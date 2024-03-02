@@ -5,6 +5,7 @@ authors = ["m3id"]
 edition = "2021"
 description = "Twitch Api reqest Http"
 license = "MIT OR Apache-2.0"
+repository = "https://github.com/m3idnotfree/twitch_highway.git"
 keywords = ["twitch"]
 
 
