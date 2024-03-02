@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{APIBase, Result};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct BadgesAPI {
     data: APIBase,
 }
@@ -52,26 +52,26 @@ impl BadgesAPI {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct BadgeResponse {
     pub data: Vec<Badges>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 // #[serde(tag = "type", rename = "badge")]
 pub struct Badges {
     pub set_id: String,
     pub versions: Vec<Versions>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 // #[serde(tag = "type", rename = "badge")]
 pub struct Badge {
     pub set_id: String,
     pub versions: Versions,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Versions {
     pub id: String,
     pub image_url_1x: String,

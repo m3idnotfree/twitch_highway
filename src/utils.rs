@@ -26,7 +26,7 @@ impl fmt::Display for APIError {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct APIBase {
     access_token: String,
     client_id: String,

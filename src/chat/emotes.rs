@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{APIBase, Result};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct EmotesAPI {
     data: APIBase,
 }
@@ -77,7 +77,7 @@ impl EmotesAPI {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "emote")]
 pub struct Emote {
     pub id: String,
@@ -88,7 +88,7 @@ pub struct Emote {
     pub theme_mode: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Images {
     pub url_1x: String,
     pub url_2x: String,
@@ -108,6 +108,13 @@ pub struct EmoteChannel {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+enum EmotesResponse {
+    Global(EmoteGlobalResponse),
+    Channel(EmoteChannelResponse),
+    Set(EmoteSetsResponse),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "emote")]
 pub struct EmoteGlobal {
     pub id: String,
@@ -118,17 +125,17 @@ pub struct EmoteGlobal {
     pub theme_mode: Vec<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EmoteChannelResponse {
     pub data: Vec<EmoteChannel>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EmoteGlobalResponse {
     pub data: Vec<EmoteGlobal>,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EmoteSetsResponse {
     pub data: Vec<EmoteGlobal>,
 }
