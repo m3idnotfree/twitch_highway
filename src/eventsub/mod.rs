@@ -70,8 +70,7 @@ impl EventSubCreateRequestBody {
             condition,
             transport,
         };
-        let body = serde_json::to_string(&body).unwrap();
-        body
+        serde_json::to_string(&body).unwrap()
     }
 }
 

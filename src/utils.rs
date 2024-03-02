@@ -211,7 +211,7 @@ pub struct APIPostBoby {
     pub data: HashMap<String, String>,
 }
 
-impl<'a> APIPostBoby {
+impl APIPostBoby {
     pub fn new(data: HashMap<String, String>) -> APIPostBoby {
         APIPostBoby { data }
     }

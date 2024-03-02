@@ -27,8 +27,8 @@ impl ModerationAPI {
                 self.data.url_endpoint_qureys(
                     "bans",
                     vec![
-                        ("broadcaster_id".into(), &broadcaster_id.into()),
-                        ("moderator_id".into(), &moderator_id.into()),
+                        ("broadcaster_id", &broadcaster_id.into()),
+                        ("moderator_id", &moderator_id.into()),
                     ],
                 ),
                 body,
@@ -46,8 +46,8 @@ impl ModerationAPI {
                 self.data.url_endpoint_qureys(
                     "bans",
                     vec![
-                        ("broadcaster_id".into(), &broadcaster_id.into()),
-                        ("moderator_id".into(), &moderator_id.into()),
+                        ("broadcaster_id", &broadcaster_id.into()),
+                        ("moderator_id", &moderator_id.into()),
                     ],
                 ),
                 body,
@@ -65,9 +65,9 @@ impl ModerationAPI {
             .api_delete(self.data.url_endpoint_qureys(
                 "bans",
                 vec![
-                    ("broadcaster_id".into(), &broadcaster_id.into()),
-                    ("moderator_id".into(), &moderator_id.into()),
-                    ("user_id".into(), &user_id.into()),
+                    ("broadcaster_id", &broadcaster_id.into()),
+                    ("moderator_id", &moderator_id.into()),
+                    ("user_id", &user_id.into()),
                 ],
             ))
             .await
