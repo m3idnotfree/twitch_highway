@@ -1,6 +1,6 @@
 [package]
 name = "twitch_highway"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["m3id"]
 edition = "2021"
 description = "Twitch Api reqest Http"
@@ -10,7 +10,7 @@ keywords = ["twitch"]
 
 
 [dependencies]
-reqwest = { version = "0.11.24", default_features = false, features = [
+reqwest = { version = "0.12.8", default_features = false, features = [
   "json",
   "rustls-tls",
 ] }
