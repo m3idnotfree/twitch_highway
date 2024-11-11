@@ -8,6 +8,13 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/m3idnotfree/twitch_highway.git"
 keywords = ["twitch"]
 
+[features]
+default = ["full"]
+chat = []
+eventsub = []
+users = []
+full = ["chat", "eventsub", "users"]
+
 [dependencies]
 anyhow = "1.0.93"
 asknothingx2-util = { version = "0.0.9", features = ["api", "oauth"] }
