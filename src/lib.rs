@@ -1,14 +1,8 @@
-mod utils;
-pub use utils::*;
-
 mod chat;
 pub use chat::*;
+mod error;
+pub use error::*;
+pub mod eventsub;
+pub mod users;
 
-mod users;
-pub use users::*;
-
-mod moderation;
-pub use moderation::*;
-
-mod eventsub;
-pub use eventsub::*;
+pub type Result<TR> = std::result::Result<TR, crate::Error>;
