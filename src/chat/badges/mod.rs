@@ -13,28 +13,32 @@ use url::Url;
 pub struct BadgeAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Url,
+    url: Arc<Url>,
 }
 
 impl BadgeAPI {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Url) -> Self {
+    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
         Self {
             access_token,
             client_id,
             url,
         }
     }
-    pub fn get_channel<'a>(&'a self, broadcaster_id: &'a str) -> GetChannelBadge<'a> {
+    pub fn get_channel<'a>(&self, broadcaster_id: &'a str) -> GetChannelBadge<'a> {
         GetChannelBadge::new(
             self.access_token.clone(),
             self.client_id.clone(),
-            &self.url,
+            self.url.clone(),
             broadcaster_id,
         )
     }
 
-    pub fn get_global(&self) -> GetGlobalBadges<'_> {
-        GetGlobalBadges::new(self.access_token.clone(), self.client_id.clone(), &self.url)
+    pub fn get_global(&self) -> GetGlobalBadges {
+        GetGlobalBadges::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            self.url.clone(),
+        )
     }
 }
 
@@ -44,14 +48,12 @@ pub struct BadgeResponse {
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-// #[serde(tag = "type", rename = "badge")]
 pub struct Badges {
     pub set_id: String,
     pub versions: Vec<Versions>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
-// #[serde(tag = "type", rename = "badge")]
 pub struct Badge {
     pub set_id: String,
     pub versions: Versions,

@@ -28,7 +28,7 @@ impl EventSub {
     }
 
     pub fn create<'a>(
-        &'a self,
+        &self,
         kind: &'a str,
         version: &'a str,
         condition: HashMap<&'a str, &'a str>,
@@ -37,7 +37,7 @@ impl EventSub {
         CreateEventSub::new(
             self.access_token.clone(),
             self.client_id.clone(),
-            &self.url,
+            self.url.clone(),
             kind,
             version,
             condition,

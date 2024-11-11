@@ -16,11 +16,11 @@ use url::Url;
 pub struct EmoteAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Url,
+    url: Arc<Url>,
 }
 
 impl EmoteAPI {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Url) -> Self {
+    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
         Self {
             access_token,
             client_id,
@@ -31,17 +31,25 @@ impl EmoteAPI {
         GetChannelEmotes::new(
             self.access_token.clone(),
             self.client_id.clone(),
-            &self.url,
+            self.url.clone(),
             broadcaster_id,
         )
     }
 
-    pub fn get_global(&self) -> GetGlobalEmotes<'_> {
-        GetGlobalEmotes::new(self.access_token.clone(), self.client_id.clone(), &self.url)
+    pub fn get_global(&self) -> GetGlobalEmotes {
+        GetGlobalEmotes::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            self.url.clone(),
+        )
     }
 
     pub fn get_emote_sets(&self) -> GetEmoteSets<'_> {
-        GetEmoteSets::new(self.access_token.clone(), self.client_id.clone(), &self.url)
+        GetEmoteSets::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            self.url.clone(),
+        )
     }
 }
 

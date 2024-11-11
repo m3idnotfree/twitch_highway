@@ -20,7 +20,7 @@ pub struct CreateEventSub<'a> {
     #[serde(skip)]
     pub client_id: Arc<ClientId>,
     #[serde(skip)]
-    pub url: &'a Url,
+    pub url: Url,
     #[serde(rename = "type")]
     pub kind: &'a str,
     pub version: &'a str,
@@ -31,7 +31,7 @@ impl<'a> CreateEventSub<'a> {
     pub fn new(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
-        url: &'a Url,
+        url: Url,
         kind: &'a str,
         version: &'a str,
         condition: HashMap<&'a str, &'a str>,
@@ -74,15 +74,14 @@ impl<'a> CreateEventSub<'a> {
 
 impl APIRequest for CreateEventSub<'_> {
     fn json(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
+        Some(Self::json_to_string(self).unwrap())
     }
 
     fn headers(&self) -> HeaderMap {
         HeaderBuilder::new()
             .content_type_json()
             .authorization("Bearer", self.access_token.secret().as_str())
-            .append("Client-Id", self.client_id.as_str())
-            .unwrap()
+            .client_id(self.client_id.as_str())
             .build()
     }
 
@@ -136,4 +135,49 @@ pub enum TransportMethod {
     Websocket,
     Conduit,
     Unknown,
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{collections::HashMap, sync::Arc};
+
+    use asknothingx2_util::{
+        api::{APIRequest, HeaderBuilder, Method},
+        oauth::{AccessToken, ClientId},
+    };
+    use pretty_assertions::assert_eq;
+    use url::Url;
+
+    use super::CreateEventSub;
+    use crate::{expect_APIRequest, expect_headers, TransportMethod};
+
+    #[test]
+    fn create_eventsub() {
+        let mut condition = HashMap::new();
+        condition.insert("user_id", "1234");
+
+        let create_eventsub = CreateEventSub::new(
+            Arc::new(AccessToken::new(
+                "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
+            )),
+            Arc::new(ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+            Url::parse("https://api.twitch.tv/helix/eventsub/subscriptions").unwrap(),
+            "user.update",
+            "1",
+            HashMap::new(),
+            TransportMethod::Websocket,
+        )
+        .set_condition(condition);
+
+        let expected_headers = expect_headers!(json);
+        let expected_json ="{\"type\":\"user.update\",\"version\":\"1\",\"condition\":{\"user_id\":\"1234\"},\"transport\":{\"method\":\"websocket\"}}".to_string();
+
+        expect_APIRequest!(
+            POST,
+            expected_headers,
+            "https://api.twitch.tv/helix/eventsub/subscriptions",
+            create_eventsub
+        );
+        expect_APIRequest!(json = Some(expected_json), create_eventsub);
+    }
 }

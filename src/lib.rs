@@ -1,5 +1,6 @@
 #[cfg(feature = "chat")]
 mod chat;
+
 #[cfg(feature = "chat")]
 pub use chat::*;
 
@@ -15,5 +16,7 @@ pub use users::*;
 
 mod error;
 pub use error::*;
+
+pub(crate) mod macros;
 
 pub type Result<TR> = std::result::Result<TR, crate::Error>;

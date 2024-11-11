@@ -13,8 +13,8 @@ pub mod badges;
 pub struct ChatAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    emote_url: Url,
-    badge_url: Url,
+    emote_url: Arc<Url>,
+    badge_url: Arc<Url>,
 }
 
 impl ChatAPI {
@@ -22,8 +22,8 @@ impl ChatAPI {
         Self {
             access_token: Arc::new(access_token.clone()),
             client_id: Arc::new(client_id.clone()),
-            emote_url: Url::parse("https://api.twitch.tv/helix/chat/emotes").unwrap(),
-            badge_url: Url::parse("https://api.twitch.tv/helix/chat/badges").unwrap(),
+            emote_url: Arc::new(Url::parse("https://api.twitch.tv/helix/chat/emotes").unwrap()),
+            badge_url: Arc::new(Url::parse("https://api.twitch.tv/helix/chat/badges").unwrap()),
         }
     }
 
@@ -44,12 +44,12 @@ impl ChatAPI {
     }
 
     pub fn set_emote_url(mut self, emote_url: &str) -> Self {
-        self.emote_url = Url::parse(emote_url).unwrap();
+        self.emote_url = Arc::new(Url::parse(emote_url).unwrap());
         self
     }
 
     pub fn set_badge_url(mut self, badge_url: &str) -> Self {
-        self.badge_url = Url::parse(badge_url).unwrap();
+        self.badge_url = Arc::new(Url::parse(badge_url).unwrap());
         self
     }
 }

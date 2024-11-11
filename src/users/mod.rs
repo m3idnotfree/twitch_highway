@@ -10,7 +10,7 @@ pub use get_user::*;
 pub struct UserAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Url,
+    url: Arc<Url>,
 }
 
 impl UserAPI {
@@ -18,12 +18,12 @@ impl UserAPI {
         Self {
             access_token: Arc::new(access_token.clone()),
             client_id: Arc::new(client_id.clone()),
-            url: Url::parse("https://api.twitch.tv/helix/users").unwrap(),
+            url: Arc::new(Url::parse("https://api.twitch.tv/helix/users").unwrap()),
         }
     }
 
     pub fn set_url(mut self, url: Url) -> Self {
-        self.url = url;
+        self.url = Arc::new(url);
         self
     }
 
