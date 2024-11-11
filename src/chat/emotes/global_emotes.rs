@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, Method},
+    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
 };
 use serde::{Deserialize, Serialize};
@@ -30,7 +30,7 @@ impl APIRequest for GetGlobalEmotes<'_> {
         Method::GET
     }
 
-    fn headers(&self) -> reqwest::header::HeaderMap {
+    fn headers(&self) -> HeaderMap {
         HeaderBuilder::new()
             .authorization("Bearer", self.access_token.secret().as_str())
             .append("Client-Id", self.client_id.as_str())

@@ -2,8 +2,8 @@
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("request error: {0}")]
-    ReqwestError(#[from] reqwest::Error),
+    // #[error("request error: {0}")]
+    // ReqwestError(#[from] reqwest::Error),
     #[error("not implement : {0}")]
     NotImplementError(String),
     #[error("request body error: {0}")]
