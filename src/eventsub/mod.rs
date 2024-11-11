@@ -1,84 +1,47 @@
-use std::collections::HashMap;
+mod create;
+use std::{collections::HashMap, sync::Arc};
 
-use serde::{Deserialize, Serialize};
+use asknothingx2_util::oauth::{AccessToken, ClientId};
+pub use create::*;
 
-use crate::{APIBase, Result};
+use url::Url;
 
 #[derive(Debug)]
-pub struct EventSubAPI {
-    data: APIBase,
+pub struct EventSub {
+    pub access_token: Arc<AccessToken>,
+    pub client_id: Arc<ClientId>,
+    pub url: Url,
 }
 
-impl EventSubAPI {
-    pub fn new<T: Into<String>>(access_token: T, client_id: T) -> EventSubAPI {
-        EventSubAPI {
-            data: APIBase::new(
-                access_token.into(),
-                client_id.into(),
-                "https://api.twitch.tv/helix/eventsub/subscriptions".into(),
-            ),
+impl EventSub {
+    pub fn new(access_token: &AccessToken, client_id: &ClientId) -> Self {
+        Self {
+            access_token: Arc::new(access_token.clone()),
+            client_id: Arc::new(client_id.clone()),
+            url: Url::parse("https://api.twitch.tv/helix/eventsub/subscriptions").unwrap(),
         }
     }
 
-    pub async fn create<T: Into<String>>(
-        &self,
-        kind: T,
-        version: T,
-        condition: HashMap<String, String>,
-        session_id: T,
-    ) -> Result<String> {
-        let body = EventSubCreateRequestBody::websocket(kind, version, condition, session_id);
-        self.data.api_post(self.data.url(), &body).await
+    pub fn set_url(mut self, url: Url) -> Self {
+        self.url = url;
+        self
     }
-    pub async fn delete<T: Into<String>>(&self, id: T) -> Result<String> {
-        self.data
-            .api_delete(self.data.url_qurey("id", &id.into()))
-            .await
-    }
-    pub fn get() {}
-}
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct EventSubCreateRequestBody {
-    #[serde(rename = "type")]
-    pub kind: String,
-    pub version: String,
-    pub condition: HashMap<String, String>,
-    pub transport: Transport,
-}
-impl EventSubCreateRequestBody {
-    pub fn body() {}
-    pub fn webhook() {}
-
-    pub fn websocket<T: Into<String>>(
-        kind: T,
-        version: T,
-        condition: HashMap<String, String>,
-        session_id: T,
-    ) -> String {
-        let transport = Transport {
-            method: "websocket".into(),
-            callback: None,
-            secret: None,
-            session_id: Some(session_id.into()),
-            conduit_id: None,
-        };
-
-        let body = EventSubCreateRequestBody {
-            kind: kind.into(),
-            version: version.into(),
+    pub fn create<'a>(
+        &'a self,
+        kind: &'a str,
+        version: &'a str,
+        condition: HashMap<&'a str, &'a str>,
+        transport_method: TransportMethod,
+    ) -> CreateEventSub<'a> {
+        CreateEventSub::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            &self.url,
+            kind,
+            version,
             condition,
-            transport,
-        };
-        serde_json::to_string(&body).unwrap()
+            transport_method,
+        )
     }
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Transport {
-    pub method: String,
-    pub callback: Option<String>,
-    pub secret: Option<String>,
-    pub session_id: Option<String>,
-    pub conduit_id: Option<String>,
 }
