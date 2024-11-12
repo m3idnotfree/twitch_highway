@@ -16,16 +16,16 @@ pub enum EventSubCreateError {
 #[derive(Debug, Serialize)]
 pub struct CreateEventSub<'a> {
     #[serde(skip)]
-    pub access_token: Arc<AccessToken>,
+    access_token: Arc<AccessToken>,
     #[serde(skip)]
-    pub client_id: Arc<ClientId>,
+    client_id: Arc<ClientId>,
     #[serde(skip)]
-    pub url: Url,
+    url: Url,
     #[serde(rename = "type")]
-    pub kind: &'a str,
-    pub version: &'a str,
-    pub condition: HashMap<&'a str, &'a str>,
-    pub transport: Transport,
+    kind: &'a str,
+    version: &'a str,
+    condition: HashMap<&'a str, &'a str>,
+    transport: Transport,
 }
 impl<'a> CreateEventSub<'a> {
     pub fn new(

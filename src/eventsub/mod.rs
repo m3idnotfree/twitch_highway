@@ -8,9 +8,9 @@ use url::Url;
 
 #[derive(Debug)]
 pub struct EventSub {
-    pub access_token: Arc<AccessToken>,
-    pub client_id: Arc<ClientId>,
-    pub url: Url,
+    access_token: Arc<AccessToken>,
+    client_id: Arc<ClientId>,
+    url: Url,
 }
 
 impl EventSub {
