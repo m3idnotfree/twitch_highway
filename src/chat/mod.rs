@@ -43,13 +43,11 @@ impl ChatAPI {
         )
     }
 
-    pub fn set_emote_url(mut self, emote_url: &str) -> Self {
+    pub fn set_emote_url(&mut self, emote_url: &str) {
         self.emote_url = Arc::new(Url::parse(emote_url).unwrap());
-        self
     }
 
-    pub fn set_badge_url(mut self, badge_url: &str) -> Self {
+    pub fn set_badge_url(&mut self, badge_url: &str) {
         self.badge_url = Arc::new(Url::parse(badge_url).unwrap());
-        self
     }
 }
