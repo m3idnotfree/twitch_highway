@@ -50,11 +50,11 @@ impl ChatAPI {
         )
     }
 
-    pub fn set_emote_url(&mut self, emote_url: &str) {
-        self.emote_url = Arc::new(Url::parse(emote_url).unwrap());
+    pub fn set_emote_url<T: Into<String>>(&mut self, emote_url: T) {
+        self.emote_url = Arc::new(Url::parse(&emote_url.into()).unwrap());
     }
 
-    pub fn set_badge_url(&mut self, badge_url: &str) {
-        self.badge_url = Arc::new(Url::parse(badge_url).unwrap());
+    pub fn set_badge_url<T: Into<String>>(&mut self, badge_url: T) {
+        self.badge_url = Arc::new(Url::parse(&badge_url.into()).unwrap());
     }
 }
