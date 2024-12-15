@@ -3,6 +3,7 @@ use std::sync::Arc;
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 use badges::BadgeAPI;
 use emotes::EmoteAPI;
+use once_cell::sync::Lazy;
 use url::Url;
 
 pub mod emotes;
@@ -17,13 +18,19 @@ pub struct ChatAPI {
     badge_url: Arc<Url>,
 }
 
+const TWITCH_EMOTE_URL: &str = "https://api.twitch.tv/helix/chat/emotes";
+const TWITCH_BADGE_URL: &str = "https://api.twitch.tv/helix/chat/badges";
+
+static EMOTE_URL: Lazy<Arc<Url>> = Lazy::new(|| Arc::new(Url::parse(TWITCH_EMOTE_URL).unwrap()));
+static BADGE_URL: Lazy<Arc<Url>> = Lazy::new(|| Arc::new(Url::parse(TWITCH_BADGE_URL).unwrap()));
+
 impl ChatAPI {
     pub fn new(access_token: &AccessToken, client_id: &ClientId) -> Self {
         Self {
             access_token: Arc::new(access_token.clone()),
             client_id: Arc::new(client_id.clone()),
-            emote_url: Arc::new(Url::parse("https://api.twitch.tv/helix/chat/emotes").unwrap()),
-            badge_url: Arc::new(Url::parse("https://api.twitch.tv/helix/chat/badges").unwrap()),
+            emote_url: EMOTE_URL.clone(),
+            badge_url: BADGE_URL.clone(),
         }
     }
 
