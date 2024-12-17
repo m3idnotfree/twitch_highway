@@ -6,31 +6,34 @@ use asknothingx2_util::{
 };
 use url::Url;
 
+/// https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges
 #[derive(Debug)]
-pub struct GetChannelBadge<'a> {
+pub struct GetChannelBadge {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
-    broadcaster_id: &'a str,
+    url: Url,
+    broadcaster_id: String,
 }
 
-impl<'a> GetChannelBadge<'a> {
-    pub fn new(
+impl GetChannelBadge {
+    pub fn new<T: Into<String>>(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
-        url: Arc<Url>,
-        broadcaster_id: &'a str,
+        broadcaster_id: T,
     ) -> Self {
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut().unwrap().push("chat").push("badges");
+
         Self {
             access_token,
             client_id,
             url,
-            broadcaster_id,
+            broadcaster_id: broadcaster_id.into(),
         }
     }
 }
 
-impl APIRequest for GetChannelBadge<'_> {
+impl APIRequest for GetChannelBadge {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -45,21 +48,15 @@ impl APIRequest for GetChannelBadge<'_> {
     fn url(&self) -> Url {
         let mut url = Url::parse(self.url.as_str()).unwrap();
         url.query_pairs_mut()
-            .append_pair("broadcaster_id", self.broadcaster_id);
+            .append_pair("broadcaster_id", &self.broadcaster_id);
         url
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
-    use asknothingx2_util::{
-        api::{APIRequest, HeaderBuilder, Method},
-        oauth::{AccessToken, ClientId},
-    };
+    use asknothingx2_util::api::APIRequest;
     use pretty_assertions::assert_eq;
-    use url::Url;
 
     use crate::{api_general, expect_APIRequest, expect_headers};
 
@@ -67,11 +64,7 @@ mod tests {
 
     #[test]
     fn channel_badges() {
-        let channel_badges = api_general!(
-            GetChannelBadge,
-            "https://api.twitch.tv/helix/chat/badges",
-            "135093069"
-        );
+        let channel_badges = api_general!(GetChannelBadge, "135093069");
 
         let expected_headers = expect_headers!();
 
@@ -79,6 +72,9 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/badges?broadcaster_id=135093069",
+            json = None,
+            text = None,
+            urlencoded = None,
             channel_badges
         );
     }

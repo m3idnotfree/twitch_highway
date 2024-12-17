@@ -16,7 +16,7 @@ use crate::Pagination;
 pub struct GetChatters {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
+    url: Url,
     broadcaster_id: String,
     moderator_id: String,
     first: Option<u64>,
@@ -27,10 +27,15 @@ impl GetChatters {
     pub fn new<T: Into<String>>(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
-        url: Arc<Url>,
         broadcaster_id: T,
         moderator_id: T,
     ) -> Self {
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut()
+            .unwrap()
+            .push("chat")
+            .push("chatters");
+
         Self {
             access_token,
             client_id,
@@ -64,7 +69,7 @@ impl APIRequest for GetChatters {
     }
 
     fn url(&self) -> Url {
-        let mut url = Url::parse(self.url.as_str()).unwrap();
+        let mut url = self.url.clone();
         url.query_pairs_mut()
             .append_pair("broadcaster_id", &self.broadcaster_id)
             .append_pair("moderator_id", &self.moderator_id);
@@ -106,12 +111,7 @@ mod tests {
 
     #[test]
     fn get_chatters() {
-        let get_chatters = api_general!(
-            GetChatters,
-            "https://api.twitch.tv/helix/chat/chatters",
-            "123456",
-            "654321"
-        );
+        let get_chatters = api_general!(GetChatters, "123456", "654321");
 
         let expected_headers = expect_headers!();
 
@@ -119,17 +119,16 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321",
+            json = None,
+            text = None,
+            urlencoded = None,
             get_chatters
         );
     }
+
     #[test]
     fn get_chatters_set_first() {
-        let mut get_chatters = api_general!(
-            GetChatters,
-            "https://api.twitch.tv/helix/chat/chatters",
-            "123456",
-            "654321"
-        );
+        let mut get_chatters = api_general!(GetChatters, "123456", "654321");
 
         get_chatters.set_first(40);
 
@@ -139,17 +138,15 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321&first=40",
+            json = None,
+            text = None,
+            urlencoded = None,
             get_chatters
         );
     }
     #[test]
     fn get_chatters_set_after() {
-        let mut get_chatters = api_general!(
-            GetChatters,
-            "https://api.twitch.tv/helix/chat/chatters",
-            "123456",
-            "654321"
-        );
+        let mut get_chatters = api_general!(GetChatters, "123456", "654321");
 
         get_chatters.set_after("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19");
 
@@ -159,17 +156,16 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321&after=eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19",
+            json = None,
+            text = None,
+            urlencoded = None,
             get_chatters
         );
     }
+
     #[test]
     fn get_chatters_set_first_after() {
-        let mut get_chatters = api_general!(
-            GetChatters,
-            "https://api.twitch.tv/helix/chat/chatters",
-            "123456",
-            "654321"
-        );
+        let mut get_chatters = api_general!(GetChatters, "123456", "654321");
 
         get_chatters.set_first(40);
         get_chatters.set_after("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19");
@@ -180,9 +176,13 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321&first=40&after=eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19",
+            json = None,
+            text = None,
+            urlencoded = None,
             get_chatters
         );
     }
+
     #[test]
     fn chatters() {
         expect_response_json!(

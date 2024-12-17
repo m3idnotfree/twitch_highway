@@ -9,14 +9,19 @@ use url::Url;
 
 use super::Images;
 
+/// https://dev.twitch.tv/docs/api/reference/#get-global-emotes
 #[derive(Debug)]
 pub struct GetGlobalEmotes {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
+    url: Url,
 }
+
 impl GetGlobalEmotes {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
+    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut().unwrap().push("chat").push("emotes");
+
         Self {
             access_token,
             client_id,
@@ -62,23 +67,19 @@ pub struct EmoteGlobalResponse {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
-    use asknothingx2_util::{
-        api::{APIRequest, HeaderBuilder, Method},
-        oauth::{AccessToken, ClientId},
-    };
+    use asknothingx2_util::api::APIRequest;
     use pretty_assertions::assert_eq;
-    use url::Url;
 
-    use crate::{api_general, expect_APIRequest, expect_headers};
+    use crate::{
+        api_general, emotes::EmoteGlobalResponse, expect_APIRequest, expect_headers,
+        expect_response_json,
+    };
 
     use super::GetGlobalEmotes;
 
     #[test]
     fn global_emtoes() {
-        let global_emotes =
-            api_general!(GetGlobalEmotes, "https://api.twitch.tv/helix/chat/emotes");
+        let global_emotes = api_general!(GetGlobalEmotes);
 
         let expected_headers = expect_headers!();
 
@@ -86,7 +87,16 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/emotes/global",
+            json = None,
+            text = None,
+            urlencoded = None,
             global_emotes
         );
+    }
+
+    #[test]
+    fn global_emotes_response() {
+        expect_response_json!("{\n  \"data\": [\n    {\n      \"id\": \"196892\",\n      \"name\": \"TwitchUnity\",\n      \"images\": {\n        \"url_1x\": \"https://static-cdn.jtvnw.net/emoticons/v2/196892/static/light/1.0\",\n        \"url_2x\": \"https://static-cdn.jtvnw.net/emoticons/v2/196892/static/light/2.0\",\n        \"url_4x\": \"https://static-cdn.jtvnw.net/emoticons/v2/196892/static/light/3.0\"\n      },\n      \"format\": [\n        \"static\"\n      ],\n      \"scale\": [\n        \"1.0\",\n        \"2.0\",\n        \"3.0\"\n      ],\n      \"theme_mode\": [\n        \"light\",\n        \"dark\"\n      ]\n    }\n  ],\n  \"template\": \"https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}\"\n}",
+        EmoteGlobalResponse);
     }
 }

@@ -9,16 +9,20 @@ use url::Url;
 
 use super::EmoteGlobal;
 
+/// https://dev.twitch.tv/docs/api/reference/#get-emote-sets
 #[derive(Debug)]
 pub struct GetEmoteSets {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
+    url: Url,
     emote_set_ids: Vec<String>,
 }
 
 impl GetEmoteSets {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
+    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut().unwrap().push("chat").push("emotes");
+
         Self {
             access_token,
             client_id,
@@ -26,6 +30,7 @@ impl GetEmoteSets {
             emote_set_ids: Vec::new(),
         }
     }
+
     pub fn add_emote_set_id<T: Into<String>>(mut self, id: T) -> Self {
         self.emote_set_ids.push(id.into());
         self
@@ -50,7 +55,7 @@ impl APIRequest for GetEmoteSets {
     }
 
     fn url(&self) -> Url {
-        let mut url = Url::parse(self.url.as_str()).unwrap();
+        let mut url = self.url.clone();
         url.path_segments_mut().unwrap().push("set");
         url.query_pairs_mut().extend_pairs(
             self.emote_set_ids
@@ -80,24 +85,22 @@ impl APIRequest for GetEmoteSets {
 pub struct EmoteSetsResponse {
     pub data: Vec<EmoteGlobal>,
 }
+
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
-    use asknothingx2_util::{
-        api::{APIRequest, HeaderBuilder, Method},
-        oauth::{AccessToken, ClientId},
-    };
+    use asknothingx2_util::api::APIRequest;
     use pretty_assertions::assert_eq;
-    use url::Url;
 
-    use crate::{api_general, expect_APIRequest, expect_headers};
+    use crate::{
+        api_general, emotes::EmoteSetsResponse, expect_APIRequest, expect_headers,
+        expect_response_json,
+    };
 
     use super::GetEmoteSets;
 
     #[test]
     fn emote_sets() {
-        let emote_sets = api_general!(GetEmoteSets, "https://api.twitch.tv/helix/chat/emotes");
+        let emote_sets = api_general!(GetEmoteSets);
         let emote_sets = emote_sets.add_emote_set_id("1234");
 
         let expected_headers = expect_headers!();
@@ -106,12 +109,15 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=1234",
+            json = None,
+            text = None,
+            urlencoded = None,
             emote_sets
         );
     }
     #[test]
     fn emotes_sets_id_vec() {
-        let emote_sets = api_general!(GetEmoteSets, "https://api.twitch.tv/helix/chat/emotes");
+        let emote_sets = api_general!(GetEmoteSets);
         let emote_sets = emote_sets.add_emote_set_ids(vec!["1234", "4567"]);
 
         let expected_headers = expect_headers!();
@@ -120,7 +126,16 @@ mod tests {
             GET,
             expected_headers,
             "https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=1234&emote_set_id=4567",
+            json = None,
+            text = None,
+            urlencoded = None,
             emote_sets
         );
+    }
+
+    #[test]
+    fn emote_sets_response() {
+        expect_response_json!("{\n  \"data\": [\n    {\n      \"id\": \"304456832\",\n      \"name\": \"twitchdevPitchfork\",\n      \"images\": {\n        \"url_1x\": \"https://static-cdn.jtvnw.net/emoticons/v2/304456832/static/light/1.0\",\n        \"url_2x\": \"https://static-cdn.jtvnw.net/emoticons/v2/304456832/static/light/2.0\",\n        \"url_4x\": \"https://static-cdn.jtvnw.net/emoticons/v2/304456832/static/light/3.0\"\n      },\n      \"emote_type\": \"subscriptions\",\n      \"emote_set_id\": \"301590448\",\n      \"owner_id\": \"141981764\",\n      \"format\": [\n        \"static\"\n      ],\n      \"scale\": [\n        \"1.0\",\n        \"2.0\",\n        \"3.0\"\n      ],\n      \"theme_mode\": [\n        \"light\",\n        \"dark\"\n      ]\n    }\n  ],\n  \"template\": \"https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}\"\n}",
+        EmoteSetsResponse);
     }
 }

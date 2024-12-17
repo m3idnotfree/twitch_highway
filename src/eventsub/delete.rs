@@ -11,7 +11,7 @@ use url::Url;
 pub struct DeleteEventSub {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
+    url: Url,
     id: String,
 }
 
@@ -19,15 +19,24 @@ impl DeleteEventSub {
     pub fn new<T: Into<String>>(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
-        url: Arc<Url>,
         id: T,
     ) -> Self {
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut()
+            .unwrap()
+            .push("eventsub")
+            .push("subscriptions");
+
         Self {
             access_token,
             client_id,
             url,
             id: id.into(),
         }
+    }
+
+    pub fn set_url<T: Into<String>>(&mut self, url: T) {
+        self.url = Url::parse(&url.into()).unwrap();
     }
 }
 
@@ -44,7 +53,7 @@ impl APIRequest for DeleteEventSub {
     }
 
     fn url(&self) -> Url {
-        let mut url = Url::parse(self.url.as_str()).unwrap();
+        let mut url = self.url.clone();
         url.query_pairs_mut().append_pair("id", &self.id);
 
         url
@@ -60,11 +69,7 @@ mod tests {
 
     #[test]
     fn delete_eventsub() {
-        let delete_eventsub = api_general!(
-            DeleteEventSub,
-            "https://api.twitch.tv/helix/eventsub/subscriptions",
-            "26b1c993-bfcf-44d9-b876-379dacafe75a"
-        );
+        let delete_eventsub = api_general!(DeleteEventSub, "26b1c993-bfcf-44d9-b876-379dacafe75a");
 
         let expected_headers = expect_headers!();
 
@@ -72,6 +77,9 @@ mod tests {
             DELETE,
             expected_headers,
             "https://api.twitch.tv/helix/eventsub/subscriptions?id=26b1c993-bfcf-44d9-b876-379dacafe75a",
+            json = None,
+            text = None,
+            urlencoded = None,
             delete_eventsub
         );
     }

@@ -10,46 +10,35 @@ use std::sync::Arc;
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 #[derive(Debug)]
 pub struct EmoteAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Arc<Url>,
 }
 
 impl EmoteAPI {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
+    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
         Self {
             access_token,
             client_id,
-            url,
         }
     }
+
     pub fn get_channel<T: Into<String>>(&self, broadcaster_id: T) -> GetChannelEmotes {
         GetChannelEmotes::new(
             self.access_token.clone(),
             self.client_id.clone(),
-            self.url.clone(),
             broadcaster_id.into(),
         )
     }
 
     pub fn get_global(&self) -> GetGlobalEmotes {
-        GetGlobalEmotes::new(
-            self.access_token.clone(),
-            self.client_id.clone(),
-            self.url.clone(),
-        )
+        GetGlobalEmotes::new(self.access_token.clone(), self.client_id.clone())
     }
 
     pub fn get_emote_sets(&self) -> GetEmoteSets {
-        GetEmoteSets::new(
-            self.access_token.clone(),
-            self.client_id.clone(),
-            self.url.clone(),
-        )
+        GetEmoteSets::new(self.access_token.clone(), self.client_id.clone())
     }
 }
 
@@ -63,7 +52,7 @@ impl EmoteAPI {
 //     pub scale: Vec<String>,
 //     pub theme_mode: Vec<String>,
 // }
-//
+
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Images {
     pub url_1x: String,

@@ -31,7 +31,7 @@ macro_rules! expect_APIRequest {
         assert_eq!($expect_url.to_string(), $input.url().to_string());
         assert_eq!($json, $input.json());
         assert_eq!($text, $input.text());
-        assert_eq!($urlencoded, $input.json());
+        assert_eq!($urlencoded, $input.urlencoded());
     };
     (json = $json:expr, $input:expr) => {
         assert_eq!($json, $input.json());
@@ -61,32 +61,20 @@ macro_rules! expect_headers {
 #[cfg(test)]
 #[macro_export]
 macro_rules! api_general {
-    ($ty:ident,$url:literal) => {
+    ($ty:ident) => {
         $ty::new(
             std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
             )),
             std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-           std::sync::Arc::new(url::Url::parse($url).unwrap()),
         )
     };
-    ($ty:ident,$url:literal,$id:literal) => {
+    ($ty:ident,$($ex:literal),+) => {
         $ty::new(
             std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
             )),
             std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            std::sync::Arc::new(url::Url::parse($url).unwrap()),
-            $id,
-        )
-    };
-    ($ty:ident,$url:literal,$($ex:literal),+) => {
-        $ty::new(
-            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
-                "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
-            )),
-            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            std::sync::Arc::new(url::Url::parse($url).unwrap()),
             $($ex),+
         )
     };

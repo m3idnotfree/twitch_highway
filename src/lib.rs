@@ -1,3 +1,23 @@
+//! implement Endpoint
+//!
+//! Users
+//! - get users
+//!
+//! EventSubAPI
+//! - create
+//! - delete
+//!
+//! Chat
+//! - emotes
+//!  - channel
+//!  - global
+//!  - emote sets
+//! - badges
+//!  - channel
+//!  - global
+//! - chatters
+
+pub(crate) const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 #[cfg(feature = "chat")]
 mod chat;
 
