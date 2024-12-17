@@ -7,7 +7,10 @@ macro_rules! expect_APIRequest {
         $expect_url:literal,
         $input:expr
     ) => {
-        assert_eq!(Method::$expect_method, $input.method());
+        assert_eq!(
+            asknothingx2_util::api::Method::$expect_method,
+            $input.method()
+        );
         assert_eq!($expect_headers, $input.headers());
         assert_eq!($expect_url.to_string(), $input.url().to_string());
     };
@@ -20,7 +23,10 @@ macro_rules! expect_APIRequest {
         urlencoded = $urlencoded:expr,
         $input:expr
     ) => {
-        assert_eq!(Method::$expect_method, $input.method());
+        assert_eq!(
+            asknothingx2_util::api::Method::$expect_method,
+            $input.method()
+        );
         assert_eq!($expect_headers, $input.headers());
         assert_eq!($expect_url.to_string(), $input.url().to_string());
         assert_eq!($json, $input.json());
@@ -36,14 +42,14 @@ macro_rules! expect_APIRequest {
 #[macro_export]
 macro_rules! expect_headers {
     () => {
-        HeaderBuilder::new()
+        asknothingx2_util::api::HeaderBuilder::new()
             .authorization("Bearer", "cfabdegwdoklmawdzdo98xt2fo512y")
             .append("Client-Id", "uo6dggojyb8d6soh92zknwmi5ej1q2")
             .unwrap()
             .build()
     };
     (json) => {
-        HeaderBuilder::new()
+        asknothingx2_util::api::HeaderBuilder::new()
             .content_type_json()
             .authorization("Bearer", "cfabdegwdoklmawdzdo98xt2fo512y")
             .append("Client-Id", "uo6dggojyb8d6soh92zknwmi5ej1q2")
@@ -57,21 +63,41 @@ macro_rules! expect_headers {
 macro_rules! api_general {
     ($ty:ident,$url:literal) => {
         $ty::new(
-            Arc::new(AccessToken::new(
+            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
             )),
-            Arc::new(ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            Arc::new(Url::parse($url).unwrap()),
+            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+           std::sync::Arc::new(url::Url::parse($url).unwrap()),
         )
     };
     ($ty:ident,$url:literal,$id:literal) => {
         $ty::new(
-            Arc::new(AccessToken::new(
+            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
             )),
-            Arc::new(ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            Arc::new(Url::parse($url).unwrap()),
+            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+            std::sync::Arc::new(url::Url::parse($url).unwrap()),
             $id,
         )
+    };
+    ($ty:ident,$url:literal,$($ex:literal),+) => {
+        $ty::new(
+            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
+                "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
+            )),
+            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+            std::sync::Arc::new(url::Url::parse($url).unwrap()),
+            $($ex),+
+        )
+    };
+}
+
+#[cfg(test)]
+#[macro_export]
+macro_rules! expect_response_json {
+    ($data:literal,$de:ident) => {
+        let result = serde_json::from_str::<$de>($data);
+
+        assert!(result.is_ok());
     };
 }
