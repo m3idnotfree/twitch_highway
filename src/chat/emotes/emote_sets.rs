@@ -10,14 +10,14 @@ use url::Url;
 use super::EmoteGlobal;
 
 #[derive(Debug)]
-pub struct GetEmoteSets<'a> {
+pub struct GetEmoteSets {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
     url: Arc<Url>,
-    emote_set_ids: Vec<&'a str>,
+    emote_set_ids: Vec<String>,
 }
 
-impl<'a> GetEmoteSets<'a> {
+impl GetEmoteSets {
     pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>, url: Arc<Url>) -> Self {
         Self {
             access_token,
@@ -26,18 +26,18 @@ impl<'a> GetEmoteSets<'a> {
             emote_set_ids: Vec::new(),
         }
     }
-    pub fn add_emote_set_id(mut self, id: &'a str) -> Self {
-        self.emote_set_ids.push(id);
+    pub fn add_emote_set_id<T: Into<String>>(mut self, id: T) -> Self {
+        self.emote_set_ids.push(id.into());
         self
     }
 
-    pub fn add_emote_set_ids(mut self, ids: Vec<&'a str>) -> Self {
-        self.emote_set_ids.extend(ids);
+    pub fn add_emote_set_ids<T: Into<String>, L: IntoIterator<Item = T>>(mut self, ids: L) -> Self {
+        self.emote_set_ids.extend(ids.into_iter().map(Into::into));
         self
     }
 }
 
-impl APIRequest for GetEmoteSets<'_> {
+impl APIRequest for GetEmoteSets {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -54,10 +54,8 @@ impl APIRequest for GetEmoteSets<'_> {
         url.path_segments_mut().unwrap().push("set");
         url.query_pairs_mut().extend_pairs(
             self.emote_set_ids
-                .clone()
-                .into_iter()
-                .map(|x| ("emote_set_id", x))
-                .collect::<Vec<(&str, &str)>>(),
+                .iter()
+                .map(|x| ("emote_set_id", x.as_str())),
         );
 
         url

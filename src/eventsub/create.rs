@@ -12,37 +12,37 @@ pub enum EventSubCreateError {
     #[error("empty value: {0}")]
     EmptyValue(String),
 }
-
+/// https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
 #[derive(Debug, Serialize)]
-pub struct CreateEventSub<'a> {
+pub struct CreateEventSub {
     #[serde(skip)]
     access_token: Arc<AccessToken>,
     #[serde(skip)]
     client_id: Arc<ClientId>,
     #[serde(skip)]
-    url: Url,
+    url: Arc<Url>,
     #[serde(rename = "type")]
-    kind: &'a str,
-    version: &'a str,
-    condition: HashMap<&'a str, &'a str>,
+    kind: String,
+    version: String,
+    condition: HashMap<String, String>,
     transport: Transport,
 }
-impl<'a> CreateEventSub<'a> {
-    pub fn new(
+impl CreateEventSub {
+    pub fn new<T: Into<String>>(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
-        url: Url,
-        kind: &'a str,
-        version: &'a str,
-        condition: HashMap<&'a str, &'a str>,
+        url: Arc<Url>,
+        kind: T,
+        version: T,
+        condition: HashMap<String, String>,
         transport_method: TransportMethod,
-    ) -> CreateEventSub<'a> {
+    ) -> CreateEventSub {
         Self {
             access_token,
             client_id,
             url,
-            kind,
-            version,
+            kind: kind.into(),
+            version: version.into(),
             condition,
             transport: Transport {
                 method: transport_method,
@@ -54,16 +54,21 @@ impl<'a> CreateEventSub<'a> {
         }
     }
 
-    pub fn set_type(mut self, kind: &'a str) -> Self {
-        self.kind = kind;
+    pub fn set_type<T: Into<String>>(mut self, kind: T) -> Self {
+        self.kind = kind.into();
         self
     }
-    pub fn set_version(mut self, version: &'a str) -> Self {
-        self.version = version;
+    pub fn set_version<T: Into<String>>(mut self, version: T) -> Self {
+        self.version = version.into();
         self
     }
-    pub fn set_condition(mut self, condition: HashMap<&'a str, &'a str>) -> Self {
-        self.condition = condition;
+    pub fn set_condition<K, V, H: IntoIterator<Item = (K, V)>>(mut self, condition: H) -> Self
+    where
+        K: Into<String>,
+        V: Into<String>,
+    {
+        self.condition
+            .extend(condition.into_iter().map(|(k, v)| (k.into(), v.into())));
         self
     }
     pub fn set_transport(mut self, transport: Transport) -> Self {
@@ -72,7 +77,7 @@ impl<'a> CreateEventSub<'a> {
     }
 }
 
-impl APIRequest for CreateEventSub<'_> {
+impl APIRequest for CreateEventSub {
     fn json(&self) -> Option<String> {
         Some(Self::json_to_string(self).unwrap())
     }
@@ -90,7 +95,7 @@ impl APIRequest for CreateEventSub<'_> {
     }
 
     fn url(&self) -> Url {
-        self.url.clone()
+        Url::parse(self.url.as_str()).unwrap()
     }
 }
 
@@ -161,7 +166,7 @@ mod tests {
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
             )),
             Arc::new(ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            Url::parse("https://api.twitch.tv/helix/eventsub/subscriptions").unwrap(),
+            Arc::new(Url::parse("https://api.twitch.tv/helix/eventsub/subscriptions").unwrap()),
             "user.update",
             "1",
             HashMap::new(),

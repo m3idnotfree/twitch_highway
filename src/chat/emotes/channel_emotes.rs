@@ -10,30 +10,30 @@ use url::Url;
 use super::Images;
 
 #[derive(Debug)]
-pub struct GetChannelEmotes<'a> {
+pub struct GetChannelEmotes {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
     url: Arc<Url>,
-    broadcaster_id: &'a str,
+    broadcaster_id: String,
 }
 
-impl<'a> GetChannelEmotes<'a> {
-    pub fn new(
+impl GetChannelEmotes {
+    pub fn new<T: Into<String>>(
         access_token: Arc<AccessToken>,
         client_id: Arc<ClientId>,
         url: Arc<Url>,
-        broadcaster_id: &'a str,
+        broadcaster_id: T,
     ) -> Self {
         Self {
             access_token,
             client_id,
             url,
-            broadcaster_id,
+            broadcaster_id: broadcaster_id.into(),
         }
     }
 }
 
-impl APIRequest for GetChannelEmotes<'_> {
+impl APIRequest for GetChannelEmotes {
     fn method(&self) -> Method {
         Method::GET
     }
@@ -48,7 +48,7 @@ impl APIRequest for GetChannelEmotes<'_> {
     fn url(&self) -> Url {
         let mut url = Url::parse(self.url.as_str()).unwrap();
         url.query_pairs_mut()
-            .append_pair("broadcaster_id", self.broadcaster_id);
+            .append_pair("broadcaster_id", self.broadcaster_id.as_str());
         url
     }
 }

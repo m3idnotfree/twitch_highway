@@ -27,12 +27,12 @@ impl EmoteAPI {
             url,
         }
     }
-    pub fn get_channel<'a>(&'a self, broadcaster_id: &'a str) -> GetChannelEmotes<'a> {
+    pub fn get_channel<T: Into<String>>(&self, broadcaster_id: T) -> GetChannelEmotes {
         GetChannelEmotes::new(
             self.access_token.clone(),
             self.client_id.clone(),
             self.url.clone(),
-            broadcaster_id,
+            broadcaster_id.into(),
         )
     }
 
@@ -44,7 +44,7 @@ impl EmoteAPI {
         )
     }
 
-    pub fn get_emote_sets(&self) -> GetEmoteSets<'_> {
+    pub fn get_emote_sets(&self) -> GetEmoteSets {
         GetEmoteSets::new(
             self.access_token.clone(),
             self.client_id.clone(),
