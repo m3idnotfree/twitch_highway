@@ -17,6 +17,9 @@ pub use users::*;
 mod error;
 pub use error::*;
 
+mod types;
+pub use types::*;
+
 pub(crate) mod macros;
 
 pub type Result<TR> = std::result::Result<TR, crate::Error>;
