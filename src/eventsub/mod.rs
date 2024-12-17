@@ -10,7 +10,7 @@ use once_cell::sync::Lazy;
 use url::Url;
 
 #[derive(Debug)]
-pub struct EventSub {
+pub struct EventSubAPI {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
     url: Arc<Url>,
@@ -21,7 +21,7 @@ const TWITCH_EVENTSUB_URL: &str = "https://api.twitch.tv/helix/eventsub/subscrip
 static EVENTSUB_URL: Lazy<Arc<Url>> =
     Lazy::new(|| Arc::new(Url::parse(TWITCH_EVENTSUB_URL).unwrap()));
 
-impl EventSub {
+impl EventSubAPI {
     pub fn new(access_token: &AccessToken, client_id: &ClientId) -> Self {
         Self {
             access_token: Arc::new(access_token.clone()),
