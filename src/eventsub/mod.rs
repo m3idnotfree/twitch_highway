@@ -1,8 +1,10 @@
 mod create;
+mod delete;
 use std::{collections::HashMap, sync::Arc};
 
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 pub use create::*;
+pub use delete::*;
 
 use once_cell::sync::Lazy;
 use url::Url;
@@ -48,6 +50,15 @@ impl EventSub {
             version,
             condition,
             transport_method,
+        )
+    }
+
+    pub fn delete<T: Into<String>>(&self, id: T) -> DeleteEventSub {
+        DeleteEventSub::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            self.url.clone(),
+            id.into(),
         )
     }
 }
