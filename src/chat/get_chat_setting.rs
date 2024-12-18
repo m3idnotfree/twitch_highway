@@ -38,7 +38,7 @@ impl GetChatSetting {
         }
     }
 
-    pub fn set<T: Into<String>>(&mut self, moderator_id: T) {
+    pub fn set_moderator_id<T: Into<String>>(&mut self, moderator_id: T) {
         self.moderator_id = Some(moderator_id.into());
     }
 }
