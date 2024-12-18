@@ -6,12 +6,14 @@ use emotes::EmoteAPI;
 use get_chat_setting::GetChatSetting;
 use get_chatters::GetChatters;
 use get_shared_chat_session::GetSharedChatSession;
+use send_chat_message::SendChatMessage;
 
 pub mod badges;
 pub mod emotes;
 pub mod get_chat_setting;
 pub mod get_chatters;
 pub mod get_shared_chat_session;
+pub mod send_chat_message;
 
 #[derive(Debug)]
 pub struct ChatAPI {
@@ -60,6 +62,19 @@ impl ChatAPI {
             self.access_token.clone(),
             self.client_id.clone(),
             broadcaster_id.into(),
+        )
+    }
+
+    pub fn send_chat_message<T: Into<String>>(
+        &self,
+        broadcaster_id: T,
+        sender_id: T,
+    ) -> SendChatMessage {
+        SendChatMessage::new(
+            self.access_token.clone(),
+            self.client_id.clone(),
+            broadcaster_id.into(),
+            sender_id.into(),
         )
     }
 }

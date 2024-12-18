@@ -27,7 +27,7 @@
 //!  [ ] Update Chat Settings
 //!  [ ] Send Chat Announcement
 //!  [ ] Send a Shoutout
-//!  [ ] Send Chat Message
+//!  [x] Send Chat Message
 //!  [ ] Get User Chat Color
 //!  [ ] Update User Chat Color
 //!
