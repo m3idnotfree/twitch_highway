@@ -8,6 +8,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+/// https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session
 #[derive(Debug)]
 pub struct GetSharedChatSession {
     access_token: Arc<AccessToken>,
