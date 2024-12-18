@@ -13,11 +13,13 @@ default = ["full"]
 chat = []
 eventsub = []
 users = []
+test = []
 full = ["chat", "eventsub", "users"]
 
 [dependencies]
 anyhow = "1.0.94"
 asknothingx2-util = { version = "0.0.11", features = ["api", "oauth"] }
+chrono = { version = "0.4.39", features = ["serde"] }
 serde = { version = "1.0.216", features = ["derive"] }
 thiserror = "2.0.7"
 url = "2.5.4"
