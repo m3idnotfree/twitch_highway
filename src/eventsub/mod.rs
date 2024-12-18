@@ -1,11 +1,13 @@
 mod create;
 mod delete;
+mod get;
 use std::{collections::HashMap, sync::Arc};
 
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 
 pub use create::*;
 pub use delete::*;
+pub use get::*;
 
 #[derive(Debug)]
 pub struct EventSubAPI {
@@ -40,5 +42,9 @@ impl EventSubAPI {
 
     pub fn delete<T: Into<String>>(&self, id: T) -> DeleteEventSub {
         DeleteEventSub::new(self.access_token.clone(), self.client_id.clone(), id.into())
+    }
+
+    pub fn get(&self) -> GetEventSub {
+        GetEventSub::new(self.access_token.clone(), self.client_id.clone())
     }
 }
