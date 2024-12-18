@@ -75,7 +75,6 @@ pub struct EmoteChannelResponse {
 
 #[cfg(test)]
 mod tests {
-    use asknothingx2_util::api::APIRequest;
     use pretty_assertions::assert_eq;
 
     use crate::{

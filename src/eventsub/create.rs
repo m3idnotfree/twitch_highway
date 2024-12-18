@@ -156,10 +156,7 @@ pub enum TransportMethod {
 mod tests {
     use std::{collections::HashMap, sync::Arc};
 
-    use asknothingx2_util::{
-        api::APIRequest,
-        oauth::{AccessToken, ClientId},
-    };
+    use asknothingx2_util::oauth::{AccessToken, ClientId};
     use pretty_assertions::assert_eq;
 
     use super::CreateEventSub;

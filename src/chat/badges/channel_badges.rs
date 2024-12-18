@@ -55,7 +55,6 @@ impl APIRequest for GetChannelBadge {
 
 #[cfg(test)]
 mod tests {
-    use asknothingx2_util::api::APIRequest;
     use pretty_assertions::assert_eq;
 
     use crate::{api_general, expect_APIRequest, expect_headers};

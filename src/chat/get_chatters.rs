@@ -103,8 +103,6 @@ pub struct Chatters {
 
 #[cfg(test)]
 mod tests {
-    use asknothingx2_util::api::APIRequest;
-
     use crate::{api_general, expect_APIRequest, expect_headers, expect_response_json};
 
     use super::{Chatters, GetChatters};

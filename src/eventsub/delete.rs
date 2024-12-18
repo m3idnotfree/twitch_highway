@@ -63,7 +63,6 @@ impl APIRequest for DeleteEventSub {
 #[cfg(test)]
 mod tests {
     use crate::{api_general, expect_APIRequest, expect_headers};
-    use asknothingx2_util::api::APIRequest;
 
     use super::DeleteEventSub;
 
