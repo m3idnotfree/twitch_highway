@@ -7,6 +7,8 @@ macro_rules! expect_APIRequest {
         $expect_url:literal,
         $input:expr
     ) => {
+        use asknothingx2_util::api::APIRequest;
+
         assert_eq!(
             asknothingx2_util::api::Method::$expect_method,
             $input.method()
@@ -23,6 +25,8 @@ macro_rules! expect_APIRequest {
         urlencoded = $urlencoded:expr,
         $input:expr
     ) => {
+        use asknothingx2_util::api::APIRequest;
+
         assert_eq!(
             asknothingx2_util::api::Method::$expect_method,
             $input.method()
@@ -32,9 +36,6 @@ macro_rules! expect_APIRequest {
         assert_eq!($json, $input.json());
         assert_eq!($text, $input.text());
         assert_eq!($urlencoded, $input.urlencoded());
-    };
-    (json = $json:expr, $input:expr) => {
-        assert_eq!($json, $input.json());
     };
 }
 
