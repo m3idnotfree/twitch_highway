@@ -4,7 +4,8 @@ use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
 };
-use serde::{Deserialize, Serialize};
+use chrono::{DateTime, FixedOffset};
+use serde::{de, Deserialize, Deserializer, Serialize};
 use url::Url;
 
 use crate::{Error, GetUsersError, Result};
@@ -17,23 +18,33 @@ use crate::{Error, GetUsersError, Result};
 pub struct GetUsers {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Url,
     id: Vec<String>,
     login: Vec<String>,
+    #[cfg(feature = "test")]
+    test_url: crate::test_url::TestUrlHold,
 }
 
 impl GetUsers {
     pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("users");
-
         Self {
             access_token,
             client_id,
-            url,
             id: Vec::new(),
             login: Vec::new(),
+            #[cfg(feature = "test")]
+            test_url: crate::test_url::TestUrlHold::default(),
         }
+    }
+
+    fn get_url(&self) -> Url {
+        #[cfg(feature = "test")]
+        if let Some(url) = self.test_url.get_test_url() {
+            return url;
+        }
+
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut().unwrap().push("users");
+        url
     }
 
     fn specify_check(&self) -> usize {
@@ -106,11 +117,10 @@ impl GetUsers {
             Ok(self)
         }
     }
-
-    pub fn set_url<T: Into<String>>(&mut self, url: T) {
-        self.url = Url::parse(&url.into()).unwrap();
-    }
 }
+
+#[cfg(feature = "test")]
+crate::impl_testurl!(GetUsers);
 
 impl APIRequest for GetUsers {
     fn method(&self) -> Method {
@@ -125,7 +135,7 @@ impl APIRequest for GetUsers {
     }
 
     fn url(&self) -> Url {
-        let mut url = self.url.clone();
+        let mut url = self.get_url();
 
         if !self.id.is_empty() {
             let ids = self
@@ -153,6 +163,79 @@ impl APIRequest for GetUsers {
     }
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum GetUserType {
+    Admin,
+    GlobalMod,
+    Staff,
+    Normal,
+}
+
+impl Serialize for GetUserType {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            GetUserType::Admin => serializer.serialize_str("admin"),
+            GetUserType::GlobalMod => serializer.serialize_str("global_mod"),
+            GetUserType::Staff => serializer.serialize_str("staff"),
+            GetUserType::Normal => serializer.serialize_str(""),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for GetUserType {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        match s.as_str() {
+            "admin" => Ok(GetUserType::Admin),
+            "global_mod" => Ok(GetUserType::GlobalMod),
+            "staff" => Ok(GetUserType::Staff),
+            "" => Ok(GetUserType::Normal),
+            _ => Err(de::Error::custom("invalid user type")),
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum BroadcasterType {
+    Affiliate,
+    Partner,
+    Normal,
+}
+
+impl Serialize for BroadcasterType {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self {
+            BroadcasterType::Normal => serializer.serialize_str(""),
+            BroadcasterType::Affiliate => serializer.serialize_str("affiliate"),
+            BroadcasterType::Partner => serializer.serialize_str("partner"),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for BroadcasterType {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        match s.as_str() {
+            "" => Ok(BroadcasterType::Normal),
+            "affiliate" => Ok(BroadcasterType::Affiliate),
+            "partner" => Ok(BroadcasterType::Partner),
+            _ => Err(de::Error::custom("invalid broadcaster type")),
+        }
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetUsersResponse {
     pub data: Vec<User>,
@@ -164,12 +247,18 @@ pub struct User {
     pub login: String,
     pub display_name: String,
     #[serde(rename = "type")]
-    pub kind: String,
-    pub broadcaster_type: String,
+    pub kind: GetUserType,
+    pub broadcaster_type: BroadcasterType,
     pub description: String,
     pub profile_image_url: String,
+    /// NOTE: This field has been deprecated (see Get Users API endpoint – “view_count” deprecation).
+    /// Any data in this field is not valid and should not be used.
     pub view_count: u64,
-    pub created_at: String,
+    pub created_at: DateTime<FixedOffset>,
+
+    pub offline_image_url: String,
+    /// if the user access token includes the user:read:email scope.
+    pub email: Option<String>,
 }
 
 #[cfg(test)]
