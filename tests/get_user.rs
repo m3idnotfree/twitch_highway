@@ -1,36 +1,14 @@
-use std::{fs::File, io::BufReader};
-
-use asknothingx2_util::{
-    api::api_request,
-    oauth::{AccessToken, ClientId},
-};
-use serde::{Deserialize, Serialize};
+use asknothingx2_util::api::api_request;
 use twitch_highway::{BroadcasterType, GetUsersResponse, UserAPI};
-use url::Url;
 
-#[derive(Debug, Serialize, Deserialize)]
-struct TestToken {
-    user_id: String,
-    client_id: ClientId,
-    secret: String,
-    name: String,
-    token: AccessToken,
-    url: Url,
-}
-
-fn get_token() -> TestToken {
-    let file = File::open("./tests/test_token.json").unwrap();
-    let reader = BufReader::new(file);
-
-    serde_json::from_reader(reader).unwrap()
-}
+mod support;
 
 #[cfg(feature = "test")]
 #[tokio::test]
 async fn base() {
     use twitch_highway::{GetUserType, TestUrl};
 
-    let token = get_token();
+    let token = support::get_token();
 
     let user_api = UserAPI::new(&token.token, &token.client_id);
     let mut get_user = user_api.get_users().add_id(token.user_id).unwrap();
