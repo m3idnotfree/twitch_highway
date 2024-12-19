@@ -82,6 +82,13 @@ pub use error::*;
 mod types;
 pub use types::*;
 
+mod serde_util;
+
 pub(crate) mod macros;
 
 pub type Result<TR> = std::result::Result<TR, crate::Error>;
+
+#[cfg(feature = "test")]
+mod test_url;
+#[cfg(feature = "test")]
+pub use test_url::TestUrl;
