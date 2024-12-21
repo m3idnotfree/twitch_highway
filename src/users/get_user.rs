@@ -8,7 +8,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{de, Deserialize, Deserializer, Serialize};
 use url::Url;
 
-use crate::{Error, GetUsersError, Result};
+use crate::{serde_util::serialize_none_as_empty_string, Error, GetUsersError, Result};
 
 /// https://dev.twitch.tv/docs/api/reference/#get-users
 /// To include the user’s verified email address in the response,
