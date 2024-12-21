@@ -258,6 +258,7 @@ pub struct User {
 
     pub offline_image_url: String,
     /// if the user access token includes the user:read:email scope.
+    #[serde(serialize_with = "serialize_none_as_empty_string")]
     pub email: Option<String>,
 }
 
