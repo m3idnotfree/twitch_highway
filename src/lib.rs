@@ -1,7 +1,13 @@
 //! implement Endpoint
 //!
+//!
+//!
+//!  ㄱ: Implement
+//!  ㄴ: Pass twitch mack-api
+//!  ㅐ: Failed twitch mack-api
+//!  ㅠ: Pass real world API
 //! Users
-//!  [x] Get Users
+//!  [ㄴ] Get Users
 //!  [ ] Update User
 //!  [ ] Get User Block List
 //!  [ ] Block User
@@ -11,29 +17,30 @@
 //!  [ ] Update User Extensions
 //!
 //! EventSubAPI
-//!  [x] Create EventSub Subscription
-//!  [x] Delete EventSub Subscription
+//!  [ㅐ] Create EventSub Subscription
+//!  [ㅐ] Delete EventSub Subscription
 //!  [ ] Get EventSub Subscriptions
 //!
 //! Chat
-//!  [x] Get Channel Emotes
-//!  [x] Get Global Emotes
-//!  [x] Get Emote Sets
-//!  [x] Get Channel Chat Badges
-//!  [x] Get Global Chat Badges
-//!  [x] Get Chat Settings
-//!  [x] Get Shared Chat Session
+//!  [ㄴ] Get Chatters
+//!  [ㄴ] Get Channel Emotes
+//!  [ㅐ] Get Global Emotes
+//!  [ㅐ] Get Emote Sets
+//!  [ㄴ] Get Channel Chat Badges
+//!  [ㅐ] Get Global Chat Badges
+//!  [ㄴ] Get Chat Settings
+//!  [ㅐ] Get Shared Chat Session
 //!  [ ] Get User Emotes
 //!  [ ] Update Chat Settings
 //!  [ ] Send Chat Announcement
 //!  [ ] Send a Shoutout
-//!  [x] Send Chat Message
+//!  [ㅐ] Send Chat Message
 //!  [ ] Get User Chat Color
 //!  [ ] Update User Chat Color
 //!
 //! Todo
 //! Ads
-//! Bits
+//! Bitsc
 //! Channels
 //! Channel Points
 //! Charity
