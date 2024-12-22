@@ -1,50 +1,30 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use chrono::{DateTime, FixedOffset};
 use serde::{de, Deserialize, Deserializer, Serialize};
 use url::Url;
 
 use crate::{serde_util::serialize_none_as_empty_string, Error, GetUsersError, Result};
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-users
 /// To include the user’s verified email address in the response,
 /// you must use a user access token that includes the
 /// user:read:email scope.
-#[derive(Debug)]
-pub struct GetUsers {
-    access_token: AccessToken,
-    client_id: ClientId,
+  GetUsers {
     id: Vec<String>,
-    login: Vec<String>,
-    #[cfg(feature = "test")]
-    test_url: crate::test_url::TestUrlHold,
-}
+    login: Vec<String>
+    };
+    new = {
+        params = {},
+        init = {
+            id :Vec::new(),
+            login: Vec::new()
+        }
+    },
+    url = ["users"],
+);
 
 impl GetUsers {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        Self {
-            access_token,
-            client_id,
-            id: Vec::new(),
-            login: Vec::new(),
-            #[cfg(feature = "test")]
-            test_url: crate::test_url::TestUrlHold::default(),
-        }
-    }
-
-    fn get_url(&self) -> Url {
-        #[cfg(feature = "test")]
-        if let Some(url) = self.test_url.get_test_url() {
-            return url;
-        }
-
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("users");
-        url
-    }
-
     fn specify_check(&self) -> usize {
         self.id.len() + self.login.len()
     }
@@ -117,20 +97,9 @@ impl GetUsers {
     }
 }
 
-#[cfg(feature = "test")]
-crate::impl_testurl!(GetUsers);
-
 impl APIRequest for GetUsers {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_default_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();
