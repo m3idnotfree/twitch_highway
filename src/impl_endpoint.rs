@@ -1,4 +1,25 @@
 #[macro_export]
+macro_rules! impl_default_header {
+    () => {
+        fn headers(&self) -> asknothingx2_util::api::HeaderMap {
+            asknothingx2_util::api::HeaderBuilder::new()
+                .authorization("Bearer", self.access_token.secret().as_str())
+                .client_id(self.client_id.as_str())
+                .build()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! impl_api_request_method {
+    ($method:ident) => {
+        fn method(&self) -> asknothingx2_util::api::Method {
+            asknothingx2_util::api::Method::$method
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! impl_endpoint {
     (
         $(#[$meta:meta])*
@@ -42,9 +63,9 @@ macro_rules! impl_endpoint {
                 Self {
                     access_token,
                     client_id,
-                    $($k: $v),*,
                     #[cfg(feature = "test")]
                     test_url: $crate::test_url::TestUrlHold::default(),
+                    $($k: $v),*
                 }
 
            }
