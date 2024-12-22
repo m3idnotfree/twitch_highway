@@ -1,8 +1,17 @@
 #[macro_export]
-macro_rules! impl_default_header {
+macro_rules! impl_api_request_header {
     () => {
         fn headers(&self) -> asknothingx2_util::api::HeaderMap {
             asknothingx2_util::api::HeaderBuilder::new()
+                .authorization("Bearer", self.access_token.secret().as_str())
+                .client_id(self.client_id.as_str())
+                .build()
+        }
+    };
+    (json) => {
+        fn headers(&self) -> asknothingx2_util::api::HeaderMap {
+            asknothingx2_util::api::HeaderBuilder::new()
+                .content_type_json()
                 .authorization("Bearer", self.access_token.secret().as_str())
                 .client_id(self.client_id.as_str())
                 .build()
