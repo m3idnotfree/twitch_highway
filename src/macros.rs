@@ -64,18 +64,18 @@ macro_rules! expect_headers {
 macro_rules! api_general {
     ($ty:ident) => {
         $ty::new(
-            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
+            asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
-            )),
-            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+            ),
+            asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string()),
         )
     };
     ($ty:ident,$($ex:literal),+) => {
         $ty::new(
-            std::sync::Arc::new(asknothingx2_util::oauth::AccessToken::new(
+            asknothingx2_util::oauth::AccessToken::new(
                 "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
-            )),
-            std::sync::Arc::new(asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
+            ),
+            asknothingx2_util::oauth::ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string()),
             $($ex),+
         )
     };
