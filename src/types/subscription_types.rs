@@ -1,3 +1,5 @@
+use serde::{Serialize, Serializer};
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SubscriptionTypes {
     // Automod related
@@ -226,5 +228,14 @@ impl SubscriptionTypes {
             | Self::ChannelGuestStarSettingsUpdate => "beta",
             _ => "1",
         }
+    }
+}
+
+impl Serialize for SubscriptionTypes {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_str(self.as_str())
     }
 }
