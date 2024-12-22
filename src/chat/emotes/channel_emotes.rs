@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -12,16 +10,15 @@ use super::Images;
 /// https://dev.twitch.tv/docs/api/reference/#get-channel-emotes
 #[derive(Debug)]
 pub struct GetChannelEmotes {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
-    url: Url,
+    access_token: AccessToken,
+    client_id: ClientId,
     broadcaster_id: String,
 }
 
 impl GetChannelEmotes {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
     ) -> Self {
         let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();

@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -14,8 +12,8 @@ use crate::Pagination;
 /// Requires a user access token that includes the moderator:read:chatters scope.
 #[derive(Debug)]
 pub struct GetChatters {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     broadcaster_id: String,
     moderator_id: String,
     first: Option<u64>,
@@ -26,8 +24,8 @@ pub struct GetChatters {
 
 impl GetChatters {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
         moderator_id: T,
     ) -> Self {

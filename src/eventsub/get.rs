@@ -13,8 +13,8 @@ use crate::{Pagination, SubscriptionTypes};
 /// https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions
 #[derive(Debug)]
 pub struct GetEventSub {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     status: Option<GetEventStatus>,
     kind: Option<SubscriptionTypes>,
     user_id: Option<String>,
@@ -22,7 +22,7 @@ pub struct GetEventSub {
 }
 
 impl GetEventSub {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
             access_token,
             client_id,

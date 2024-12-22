@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -11,8 +9,8 @@ use url::Url;
 /// https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session
 #[derive(Debug)]
 pub struct GetSharedChatSession {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     broadcaster_id: String,
     #[cfg(feature = "test")]
     test_url: Option<String>,
@@ -20,8 +18,8 @@ pub struct GetSharedChatSession {
 
 impl GetSharedChatSession {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
     ) -> Self {
         Self {

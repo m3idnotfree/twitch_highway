@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -10,8 +8,8 @@ use url::Url;
 /// https://dev.twitch.tv/docs/api/reference/#get-chat-settings
 #[derive(Debug)]
 pub struct GetChatSetting {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     broadcaster_id: String,
     moderator_id: Option<String>,
     #[cfg(feature = "test")]
@@ -20,8 +18,8 @@ pub struct GetChatSetting {
 
 impl GetChatSetting {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
     ) -> Self {
         Self {

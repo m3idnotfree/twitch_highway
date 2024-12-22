@@ -5,20 +5,18 @@ pub use global_emotes::*;
 mod emote_sets;
 pub use emote_sets::*;
 
-use std::sync::Arc;
-
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub struct EmoteAPI {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
 }
 
 impl EmoteAPI {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
             access_token,
             client_id,

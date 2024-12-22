@@ -17,11 +17,9 @@ pub enum EventSubCreateError {
 #[derive(Debug, Serialize)]
 pub struct CreateEventSub {
     #[serde(skip)]
-    access_token: Arc<AccessToken>,
+    access_token: AccessToken,
     #[serde(skip)]
-    client_id: Arc<ClientId>,
-    #[serde(skip)]
-    url: Url,
+    client_id: ClientId,
     #[serde(rename = "type")]
     kind: String,
     version: String,
@@ -30,11 +28,10 @@ pub struct CreateEventSub {
 }
 
 impl CreateEventSub {
-    pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
-        kind: T,
-        version: T,
+    pub fn new(
+        access_token: AccessToken,
+        client_id: ClientId,
+        kind: SubscriptionTypes,
         condition: HashMap<String, String>,
         transport_method: TransportMethod,
     ) -> CreateEventSub {

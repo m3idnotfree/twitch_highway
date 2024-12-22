@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -9,16 +7,15 @@ use url::Url;
 /// https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges
 #[derive(Debug)]
 pub struct GetChannelBadge {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
-    url: Url,
+    access_token: AccessToken,
+    client_id: ClientId,
     broadcaster_id: String,
 }
 
 impl GetChannelBadge {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
     ) -> Self {
         let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();

@@ -3,19 +3,17 @@ pub use channel_badges::*;
 mod global_badges;
 pub use global_badges::*;
 
-use std::sync::Arc;
-
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug)]
 pub struct BadgeAPI {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
 }
 
 impl BadgeAPI {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
             access_token,
             client_id,

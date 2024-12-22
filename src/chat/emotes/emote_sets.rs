@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -12,14 +10,14 @@ use super::EmoteGlobal;
 /// https://dev.twitch.tv/docs/api/reference/#get-emote-sets
 #[derive(Debug)]
 pub struct GetEmoteSets {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     url: Url,
     emote_set_ids: Vec<String>,
 }
 
 impl GetEmoteSets {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
         url.path_segments_mut().unwrap().push("chat").push("emotes");
 

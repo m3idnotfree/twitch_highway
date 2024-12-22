@@ -15,9 +15,9 @@ use url::Url;
 #[derive(Debug, Serialize)]
 pub struct SendChatMessage {
     #[serde(skip)]
-    access_token: Arc<AccessToken>,
+    access_token: AccessToken,
     #[serde(skip)]
-    client_id: Arc<ClientId>,
+    client_id: ClientId,
     broadcaster_id: String,
     sender_id: String,
     /// The message is limited to a maximum of 500 characters.
@@ -33,8 +33,8 @@ pub struct SendChatMessage {
 
 impl SendChatMessage {
     pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
+        access_token: AccessToken,
+        client_id: ClientId,
         broadcaster_id: T,
         sender_id: T,
     ) -> Self {

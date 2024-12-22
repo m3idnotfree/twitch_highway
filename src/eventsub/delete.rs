@@ -9,18 +9,14 @@ use url::Url;
 /// https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription
 #[derive(Debug)]
 pub struct DeleteEventSub {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     url: Url,
     id: String,
 }
 
 impl DeleteEventSub {
-    pub fn new<T: Into<String>>(
-        access_token: Arc<AccessToken>,
-        client_id: Arc<ClientId>,
-        id: T,
-    ) -> Self {
+    pub fn new<T: Into<String>>(access_token: AccessToken, client_id: ClientId, id: T) -> Self {
         let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
         url.path_segments_mut()
             .unwrap()

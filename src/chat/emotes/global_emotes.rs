@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -12,16 +10,14 @@ use super::Images;
 /// https://dev.twitch.tv/docs/api/reference/#get-global-emotes
 #[derive(Debug)]
 pub struct GetGlobalEmotes {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
-    url: Url,
+    access_token: AccessToken,
+    client_id: ClientId,
+    #[cfg(feature = "test")]
+    test_url: crate::test_url::TestUrlHold,
 }
 
 impl GetGlobalEmotes {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("chat").push("emotes");
-
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
             access_token,
             client_id,

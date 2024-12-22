@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 use badges::BadgeAPI;
 use emotes::EmoteAPI;
@@ -17,15 +15,15 @@ pub mod send_chat_message;
 
 #[derive(Debug)]
 pub struct ChatAPI {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
 }
 
 impl ChatAPI {
-    pub fn new(access_token: &AccessToken, client_id: &ClientId) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
-            access_token: Arc::new(access_token.clone()),
-            client_id: Arc::new(client_id.clone()),
+            access_token,
+            client_id,
         }
     }
 

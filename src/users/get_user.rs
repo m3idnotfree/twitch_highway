@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use asknothingx2_util::{
     api::{APIRequest, HeaderBuilder, HeaderMap, Method},
     oauth::{AccessToken, ClientId},
@@ -16,8 +14,8 @@ use crate::{serde_util::serialize_none_as_empty_string, Error, GetUsersError, Re
 /// user:read:email scope.
 #[derive(Debug)]
 pub struct GetUsers {
-    access_token: Arc<AccessToken>,
-    client_id: Arc<ClientId>,
+    access_token: AccessToken,
+    client_id: ClientId,
     id: Vec<String>,
     login: Vec<String>,
     #[cfg(feature = "test")]
@@ -25,7 +23,7 @@ pub struct GetUsers {
 }
 
 impl GetUsers {
-    pub fn new(access_token: Arc<AccessToken>, client_id: Arc<ClientId>) -> Self {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
         Self {
             access_token,
             client_id,
