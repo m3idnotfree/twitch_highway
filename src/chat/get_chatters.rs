@@ -1,52 +1,35 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::Pagination;
+use crate::{impl_endpoint, Pagination};
 
+impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-chatters
 /// Authorization
 /// Requires a user access token that includes the moderator:read:chatters scope.
-#[derive(Debug)]
-pub struct GetChatters {
-    access_token: AccessToken,
-    client_id: ClientId,
-    broadcaster_id: String,
-    moderator_id: String,
-    first: Option<u64>,
-    after: Option<String>,
-    #[cfg(feature = "test")]
-    test_url: crate::test_url::TestUrlHold,
-}
-
-impl GetChatters {
-    pub fn new<T: Into<String>>(
-        access_token: AccessToken,
-        client_id: ClientId,
-        broadcaster_id: T,
-        moderator_id: T,
-    ) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("chat")
-            .push("chatters");
-
-        Self {
-            access_token,
-            client_id,
+    GetChatters {
+        broadcaster_id: String,
+        moderator_id: String,
+        first: Option<u64>,
+        after: Option<String>,
+    };
+    new = {
+        params = {
+            broadcaster_id: impl Into<String>,
+            moderator_id: impl Into<String>,
+        },
+        init = {
             broadcaster_id: broadcaster_id.into(),
             moderator_id: moderator_id.into(),
             first: None,
             after: None,
-            #[cfg(feature = "test")]
-            test_url: crate::test_url::TestUrlHold::default(),
         }
-    }
+    },
+    url = ["chat","chatters"]
+);
 
+impl GetChatters {
     pub fn set_first(&mut self, first: u64) {
         self.first = Some(first);
     }
@@ -54,36 +37,11 @@ impl GetChatters {
     pub fn set_after<T: Into<String>>(&mut self, after: T) {
         self.after = Some(after.into());
     }
-
-    fn get_url(&self) -> Url {
-        #[cfg(feature = "test")]
-        if let Some(url) = self.test_url.get_test_url() {
-            return url;
-        }
-
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("chat")
-            .push("chatters");
-        url
-    }
 }
 
-#[cfg(feature = "test")]
-crate::impl_testurl!(GetChatters);
-
 impl APIRequest for GetChatters {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

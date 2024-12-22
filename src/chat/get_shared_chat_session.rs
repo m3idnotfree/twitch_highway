@@ -1,68 +1,27 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session
-#[derive(Debug)]
-pub struct GetSharedChatSession {
-    access_token: AccessToken,
-    client_id: ClientId,
-    broadcaster_id: String,
-    #[cfg(feature = "test")]
-    test_url: Option<String>,
-}
-
-impl GetSharedChatSession {
-    pub fn new<T: Into<String>>(
-        access_token: AccessToken,
-        client_id: ClientId,
-        broadcaster_id: T,
-    ) -> Self {
-        Self {
-            access_token,
-            client_id,
+    GetSharedChatSession {
+        broadcaster_id: String,
+    };
+    new = {
+        params = {
+            broadcaster_id: impl Into<String>,
+        },
+        init = {
             broadcaster_id: broadcaster_id.into(),
-            #[cfg(feature = "test")]
-            test_url: None,
         }
-    }
-
-    #[cfg(feature = "test")]
-    pub fn with_url<T: Into<String>>(&mut self, url: T) -> &mut Self {
-        self.test_url = Some(url.into());
-        self
-    }
-
-    fn get_url(&self) -> Url {
-        #[cfg(feature = "test")]
-        if let Some(url) = &self.test_url {
-            return Url::parse(url).unwrap();
-        }
-
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("shared_chat")
-            .push("session");
-        url
-    }
-}
+    },
+    url = ["shared_chat","session"]
+);
 
 impl APIRequest for GetSharedChatSession {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();
@@ -135,6 +94,8 @@ mod tests {
     #[cfg(feature = "test")]
     #[test]
     fn get_shared_chat_session_feature_test() {
+        use crate::TestUrl;
+
         let mut get_shared_chat_session = api_general!(GetSharedChatSession, "198704263");
         get_shared_chat_session.with_url("https://test.url/shared_chat/session");
         expect_APIRequest!(

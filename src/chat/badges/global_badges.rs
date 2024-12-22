@@ -1,44 +1,22 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use url::Url;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges
-#[derive(Debug)]
-pub struct GetGlobalBadges {
-    access_token: AccessToken,
-    client_id: ClientId,
-    url: Url,
-}
-
-impl GetGlobalBadges {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("chat").push("badges");
-
-        Self {
-            access_token,
-            client_id,
-            url,
-        }
-    }
-}
+    GetGlobalBadges {};
+    new = {
+        params = {},
+        init = {}
+    },
+    url = ["chat","badges"]
+);
 
 impl APIRequest for GetGlobalBadges {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
-        let mut url = Url::parse(self.url.as_str()).unwrap();
+        let mut url = self.get_url();
         url.path_segments_mut().unwrap().push("global");
         url
     }

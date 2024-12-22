@@ -1,34 +1,24 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
 use super::EmoteGlobal;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-emote-sets
-#[derive(Debug)]
-pub struct GetEmoteSets {
-    access_token: AccessToken,
-    client_id: ClientId,
-    url: Url,
-    emote_set_ids: Vec<String>,
-}
-
-impl GetEmoteSets {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("chat").push("emotes");
-
-        Self {
-            access_token,
-            client_id,
-            url,
+    GetEmoteSets {
+        emote_set_ids: Vec<String>,
+    };
+    new = {
+        params = {},
+        init = {
             emote_set_ids: Vec::new(),
         }
-    }
+    },
+    url = ["chat","emotes","set"]
+);
 
+impl GetEmoteSets {
     pub fn add_emote_set_id<T: Into<String>>(mut self, id: T) -> Self {
         self.emote_set_ids.push(id.into());
         self
@@ -41,20 +31,11 @@ impl GetEmoteSets {
 }
 
 impl APIRequest for GetEmoteSets {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
-        let mut url = self.url.clone();
-        url.path_segments_mut().unwrap().push("set");
+        let mut url = self.get_url();
         url.query_pairs_mut().extend_pairs(
             self.emote_set_ids
                 .iter()
@@ -64,20 +45,6 @@ impl APIRequest for GetEmoteSets {
         url
     }
 }
-
-// #[derive(Debug, Clone, Serialize, Deserialize)]
-// #[serde(tag = "type", rename = "emote")]
-// pub struct EmoteSets {
-//     pub id: String,
-//     pub name: String,
-//     pub images: Images,
-//     pub emote_type: String,
-//     pub emote_set_id: String,
-//     pub owner_id: String,
-//     pub format: Vec<String>,
-//     pub scale: Vec<String>,
-//     pub theme_mode: Vec<String>,
-// }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EmoteSetsResponse {

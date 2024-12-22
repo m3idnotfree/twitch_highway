@@ -1,60 +1,41 @@
-use std::sync::Arc;
-
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#send-chat-message
 /// Requires an app access token or user access token that includes the user:write:chat scope.
 /// If app access token used,
 /// then additionally requires user:bot scope from chatting user,
 /// and either channel:bot scope from broadcaster or moderator status.
-#[derive(Debug, Serialize)]
-pub struct SendChatMessage {
-    #[serde(skip)]
-    access_token: AccessToken,
-    #[serde(skip)]
-    client_id: ClientId,
+    SendChatMessage {
     broadcaster_id: String,
     sender_id: String,
-    /// The message is limited to a maximum of 500 characters.
-    /// Chat messages can also include emoticons.
-    /// To include emoticons,
-    /// use the name of the emote.
-    /// The names are case sensitive.
-    /// Don’t include colons around the name (e.g., :bleedPurple:).
-    /// If Twitch recognizes the name,
-    /// Twitch converts the name to the emote before writing the chat message to the chat room
+     /// The message is limited to a maximum of 500 characters.
+     /// Chat messages can also include emoticons.
+     /// To include emoticons,
+     /// use the name of the emote.
+     /// The names are case sensitive.
+     /// Don’t include colons around the name (e.g., :bleedPurple:).
+     /// If Twitch recognizes the name,
+     /// Twitch converts the name to the emote before writing the chat message to the chat room
     message: String,
-}
-
-impl SendChatMessage {
-    pub fn new<T: Into<String>>(
-        access_token: AccessToken,
-        client_id: ClientId,
-        broadcaster_id: T,
-        sender_id: T,
-    ) -> Self {
-        Self {
-            access_token,
-            client_id,
+    };
+    new = {
+        params = {
+            broadcaster_id: impl Into<String>,
+            sender_id: impl Into<String>
+        },
+        init = {
             broadcaster_id: broadcaster_id.into(),
             sender_id: sender_id.into(),
-            message: "".into(),
+            message: "".to_string()
         }
-    }
-    fn get_url(&self) -> Url {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("chat")
-            .push("messages");
-        url
-    }
+    },
+    url = ["chat","messages"]
+);
 
+impl SendChatMessage {
     pub fn set_message<T: Into<String>>(&mut self, message: T) {
         self.message = message.into();
     }
@@ -68,21 +49,36 @@ impl SendChatMessage {
     }
 }
 
-impl APIRequest for SendChatMessage {
-    fn method(&self) -> Method {
-        Method::POST
-    }
+#[derive(Debug, Serialize)]
+pub struct SendChatMessageRequest {
+    broadcaster_id: String,
+    sender_id: String,
+    message: String,
+}
 
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .content_type_json()
-            .build()
+impl SendChatMessageRequest {
+    pub fn new(broadcaster_id: String, sender_id: String, message: String) -> Self {
+        Self {
+            broadcaster_id,
+            sender_id,
+            message,
+        }
     }
+}
+
+impl APIRequest for SendChatMessage {
+    crate::impl_api_request_method!(POST);
+    crate::impl_api_request_header!(json);
 
     fn json(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
+        Some(
+            serde_json::to_string(&SendChatMessageRequest::new(
+                self.broadcaster_id.clone(),
+                self.sender_id.clone(),
+                self.message.clone(),
+            ))
+            .unwrap(),
+        )
     }
 
     fn url(&self) -> Url {

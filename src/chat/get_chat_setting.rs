@@ -1,70 +1,34 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-chat-settings
-#[derive(Debug)]
-pub struct GetChatSetting {
-    access_token: AccessToken,
-    client_id: ClientId,
-    broadcaster_id: String,
-    moderator_id: Option<String>,
-    #[cfg(feature = "test")]
-    test_url: crate::test_url::TestUrlHold,
-}
-
-impl GetChatSetting {
-    pub fn new<T: Into<String>>(
-        access_token: AccessToken,
-        client_id: ClientId,
-        broadcaster_id: T,
-    ) -> Self {
-        Self {
-            access_token,
-            client_id,
+    GetChatSetting {
+        broadcaster_id: String,
+        moderator_id: Option<String>,
+    };
+    new = {
+        params = {
+            broadcaster_id: impl Into<String>,
+        },
+        init = {
             broadcaster_id: broadcaster_id.into(),
             moderator_id: None,
-            #[cfg(feature = "test")]
-            test_url: crate::test_url::TestUrlHold::default(),
         }
-    }
+    },
+    url = ["chat","settings"]
+);
 
+impl GetChatSetting {
     pub fn set_moderator_id<T: Into<String>>(&mut self, moderator_id: T) {
         self.moderator_id = Some(moderator_id.into());
     }
-
-    fn get_url(&self) -> Url {
-        #[cfg(feature = "test")]
-        if let Some(url) = self.test_url.get_test_url() {
-            return url;
-        }
-
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("chat")
-            .push("settings");
-        url
-    }
 }
 
-#[cfg(feature = "test")]
-crate::impl_testurl!(GetChatSetting);
-
 impl APIRequest for GetChatSetting {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

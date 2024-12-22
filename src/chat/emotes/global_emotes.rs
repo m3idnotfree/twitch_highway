@@ -1,45 +1,25 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
 use super::Images;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-global-emotes
-#[derive(Debug)]
-pub struct GetGlobalEmotes {
-    access_token: AccessToken,
-    client_id: ClientId,
-    #[cfg(feature = "test")]
-    test_url: crate::test_url::TestUrlHold,
-}
-
-impl GetGlobalEmotes {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        Self {
-            access_token,
-            client_id,
-            url,
-        }
-    }
-}
+    GetGlobalEmotes {};
+    new = {
+        params = {},
+        init = {}
+    },
+    url = ["chat","emotes"]
+);
 
 impl APIRequest for GetGlobalEmotes {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
-        let mut url = Url::parse(self.url.as_str()).unwrap();
+        let mut url = self.get_url();
         url.path_segments_mut().unwrap().push("global");
         url
     }

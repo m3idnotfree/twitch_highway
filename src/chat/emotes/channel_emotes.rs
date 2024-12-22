@@ -1,52 +1,31 @@
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
 use super::Images;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-channel-emotes
-#[derive(Debug)]
-pub struct GetChannelEmotes {
-    access_token: AccessToken,
-    client_id: ClientId,
-    broadcaster_id: String,
-}
-
-impl GetChannelEmotes {
-    pub fn new<T: Into<String>>(
-        access_token: AccessToken,
-        client_id: ClientId,
-        broadcaster_id: T,
-    ) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut().unwrap().push("chat").push("emotes");
-
-        Self {
-            access_token,
-            client_id,
-            url,
+    GetChannelEmotes {
+        broadcaster_id: String,
+    };
+    new = {
+        params = {
+            broadcaster_id: impl Into<String>,
+        },
+        init = {
             broadcaster_id: broadcaster_id.into(),
         }
-    }
-}
+    },
+    url = ["chat","emotes"]
+);
 
 impl APIRequest for GetChannelEmotes {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
-        let mut url = self.url.clone();
+        let mut url = self.get_url();
         url.query_pairs_mut()
             .append_pair("broadcaster_id", self.broadcaster_id.as_str());
         url
