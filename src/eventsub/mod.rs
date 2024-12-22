@@ -1,13 +1,15 @@
 mod create;
 mod delete;
 mod get;
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
 use asknothingx2_util::oauth::{AccessToken, ClientId};
 
 pub use create::*;
 pub use delete::*;
 pub use get::*;
+
+use crate::SubscriptionTypes;
 
 #[derive(Debug)]
 pub struct EventSubAPI {
@@ -23,19 +25,16 @@ impl EventSubAPI {
         }
     }
 
-    pub fn create<T: Into<String>>(
+    pub fn create(
         &self,
-        kind: T,
-        version: T,
-        condition: HashMap<String, String>,
+        kind: SubscriptionTypes,
         transport_method: TransportMethod,
     ) -> CreateEventSub {
         CreateEventSub::new(
             self.access_token.clone(),
             self.client_id.clone(),
             kind,
-            version,
-            condition,
+            HashMap::new(),
             transport_method,
         )
     }

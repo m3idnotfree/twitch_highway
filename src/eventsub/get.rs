@@ -1,49 +1,34 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
 use crate::{Pagination, SubscriptionTypes};
-
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions
-#[derive(Debug)]
-pub struct GetEventSub {
-    access_token: AccessToken,
-    client_id: ClientId,
-    status: Option<GetEventStatus>,
-    kind: Option<SubscriptionTypes>,
-    user_id: Option<String>,
-    after: Option<String>,
-}
-
-impl GetEventSub {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        Self {
-            access_token,
-            client_id,
+    GetEventSub {
+        status: Option<GetEventStatus>,
+        kind: Option<SubscriptionTypes>,
+        user_id: Option<String>,
+        after: Option<String>,
+    };
+    new = {
+        params = {},
+        init = {
             status: None,
             kind: None,
             user_id: None,
             after: None,
-        }
-    }
+       }
+    },
+    url = ["eventsub","subscriptions"],
+);
 
+impl GetEventSub {
     pub fn set_status(&mut self, status: GetEventStatus) {
         self.status = Some(status);
-    }
-
-    pub fn get_url(&self) -> Url {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("eventsub")
-            .push("subscriptions");
-        url
     }
 }
 
@@ -141,16 +126,8 @@ where
 }
 
 impl APIRequest for GetEventSub {
-    fn method(&self) -> Method {
-        Method::GET
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(GET);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

@@ -1,55 +1,29 @@
-use std::sync::Arc;
-
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use url::Url;
 
+crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription
-#[derive(Debug)]
-pub struct DeleteEventSub {
-    access_token: AccessToken,
-    client_id: ClientId,
-    url: Url,
-    id: String,
-}
-
-impl DeleteEventSub {
-    pub fn new<T: Into<String>>(access_token: AccessToken, client_id: ClientId, id: T) -> Self {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("eventsub")
-            .push("subscriptions");
-
-        Self {
-            access_token,
-            client_id,
-            url,
+    DeleteEventSub {
+        id: String,
+    };
+    new = {
+        params = {
+            id: impl Into<String>
+        },
+        init = {
             id: id.into(),
         }
-    }
+    },
+    url = ["eventsub", "subscriptions"]
 
-    pub fn set_url<T: Into<String>>(&mut self, url: T) {
-        self.url = Url::parse(&url.into()).unwrap();
-    }
-}
+);
 
 impl APIRequest for DeleteEventSub {
-    fn method(&self) -> Method {
-        Method::DELETE
-    }
-
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
+    crate::impl_api_request_method!(DELETE);
+    crate::impl_api_request_header!();
 
     fn url(&self) -> Url {
-        let mut url = self.url.clone();
+        let mut url = self.get_url();
         url.query_pairs_mut().append_pair("id", &self.id);
 
         url

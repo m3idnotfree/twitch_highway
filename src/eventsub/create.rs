@@ -1,11 +1,10 @@
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
 
-use asknothingx2_util::{
-    api::{APIRequest, HeaderBuilder, HeaderMap, Method},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
+
+use crate::SubscriptionTypes;
 
 #[derive(Debug, thiserror::Error)]
 pub enum EventSubCreateError {
@@ -13,58 +12,37 @@ pub enum EventSubCreateError {
     EmptyValue(String),
 }
 
-/// https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
-#[derive(Debug, Serialize)]
-pub struct CreateEventSub {
-    #[serde(skip)]
-    access_token: AccessToken,
-    #[serde(skip)]
-    client_id: ClientId,
-    #[serde(rename = "type")]
-    kind: String,
-    version: String,
-    condition: HashMap<String, String>,
-    transport: Transport,
-}
-
-impl CreateEventSub {
-    pub fn new(
-        access_token: AccessToken,
-        client_id: ClientId,
+crate::impl_endpoint!(
+    /// https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
+    CreateEventSub {
         kind: SubscriptionTypes,
         condition: HashMap<String, String>,
-        transport_method: TransportMethod,
-    ) -> CreateEventSub {
-        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
-        url.path_segments_mut()
-            .unwrap()
-            .push("eventsub")
-            .push("subscriptions");
-
-        Self {
-            access_token,
-            client_id,
-            url,
-            kind: kind.into(),
-            version: version.into(),
-            condition,
+        transport: Transport
+    };
+    new = {
+        params = {
+            kind: SubscriptionTypes,
+            condition: HashMap<String, String>,
+            transport_method: TransportMethod
+        },
+        init = {
+            kind: kind,
+            condition: condition,
             transport: Transport {
                 method: transport_method,
                 callback: None,
                 secret: None,
                 session_id: None,
-                conduit_id: None,
-            },
+                conduit_id: None
+            }
         }
-    }
+    },
+    url = ["eventsub", "subscriptions"]
+);
 
-    pub fn set_type<T: Into<String>>(mut self, kind: T) -> Self {
-        self.kind = kind.into();
-        self
-    }
-
-    pub fn set_version<T: Into<String>>(mut self, version: T) -> Self {
-        self.version = version.into();
+impl CreateEventSub {
+    pub fn set_type(mut self, kind: SubscriptionTypes) -> Self {
+        self.kind = kind;
         self
     }
 
@@ -84,25 +62,45 @@ impl CreateEventSub {
     }
 }
 
+#[derive(Debug, Serialize)]
+pub struct CreateEventRequest {
+    #[serde(rename = "type")]
+    kind: SubscriptionTypes,
+    version: String,
+    condition: HashMap<String, String>,
+    transport: Transport,
+}
+
+impl CreateEventRequest {
+    pub fn new(
+        kind: SubscriptionTypes,
+        condition: HashMap<String, String>,
+        transport: Transport,
+    ) -> Self {
+        Self {
+            version: kind.version().to_string(),
+            kind,
+            condition,
+            transport,
+        }
+    }
+}
+
 impl APIRequest for CreateEventSub {
+    crate::impl_api_request_method!(POST);
+    crate::impl_api_request_header!(json);
     fn json(&self) -> Option<String> {
-        Some(Self::json_to_string(self).unwrap())
-    }
+        let request = CreateEventRequest::new(
+            self.kind.clone(),
+            self.condition.clone(),
+            self.transport.clone(),
+        );
 
-    fn headers(&self) -> HeaderMap {
-        HeaderBuilder::new()
-            .content_type_json()
-            .authorization("Bearer", self.access_token.secret().as_str())
-            .client_id(self.client_id.as_str())
-            .build()
-    }
-
-    fn method(&self) -> Method {
-        Method::POST
+        Some(Self::json_to_string(&request).unwrap())
     }
 
     fn url(&self) -> Url {
-        self.url.clone()
+        self.get_url()
     }
 }
 
@@ -127,7 +125,7 @@ pub struct EventSubCreateResponseData {
     cost: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Transport {
     pub method: TransportMethod,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -140,7 +138,7 @@ pub struct Transport {
     pub conduit_id: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum TransportMethod {
     Webhook,
@@ -151,13 +149,13 @@ pub enum TransportMethod {
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, sync::Arc};
+    use std::collections::HashMap;
 
     use asknothingx2_util::oauth::{AccessToken, ClientId};
     use pretty_assertions::assert_eq;
 
     use super::CreateEventSub;
-    use crate::{expect_APIRequest, expect_headers, TransportMethod};
+    use crate::{expect_APIRequest, expect_headers, SubscriptionTypes, TransportMethod};
 
     #[test]
     fn create_eventsub() {
@@ -165,12 +163,9 @@ mod tests {
         condition.insert("user_id", "1234");
 
         let create_eventsub = CreateEventSub::new(
-            Arc::new(AccessToken::new(
-                "cfabdegwdoklmawdzdo98xt2fo512y".to_string(),
-            )),
-            Arc::new(ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string())),
-            "user.update",
-            "1",
+            AccessToken::new("cfabdegwdoklmawdzdo98xt2fo512y".to_string()),
+            ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string()),
+            SubscriptionTypes::UserUpdate,
             HashMap::new(),
             TransportMethod::Websocket,
         )
