@@ -16,11 +16,12 @@ use crate::Pagination;
 pub struct GetChatters {
     access_token: Arc<AccessToken>,
     client_id: Arc<ClientId>,
-    url: Url,
     broadcaster_id: String,
     moderator_id: String,
     first: Option<u64>,
     after: Option<String>,
+    #[cfg(feature = "test")]
+    test_url: crate::test_url::TestUrlHold,
 }
 
 impl GetChatters {
@@ -39,11 +40,12 @@ impl GetChatters {
         Self {
             access_token,
             client_id,
-            url,
             broadcaster_id: broadcaster_id.into(),
             moderator_id: moderator_id.into(),
             first: None,
             after: None,
+            #[cfg(feature = "test")]
+            test_url: crate::test_url::TestUrlHold::default(),
         }
     }
 
@@ -54,7 +56,24 @@ impl GetChatters {
     pub fn set_after<T: Into<String>>(&mut self, after: T) {
         self.after = Some(after.into());
     }
+
+    fn get_url(&self) -> Url {
+        #[cfg(feature = "test")]
+        if let Some(url) = self.test_url.get_test_url() {
+            return url;
+        }
+
+        let mut url = Url::parse(crate::TWITCH_API_BASE).unwrap();
+        url.path_segments_mut()
+            .unwrap()
+            .push("chat")
+            .push("chatters");
+        url
+    }
 }
+
+#[cfg(feature = "test")]
+crate::impl_testurl!(GetChatters);
 
 impl APIRequest for GetChatters {
     fn method(&self) -> Method {
@@ -69,7 +88,7 @@ impl APIRequest for GetChatters {
     }
 
     fn url(&self) -> Url {
-        let mut url = self.url.clone();
+        let mut url = self.get_url();
         url.query_pairs_mut()
             .append_pair("broadcaster_id", &self.broadcaster_id)
             .append_pair("moderator_id", &self.moderator_id);
@@ -95,7 +114,7 @@ pub struct ChattersData {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Chatters {
+pub struct ChattersResponse {
     pub data: Vec<ChattersData>,
     pub pagination: Option<Pagination>,
     pub total: u64,
@@ -105,7 +124,7 @@ pub struct Chatters {
 mod tests {
     use crate::{api_general, expect_APIRequest, expect_headers, expect_response_json};
 
-    use super::{Chatters, GetChatters};
+    use super::{ChattersResponse, GetChatters};
 
     #[test]
     fn get_chatters() {
@@ -185,7 +204,7 @@ mod tests {
     fn chatters() {
         expect_response_json!(
             "{\n    \"data\": [\n        {\n            \"user_id\": \"128393656\",\n            \"user_login\": \"smittysmithers\",\n            \"user_name\": \"smittysmithers\"\n        }\n    ],\n    \"pagination\": {\n        \"cursor\": \"eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19\"\n    },\n    \"total\": 8\n}",
-            Chatters
+            ChattersResponse
         );
     }
 }
