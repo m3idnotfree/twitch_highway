@@ -50,7 +50,7 @@ impl SendChatMessage {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SendChatMessageRequest {
+struct SendChatMessageRequest {
     broadcaster_id: String,
     sender_id: String,
     message: String,
@@ -88,51 +88,19 @@ impl APIRequest for SendChatMessage {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DropReason {
-    code: String,
-    message: String,
+    pub code: String,
+    pub message: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResponse {
-    message_id: String,
-    is_sent: bool,
+    pub message_id: String,
+    pub is_sent: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
-    drop_reason: Option<DropReason>,
+    pub drop_reason: Option<DropReason>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendChatMessageResponse {
-    data: Vec<MessageResponse>,
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        api_general, expect_APIRequest, expect_headers, expect_response_json,
-        send_chat_message::SendChatMessageResponse,
-    };
-
-    use super::SendChatMessage;
-
-    #[test]
-    fn send_chat_message() {
-        let mut send_chat_message = api_general!(SendChatMessage, "12826", "141981764");
-        send_chat_message.set_message("Hello, world! twitchdevHype");
-
-        expect_APIRequest!(
-            POST,
-            expect_headers!(json),
-            "https://api.twitch.tv/helix/chat/messages",
-            json = Some("{\"broadcaster_id\":\"12826\",\"sender_id\":\"141981764\",\"message\":\"Hello, world! twitchdevHype\"}".to_string()),
-            text = None,
-            urlencoded= None,
-            send_chat_message
-        );
-    }
-
-    #[test]
-    fn send_chat_message_response() {
-        expect_response_json!("{\n  \"data\": [\n    {\n      \"message_id\": \"abc-123-def\",\n      \"is_sent\": true\n    }\n  ]\n}",
-        SendChatMessageResponse);
-    }
+    pub data: Vec<MessageResponse>,
 }

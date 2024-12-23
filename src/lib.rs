@@ -66,12 +66,10 @@
 //! Videos
 //! Whispers
 
-pub(crate) const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
-#[cfg(feature = "chat")]
-mod chat;
+const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
 #[cfg(feature = "chat")]
-pub use chat::*;
+pub mod chat;
 
 #[cfg(feature = "eventsub")]
 pub mod eventsub;

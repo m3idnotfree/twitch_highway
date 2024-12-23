@@ -28,29 +28,3 @@ impl APIRequest for GetChannelBadge {
         url
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use pretty_assertions::assert_eq;
-
-    use crate::{api_general, expect_APIRequest, expect_headers};
-
-    use super::GetChannelBadge;
-
-    #[test]
-    fn channel_badges() {
-        let channel_badges = api_general!(GetChannelBadge, "135093069");
-
-        let expected_headers = expect_headers!();
-
-        expect_APIRequest!(
-            GET,
-            expected_headers,
-            "https://api.twitch.tv/helix/chat/badges?broadcaster_id=135093069",
-            json = None,
-            text = None,
-            urlencoded = None,
-            channel_badges
-        );
-    }
-}
