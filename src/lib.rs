@@ -79,9 +79,7 @@ mod eventsub;
 pub use eventsub::*;
 
 #[cfg(feature = "users")]
-mod users;
-#[cfg(feature = "users")]
-pub use users::*;
+pub mod users;
 
 mod error;
 pub use error::*;

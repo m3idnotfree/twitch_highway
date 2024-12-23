@@ -1,7 +1,7 @@
 use asknothingx2_util::oauth::{AccessToken, ClientId};
+use get_user::GetUsers;
 
-mod get_user;
-pub use get_user::*;
+pub mod get_user;
 
 #[derive(Debug)]
 pub struct UserAPI {
