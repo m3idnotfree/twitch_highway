@@ -14,7 +14,8 @@ chat = []
 eventsub = []
 users = []
 test = []
-full = ["chat", "eventsub", "users"]
+types = []
+full = ["chat", "eventsub", "users", "types"]
 
 [dependencies]
 anyhow = "1.0.94"
@@ -28,3 +29,6 @@ serde_json = "1.0.133"
 [dev-dependencies]
 pretty_assertions = "1.4.1"
 serde_json = "1.0.133"
+tokio = { version = "1.42.0", features = ["full"] }
+twitch_oauth_token = { version = "1.0.4", features = ["full"] }
+asknothingx2-eventsub = "0.0.4"

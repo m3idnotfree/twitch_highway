@@ -86,7 +86,9 @@ pub use users::*;
 mod error;
 pub use error::*;
 
+#[cfg(feature = "types")]
 mod types;
+#[cfg(feature = "types")]
 pub use types::*;
 
 mod serde_util;
