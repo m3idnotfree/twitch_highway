@@ -9,7 +9,7 @@ pub use create::*;
 pub use delete::*;
 pub use get::*;
 
-use crate::SubscriptionTypes;
+use crate::{SubscriptionTypes, Transport};
 
 #[derive(Debug)]
 pub struct EventSubAPI {
@@ -25,17 +25,13 @@ impl EventSubAPI {
         }
     }
 
-    pub fn create(
-        &self,
-        kind: SubscriptionTypes,
-        transport_method: TransportMethod,
-    ) -> CreateEventSub {
+    pub fn create(&self, kind: SubscriptionTypes, transport: Transport) -> CreateEventSub {
         CreateEventSub::new(
             self.access_token.clone(),
             self.client_id.clone(),
             kind,
             HashMap::new(),
-            transport_method,
+            transport,
         )
     }
 

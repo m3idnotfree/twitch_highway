@@ -1,10 +1,11 @@
 use std::collections::HashMap;
 
 use asknothingx2_util::api::APIRequest;
+use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::SubscriptionTypes;
+use crate::{SubscriptionTypes, Transport};
 
 #[derive(Debug, thiserror::Error)]
 pub enum EventSubCreateError {
@@ -23,18 +24,12 @@ crate::impl_endpoint!(
         params = {
             kind: SubscriptionTypes,
             condition: HashMap<String, String>,
-            transport_method: TransportMethod
+            transport: Transport
         },
         init = {
             kind: kind,
             condition: condition,
-            transport: Transport {
-                method: transport_method,
-                callback: None,
-                secret: None,
-                session_id: None,
-                conduit_id: None
-            }
+            transport: transport
         }
     },
     url = ["eventsub", "subscriptions"]
@@ -112,39 +107,75 @@ pub struct EventSubCreateResponse {
     max_total_cost: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct EventSubCreateResponseData {
-    id: String,
-    status: String,
+    pub id: String,
+    pub status: String,
     #[serde(rename = "type")]
-    kind: String,
-    version: String,
-    condition: HashMap<String, String>,
-    created_at: String,
-    transport: Transport,
-    cost: u64,
+    pub kind: SubscriptionTypes,
+    pub version: String,
+    pub condition: HashMap<String, String>,
+    pub created_at: DateTime<FixedOffset>,
+    pub transport: Transport,
+    pub cost: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Transport {
-    pub method: TransportMethod,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub callback: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub secret: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub session_id: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub conduit_id: Option<String>,
-}
+impl<'de> Deserialize<'de> for EventSubCreateResponseData {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct Helper {
+            id: String,
+            status: String,
+            #[serde(rename = "type")]
+            kind: SubscriptionTypes,
+            version: String,
+            condition: HashMap<String, String>,
+            created_at: DateTime<FixedOffset>,
+            transport: Transport,
+            cost: u64,
+        }
 
-#[derive(Debug, Serialize, Deserialize, Eq, PartialEq, Clone)]
-#[serde(rename_all = "lowercase")]
-pub enum TransportMethod {
-    Webhook,
-    Websocket,
-    Conduit,
-    Unknown,
+        let helper = Helper::deserialize(deserializer)?;
+
+        let kind = match helper.kind {
+            kind @ SubscriptionTypes::AutomodMessageHold => {
+                if helper.version == "2" {
+                    SubscriptionTypes::AutomodMessageHoldV2
+                } else {
+                    kind
+                }
+            }
+            kind @ SubscriptionTypes::AutomodMessageUpdate => {
+                if helper.version == "2" {
+                    SubscriptionTypes::AutomodMessageUpdateV2
+                } else {
+                    kind
+                }
+            }
+            kind @ SubscriptionTypes::ChannelModerate => {
+                if helper.version == "2" {
+                    SubscriptionTypes::ChannelModerateV2
+                } else {
+                    kind
+                }
+            }
+            _ => helper.kind,
+        };
+
+        Ok(EventSubCreateResponseData {
+            id: helper.id,
+            status: helper.status,
+            kind,
+            version: helper.version,
+            condition: helper.condition,
+            created_at: helper.created_at,
+            transport: helper.transport,
+            cost: helper.cost,
+        })
+    }
 }
 
 #[cfg(test)]
@@ -155,7 +186,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::CreateEventSub;
-    use crate::{expect_APIRequest, expect_headers, SubscriptionTypes, TransportMethod};
+    use crate::{expect_APIRequest, expect_headers, SubscriptionTypes, Transport};
 
     #[test]
     fn create_eventsub() {
@@ -167,12 +198,12 @@ mod tests {
             ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string()),
             SubscriptionTypes::UserUpdate,
             HashMap::new(),
-            TransportMethod::Websocket,
+            Transport::websocket(""),
         )
         .set_condition(condition);
 
         let expected_headers = expect_headers!(json);
-        let expected_json ="{\"type\":\"user.update\",\"version\":\"1\",\"condition\":{\"user_id\":\"1234\"},\"transport\":{\"method\":\"websocket\"}}".to_string();
+        let expected_json ="{\"type\":\"user.update\",\"version\":\"1\",\"condition\":{\"user_id\":\"1234\"},\"transport\":{\"method\":\"websocket\",\"session_id\":\"\"}}".to_string();
 
         expect_APIRequest!(
             POST,
