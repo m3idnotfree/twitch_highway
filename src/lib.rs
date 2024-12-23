@@ -93,8 +93,7 @@ pub use types::*;
 
 mod serde_util;
 
-pub(crate) mod impl_endpoint;
-pub(crate) mod macros;
+mod impl_endpoint;
 
 pub type Result<TR> = std::result::Result<TR, crate::Error>;
 
