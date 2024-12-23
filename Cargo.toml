@@ -9,13 +9,13 @@ repository = "https://github.com/m3idnotfree/twitch_highway.git"
 keywords = ["twitch"]
 
 [features]
-default = ["full"]
-chat = []
-eventsub = []
-users = []
-test = []
+default = []
+chat = ["types"]
+eventsub = ["types"]
+users = ["types"]
+test = ["types"]
 types = []
-full = ["chat", "eventsub", "users", "types"]
+full = ["chat", "eventsub", "users", "types", "test"]
 
 [dependencies]
 anyhow = "1.0.94"

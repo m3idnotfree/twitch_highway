@@ -77,14 +77,25 @@ pub mod eventsub;
 #[cfg(feature = "users")]
 pub mod users;
 
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
 mod error;
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
 pub use error::*;
 
 #[cfg(any(
     feature = "chat",
     feature = "eventsub",
     feature = "users",
-    feature = "chat",
     feature = "types",
     feature = "test",
 ))]
@@ -94,6 +105,12 @@ mod serde_util;
 
 mod impl_endpoint;
 
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
 pub type Result<TR> = std::result::Result<TR, crate::Error>;
 
 #[cfg(feature = "test")]
