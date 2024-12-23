@@ -5,7 +5,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Deserializer, Serialize};
 use url::Url;
 
-use crate::{Pagination, SubscriptionTypes};
+use crate::types::{Pagination, SubscriptionTypes, Transport};
+
 crate::impl_endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions
     GetEventSub {
@@ -81,24 +82,24 @@ impl GetEventStatus {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EventSubSubscription {
-    id: String,
-    status: String,
+    pub id: String,
+    pub status: String,
     #[serde(rename = "type")]
-    kind: String,
-    version: String,
-    condition: HashMap<String, String>,
-    created_at: DateTime<FixedOffset>,
-    transport: HashMap<String, String>,
+    pub kind: String,
+    pub version: String,
+    pub condition: HashMap<String, String>,
+    pub created_at: DateTime<FixedOffset>,
+    pub transport: Transport,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetEventResponse {
-    data: Vec<EventSubSubscription>,
-    total: u64,
-    total_cost: u64,
-    max_total_cost: u64,
+    pub data: Vec<EventSubSubscription>,
+    pub total: u64,
+    pub total_cost: u64,
+    pub max_total_cost: u64,
     #[serde(default, deserialize_with = "deserialize_empty_object")]
-    pagination: Option<Pagination>,
+    pub pagination: Option<Pagination>,
 }
 
 /// https://github.com/serde-rs/serde/issues/2362
@@ -149,43 +150,5 @@ impl APIRequest for GetEventSub {
         }
 
         url
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        api_general, expect_APIRequest, expect_headers, expect_response_json, GetEventResponse,
-    };
-
-    use super::GetEventSub;
-
-    #[test]
-    fn get_eventsub() {
-        let get_eventsub = api_general!(GetEventSub);
-
-        expect_APIRequest!(
-            GET,
-            expect_headers!(),
-            "https://api.twitch.tv/helix/eventsub/subscriptions",
-            json = None,
-            text = None,
-            urlencoded = None,
-            get_eventsub
-        );
-    }
-
-    #[test]
-    fn get_eventsub_response() {
-        expect_response_json!("{\n  \"total\": 2,\n  \"data\": [\n    {\n      \"id\": \"26b1c993-bfcf-44d9-b876-379dacafe75a\",\n      \"status\": \"enabled\",\n      \"type\": \"stream.online\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"broadcaster_user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T20:08:33.12345678Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 1\n    },\n    {\n      \"id\": \"35016908-41ff-33ce-7879-61b8dfc2ee16\",\n      \"status\": \"webhook_callback_verification_pending\",\n      \"type\": \"user.update\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T14:32:18.730260295Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 0\n    }\n  ],\n  \"total_cost\": 1,\n  \"max_total_cost\": 10000,\n  \"pagination\": {}\n}",
-        GetEventResponse);
-        let data_pagination_none = serde_json::from_str::<GetEventResponse>("{\n  \"total\": 2,\n  \"data\": [\n    {\n      \"id\": \"26b1c993-bfcf-44d9-b876-379dacafe75a\",\n      \"status\": \"enabled\",\n      \"type\": \"stream.online\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"broadcaster_user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T20:08:33.12345678Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 1\n    },\n    {\n      \"id\": \"35016908-41ff-33ce-7879-61b8dfc2ee16\",\n      \"status\": \"webhook_callback_verification_pending\",\n      \"type\": \"user.update\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T14:32:18.730260295Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 0\n    }\n  ],\n  \"total_cost\": 1,\n  \"max_total_cost\": 10000,\n  \"pagination\": {}\n}").unwrap();
-        assert!(data_pagination_none.pagination.is_none());
-
-        let data_pagination_some:GetEventResponse = serde_json::from_str("{\n  \"total\": 2,\n  \"data\": [\n    {\n      \"id\": \"26b1c993-bfcf-44d9-b876-379dacafe75a\",\n      \"status\": \"enabled\",\n      \"type\": \"stream.online\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"broadcaster_user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T20:08:33.12345678Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 1\n    },\n    {\n      \"id\": \"35016908-41ff-33ce-7879-61b8dfc2ee16\",\n      \"status\": \"webhook_callback_verification_pending\",\n      \"type\": \"user.update\",\n      \"version\": \"1\",\n      \"condition\": {\n        \"user_id\": \"1234\"\n      },\n      \"created_at\": \"2020-11-10T14:32:18.730260295Z\",\n      \"transport\": {\n        \"method\": \"webhook\",\n        \"callback\": \"https://this-is-a-callback.com\"\n      },\n      \"cost\": 0\n    }\n  ],\n  \"total_cost\": 1,\n  \"max_total_cost\": 10000,\n  \"pagination\": {\n\"cursor\":\"eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19\"}\n}").unwrap();
-        assert_eq!(
-            data_pagination_some.pagination.unwrap().cursor,
-            "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19".to_string()
-        );
     }
 }

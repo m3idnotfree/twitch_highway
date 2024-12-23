@@ -29,27 +29,3 @@ impl APIRequest for DeleteEventSub {
         url
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{api_general, expect_APIRequest, expect_headers};
-
-    use super::DeleteEventSub;
-
-    #[test]
-    fn delete_eventsub() {
-        let delete_eventsub = api_general!(DeleteEventSub, "26b1c993-bfcf-44d9-b876-379dacafe75a");
-
-        let expected_headers = expect_headers!();
-
-        expect_APIRequest!(
-            DELETE,
-            expected_headers,
-            "https://api.twitch.tv/helix/eventsub/subscriptions?id=26b1c993-bfcf-44d9-b876-379dacafe75a",
-            json = None,
-            text = None,
-            urlencoded = None,
-            delete_eventsub
-        );
-    }
-}

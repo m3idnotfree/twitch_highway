@@ -74,9 +74,7 @@ mod chat;
 pub use chat::*;
 
 #[cfg(feature = "eventsub")]
-mod eventsub;
-#[cfg(feature = "eventsub")]
-pub use eventsub::*;
+pub mod eventsub;
 
 #[cfg(feature = "users")]
 pub mod users;

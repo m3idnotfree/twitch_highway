@@ -1,15 +1,15 @@
-mod create;
-mod delete;
-mod get;
 use std::collections::HashMap;
 
 use asknothingx2_util::oauth::{AccessToken, ClientId};
+use create::CreateEventSub;
+use delete::DeleteEventSub;
+use get::GetEventSub;
 
-pub use create::*;
-pub use delete::*;
-pub use get::*;
+use crate::types::{SubscriptionTypes, Transport};
 
-use crate::{SubscriptionTypes, Transport};
+pub mod create;
+pub mod delete;
+pub mod get;
 
 #[derive(Debug)]
 pub struct EventSubAPI {

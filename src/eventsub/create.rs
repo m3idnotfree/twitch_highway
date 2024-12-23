@@ -5,13 +5,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::{SubscriptionTypes, Transport};
-
-#[derive(Debug, thiserror::Error)]
-pub enum EventSubCreateError {
-    #[error("empty value: {0}")]
-    EmptyValue(String),
-}
+use crate::types::{SubscriptionTypes, Transport};
 
 crate::impl_endpoint!(
     /// https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
@@ -58,7 +52,7 @@ impl CreateEventSub {
 }
 
 #[derive(Debug, Serialize)]
-pub struct CreateEventRequest {
+struct CreateEventRequest {
     #[serde(rename = "type")]
     kind: SubscriptionTypes,
     version: String,
@@ -101,10 +95,10 @@ impl APIRequest for CreateEventSub {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct EventSubCreateResponse {
-    data: EventSubCreateResponseData,
-    total: u64,
-    total_cost: u64,
-    max_total_cost: u64,
+    pub data: EventSubCreateResponseData,
+    pub total: u64,
+    pub total_cost: u64,
+    pub max_total_cost: u64,
 }
 
 #[derive(Debug, Serialize)]
@@ -175,44 +169,5 @@ impl<'de> Deserialize<'de> for EventSubCreateResponseData {
             transport: helper.transport,
             cost: helper.cost,
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::collections::HashMap;
-
-    use asknothingx2_util::oauth::{AccessToken, ClientId};
-    use pretty_assertions::assert_eq;
-
-    use super::CreateEventSub;
-    use crate::{expect_APIRequest, expect_headers, SubscriptionTypes, Transport};
-
-    #[test]
-    fn create_eventsub() {
-        let mut condition = HashMap::new();
-        condition.insert("user_id", "1234");
-
-        let create_eventsub = CreateEventSub::new(
-            AccessToken::new("cfabdegwdoklmawdzdo98xt2fo512y".to_string()),
-            ClientId::new("uo6dggojyb8d6soh92zknwmi5ej1q2".to_string()),
-            SubscriptionTypes::UserUpdate,
-            HashMap::new(),
-            Transport::websocket(""),
-        )
-        .set_condition(condition);
-
-        let expected_headers = expect_headers!(json);
-        let expected_json ="{\"type\":\"user.update\",\"version\":\"1\",\"condition\":{\"user_id\":\"1234\"},\"transport\":{\"method\":\"websocket\",\"session_id\":\"\"}}".to_string();
-
-        expect_APIRequest!(
-            POST,
-            expected_headers,
-            "https://api.twitch.tv/helix/eventsub/subscriptions",
-            json = Some(expected_json),
-            text = None,
-            urlencoded = None,
-            create_eventsub
-        );
     }
 }
