@@ -84,10 +84,15 @@ pub mod users;
 mod error;
 pub use error::*;
 
-#[cfg(feature = "types")]
-mod types;
-#[cfg(feature = "types")]
-pub use types::*;
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "chat",
+    feature = "types",
+    feature = "test",
+))]
+pub mod types;
 
 mod serde_util;
 
