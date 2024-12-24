@@ -2,7 +2,7 @@ use asknothingx2_util::api::APIRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#send-chat-message
 /// Requires an app access token or user access token that includes the user:write:chat scope.
 /// If app access token used,
@@ -67,8 +67,8 @@ impl SendChatMessageRequest {
 }
 
 impl APIRequest for SendChatMessage {
-    crate::impl_api_request_method!(POST);
-    crate::impl_api_request_header!(json);
+    impl_api_request_method!(POST);
+    impl_api_request_header!(json);
 
     fn json(&self) -> Option<String> {
         Some(

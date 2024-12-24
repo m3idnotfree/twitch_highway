@@ -66,6 +66,15 @@
 //! Videos
 //! Whispers
 
+#[cfg(feature = "test")]
+#[macro_use]
+mod test_url;
+#[cfg(feature = "test")]
+pub use test_url::TestUrl;
+
+#[macro_use]
+mod macros;
+
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
 #[cfg(feature = "chat")]
@@ -104,9 +113,6 @@ pub mod types;
 #[doc(hidden)]
 mod serde_util;
 
-#[doc(hidden)]
-pub(crate) mod impl_endpoint;
-
 #[cfg(any(
     feature = "chat",
     feature = "eventsub",
@@ -114,11 +120,6 @@ pub(crate) mod impl_endpoint;
     feature = "test"
 ))]
 pub type Result<TR> = std::result::Result<TR, crate::Error>;
-
-#[cfg(feature = "test")]
-mod test_url;
-#[cfg(feature = "test")]
-pub use test_url::TestUrl;
 
 #[cfg(any(
     feature = "chat",

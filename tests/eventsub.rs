@@ -1,3 +1,4 @@
+#[macro_use]
 mod support;
 
 #[cfg(feature = "eventsub")]

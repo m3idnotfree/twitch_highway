@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use serde::{de::IntoDeserializer, Deserialize, Deserializer, Serialize, Serializer};
 
 /// https://github.com/serde-rs/serde/issues/2362

@@ -5,7 +5,7 @@ use url::Url;
 
 use crate::{serde_util::serialize_none_as_empty_string, Error, GetUsersError, Result};
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-users
 /// To include the user’s verified email address in the response,
 /// you must use a user access token that includes the
@@ -98,8 +98,8 @@ impl GetUsers {
 }
 
 impl APIRequest for GetUsers {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

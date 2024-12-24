@@ -3,7 +3,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session
     GetSharedChatSession {
         broadcaster_id: String,
@@ -20,8 +20,8 @@ crate::impl_endpoint!(
 );
 
 impl APIRequest for GetSharedChatSession {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

@@ -1,7 +1,7 @@
 use asknothingx2_util::api::APIRequest;
 use url::Url;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges
     GetGlobalBadges {};
     new = {
@@ -12,8 +12,8 @@ crate::impl_endpoint!(
 );
 
 impl APIRequest for GetGlobalBadges {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

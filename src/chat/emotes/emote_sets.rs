@@ -4,7 +4,7 @@ use url::Url;
 
 use super::EmoteGlobal;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-emote-sets
     GetEmoteSets {
         emote_set_ids: Vec<String>,
@@ -31,8 +31,8 @@ impl GetEmoteSets {
 }
 
 impl APIRequest for GetEmoteSets {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

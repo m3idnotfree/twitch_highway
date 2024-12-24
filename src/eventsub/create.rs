@@ -7,7 +7,7 @@ use url::Url;
 
 use crate::types::{SubscriptionTypes, Transport};
 
-crate::impl_endpoint!(
+endpoint!(
     /// https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription
     CreateEventSub {
         kind: SubscriptionTypes,
@@ -76,8 +76,8 @@ impl CreateEventRequest {
 }
 
 impl APIRequest for CreateEventSub {
-    crate::impl_api_request_method!(POST);
-    crate::impl_api_request_header!(json);
+    impl_api_request_method!(POST);
+    impl_api_request_header!(json);
     fn json(&self) -> Option<String> {
         let request = CreateEventRequest::new(
             self.kind.clone(),

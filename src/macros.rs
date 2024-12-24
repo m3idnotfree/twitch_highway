@@ -1,4 +1,3 @@
-#[macro_export]
 macro_rules! impl_api_request_header {
     () => {
         fn headers(&self) -> asknothingx2_util::api::HeaderMap {
@@ -19,7 +18,6 @@ macro_rules! impl_api_request_header {
     };
 }
 
-#[macro_export]
 macro_rules! impl_api_request_method {
     ($method:ident) => {
         fn method(&self) -> asknothingx2_util::api::Method {
@@ -28,8 +26,7 @@ macro_rules! impl_api_request_method {
     };
 }
 
-#[macro_export]
-macro_rules! impl_endpoint {
+macro_rules! endpoint {
     (
         $(#[$meta:meta])*
         $name:ident {
@@ -92,6 +89,6 @@ macro_rules! impl_endpoint {
         }
 
          #[cfg(feature = "test")]
-         $crate::impl_testurl!($name);
+         impl_testurl!($name);
     };
 }

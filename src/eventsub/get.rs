@@ -7,7 +7,7 @@ use url::Url;
 
 use crate::types::{Pagination, SubscriptionTypes, Transport};
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions
     GetEventSub {
         status: Option<GetEventStatus>,
@@ -127,8 +127,8 @@ where
 }
 
 impl APIRequest for GetEventSub {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

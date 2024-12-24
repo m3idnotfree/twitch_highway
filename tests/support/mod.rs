@@ -1,5 +1,5 @@
 #[cfg(test)]
-#[macro_export]
+// #[macro_export]
 macro_rules! expect_APIRequest {
     (
         $expect_method:ident,
@@ -40,7 +40,7 @@ macro_rules! expect_APIRequest {
 }
 
 #[cfg(test)]
-#[macro_export]
+// #[macro_export]
 macro_rules! expect_headers {
     () => {
         asknothingx2_util::api::HeaderBuilder::new()
@@ -60,7 +60,7 @@ macro_rules! expect_headers {
 }
 
 #[cfg(test)]
-#[macro_export]
+// #[macro_export]
 macro_rules! api_general {
     ($ty:ident) => {
         $ty::new(
@@ -82,7 +82,7 @@ macro_rules! api_general {
 }
 
 #[cfg(test)]
-#[macro_export]
+// #[macro_export]
 macro_rules! expect_response_json {
     ($data:literal,$de:ident) => {
         let result = serde_json::from_str::<$de>($data);

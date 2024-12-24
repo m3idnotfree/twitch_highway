@@ -4,7 +4,7 @@ use url::Url;
 
 use crate::types::Pagination;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-chatters
 /// Authorization
 /// Requires a user access token that includes the moderator:read:chatters scope.
@@ -40,8 +40,8 @@ impl GetChatters {
 }
 
 impl APIRequest for GetChatters {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

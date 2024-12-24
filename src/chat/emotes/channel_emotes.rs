@@ -4,7 +4,7 @@ use url::Url;
 
 use super::Images;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#get-channel-emotes
     GetChannelEmotes {
         broadcaster_id: String,
@@ -21,8 +21,8 @@ crate::impl_endpoint!(
 );
 
 impl APIRequest for GetChannelEmotes {
-    crate::impl_api_request_method!(GET);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(GET);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

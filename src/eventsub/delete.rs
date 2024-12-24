@@ -1,7 +1,7 @@
 use asknothingx2_util::api::APIRequest;
 use url::Url;
 
-crate::impl_endpoint!(
+endpoint!(
 /// https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription
     DeleteEventSub {
         id: String,
@@ -19,8 +19,8 @@ crate::impl_endpoint!(
 );
 
 impl APIRequest for DeleteEventSub {
-    crate::impl_api_request_method!(DELETE);
-    crate::impl_api_request_header!();
+    impl_api_request_method!(DELETE);
+    impl_api_request_header!();
 
     fn url(&self) -> Url {
         let mut url = self.get_url();

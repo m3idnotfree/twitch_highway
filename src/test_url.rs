@@ -21,7 +21,6 @@ impl TestUrlHold {
     }
 }
 
-#[macro_export]
 #[cfg(feature = "test")]
 macro_rules! impl_testurl {
     ($type:ty) => {
@@ -35,16 +34,6 @@ macro_rules! impl_testurl {
             fn get_test_url(&self) -> Option<Url> {
                 self.test_url.get_test_url()
             }
-        }
-    };
-}
-
-#[macro_export]
-#[cfg(feature = "test")]
-macro_rules! impl_get_url {
-    ($self:ident) => {
-        if let Some(url) = self.test_url.get_test_url() {
-            return url;
         }
     };
 }
