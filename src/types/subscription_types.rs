@@ -1,9 +1,4 @@
-use std::collections::HashMap;
-
-use chrono::{DateTime, FixedOffset};
 use serde::{de::Error, Deserialize, Deserializer, Serialize, Serializer};
-
-use super::Transport;
 
 /// https://dev.twitch.tv/docs/eventsub/eventsub-subscription-types/
 #[derive(Debug, Clone, PartialEq, Eq)]
