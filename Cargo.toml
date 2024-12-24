@@ -1,6 +1,6 @@
 [package]
 name = "twitch_highway"
-version = "0.0.8"
+version = "0.0.9"
 authors = ["m3id"]
 edition = "2021"
 description = "Twitch Api reqest Http"
@@ -18,17 +18,17 @@ types = []
 full = ["chat", "eventsub", "users", "types", "test"]
 
 [dependencies]
-anyhow = "1.0.94"
+anyhow = "1.0.95"
 asknothingx2-util = { version = "0.0.11", features = ["api", "oauth"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 serde = { version = "1.0.216", features = ["derive"] }
-thiserror = "2.0.7"
+thiserror = "2.0.9"
 url = "2.5.4"
-serde_json = "1.0.133"
+serde_json = "1.0.134"
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
-serde_json = "1.0.133"
+serde_json = "1.0.134"
 tokio = { version = "1.42.0", features = ["full"] }
 twitch_oauth_token = { version = "1.0.4", features = ["full"] }
 asknothingx2-eventsub = "0.0.4"
