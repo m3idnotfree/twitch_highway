@@ -101,9 +101,11 @@ pub use error::*;
 ))]
 pub mod types;
 
+#[doc(hidden)]
 mod serde_util;
 
-mod impl_endpoint;
+#[doc(hidden)]
+pub(crate) mod impl_endpoint;
 
 #[cfg(any(
     feature = "chat",
@@ -117,3 +119,11 @@ pub type Result<TR> = std::result::Result<TR, crate::Error>;
 mod test_url;
 #[cfg(feature = "test")]
 pub use test_url::TestUrl;
+
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
+pub use chrono::{Datelike, Timelike};
