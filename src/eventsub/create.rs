@@ -114,60 +114,70 @@ pub struct EventSubCreateResponseData {
     pub cost: u64,
 }
 
-impl<'de> Deserialize<'de> for EventSubCreateResponseData {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        struct Helper {
-            id: String,
-            status: String,
-            #[serde(rename = "type")]
-            kind: SubscriptionTypes,
-            version: String,
-            condition: HashMap<String, String>,
-            created_at: DateTime<FixedOffset>,
-            transport: Transport,
-            cost: u64,
-        }
+crate::impl_subscription_type_deserialize!(
+EventSubCreateResponseData,
+     id: String,
+     status: String,
+     condition: HashMap<String, String>,
+     created_at: DateTime<FixedOffset>,
+     transport: Transport,
+     cost: u64
+);
 
-        let helper = Helper::deserialize(deserializer)?;
-
-        let kind = match helper.kind {
-            kind @ SubscriptionTypes::AutomodMessageHold => {
-                if helper.version == "2" {
-                    SubscriptionTypes::AutomodMessageHoldV2
-                } else {
-                    kind
-                }
-            }
-            kind @ SubscriptionTypes::AutomodMessageUpdate => {
-                if helper.version == "2" {
-                    SubscriptionTypes::AutomodMessageUpdateV2
-                } else {
-                    kind
-                }
-            }
-            kind @ SubscriptionTypes::ChannelModerate => {
-                if helper.version == "2" {
-                    SubscriptionTypes::ChannelModerateV2
-                } else {
-                    kind
-                }
-            }
-            _ => helper.kind,
-        };
-
-        Ok(EventSubCreateResponseData {
-            id: helper.id,
-            status: helper.status,
-            kind,
-            version: helper.version,
-            condition: helper.condition,
-            created_at: helper.created_at,
-            transport: helper.transport,
-            cost: helper.cost,
-        })
-    }
-}
+// impl<'de> Deserialize<'de> for EventSubCreateResponseData {
+//     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+//     where
+//         D: serde::Deserializer<'de>,
+//     {
+//         #[derive(Deserialize)]
+//         struct Helper {
+//             id: String,
+//             status: String,
+//             #[serde(rename = "type")]
+//             kind: SubscriptionTypes,
+//             version: String,
+//             condition: HashMap<String, String>,
+//             created_at: DateTime<FixedOffset>,
+//             transport: Transport,
+//             cost: u64,
+//         }
+//
+//         let helper = Helper::deserialize(deserializer)?;
+//
+//         let kind = match helper.kind {
+//             kind @ SubscriptionTypes::AutomodMessageHold => {
+//                 if helper.version == "2" {
+//                     SubscriptionTypes::AutomodMessageHoldV2
+//                 } else {
+//                     kind
+//                 }
+//             }
+//             kind @ SubscriptionTypes::AutomodMessageUpdate => {
+//                 if helper.version == "2" {
+//                     SubscriptionTypes::AutomodMessageUpdateV2
+//                 } else {
+//                     kind
+//                 }
+//             }
+//             kind @ SubscriptionTypes::ChannelModerate => {
+//                 if helper.version == "2" {
+//                     SubscriptionTypes::ChannelModerateV2
+//                 } else {
+//                     kind
+//                 }
+//             }
+//             _ => helper.kind,
+//         };
+//
+//         Ok(EventSubCreateResponseData {
+//             id: helper.id,
+//             status: helper.status,
+//             kind,
+//             version: helper.version,
+//             condition: helper.condition,
+//             created_at: helper.created_at,
+//             transport: helper.transport,
+//             cost: helper.cost,
+//         })
+//     }
+// }
