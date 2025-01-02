@@ -95,6 +95,7 @@ impl<L> crate::test_url::TestUrl for TwitchAPIRequest<L> {
 pub struct EmptyBody;
 impl AsBody for EmptyBody {}
 
+#[derive(Debug)]
 pub enum EndpointType {
     // Users
     GetUsers,
@@ -121,6 +122,11 @@ pub enum EndpointType {
     SendChatMessage,
     GetUserChatColor,
     UpdateUserChatColor,
+    // EventSub
+    DeleteEventSub,
+    CreateEventSub,
+    GetEventSub,
+    ChannelRaid,
 }
 
 impl EndpointType {
@@ -158,6 +164,52 @@ impl EndpointType {
             ]),
             Self::GetUserChatColor => None,
             Self::UpdateUserChatColor => Some(vec![Scope::UserManageChatColor]),
+            // EventSub
+            Self::DeleteEventSub => None,
+            Self::CreateEventSub => None,
+            Self::GetEventSub => None,
+            Self::ChannelRaid => None,
         }
     }
+
+    pub fn token_type(&self) -> TokenType {
+        match self {
+            Self::GetUsers => TokenType::Any,
+            Self::UpdateUser => TokenType::User,
+            Self::GetUserBlockList => TokenType::User,
+            Self::BlockUser => TokenType::User,
+            Self::UnblockUser => TokenType::User,
+            Self::GetUserExtensions => TokenType::User,
+            Self::GetUserActiveExtensions => TokenType::Any,
+            Self::UpdateUserExtensions => TokenType::User,
+            // Chat
+            Self::GetChatters => TokenType::User,
+            Self::GetChannelEmotes => TokenType::Any,
+            Self::GetGlobalEmotes => TokenType::Any,
+            Self::GetEmoteSets => TokenType::Any,
+            Self::GetChannelChatBadges => TokenType::Any,
+            Self::GetGlobalChatBadges => TokenType::Any,
+            Self::GetChatSettings => TokenType::Any,
+            Self::GetShardChatSession => TokenType::Any,
+            Self::GetUserEmotes => TokenType::User,
+            Self::UpdateChatSettings => TokenType::User,
+            Self::SendChatAnnouncement => TokenType::User,
+            Self::SendAShoutout => TokenType::User,
+            Self::SendChatMessage => TokenType::Any,
+            Self::GetUserChatColor => TokenType::Any,
+            Self::UpdateUserChatColor => TokenType::User,
+            // EventSub
+            Self::CreateEventSub => TokenType::App,
+            Self::DeleteEventSub => TokenType::App,
+            Self::GetEventSub => TokenType::App,
+            Self::ChannelRaid => TokenType::App,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum TokenType {
+    User,
+    App,
+    Any,
 }

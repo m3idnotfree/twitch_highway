@@ -192,7 +192,7 @@ impl ChatAPI for TwitchAPI {
 
     fn get_shared_chat_session(&self, broadcaster_id: &str) -> TwitchAPIRequest<EmptyBody> {
         TwitchAPIRequest::new(
-            EndpointType::GetChatSettings,
+            EndpointType::GetShardChatSession,
             self.build_url()
                 .path(["shared_chat", "session"])
                 .query([("broadcaster_id", broadcaster_id)])

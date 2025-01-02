@@ -52,7 +52,7 @@ pub trait EventSubAPI: TwitchAPIBase {
 impl EventSubAPI for TwitchAPI {
     fn delete(&self, id: &str) -> TwitchAPIRequest<EmptyBody> {
         TwitchAPIRequest::new(
-            EndpointType::GetChannelChatBadges,
+            EndpointType::DeleteEventSub,
             self.build_url()
                 .path(["eventsub", "subscriptions"])
                 .query([("id", id)])
@@ -80,7 +80,7 @@ impl EventSubAPI for TwitchAPI {
             params
         });
         TwitchAPIRequest::new(
-            EndpointType::GetChannelChatBadges,
+            EndpointType::GetEventSub,
             self.build_url()
                 .path(["eventsub", "subscriptions"])
                 .query_option_extend(request)
@@ -109,7 +109,7 @@ impl EventSubAPI for TwitchAPI {
         };
 
         TwitchAPIRequest::new(
-            EndpointType::GetChannelChatBadges,
+            EndpointType::ChannelRaid,
             self.build_url().path(["eventsub", "subscriptions"]).build(),
             Method::POST,
             self.build_headers().json().build(),
@@ -134,7 +134,7 @@ impl EventSubAPI for TwitchAPI {
         };
 
         TwitchAPIRequest::new(
-            EndpointType::GetChannelChatBadges,
+            EndpointType::ChannelRaid,
             self.build_url().path(["eventsub", "subscriptions"]).build(),
             Method::POST,
             self.build_headers().json().build(),

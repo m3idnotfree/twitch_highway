@@ -32,5 +32,5 @@ twitch_oauth_token = { version = "1.1.2", features = ["types"] }
 pretty_assertions = "1.4.1"
 serde_json = "1.0.134"
 tokio = { version = "1.42.0", features = ["full"] }
-twitch_oauth_token = { version = "1.0.4", features = ["full"] }
-asknothingx2-eventsub = "0.0.4"
+twitch_oauth_token = { version = "1.1.2", features = ["full"] }
+asknothingx2-eventsub = "0.0.9"
