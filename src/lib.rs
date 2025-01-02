@@ -125,3 +125,21 @@ pub type Result<TR> = std::result::Result<TR, crate::Error>;
     feature = "test"
 ))]
 pub use chrono::{Datelike, Timelike};
+
+mod request;
+pub use request::{AsBody, EmptyBody, EndpointType, TwitchAPIRequest};
+
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
+mod base;
+#[cfg(any(
+    feature = "chat",
+    feature = "eventsub",
+    feature = "users",
+    feature = "test"
+))]
+pub use base::TwitchAPI;
