@@ -9,22 +9,22 @@ macro_rules! expected_APIRequest {
         $(expected_APIRequest!(@$name $expected, $actual));*
     };
     (@url $expected:expr, $actual:expr) => {
-        assert_eq!($expected, $actual.url().to_string());
+        pretty_assertions::assert_eq!($expected, $actual.url().to_string());
     };
     (@method $expected:ident,$actual:expr) => {
-        assert_eq!(asknothingx2_util::api::Method::$expected, $actual.method());
+        pretty_assertions::assert_eq!(asknothingx2_util::api::Method::$expected, $actual.method());
     };
     (@header $expected:expr, $actual:expr) => {
-        assert_eq!($expected, $actual.headers());
+        pretty_assertions::assert_eq!($expected, $actual.headers());
     };
     (@json $expected:expr, $actual:expr) => {
-        assert_eq!($expected, $actual.json());
+        pretty_assertions::assert_eq!($expected, $actual.json());
     };
     (@text $expected:expr, $actual:expr) => {
-        assert_eq!($expected, $actual.text());
+        pretty_assertions::assert_eq!($expected, $actual.text());
     };
     (@urlencoded  $expected:expr, $actual:expr) => {
-        assert_eq!($expected, $actual.urlencoded());
+        pretty_assertions::assert_eq!($expected, $actual.urlencoded());
     };
 }
 
@@ -71,58 +71,28 @@ macro_rules! fn_expected_request {
         endpoint: $endpoint:ident,
         token_type: $token_type:ident,
         scopes: $scopes:expr,
-        args: [$($params:expr),+],
+        $(args: [$($params:expr),+],)?
         method: $method:ident
         $(, $name:ident: $expected:expr)+$(,)?
     ) => {
-        #[test]
-        fn request() {
-            #![allow(unused_imports)]
-            use $api;
-            use asknothingx2_util::api::APIRequest;
-            use twitch_oauth_token::types::Scope;
-            use twitch_highway::TokenType;
-
-            let api = api!();
-            let endpoint = api.$endpoint($($params),+);
-            assert_eq!(TokenType::$token_type, endpoint.kind().token_type());
-            assert_eq!($scopes, endpoint.kind().required_scopes());
-            expected_APIRequest!(@method $method, endpoint);
-            $(expected_APIRequest!(@$name $expected, endpoint);)+
-        }
+        fn_expected_request!(
+            name: request,
+            api: $api,
+            endpoint: $endpoint,
+            token_type: $token_type,
+            scopes: $scopes,
+            $(args: [$($params),+],)?
+            method: $method
+            $(, $name: $expected)+
+        );
     };
-    (
-        api: $api:ty,
-        endpoint: $endpoint:ident,
-        token_type: $token_type:ident,
-        scopes: $scopes:expr,
-        method: $method:ident
-        $(, $name:ident: $expected:expr)+$(,)?
-    ) => {
-        #[test]
-        fn request() {
-            #![allow(unused_imports)]
-            use $api;
-            use asknothingx2_util::api::APIRequest;
-            use twitch_oauth_token::types::Scope;
-            use twitch_highway::TokenType;
-
-            let api = api!();
-            let endpoint = api.$endpoint();
-            assert_eq!(TokenType::$token_type, endpoint.kind().token_type());
-            assert_eq!($scopes, endpoint.kind().required_scopes());
-            expected_APIRequest!(@method $method, endpoint);
-            $(expected_APIRequest!(@$name $expected, endpoint);)+
-        }
-    };
-
     (
         name:$sub_name:ident,
         api: $api:ty,
         endpoint: $endpoint:ident,
         token_type: $token_type:ident,
         scopes: $scopes:expr,
-        args: [$($params:expr),+],
+        $(args: [$($params:expr),+],)?
         method: $method:ident
         $(, $name:ident: $expected:expr)+$(,)?
     ) => {
@@ -135,12 +105,16 @@ macro_rules! fn_expected_request {
             use twitch_highway::TokenType;
 
             let api = api!();
-            let endpoint = api.$endpoint($($params),+);
-            assert_eq!(TokenType::$token_type, endpoint.kind().token_type());
-            assert_eq!($scopes, endpoint.kind().required_scopes());
+            let endpoint = api.$endpoint($($($params),+)?);
+
+            fn_expected_request!(@required $token_type $scopes, endpoint);
             expected_APIRequest!(@method $method, endpoint);
             $(expected_APIRequest!(@$name $expected, endpoint);)+
         }
+    };
+    (@required $token_type:ident $scopes:expr, $actual:expr) => {
+        pretty_assertions::assert_eq!(TokenType::$token_type, $actual.kind().token_type());
+        pretty_assertions::assert_eq!($scopes, $actual.kind().required_scopes());
     };
 }
 
@@ -150,13 +124,8 @@ macro_rules! fn_expected_resopnse {
     module: $module:ty,
     de: $response:ident
     ) => {
-        #[test]
-        fn response() {
-            use $module;
-            expected_response!($data, $response);
-        }
+        fn_expected_resopnse!(name: response, payload: $data, module:$module, de: $response);
     };
-
     (
     name:$sub_name:ident,
     payload: $data:literal,
