@@ -3,40 +3,46 @@
 //!
 //!
 //!  ㄱ: Implement
+//!  ㄷ: Pass test
 //!  ㄴ: Pass twitch mack-api
 //!  ㅐ: Failed twitch mack-api
 //!  ㅠ: Pass real world API
 //! Users
-//!  [ㄴ] Get Users
-//!  [ ] Update User
-//!  [ ] Get User Block List
-//!  [ ] Block User
-//!  [ ] Unblock User
-//!  [ ] Get User Extensions
-//!  [ ] Get User Active Extensions
+//!  [ㄷ] Get Users
+//!  [ㄷ] Update User
+//!  [ㄷ] Get User Block List
+//!  [ㄷ] Block User
+//!  [ㄷ] Unblock User
+//!  [ㄷ] Get User Extensions
+//!  [ㄷ] Get User Active Extensions
+//!     - [ ] Response
 //!  [ ] Update User Extensions
 //!
-//! EventSubAPI
+//! EventSubAPI: mock server except
 //!  [ㅐ] Create EventSub Subscription
+//!     [ㄱ] drop entitlement grant
+//!     [ㄱ] extension bits transaction create
+//!     [ㄱ] conduit shard disabled
+//!     [ㄱ] channel raid
 //!  [ㅐ] Delete EventSub Subscription
 //!  [ ] Get EventSub Subscriptions
 //!
 //! Chat
-//!  [ㄴ] Get Chatters
-//!  [ㄴ] Get Channel Emotes
+//!  [ㄷ] Get Chatters
+//!  [ㄷ] Get Channel Emotes
 //!  [ㅐ] Get Global Emotes
 //!  [ㅐ] Get Emote Sets
-//!  [ㄴ] Get Channel Chat Badges
+//!  [ㄷ] Get Channel Chat Badges
 //!  [ㅐ] Get Global Chat Badges
-//!  [ㄴ] Get Chat Settings
+//!  [ㄷ] Get Chat Settings
 //!  [ㅐ] Get Shared Chat Session
-//!  [ ] Get User Emotes
-//!  [ ] Update Chat Settings
+//!  [ㄷ] Get User Emotes
+//!  [ㄷ] Update Chat Settings
 //!  [ ] Send Chat Announcement
 //!  [ ] Send a Shoutout
 //!  [ㅐ] Send Chat Message
-//!  [ ] Get User Chat Color
-//!  [ ] Update User Chat Color
+//!  [ㄷ] Get User Chat Color
+//!  [ㄷ] Update User Chat Color
 //!
 //! Todo
 //! Ads
@@ -47,8 +53,8 @@
 //! Clips
 //! Conduits
 //! CCLs
-//! Entitlements
-//! Extensions
+//! Entitlements: mock server except
+//! Extensions: mock server except
 //! Games
 //! Goals
 //! Guest Star
@@ -65,6 +71,11 @@
 //! Teams
 //! Videos
 //! Whispers
+//! The mock server replicates a majority of the Twitch API endpoints except
+//! for endpoints related to:
+//! Extensions
+//! Code entitlements
+//! EventSub
 
 #[cfg(feature = "test")]
 #[macro_use]
