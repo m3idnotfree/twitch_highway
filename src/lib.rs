@@ -107,9 +107,6 @@ pub use error::*;
 ))]
 pub mod types;
 
-#[doc(hidden)]
-mod serde_util;
-
 #[cfg(any(
     feature = "chat",
     feature = "eventsub",
