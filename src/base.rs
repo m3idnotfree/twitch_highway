@@ -1,5 +1,3 @@
-use std::fmt;
-
 use asknothingx2_util::{
     api::{HeaderBuilder, HeaderMap},
     oauth::{AccessToken, ClientId},
@@ -9,7 +7,6 @@ use url::Url;
 pub trait TwitchAPIBase {
     fn access_token(&self) -> &AccessToken;
     fn client_id(&self) -> &ClientId;
-
     fn build_headers(&self) -> HH {
         HH::base(self.access_token(), self.client_id())
     }
@@ -31,10 +28,12 @@ impl TwitchAPI {
         }
     }
 }
+
 impl TwitchAPIBase for TwitchAPI {
     fn access_token(&self) -> &AccessToken {
         &self.access_token
     }
+
     fn client_id(&self) -> &ClientId {
         &self.client_id
     }
@@ -72,31 +71,28 @@ impl UU {
     pub fn new() -> Self {
         Self::default()
     }
+
     pub fn path<T: AsRef<str>, L: IntoIterator<Item = T>>(mut self, path: L) -> Self {
         self.0.path_segments_mut().unwrap().extend(path);
         self
     }
-    pub fn query<T: AsRef<str>, L: IntoIterator<Item = (T, T)>>(mut self, querys: L) -> Self {
+
+    pub fn query<K: AsRef<str>, V: AsRef<str>, L: IntoIterator<Item = (K, V)>>(
+        mut self,
+        querys: L,
+    ) -> Self {
         self.0.query_pairs_mut().extend_pairs(querys);
         self
     }
-    pub fn query_option<T: Into<String>>(mut self, key: &str, value: Option<T>) -> Self {
+
+    pub fn query_option<T: AsRef<str>>(mut self, key: &str, value: Option<T>) -> Self {
         if let Some(value) = value {
-            self.0.query_pairs_mut().append_pair(key, &value.into());
+            self.0.query_pairs_mut().append_pair(key, value.as_ref());
         }
         self
     }
 
-    pub fn query_option_display<T: fmt::Display>(mut self, key: &str, value: Option<T>) -> Self {
-        if let Some(value) = value {
-            self.0
-                .query_pairs_mut()
-                .append_pair(key, &value.to_string());
-        }
-        self
-    }
-
-    pub fn query_option_extend<K: AsRef<str>, T: AsRef<str>, L: IntoIterator<Item = (T, K)>>(
+    pub fn query_option_extend<K: AsRef<str>, V: AsRef<str>, L: IntoIterator<Item = (K, V)>>(
         mut self,
         querys: Option<L>,
     ) -> Self {
@@ -105,6 +101,7 @@ impl UU {
         }
         self
     }
+
     pub fn build(self) -> Url {
         self.0
     }
