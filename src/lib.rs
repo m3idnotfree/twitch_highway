@@ -70,10 +70,7 @@
 #[macro_use]
 mod test_url;
 #[cfg(feature = "test")]
-pub use test_url::TestUrl;
-
-#[macro_use]
-mod macros;
+pub use test_url::{TestUrl, TestUrlHold};
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
