@@ -1,6 +1,11 @@
-use asknothingx2_util::api::{APIRequest, HeaderMap, Method};
+use std::fmt;
+
+use asknothingx2_util::api::{api_request, APIRequest, APIResponse, HeaderMap, Method, StatusCode};
+use serde::{Deserialize, Serialize};
 use twitch_oauth_token::types::Scope;
 use url::Url;
+
+use crate::Error;
 
 // https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
 pub trait AsBody {
@@ -54,6 +59,50 @@ where
     pub fn body(&self) -> &T {
         &self.body
     }
+
+    pub async fn request(self) -> Result<APIResponse, Error> {
+        let response = api_request(self).await?;
+
+        Ok(APIResponse::from_response(response).await?)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct APIError {
+    #[serde(with = "http_serde::status_code")]
+    status: StatusCode,
+    message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error: Option<String>,
+}
+
+impl APIError {
+    pub fn status(&self) -> StatusCode {
+        self.status
+    }
+
+    pub fn message(&self) -> &str {
+        &self.message
+    }
+
+    pub fn error_details(&self) -> Option<&str> {
+        self.error.as_deref()
+    }
+}
+
+impl fmt::Display for APIError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "API error ({}): {}{}",
+            self.status,
+            self.message,
+            self.error
+                .as_ref()
+                .map(|e| format!(" - {}", e))
+                .unwrap_or_default()
+        )
+    }
 }
 
 impl<T> APIRequest for TwitchAPIRequest<T>
@@ -97,6 +146,23 @@ impl AsBody for EmptyBody {}
 
 #[derive(Debug)]
 pub enum EndpointType {
+    // Ads
+    StartCommercial,
+    GetAdSchedule,
+    SnoozeNextAd,
+    // Analytics
+    GetExtensionAnalytics,
+    GetGameAnalytics,
+    // Bits
+    GetBitsLeaderboard,
+    GetCheermotes,
+    GetExtensionTransactions,
+    // Channel
+    GetChanelInformation,
+    ModifyChannelInformation,
+    GetChannelEditors,
+    GetFollowedChannels,
+    GetChannelFollowers,
     // Users
     GetUsers,
     UpdateUser,
@@ -132,6 +198,24 @@ pub enum EndpointType {
 impl EndpointType {
     pub fn required_scopes(&self) -> Option<Vec<Scope>> {
         match self {
+            // Ads
+            Self::StartCommercial => Some(vec![Scope::ChannelEditCommercial]),
+            Self::GetAdSchedule => Some(vec![Scope::ChannelReadAds]),
+            Self::SnoozeNextAd => Some(vec![Scope::ChannelManageAds]),
+            // Analytics
+            Self::GetExtensionAnalytics => Some(vec![Scope::AnalyticsReadExtensions]),
+            Self::GetGameAnalytics => Some(vec![Scope::AnalyticsReadGames]),
+            // Bits
+            Self::GetBitsLeaderboard => Some(vec![Scope::BitsRead]),
+            Self::GetCheermotes => None,
+            Self::GetExtensionTransactions => None,
+            // Channel
+            Self::GetChanelInformation => None,
+            Self::ModifyChannelInformation => Some(vec![Scope::ChannelManageBroadcast]),
+            Self::GetChannelEditors => Some(vec![Scope::ChannelReadEditors]),
+            Self::GetFollowedChannels => Some(vec![Scope::UserReadFollows]),
+            Self::GetChannelFollowers => Some(vec![Scope::ModeratorReadFollowers]),
+            // Users
             Self::GetUsers => Some(vec![Scope::UserReadEmail]),
             Self::UpdateUser => Some(vec![Scope::UserReadEmail, Scope::UserEdit]),
             Self::GetUserBlockList => Some(vec![Scope::UserReadBlockedUsers]),
@@ -174,6 +258,24 @@ impl EndpointType {
 
     pub fn token_type(&self) -> TokenType {
         match self {
+            // Ads
+            Self::StartCommercial => TokenType::User,
+            Self::GetAdSchedule => TokenType::User,
+            Self::SnoozeNextAd => TokenType::User,
+            // Analytics
+            Self::GetExtensionAnalytics => TokenType::User,
+            Self::GetGameAnalytics => TokenType::User,
+            // Bits
+            Self::GetBitsLeaderboard => TokenType::User,
+            Self::GetCheermotes => TokenType::Any,
+            Self::GetExtensionTransactions => TokenType::App,
+            // Channel
+            Self::GetChanelInformation => TokenType::Any,
+            Self::ModifyChannelInformation => TokenType::User,
+            Self::GetChannelEditors => TokenType::User,
+            Self::GetFollowedChannels => TokenType::User,
+            Self::GetChannelFollowers => TokenType::User,
+            // Users
             Self::GetUsers => TokenType::Any,
             Self::UpdateUser => TokenType::User,
             Self::GetUserBlockList => TokenType::User,
