@@ -79,75 +79,28 @@
 
 #[cfg(feature = "test")]
 #[macro_use]
-mod test_url;
-#[cfg(feature = "test")]
-pub use test_url::{TestUrl, TestUrlHold};
+mod macros;
 
-const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
+pub mod types;
+
+mod base;
+mod error;
+mod request;
+
+pub use base::TwitchAPI;
+pub use chrono::{Datelike, Timelike};
+pub use error::Error;
+pub use request::{AsBody, EmptyBody, EndpointType, TokenType, TwitchAPIRequest};
 
 #[cfg(feature = "chat")]
 pub mod chat;
 
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
-
 #[cfg(feature = "users")]
 pub mod users;
 
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-mod error;
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-pub use error::*;
-
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "types",
-    feature = "test",
-))]
-pub mod types;
-
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-pub type Result<TR> = std::result::Result<TR, crate::Error>;
-
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-pub use chrono::{Datelike, Timelike};
-
-mod request;
-pub use request::{AsBody, EmptyBody, EndpointType, TokenType, TwitchAPIRequest};
-
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-mod base;
-#[cfg(any(
-    feature = "chat",
-    feature = "eventsub",
-    feature = "users",
-    feature = "test"
-))]
-pub use base::TwitchAPI;
+#[cfg(feature = "test")]
+mod test_url;
+#[cfg(feature = "test")]
+pub use test_url::{TestUrl, TestUrlHold};
