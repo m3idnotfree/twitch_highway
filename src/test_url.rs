@@ -21,12 +21,45 @@ impl TestUrlHold {
             .and_then(|url| Ok(Url::parse(url)?))
     }
 
-    pub fn users_url(port: Option<u16>) -> String {
+    pub fn base_url(port: Option<u16>, query: Option<&[&str]>) -> String {
+        let mut url = Url::parse("http://localhost:8080/mock").unwrap();
         if let Some(port) = port {
-            return format!("http://localhost:{}/mock/users", port);
+            url.set_port(Some(port)).unwrap();
         }
-        "http://localhost:8080/mock/users".to_string()
+
+        if let Some(query) = query {
+            url.path_segments_mut().unwrap().extend(query);
+        }
+
+        url.to_string()
     }
+
+    pub fn users_url(port: Option<u16>, query: Option<&[&str]>) -> String {
+        let mut url = Url::parse("http://localhost:8080/mock/users").unwrap();
+        if let Some(port) = port {
+            url.set_port(Some(port)).unwrap();
+        }
+
+        if let Some(query) = query {
+            url.path_segments_mut().unwrap().extend(query);
+        }
+
+        url.to_string()
+    }
+
+    pub fn chat_url(port: Option<u16>, query: Option<&[&str]>) -> String {
+        let mut url = Url::parse("http://localhost:8080/mock/chat").unwrap();
+        if let Some(port) = port {
+            url.set_port(Some(port)).unwrap();
+        }
+
+        if let Some(query) = query {
+            url.path_segments_mut().unwrap().extend(query);
+        }
+
+        url.to_string()
+    }
+
     pub fn eventsub_url(port: Option<u16>) -> String {
         if let Some(port) = port {
             return format!("http://localhost:{}/eventsub/subscriptions", port);
