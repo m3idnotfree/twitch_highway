@@ -1,5 +1,5 @@
 fn_expected_request!(
-    api:twitch_highway::users::UserAPI,
+    api: twitch_highway::users::UserAPI,
     endpoint: update_user,
     token_type: User,
     scopes: Some(vec![Scope::UserReadEmail, Scope::UserEdit]),

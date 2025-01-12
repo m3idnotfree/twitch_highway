@@ -2,9 +2,11 @@ use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+use crate::types::{Id, UserId};
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
-    pub id: String,
+    pub id: Id,
     pub login: String,
     pub display_name: String,
     #[serde(rename = "type")]
@@ -43,14 +45,14 @@ pub enum BroadcasterType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BlockUser {
-    user_id: String,
+    user_id: UserId,
     user_login: String,
     display_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserExtension {
-    id: String,
+    id: Id,
     version: String,
     name: String,
     can_activate: bool,

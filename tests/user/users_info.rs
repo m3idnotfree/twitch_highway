@@ -1,10 +1,12 @@
+use twitch_highway::types::Id;
+
 fn_expected_request!(
     name: id,
-    api:twitch_highway::users::UserAPI,
+    api: twitch_highway::users::UserAPI,
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),
-    args: [Some(["141981764"]), None],
+    args: [Some(&[Id::new("141981764")]), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/users?id=141981764",
@@ -15,11 +17,11 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: login,
-    api:twitch_highway::users::UserAPI,
+    api: twitch_highway::users::UserAPI,
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),
-    args: [None, Some(["twitchdev"])],
+    args: [None, Some(&["twitchdev".to_string()])],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/users?login=twitchdev",
@@ -30,11 +32,11 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: users_id_login,
-    api:twitch_highway::users::UserAPI,
+    api: twitch_highway::users::UserAPI,
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),
-    args: [Some(["141981764"]), Some(["twitchdev"])],
+    args: [Some(&[Id::new("141981764")]), Some(&["twitchdev".to_string()])],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/users?id=141981764&login=twitchdev",

@@ -1,5 +1,5 @@
 fn_expected_request!(
-    api:twitch_highway::users::UserAPI,
+    api: twitch_highway::users::UserAPI,
     endpoint: user_active_extensions,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadBroadcast, Scope::UserEditBroadcast]),
