@@ -6,6 +6,8 @@ mod ads;
 mod analytics;
 #[cfg(feature = "bits")]
 mod bits;
+#[cfg(feature = "channel_points")]
+mod channel_points;
 #[cfg(feature = "chat")]
 mod chat;
 #[cfg(feature = "eventsub")]

@@ -97,6 +97,8 @@ pub mod ads;
 pub mod analytics;
 #[cfg(feature = "bits")]
 pub mod bits;
+#[cfg(feature = "channel_points")]
+pub mod channel_points;
 #[cfg(feature = "chat")]
 pub mod chat;
 

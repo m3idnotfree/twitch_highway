@@ -14,7 +14,7 @@ ads = []
 analytics = []
 bits = []
 test = ["types"]
-types = []
+channel_points = []
 full = ["chat", "eventsub", "users", "types", "test"]
 
 [dependencies]
