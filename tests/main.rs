@@ -22,3 +22,7 @@ mod eventsub;
 mod moderation;
 #[cfg(feature = "users")]
 mod user;
+#[cfg(feature = "videos")]
+mod videos;
+#[cfg(feature = "whispers")]
+mod whispers;

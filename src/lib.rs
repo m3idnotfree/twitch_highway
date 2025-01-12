@@ -113,6 +113,8 @@ pub mod eventsub;
 pub mod moderation;
 #[cfg(feature = "users")]
 pub mod users;
+#[cfg(feature = "videos")]
+pub mod videos;
 #[cfg(feature = "whispers")]
 pub mod whispers;
 
