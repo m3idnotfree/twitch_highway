@@ -11,3 +11,6 @@ mod update_chat_settings;
 mod update_user_chat_color;
 mod user_chat_color;
 mod user_emotes;
+
+#[cfg(feature = "test")]
+mod mock_server;

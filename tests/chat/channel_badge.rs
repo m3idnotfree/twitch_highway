@@ -1,9 +1,11 @@
+use twitch_highway::types::BroadcasterId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: channel_badge,
     token_type: Any,
     scopes: None,
-    args: ["135093069"],
+    args: [BroadcasterId::new("135093069")],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/badges?broadcaster_id=135093069",

@@ -1,3 +1,6 @@
+mod token;
+pub use token::*;
+
 macro_rules! expected_APIRequest {
     (
         $actual:expr,
@@ -40,21 +43,25 @@ macro_rules! api {
 }
 
 macro_rules! expected_headers {
-    () => {
-        asknothingx2_util::api::HeaderBuilder::new()
+    () => {{
+        let mut headers = asknothingx2_util::api::HeaderBuilder::new();
+        headers
             .authorization("Bearer", "cfabdegwdoklmawdzdo98xt2fo512y")
             .append("Client-Id", "uo6dggojyb8d6soh92zknwmi5ej1q2")
-            .unwrap()
-            .build()
-    };
-    (json) => {
-        asknothingx2_util::api::HeaderBuilder::new()
+            .unwrap();
+
+        headers.build()
+    }};
+    (json) => {{
+        let mut headers = asknothingx2_util::api::HeaderBuilder::new();
+        headers
             .content_type_json()
             .authorization("Bearer", "cfabdegwdoklmawdzdo98xt2fo512y")
             .append("Client-Id", "uo6dggojyb8d6soh92zknwmi5ej1q2")
-            .unwrap()
-            .build()
-    };
+            .unwrap();
+
+        headers.build()
+    }};
 }
 
 macro_rules! expected_response {
@@ -72,8 +79,10 @@ macro_rules! fn_expected_request {
         token_type: $token_type:ident,
         scopes: $scopes:expr,
         $(args: [$($params:expr),+],)?
+        $(json_contain: [$($contain:expr),+],)?
         method: $method:ident
-        $(, $name:ident: $expected:expr)+$(,)?
+        $(, $name:ident: $expected:expr)+
+
     ) => {
         fn_expected_request!(
             name: request,
@@ -82,6 +91,7 @@ macro_rules! fn_expected_request {
             token_type: $token_type,
             scopes: $scopes,
             $(args: [$($params),+],)?
+            $(json_contain: [$($contain),+],)?
             method: $method
             $(, $name: $expected)+
         );
@@ -93,8 +103,9 @@ macro_rules! fn_expected_request {
         token_type: $token_type:ident,
         scopes: $scopes:expr,
         $(args: [$($params:expr),+],)?
+        $(json_contain: [$($contain:expr),+],)?
         method: $method:ident
-        $(, $name:ident: $expected:expr)+$(,)?
+        $(, $name:ident: $expected:expr)+
     ) => {
         #[test]
         fn $sub_name() {
@@ -110,6 +121,10 @@ macro_rules! fn_expected_request {
             fn_expected_request!(@required $token_type $scopes, endpoint);
             expected_APIRequest!(@method $method, endpoint);
             $(expected_APIRequest!(@$name $expected, endpoint);)+
+        $(
+            let js_contain = endpoint.json().unwrap();
+            $(assert!(js_contain.contains($contain));)+
+        )?
         }
     };
     (@required $token_type:ident $scopes:expr, $actual:expr) => {
@@ -136,6 +151,51 @@ macro_rules! fn_expected_resopnse {
         fn $sub_name() {
             use $module;
             expected_response!($data, $response);
+        }
+    };
+}
+
+macro_rules! fn_mock_server {
+    (
+        token_type: $token_type:expr,
+        name:$sub_name:ident,
+        endpoint: $endpoint:ident,
+        scopes: $scopes:expr,
+        args:|$param:ident| {$($($arg:expr),+)?},
+        url: $paths:expr
+        $(, status:$status:ident)?
+        $(, response: $response:ty)?
+    ) => {
+        #[tokio::test]
+        async fn $sub_name() {
+            #![allow(unused_imports,unused_variables)]
+            use asknothingx2_util::api::api_request;
+            use twitch_highway::{
+                TestUrl, TestUrlHold, TwitchAPI,
+            };
+            use twitch_oauth_token::types::Scope;
+
+            #[cfg(feature = "users")]
+            use twitch_highway::users::UserAPI;
+            #[cfg(feature = "chat")]
+            use twitch_highway::chat::ChatAPI;
+
+            use crate::support::user_token;
+
+            let (token, client_id, _, $param) = $token_type($scopes).await;
+            let api = TwitchAPI::new(token.access_token, client_id)
+                .$endpoint($($($arg),+)?)
+                .with_url($paths);
+
+            let response = api_request(api)
+                .await
+                .expect("Falied request get block list");
+            $(assert_eq!(asknothingx2_util::api::StatusCode::$status, response.status());)?
+            $(response
+                .json::<$response>()
+                .await
+                .expect("Falied Parse block user list response");
+            )?
         }
     };
 }

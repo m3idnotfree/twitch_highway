@@ -1,9 +1,15 @@
+use twitch_highway::types::BroadcasterId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: chat_write,
     token_type: Any,
     scopes: Some(vec![Scope::UserWriteChat, Scope::UserBot, Scope::ChannelBot]),
-    args: ["12826", "141981764", "Hello, world! twitchdevHype"],
+    args: [
+        BroadcasterId::new("12826"),
+        "141981764".to_string(),
+        "Hello, world! twitchdevHype".to_string()
+    ],
     method: POST,
     header: expected_headers!(json),
     url: "https://api.twitch.tv/helix/chat/messages",

@@ -1,9 +1,11 @@
+use twitch_highway::types::UserId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: user_emotes,
     token_type: User,
     scopes: Some(vec![Scope::UserReadEmotes]),
-    args: ["123456",None,None],
+    args: [UserId::new("123456"), None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/emotes/user?user_id=123456",

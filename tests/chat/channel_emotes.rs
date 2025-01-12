@@ -1,9 +1,11 @@
+use twitch_highway::types::BroadcasterId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: channel_emotes,
     token_type: Any,
     scopes: None,
-    args: ["141981764"],
+    args: [BroadcasterId::new("141981764")],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/emotes?broadcaster_id=141981764",

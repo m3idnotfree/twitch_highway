@@ -1,5 +1,5 @@
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: emote_sets,
     token_type: Any,
     scopes: None,
@@ -14,7 +14,7 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: id_vec,
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: emote_sets,
     token_type: Any,
     scopes: None,

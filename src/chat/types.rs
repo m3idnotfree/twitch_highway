@@ -1,10 +1,12 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+use crate::types::{BroadcasterId, Id, Images, ModeratorId, UserId};
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "emote")]
 pub struct Emote {
-    pub id: String,
+    pub id: Id,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub images: Option<Images>,
@@ -29,14 +31,14 @@ pub struct Badge {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatSetting {
-    pub broadcaster_id: String,
+    pub broadcaster_id: BroadcasterId,
     pub emote_mode: bool,
     pub follower_mode: bool,
     pub follower_mode_duration: Option<u64>,
     /// only includes the moderator:read:chat_settings scope
-    pub moderator_id: Option<String>,
+    pub moderator_id: Option<ModeratorId>,
     /// only includes the moderator:read:chat_settings scope
-    pub non_moderator_chat_delay: bool,
+    pub non_moderator_chat_delay: Option<bool>,
     /// The response includes this field only
     /// if the request specifies a user access token that includes the
     /// moderator:read:chat_settings scope
@@ -51,7 +53,7 @@ pub struct ChatSetting {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Chatter {
-    pub user_id: String,
+    pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
 }
@@ -74,7 +76,7 @@ pub struct DropReason {
 pub struct SharedChatSession {
     pub session_id: String,
     pub host_broadcaster_id: String,
-    pub participants: Vec<BroadcasterId>,
+    pub participants: Vec<BroadcasterIdField>,
     /// The UTC date and time (in RFC3339 format) for when the session was created.
     pub created_at: DateTime<FixedOffset>,
     /// The UTC date and time (in RFC3339 format) for when the session was last updated.
@@ -82,13 +84,13 @@ pub struct SharedChatSession {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct BroadcasterId {
-    pub broadcaster_id: String,
+pub struct BroadcasterIdField {
+    pub broadcaster_id: BroadcasterId,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserColor {
-    pub user_id: String,
+    pub user_id: UserId,
     pub user_name: String,
     pub user_login: String,
     pub color: String,
@@ -111,6 +113,8 @@ pub enum EmoteType {
     Owl2019,
     Twofactor,
     Limitedtime,
+    #[cfg(feature = "test")]
+    Subscription,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -138,15 +142,8 @@ pub enum EmoteScale {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Images {
-    pub url_1x: String,
-    pub url_2x: String,
-    pub url_4x: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 pub struct Version {
-    pub id: String,
+    pub id: Id,
     pub image_url_1x: String,
     pub image_url_2x: String,
     pub image_url_4x: String,

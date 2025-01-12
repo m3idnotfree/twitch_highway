@@ -1,15 +1,22 @@
-use twitch_highway::chat::request::UpdateChatSettingsRequest;
+use twitch_highway::{
+    chat::request::UpdateChatSettingsRequest,
+    types::{BroadcasterId, ModeratorId},
+};
 
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: update_chat_settings,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageChatSettings]),
-    args: ["1234","5678",UpdateChatSettingsRequest::default().set_follower_mode(false)],
+    args: [
+        BroadcasterId::new("1234"),
+        ModeratorId::new("5678"),
+        UpdateChatSettingsRequest::default().follower_mode(false)
+    ],
     method: PATCH,
     header: expected_headers!(json),
     url: "https://api.twitch.tv/helix/chat/settings?broadcaster_id=1234&moderator_id=5678",
-    json: Some("{\"follower_mode\":false}".to_string()),
+    json: Some("{\"follower_mode\":false}".to_string())
 );
 
 fn_expected_resopnse!(

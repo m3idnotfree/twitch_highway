@@ -1,5 +1,5 @@
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: global_badge,
     token_type: Any,
     scopes: None,

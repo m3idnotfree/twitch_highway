@@ -1,9 +1,11 @@
+use twitch_highway::types::BroadcasterId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: get_shared_chat_session,
     token_type: Any,
     scopes: None,
-    args: ["198704263"],
+    args: [BroadcasterId::new("198704263")],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/shared_chat/session?broadcaster_id=198704263",

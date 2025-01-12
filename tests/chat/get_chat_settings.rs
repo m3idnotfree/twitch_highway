@@ -1,9 +1,11 @@
+use twitch_highway::types::BroadcasterId;
+
 fn_expected_request!(
-    api:twitch_highway::chat::ChatAPI,
+    api: twitch_highway::chat::ChatAPI,
     endpoint: get_chat_settings,
     token_type: Any,
     scopes: None,
-    args: ["1234",None],
+    args: [BroadcasterId::new("1234"), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/settings?broadcaster_id=1234",
