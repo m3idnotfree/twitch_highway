@@ -16,6 +16,8 @@ bits = []
 channels = []
 channel_points = []
 charity = []
+chat = []
+clips = []
 
 [dependencies]
 anyhow = "1.0.95"

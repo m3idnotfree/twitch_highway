@@ -14,6 +14,8 @@ mod channels;
 mod charity;
 #[cfg(feature = "chat")]
 mod chat;
+#[cfg(feature = "clips")]
+mod clips;
 #[cfg(feature = "eventsub")]
 mod eventsub;
 #[cfg(feature = "users")]

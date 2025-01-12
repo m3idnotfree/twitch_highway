@@ -105,7 +105,8 @@ pub mod channels;
 pub mod charity;
 #[cfg(feature = "chat")]
 pub mod chat;
-
+#[cfg(feature = "clips")]
+pub mod clips;
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
 #[cfg(feature = "users")]
