@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
+use serde::{de::Visitor, Deserialize, Serialize};
 use std::fmt;
 
 macro_rules! new_type {
     ($name:ident) => {
-        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct $name(String);
 
         impl $name {
@@ -25,6 +25,48 @@ macro_rules! new_type {
         impl AsRef<str> for $name {
             fn as_ref(&self) -> &str {
                 self.as_str()
+            }
+        }
+
+        impl Serialize for $name {
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: serde::Serializer,
+            {
+                serializer.serialize_str(&self.0)
+            }
+        }
+
+        impl<'de> Deserialize<'de> for $name {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                struct IdVisitor;
+
+                impl<'de> Visitor<'de> for IdVisitor {
+                    type Value = $name;
+
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str(stringify!($name))
+                    }
+
+                    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        Ok($name::new(value.to_string()))
+                    }
+
+                    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+                    where
+                        E: serde::de::Error,
+                    {
+                        Ok($name::new(value))
+                    }
+                }
+
+                deserializer.deserialize_string(IdVisitor)
             }
         }
     };
