@@ -5,13 +5,17 @@ use crate::{
     types::{AFTER, FIRST, ID, STARTED_AT, USER_ID},
 };
 
-request_struct!(
+new_request_struct!(
     #[derive(Debug, Default, Serialize)]
     BitsLeaderboardRequest {
-        count: u64,
-        period: String,
-        started_at: String,
-        user_id: String,
+        string: {
+            period: String,
+            started_at: String,
+            user_id: String
+        },
+        any: {
+            count: u64
+        }
     }
 );
 

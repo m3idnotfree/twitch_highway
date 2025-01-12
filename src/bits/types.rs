@@ -2,9 +2,11 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+use crate::types::{BroadcasterId, UserId};
+
 #[derive(Debug, Deserialize)]
 pub struct BitsLeaderboard {
-    pub user_id: String,
+    pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
     pub rank: u64,
@@ -15,10 +17,10 @@ pub struct BitsLeaderboard {
 pub struct ExtensionTransaction {
     pub id: String,
     pub timestamp: String,
-    pub broadcaster_id: String,
+    pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,
-    pub user_id: String,
+    pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
     pub product_type: String,
@@ -127,10 +129,10 @@ pub struct ProductData {
 pub struct ExtensionTransactions {
     pub id: String,
     pub timestamp: DateTime<FixedOffset>,
-    pub broadcaster_id: String,
+    pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,
-    pub user_id: String,
+    pub user_id: UserId,
     pub user_login: String,
     pub product_type: ExtensionTransactionsProductType,
     pub product_data: ExtensionTransactionsProduct,

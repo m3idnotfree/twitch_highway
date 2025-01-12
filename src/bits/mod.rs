@@ -3,7 +3,7 @@ use request::{BitsLeaderboardRequest, ExtensionTransactionRequest};
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BROADCASTER_ID, EXTENSIONS},
+    types::{BroadcasterId, BROADCASTER_ID, EXTENSIONS},
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -17,7 +17,7 @@ pub trait BitsAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard
     fn get_bits_leaderboard(&self, request: BitsLeaderboardRequest) -> TwitchAPIRequest<EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#get-cheermotes
-    fn get_cheermotes(&self, broadcaster_id: Option<&str>) -> TwitchAPIRequest<EmptyBody>;
+    fn get_cheermotes(&self, broadcaster_id: Option<BroadcasterId>) -> TwitchAPIRequest<EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#get-extension-transactions
     fn get_extension_transactions(
         &self,
@@ -38,7 +38,7 @@ impl BitsAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn get_cheermotes(&self, broadcaster_id: Option<&str>) -> TwitchAPIRequest<EmptyBody> {
+    fn get_cheermotes(&self, broadcaster_id: Option<BroadcasterId>) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([BITS, "cheermotes"])
             .query_opt(BROADCASTER_ID, broadcaster_id);
