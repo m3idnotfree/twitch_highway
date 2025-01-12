@@ -13,7 +13,7 @@ default = []
 ads = []
 analytics = []
 bits = []
-test = ["types"]
+channels = []
 channel_points = []
 full = ["chat", "eventsub", "users", "types", "test"]
 

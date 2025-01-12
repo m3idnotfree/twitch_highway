@@ -99,6 +99,8 @@ pub mod analytics;
 pub mod bits;
 #[cfg(feature = "channel_points")]
 pub mod channel_points;
+#[cfg(feature = "channels")]
+pub mod channels;
 #[cfg(feature = "chat")]
 pub mod chat;
 
