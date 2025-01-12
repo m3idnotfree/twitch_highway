@@ -18,5 +18,7 @@ mod chat;
 mod clips;
 #[cfg(feature = "eventsub")]
 mod eventsub;
+#[cfg(feature = "moderation")]
+mod moderation;
 #[cfg(feature = "users")]
 mod user;

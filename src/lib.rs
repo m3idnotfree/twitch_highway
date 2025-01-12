@@ -109,6 +109,8 @@ pub mod chat;
 pub mod clips;
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
+#[cfg(feature = "moderation")]
+pub mod moderation;
 #[cfg(feature = "users")]
 pub mod users;
 

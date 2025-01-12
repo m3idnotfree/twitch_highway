@@ -18,6 +18,7 @@ channel_points = []
 charity = []
 chat = []
 clips = []
+moderation = []
 
 [dependencies]
 anyhow = "1.0.95"
