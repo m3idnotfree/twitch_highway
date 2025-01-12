@@ -2,6 +2,8 @@
 mod support;
 #[cfg(feature = "ads")]
 mod ads;
+#[cfg(feature = "analytics")]
+mod analytics;
 #[cfg(feature = "chat")]
 mod chat;
 #[cfg(feature = "eventsub")]

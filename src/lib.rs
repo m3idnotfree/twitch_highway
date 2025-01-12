@@ -93,6 +93,8 @@ pub use request::{AsBody, EmptyBody, EndpointType, TokenType, TwitchAPIRequest};
 
 #[cfg(feature = "ads")]
 pub mod ads;
+#[cfg(feature = "analytics")]
+pub mod analytics;
 #[cfg(feature = "chat")]
 pub mod chat;
 
