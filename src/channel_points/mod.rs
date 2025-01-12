@@ -60,7 +60,7 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<CreateCustomRewardsRequest> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -80,8 +80,8 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(ID, id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(ID, id);
 
         TwitchAPIRequest::new(
             EndpointType::DeleteCustomReward,
@@ -99,7 +99,7 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt_extend(id.map(|x| x.into_iter().map(|x| (ID, x))))
             .query_opt(
                 "only_manageable_rewards",
@@ -138,8 +138,8 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<UpdateCustomRewardRequest> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(ID, id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(ID, id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -160,9 +160,9 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<UpdateRedemptionStatusRequest> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([("reward_id", reward_id)])
-            .query(id.into_iter().map(|x| (ID, x)));
+            .query(BROADCASTER_ID, broadcaster_id.as_str())
+            .query("reward_id", reward_id)
+            .query_extend(id.into_iter().map(|x| (ID, x)));
 
         let mut headers = self.build_headers();
         headers.json();

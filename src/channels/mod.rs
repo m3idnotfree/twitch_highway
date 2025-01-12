@@ -49,8 +49,7 @@ impl ChannelsAPI for TwitchAPI {
         request: ModifyChannelRequest,
     ) -> TwitchAPIRequest<ModifyChannelRequest> {
         let mut url = self.build_url();
-        url.path([CHANNELS])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+        url.path([CHANNELS]).query(BROADCASTER_ID, broadcaster_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -65,7 +64,7 @@ impl ChannelsAPI for TwitchAPI {
     fn get_channel_editors(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "editors"])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::GetChannelEditors,

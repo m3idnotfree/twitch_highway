@@ -170,7 +170,7 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<CheckAutoModStatusRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "enforcements", "status"])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -208,8 +208,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "automod", "settings"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         TwitchAPIRequest::new(
             EndpointType::GetAutoModSettings,
@@ -227,8 +227,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<UpdateAutoModSettingsRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "automod", "settings"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -251,7 +251,7 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "banned"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt_extend(user_id.map(|ids| ids.into_iter().map(|id| (USER_ID, id))))
             .query_opt(FIRST, first.map(|x| x.to_string()))
             .query_opt(AFTER, after)
@@ -273,8 +273,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<BanUsersRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "bans"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -295,9 +295,9 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "bans"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
-            .query([(USER_ID, user_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
+            .query(USER_ID, user_id);
 
         TwitchAPIRequest::new(
             EndpointType::BanUsers,
@@ -318,9 +318,9 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "unban_requests"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
-            .query([("status", status)])
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
+            .query("status", status)
             .query_opt(USER_ID, user_id)
             .query_opt(AFTER, after)
             .query_opt(FIRST, first.map(|x| x.to_string()));
@@ -343,9 +343,9 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "unban_requests"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
-            .query([("unban_request_id", unban_request_id), ("status", status)])
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
+            .query_extend([("unban_request_id", unban_request_id), ("status", status)])
             .query_opt("resolution_text", resolution_text);
 
         TwitchAPIRequest::new(
@@ -365,8 +365,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
             .query_opt(FIRST, first.map(|x| x.to_string()))
             .query_opt(AFTER, after);
 
@@ -386,8 +386,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<AddBlockedTermRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -408,9 +408,9 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
-            .query([(ID, id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
+            .query(ID, id);
 
         TwitchAPIRequest::new(
             EndpointType::RemoveBlockedTerm,
@@ -428,8 +428,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "chat"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id)
             .query_opt("message_id", message_id);
 
         TwitchAPIRequest::new(
@@ -448,7 +448,7 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "channels"])
-            .query([(USER_ID, user_id)])
+            .query(USER_ID, user_id)
             .query_opt("after", after)
             .query_opt("first", first.map(|x| x.to_string()));
 
@@ -469,7 +469,7 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt(USER_ID, user_id)
             .query_opt("first", first)
             .query_opt("after", after);
@@ -489,8 +489,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(USER_ID, user_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(USER_ID, user_id);
 
         TwitchAPIRequest::new(
             EndpointType::AddChannelModerator,
@@ -507,8 +507,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(USER_ID, user_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(USER_ID, user_id);
 
         TwitchAPIRequest::new(
             EndpointType::RemoveChannelModerator,
@@ -527,7 +527,7 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt_extend(user_ids.map(|ids| ids.into_iter().map(|id| (USER_ID, id))))
             .query_opt(FIRST, first.map(|x| x.to_string()))
             .query_opt(AFTER, after);
@@ -547,8 +547,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
-            .query([(USER_ID, user_id)])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(USER_ID, user_id)
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::AddChannelVIP,
@@ -565,8 +565,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
-            .query([(USER_ID, user_id)])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(USER_ID, user_id)
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::RemoveChannelVIP,
@@ -584,8 +584,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<UpdateShieldModeStatusRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "shield_mode"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -604,8 +604,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "shield_mode"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         TwitchAPIRequest::new(
             EndpointType::GetShieldModeStatus,
@@ -623,8 +623,8 @@ impl ModerationAPI for TwitchAPI {
     ) -> TwitchAPIRequest<WarnChatUserRequest> {
         let mut url = self.build_url();
         url.path([MODERATION, "warnings"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
-            .query([(MODERATOR_ID, moderator_id)]);
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
 
         TwitchAPIRequest::new(
             EndpointType::WarnChatUser,

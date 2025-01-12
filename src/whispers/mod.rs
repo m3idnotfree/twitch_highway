@@ -23,7 +23,7 @@ impl WhisperAPI for TwitchAPI {
     ) -> TwitchAPIRequest<SendWhisperRequest> {
         let mut url = self.build_url();
         url.path(["whispers"])
-            .query([("from_user_id", from_user_id), ("to_user_id", to_user_id)]);
+            .query_extend([("from_user_id", from_user_id), ("to_user_id", to_user_id)]);
 
         let mut headers = self.build_headers();
         headers.json();

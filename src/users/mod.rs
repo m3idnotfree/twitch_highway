@@ -101,7 +101,7 @@ impl UserAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt(FIRST, first)
             .query_opt(AFTER, after);
 
@@ -122,7 +122,7 @@ impl UserAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
-            .query([("target_user_id", target_user_id)])
+            .query("target_user_id", target_user_id)
             .query_opt("source_context", source_context)
             .query_opt("reason", reason);
 
@@ -138,7 +138,7 @@ impl UserAPI for TwitchAPI {
     fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
-            .query([("target_user_id", target_user_id)]);
+            .query("target_user_id", target_user_id);
 
         TwitchAPIRequest::new(
             EndpointType::UnblockUser,

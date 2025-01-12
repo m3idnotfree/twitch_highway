@@ -27,7 +27,7 @@ impl ClipsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path(["clips"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt("has_delay", has_delay.map(|x| x.to_string()));
 
         TwitchAPIRequest::new(

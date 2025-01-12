@@ -24,7 +24,7 @@ impl CharityAPI for TwitchAPI {
     fn get_charity_campaign(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHARITY, "campaigns"])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::GetCharityCampaign,
@@ -42,7 +42,7 @@ impl CharityAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHARITY, "donations"])
-            .query([(BROADCASTER_ID, broadcaster_id)])
+            .query(BROADCASTER_ID, broadcaster_id)
             .query_opt(FIRST, first.map(|x| x.to_string()))
             .query_opt(AFTER, after);
 

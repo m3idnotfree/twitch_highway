@@ -80,11 +80,8 @@ impl UrlBuilder {
         self
     }
 
-    pub fn query<K: AsRef<str>, V: AsRef<str>, L: IntoIterator<Item = (K, V)>>(
-        &mut self,
-        querys: L,
-    ) -> &mut Self {
-        self.0.query_pairs_mut().extend_pairs(querys);
+    pub fn query<K: AsRef<str>>(&mut self, key: &str, value: K) -> &mut Self {
+        self.0.query_pairs_mut().append_pair(key, value.as_ref());
         self
     }
 

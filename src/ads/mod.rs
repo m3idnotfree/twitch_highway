@@ -47,7 +47,7 @@ impl AdsAPI for TwitchAPI {
     fn get_ad_schedule(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "ads"])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::GetAdSchedule,
@@ -60,7 +60,7 @@ impl AdsAPI for TwitchAPI {
     fn snooze_next_ad(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "ads", "schedule", "snooze"])
-            .query([(BROADCASTER_ID, broadcaster_id)]);
+            .query(BROADCASTER_ID, broadcaster_id);
 
         TwitchAPIRequest::new(
             EndpointType::SnoozeNextAd,
