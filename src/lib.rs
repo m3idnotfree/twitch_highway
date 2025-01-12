@@ -77,7 +77,6 @@
 //! Code entitlements
 //! EventSub
 
-#[cfg(feature = "test")]
 #[macro_use]
 mod macros;
 

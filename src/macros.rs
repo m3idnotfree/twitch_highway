@@ -19,11 +19,9 @@ macro_rules! request_struct {
                 Self::default()
             }
 
-         $(pub fn $field<T>(mut self, value: T) -> Self
-            where
-                T: Into<$type>
+         $(pub fn $field(mut self, value: $type) -> Self
             {
-                self.$field = Some(value.into());
+                self.$field = Some(value);
                 self
             })*
         }
@@ -63,14 +61,66 @@ macro_rules! request_struct {
             }
 
             $($(
-                pub fn $opt_field<T>(mut self, value: T) -> Self
-                where
-                    T: Into<$opt_type>
+                pub fn $opt_field(mut self, value: $opt_type) -> Self
                 {
-                    self.$opt_field = Some(value.into());
+                    self.$opt_field = Some(value);
                     self
                 }
             )*)?
+        }
+    };
+}
+
+macro_rules! new_request_struct {
+    (
+        $(#[$struct_meta:meta])*
+        $struct_name:ident {
+    $(  string: {
+            $($(#[$string_meta:meta])*
+                $string_vis:vis $string_field:ident: $string_type:ty),*$(,)?
+        }
+    )?
+    $(,
+        any: {
+            $($(#[$any_meta:meta])*
+                $any_vis:vis $any_field:ident: $any_type:ty),*$(,)?
+        }
+    )?
+    }
+    ) => {
+        $(#[$struct_meta])*
+        pub struct $struct_name {
+            $(
+        $($(#[$string_meta])*
+            $string_vis $string_field: Option<$string_type>,)*
+            )?
+        $($($(#[$any_meta])*
+            $any_vis $any_field: Option<$any_type>,
+        )*)?
+        }
+
+        impl $struct_name {
+            pub fn new() -> Self {
+                Self::default()
+            }
+
+        $(
+         $(pub fn $string_field<T: Into<String>>(mut self, value: T) -> Self
+            {
+                self.$string_field = Some(value.into());
+                self
+            }
+         )*
+        )?
+
+        $(
+         $(pub fn $any_field(mut self, value: $any_type) -> Self
+            {
+                self.$any_field = Some(value);
+                self
+            }
+         )*
+        )?
         }
     };
 }
