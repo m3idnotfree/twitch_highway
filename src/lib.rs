@@ -101,6 +101,8 @@ pub mod bits;
 pub mod channel_points;
 #[cfg(feature = "channels")]
 pub mod channels;
+#[cfg(feature = "charity")]
+pub mod charity;
 #[cfg(feature = "chat")]
 pub mod chat;
 

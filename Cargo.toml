@@ -15,7 +15,7 @@ analytics = []
 bits = []
 channels = []
 channel_points = []
-full = ["chat", "eventsub", "users", "types", "test"]
+charity = []
 
 [dependencies]
 anyhow = "1.0.95"
