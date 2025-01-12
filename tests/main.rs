@@ -20,6 +20,8 @@ mod clips;
 mod eventsub;
 #[cfg(feature = "moderation")]
 mod moderation;
+#[cfg(feature = "subscriptions")]
+mod subscriptions;
 #[cfg(feature = "users")]
 mod user;
 #[cfg(feature = "videos")]

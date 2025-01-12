@@ -19,6 +19,7 @@ charity = []
 chat = []
 clips = []
 moderation = []
+subscriptions = []
 videos = []
 whispers = []
 

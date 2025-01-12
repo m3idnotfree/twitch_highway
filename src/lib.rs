@@ -111,6 +111,8 @@ pub mod clips;
 pub mod eventsub;
 #[cfg(feature = "moderation")]
 pub mod moderation;
+#[cfg(feature = "subscriptions")]
+pub mod subscriptions;
 #[cfg(feature = "users")]
 pub mod users;
 #[cfg(feature = "videos")]
