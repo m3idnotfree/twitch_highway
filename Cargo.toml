@@ -10,7 +10,7 @@ keywords = ["twitch"]
 
 [features]
 default = []
-chat = ["types"]
+ads = []
 eventsub = ["types"]
 users = ["types"]
 test = ["types"]

@@ -91,6 +91,8 @@ pub use chrono::{Datelike, Timelike};
 pub use error::Error;
 pub use request::{AsBody, EmptyBody, EndpointType, TokenType, TwitchAPIRequest};
 
+#[cfg(feature = "ads")]
+pub mod ads;
 #[cfg(feature = "chat")]
 pub mod chat;
 
