@@ -9,7 +9,7 @@ pub use image::Images;
 pub use pagination::Pagination;
 pub use title::Title;
 
-pub use new_types::{BroadcasterId, ModeratorId, UserId};
+pub use new_types::{BroadcasterId, Id, ModeratorId, UserId};
 
 pub(crate) const BROADCASTER_ID: &str = "broadcaster_id";
 pub(crate) const MODERATOR_ID: &str = "moderator_id";

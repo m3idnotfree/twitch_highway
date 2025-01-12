@@ -27,6 +27,23 @@ macro_rules! new_type {
                 self.as_str()
             }
         }
+        impl From<$name> for String {
+            fn from(id: $name) -> Self {
+                id.0
+            }
+        }
+
+        impl From<String> for $name {
+            fn from(s: String) -> Self {
+                Self(s)
+            }
+        }
+
+        impl From<&str> for $name {
+            fn from(s: &str) -> Self {
+                Self(s.to_string())
+            }
+        }
 
         impl Serialize for $name {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -75,3 +92,4 @@ macro_rules! new_type {
 new_type!(BroadcasterId);
 new_type!(ModeratorId);
 new_type!(UserId);
+new_type!(Id);
