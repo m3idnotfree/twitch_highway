@@ -95,6 +95,14 @@ impl UrlBuilder {
         self
     }
 
+    pub fn query_extend<K: AsRef<str>, V: AsRef<str>, L: IntoIterator<Item = (K, V)>>(
+        &mut self,
+        querys: L,
+    ) -> &mut Self {
+        self.0.query_pairs_mut().extend_pairs(querys);
+        self
+    }
+
     pub fn query_opt_extend<K: AsRef<str>, V: AsRef<str>, L: IntoIterator<Item = (K, V)>>(
         &mut self,
         querys: Option<L>,
@@ -120,6 +128,7 @@ impl UrlBuilder {
 pub trait IntoQueryPairs {
     fn into_query_pairs(self) -> Vec<(&'static str, String)>;
 }
+
 #[derive(Debug, Default)]
 pub struct QueryParams(Vec<(&'static str, String)>);
 
@@ -146,6 +155,16 @@ impl QueryParams {
     ) -> &mut Self {
         self.0
             .extend(extend.into_iter().map(|(x, y)| (x, y.into())));
+        self
+    }
+
+    pub fn extend_opt<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
+        &mut self,
+        extend: Option<L>,
+    ) -> &mut Self {
+        if let Some(v) = extend {
+            self.0.extend(v.into_iter().map(|(x, y)| (x, y.into())));
+        }
         self
     }
 
