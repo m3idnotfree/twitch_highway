@@ -109,6 +109,8 @@ pub mod charity;
 pub mod chat;
 #[cfg(feature = "clips")]
 pub mod clips;
+#[cfg(feature = "entitlements")]
+pub mod entitlements;
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
 #[cfg(feature = "extensions")]

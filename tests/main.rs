@@ -18,6 +18,8 @@ mod charity;
 mod chat;
 #[cfg(feature = "clips")]
 mod clips;
+#[cfg(feature = "entitlements")]
+mod entitlements;
 #[cfg(feature = "eventsub")]
 mod eventsub;
 #[cfg(feature = "extensions")]
