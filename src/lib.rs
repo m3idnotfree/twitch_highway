@@ -115,6 +115,8 @@ pub mod hype_train;
 pub mod moderation;
 #[cfg(feature = "polls")]
 pub mod polls;
+#[cfg(feature = "predictions")]
+pub mod predictions;
 #[cfg(feature = "raid")]
 pub mod raid;
 #[cfg(feature = "streams")]

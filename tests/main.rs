@@ -24,6 +24,8 @@ mod hype_train;
 mod moderation;
 #[cfg(feature = "polls")]
 mod polls;
+#[cfg(feature = "predictions")]
+mod predictions;
 #[cfg(feature = "raid")]
 mod raid;
 #[cfg(feature = "streams")]
