@@ -1,0 +1,11 @@
+mod create_extension_secret;
+mod get_extension_bits_products;
+mod get_extension_configuration_segment;
+mod get_extension_live_channels;
+mod get_extension_secrets;
+mod get_extensions;
+mod get_released_extensions;
+mod send_extension_chat_message;
+mod send_extension_pubsub_message;
+mod set_extension_required_configuration;
+mod update_extension_bits_product;
