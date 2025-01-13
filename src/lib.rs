@@ -111,6 +111,8 @@ pub mod chat;
 pub mod clips;
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
+#[cfg(feature = "games")]
+pub mod games;
 #[cfg(feature = "goals")]
 pub mod goals;
 #[cfg(feature = "hype-train")]

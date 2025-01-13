@@ -20,6 +20,8 @@ mod chat;
 mod clips;
 #[cfg(feature = "eventsub")]
 mod eventsub;
+#[cfg(feature = "games")]
+mod games;
 #[cfg(feature = "goals")]
 mod goals;
 #[cfg(feature = "hype-train")]
