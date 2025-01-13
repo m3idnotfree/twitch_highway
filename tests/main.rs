@@ -6,6 +6,8 @@ mod ads;
 mod analytics;
 #[cfg(feature = "bits")]
 mod bits;
+#[cfg(feature = "ccls")]
+mod ccls;
 #[cfg(feature = "channel_points")]
 mod channel_points;
 #[cfg(feature = "channels")]
