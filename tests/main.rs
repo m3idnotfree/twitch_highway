@@ -20,6 +20,8 @@ mod clips;
 mod eventsub;
 #[cfg(feature = "moderation")]
 mod moderation;
+#[cfg(feature = "raid")]
+mod raid;
 #[cfg(feature = "streams")]
 mod streams;
 #[cfg(feature = "subscriptions")]

@@ -111,6 +111,8 @@ pub mod clips;
 pub mod eventsub;
 #[cfg(feature = "moderation")]
 pub mod moderation;
+#[cfg(feature = "raid")]
+pub mod raid;
 #[cfg(feature = "streams")]
 pub mod streams;
 #[cfg(feature = "subscriptions")]
