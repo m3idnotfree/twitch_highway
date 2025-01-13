@@ -18,6 +18,8 @@ mod chat;
 mod clips;
 #[cfg(feature = "eventsub")]
 mod eventsub;
+#[cfg(feature = "hype-train")]
+mod hype_train;
 #[cfg(feature = "moderation")]
 mod moderation;
 #[cfg(feature = "polls")]

@@ -109,6 +109,8 @@ pub mod chat;
 pub mod clips;
 #[cfg(feature = "eventsub")]
 pub mod eventsub;
+#[cfg(feature = "hype-train")]
+pub mod hype_train;
 #[cfg(feature = "moderation")]
 pub mod moderation;
 #[cfg(feature = "polls")]
