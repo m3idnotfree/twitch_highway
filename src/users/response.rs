@@ -27,7 +27,7 @@ pub struct UserExtensionsResponse {
 //    data: Vec<UserActiveExtensions>,
 //}
 
-//impl AsBody for UserActiveExtensionsData {
+//impl RequestBody for UserActiveExtensionsData {
 //    fn as_body(&self) -> Option<String> {
 //        Some(serde_json::to_string(self).unwrap())
 //    }

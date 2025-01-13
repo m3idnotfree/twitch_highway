@@ -1,5 +1,5 @@
 use asknothingx2_util::api::Method;
-use request::StartCommercialRequest;
+use request::StartCommercialRequestBody;
 
 use crate::{
     base::TwitchAPIBase,
@@ -17,7 +17,7 @@ pub trait AdsAPI: TwitchAPIBase {
         &self,
         broadcaster_id: BroadcasterId,
         length: u64,
-    ) -> TwitchAPIRequest<StartCommercialRequest>;
+    ) -> TwitchAPIRequest<StartCommercialRequestBody>;
     /// https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
     fn get_ad_schedule(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#snooze-next-ad
@@ -29,7 +29,7 @@ impl AdsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         length: u64,
-    ) -> TwitchAPIRequest<StartCommercialRequest> {
+    ) -> TwitchAPIRequest<StartCommercialRequestBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "commercial"]);
 
@@ -41,7 +41,7 @@ impl AdsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            StartCommercialRequest::new(broadcaster_id, length),
+            StartCommercialRequestBody::new(broadcaster_id, length),
         )
     }
     fn get_ad_schedule(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {

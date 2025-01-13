@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     base::{IntoQueryPairs, QueryParams},
     types::{BroadcasterId, UserId, AFTER, BROADCASTER_ID, FIRST, USER_ID},
-    AsBody,
+    RequestBody,
 };
 
 request_struct!(
@@ -26,7 +26,7 @@ request_struct!(
     }
 );
 
-impl AsBody for ModifyChannelRequest {
+impl RequestBody for ModifyChannelRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }

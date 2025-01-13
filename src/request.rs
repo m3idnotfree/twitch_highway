@@ -8,7 +8,7 @@ use url::Url;
 use crate::Error;
 
 // https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
-pub trait AsBody {
+pub trait RequestBody {
     fn as_body(&self) -> Option<String> {
         None
     }
@@ -26,7 +26,7 @@ pub struct TwitchAPIRequest<T> {
 
 impl<T> TwitchAPIRequest<T>
 where
-    T: AsBody,
+    T: RequestBody,
 {
     pub fn new(kind: EndpointType, url: Url, method: Method, header: HeaderMap, body: T) -> Self {
         Self {
@@ -107,7 +107,7 @@ impl fmt::Display for APIError {
 
 impl<T> APIRequest for TwitchAPIRequest<T>
 where
-    T: AsBody,
+    T: RequestBody,
 {
     fn url(&self) -> Url {
         self.url()
@@ -142,7 +142,7 @@ impl<L> crate::test_url::TestUrl for TwitchAPIRequest<L> {
 }
 
 pub struct EmptyBody;
-impl AsBody for EmptyBody {}
+impl RequestBody for EmptyBody {}
 
 #[derive(Debug)]
 pub enum EndpointType {

@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{
     base::{IntoQueryPairs, QueryParams},
     types::{BroadcasterId, Id, AFTER, BROADCASTER_ID, FIRST, ID},
-    AsBody,
+    RequestBody,
 };
 
 use super::types::RedemptionStatus;
@@ -17,7 +17,7 @@ request_struct!(
     }
 );
 
-impl AsBody for UpdateRedemptionStatusRequest {
+impl RequestBody for UpdateRedemptionStatusRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
@@ -59,7 +59,7 @@ request_struct!(
 
 );
 
-impl AsBody for CreateCustomRewardsRequest {
+impl RequestBody for CreateCustomRewardsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
@@ -133,7 +133,7 @@ request_struct!(
     }
 );
 
-impl AsBody for UpdateCustomRewardRequest {
+impl RequestBody for UpdateCustomRewardRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }

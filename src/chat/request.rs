@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::{types::BroadcasterId, AsBody};
+use crate::{types::BroadcasterId, RequestBody};
 
 request_struct!(
     #[derive(Debug, Serialize)]
@@ -13,7 +13,7 @@ request_struct!(
     }
 );
 
-impl AsBody for SendChatMessageRequest {
+impl RequestBody for SendChatMessageRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
@@ -44,7 +44,7 @@ request_struct!(
     }
 );
 
-impl AsBody for UpdateChatSettingsRequest {
+impl RequestBody for UpdateChatSettingsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }

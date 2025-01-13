@@ -1,7 +1,6 @@
-use asknothingx2_eventsub::twitch::subscription_types::request;
 use serde::Serialize;
 
-use crate::{types::UserId, AsBody};
+use crate::{types::UserId, RequestBody};
 
 request_struct!(
     #[derive(Debug,Serialize)]
@@ -12,7 +11,7 @@ request_struct!(
     }
 );
 
-impl AsBody for CheckAutoModStatusRequest {
+impl RequestBody for CheckAutoModStatusRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -38,7 +37,7 @@ request_struct!(
         }
     }
 );
-impl AsBody for ManageHeldAutoModMeussageRequest {
+impl RequestBody for ManageHeldAutoModMeussageRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -74,7 +73,7 @@ request_struct!(
     }
 );
 
-impl AsBody for UpdateAutoModSettingsRequest {
+impl RequestBody for UpdateAutoModSettingsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -88,7 +87,7 @@ request_struct!(
         }
     }
 );
-impl AsBody for BanUsersRequest {
+impl RequestBody for BanUsersRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -116,7 +115,7 @@ request_struct!(
     }
 );
 
-impl AsBody for AddBlockedTermRequest {
+impl RequestBody for AddBlockedTermRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -131,7 +130,7 @@ request_struct!(
     }
 );
 
-impl AsBody for UpdateShieldModeStatusRequest {
+impl RequestBody for UpdateShieldModeStatusRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -156,7 +155,7 @@ request_struct!(
     }
 );
 
-impl AsBody for WarnChatUserRequest {
+impl RequestBody for WarnChatUserRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }

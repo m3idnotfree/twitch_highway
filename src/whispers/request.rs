@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::AsBody;
+use crate::RequestBody;
 
 #[derive(Debug, Serialize)]
 pub struct SendWhisperRequest {
@@ -13,7 +13,7 @@ impl SendWhisperRequest {
     }
 }
 
-impl AsBody for SendWhisperRequest {
+impl RequestBody for SendWhisperRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }

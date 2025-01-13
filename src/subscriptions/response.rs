@@ -7,12 +7,12 @@ use super::types::UserSubscription;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserSubscriptionResponse {
-    pub data:Vec<UserSubscription>
+    pub data: Vec<UserSubscription>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BroadcasterSubscriptionResponse {
-    pub data:Vec<UserSubscription>,
+    pub data: Vec<UserSubscription>,
     #[serde(
         default,
         serialize_with = "serialize_none_as_empty_object",
@@ -20,5 +20,5 @@ pub struct BroadcasterSubscriptionResponse {
     )]
     pub pagination: Option<Pagination>,
     pub total: u64,
-    pub points: u64
+    pub points: u64,
 }
