@@ -38,6 +38,8 @@ mod polls;
 mod predictions;
 #[cfg(feature = "raid")]
 mod raid;
+#[cfg(feature = "schedule")]
+mod schedule;
 #[cfg(feature = "streams")]
 mod streams;
 #[cfg(feature = "subscriptions")]
