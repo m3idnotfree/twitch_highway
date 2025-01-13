@@ -4,6 +4,8 @@ use asknothingx2_util::{
 };
 use url::Url;
 
+use crate::types::JWTToken;
+
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
 pub trait TwitchAPIBase {
@@ -11,6 +13,9 @@ pub trait TwitchAPIBase {
     fn client_id(&self) -> &ClientId;
     fn build_headers(&self) -> HeadersBuilder {
         HeadersBuilder::base(self.access_token(), self.client_id())
+    }
+    fn build_jwt_headers(&self, jwt: &JWTToken) -> HeadersBuilder {
+        HeadersBuilder::base_with_jwt(jwt, self.client_id())
     }
     fn build_url(&self) -> UrlBuilder {
         UrlBuilder::new()
@@ -48,6 +53,13 @@ impl HeadersBuilder {
         let mut headers = HeaderBuilder::new();
         headers
             .authorization("Bearer", access_token.secret().as_str())
+            .client_id(client_id.as_str());
+        Self(headers)
+    }
+    pub fn base_with_jwt(jwt_token: &JWTToken, client_id: &ClientId) -> Self {
+        let mut headers = HeaderBuilder::new();
+        headers
+            .authorization("Bearer", jwt_token.as_str())
             .client_id(client_id.as_str());
         Self(headers)
     }

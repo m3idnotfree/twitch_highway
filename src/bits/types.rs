@@ -2,7 +2,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, UserId};
+use crate::types::{BroadcasterId, Cost, UserId};
 
 #[derive(Debug, Deserialize)]
 pub struct BitsLeaderboard {
@@ -108,13 +108,6 @@ pub struct CheermotesImagess {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Cost {
-    pub amount: u64,
-    #[serde(rename = "type")]
-    pub kind: String,
-}
-
-#[derive(Debug, Deserialize)]
 pub struct ProductData {
     pub domain: String,
     pub sku: String,
@@ -142,7 +135,7 @@ pub struct ExtensionTransactions {
 pub struct ExtensionTransactionsProduct {
     pub sku: String,
     pub domain: String,
-    pub cost: ExtensionTransactionsCost,
+    pub cost: Cost,
     pub inDevelopment: bool,
     pub displayName: String,
     pub expiration: String,
@@ -153,11 +146,4 @@ pub struct ExtensionTransactionsProduct {
 #[derive(Debug, Deserialize)]
 pub enum ExtensionTransactionsProductType {
     BITS_IN_EXTENSION,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ExtensionTransactionsCost {
-    pub amount: u64,
-    #[serde(rename = "type")]
-    pub kind: String,
 }

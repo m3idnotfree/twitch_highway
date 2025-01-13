@@ -62,6 +62,15 @@ macro_rules! expected_headers {
 
         headers.build()
     }};
+    (jwt) => {{
+        let mut headers = asknothingx2_util::api::HeaderBuilder::new();
+        headers
+            .authorization("Bearer", "<your JWT token>")
+            .append("Client-Id", "uo6dggojyb8d6soh92zknwmi5ej1q2")
+            .unwrap();
+
+        headers.build()
+    }};
 }
 
 macro_rules! expected_response {
@@ -123,7 +132,9 @@ macro_rules! fn_expected_request {
             $(expected_APIRequest!(@$name $expected, endpoint);)+
         $(
             let js_contain = endpoint.json().unwrap();
+            //pretty_assertions::assert_eq!("f", js_contain);
             $(assert!(js_contain.contains($contain));)+
+
         )?
         }
     };

@@ -89,7 +89,7 @@ mod request;
 pub use base::TwitchAPI;
 pub use chrono::{Datelike, Timelike};
 pub use error::Error;
-pub use request::{AsBody, EmptyBody, EndpointType, TokenType, TwitchAPIRequest};
+pub use request::{EmptyBody, EndpointType, RequestBody, TokenType, TwitchAPIRequest};
 
 #[cfg(feature = "ads")]
 pub mod ads;

@@ -1,15 +1,17 @@
+mod cost;
 mod date_range;
 mod image;
 mod new_types;
 mod pagination;
 mod title;
 
+pub use cost::{Cost, CostType};
 pub use date_range::DateRange;
 pub use image::Images;
 pub use pagination::Pagination;
 pub use title::Title;
 
-pub use new_types::{BroadcasterId, Id, ModeratorId, UserId};
+pub use new_types::{BroadcasterId, ExtensionId, Id, JWTToken, ModeratorId, UserId};
 
 pub(crate) const BROADCASTER_ID: &str = "broadcaster_id";
 pub(crate) const MODERATOR_ID: &str = "moderator_id";

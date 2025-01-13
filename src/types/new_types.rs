@@ -93,3 +93,15 @@ new_type!(BroadcasterId);
 new_type!(ModeratorId);
 new_type!(UserId);
 new_type!(Id);
+new_type!(ExtensionId);
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct JWTToken(String);
+impl JWTToken {
+    pub fn new(token: String) -> Self {
+        Self(token)
+    }
+    pub fn as_str(&self) -> &str {
+        self.0.as_str()
+    }
+}
