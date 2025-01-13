@@ -26,6 +26,8 @@ predictions = []
 raid = []
 streams = []
 subscriptions = []
+teams = []
+users = []
 videos = []
 whispers = []
 

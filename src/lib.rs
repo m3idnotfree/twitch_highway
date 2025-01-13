@@ -125,6 +125,8 @@ pub mod raid;
 pub mod streams;
 #[cfg(feature = "subscriptions")]
 pub mod subscriptions;
+#[cfg(feature = "teams")]
+pub mod teams;
 #[cfg(feature = "users")]
 pub mod users;
 #[cfg(feature = "videos")]

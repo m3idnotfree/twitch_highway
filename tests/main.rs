@@ -34,6 +34,8 @@ mod raid;
 mod streams;
 #[cfg(feature = "subscriptions")]
 mod subscriptions;
+#[cfg(feature = "teams")]
+mod teams;
 #[cfg(feature = "users")]
 mod user;
 #[cfg(feature = "videos")]
