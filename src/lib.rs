@@ -133,6 +133,8 @@ pub mod predictions;
 pub mod raid;
 #[cfg(feature = "schedule")]
 pub mod schedule;
+#[cfg(feature = "search")]
+pub mod search;
 #[cfg(feature = "streams")]
 pub mod streams;
 #[cfg(feature = "subscriptions")]

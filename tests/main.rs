@@ -42,6 +42,8 @@ mod predictions;
 mod raid;
 #[cfg(feature = "schedule")]
 mod schedule;
+#[cfg(feature = "search")]
+pub mod search;
 #[cfg(feature = "streams")]
 mod streams;
 #[cfg(feature = "subscriptions")]
