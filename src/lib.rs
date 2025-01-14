@@ -111,8 +111,8 @@ pub mod chat;
 pub mod clips;
 #[cfg(feature = "entitlements")]
 pub mod entitlements;
-#[cfg(feature = "eventsub")]
-pub mod eventsub;
+//#[cfg(feature = "eventsub")]
+//pub mod eventsub;
 #[cfg(feature = "extensions")]
 pub mod extensions;
 #[cfg(feature = "games")]

@@ -13,13 +13,14 @@ default = []
 ads = []
 analytics = []
 bits = []
-channels = []
+ccls = []
 channel_points = []
+channels = []
 charity = []
 chat = []
 clips = []
-ccls = []
 entitlements = []
+# eventsub = []
 extensions = []
 games = []
 goals = []
@@ -37,6 +38,37 @@ teams = []
 users = []
 videos = []
 whispers = []
+test = []
+full = [
+  "ads",
+  "analytics",
+  "bits",
+  "ccls",
+  "channel_points",
+  "channels",
+  "charity",
+  "chat",
+  "clips",
+  "entitlements",
+  # "eventsub",
+  "extensions",
+  "games",
+  "goals",
+  "guest-star",
+  "hype-train",
+  "moderation",
+  "polls",
+  "predictions",
+  "raid",
+  "schedule",
+  "search",
+  "streams",
+  "subscriptions",
+  "teams",
+  "users",
+  "videos",
+  "whispers",
+]
 
 [dependencies]
 anyhow = "1.0.95"

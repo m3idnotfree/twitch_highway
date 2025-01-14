@@ -20,8 +20,8 @@ mod chat;
 mod clips;
 #[cfg(feature = "entitlements")]
 mod entitlements;
-#[cfg(feature = "eventsub")]
-mod eventsub;
+//#[cfg(feature = "eventsub")]
+//mod eventsub;
 #[cfg(feature = "extensions")]
 mod extensions;
 #[cfg(feature = "games")]
