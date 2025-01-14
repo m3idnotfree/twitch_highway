@@ -119,6 +119,8 @@ pub mod extensions;
 pub mod games;
 #[cfg(feature = "goals")]
 pub mod goals;
+#[cfg(feature = "guest-star")]
+pub mod guest_star;
 #[cfg(feature = "hype-train")]
 pub mod hype_train;
 #[cfg(feature = "moderation")]

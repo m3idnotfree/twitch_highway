@@ -28,6 +28,8 @@ mod extensions;
 mod games;
 #[cfg(feature = "goals")]
 mod goals;
+#[cfg(feature = "guest-star")]
+mod guest_star;
 #[cfg(feature = "hype-train")]
 mod hype_train;
 #[cfg(feature = "moderation")]
