@@ -1,11 +1,12 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::channels::ChannelsAPI,
+    modules: [
+        twitch_highway::channels::ChannelsAPI,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: get_channel_info,
     token_type: Any,
     scopes: None,
-    args: [[BroadcasterId::new("141981764")]],
+    args: [&[BroadcasterId::new("141981764")]],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/channels?broadcaster_id=141981764",

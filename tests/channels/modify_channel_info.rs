@@ -1,17 +1,22 @@
-use twitch_highway::{channels::request::ModifyChannelRequest, types::BroadcasterId};
-
 fn_expected_request!(
-    api: twitch_highway::channels::ChannelsAPI,
+    modules: [
+        twitch_highway::channels::ChannelsAPI,
+        twitch_highway::channels::request::ModifyChannelRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::GameId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: modify_channel_info,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageBroadcast]),
     args: [
         BroadcasterId::new("41245072"),
-        ModifyChannelRequest::new()
-            .game_id("33214".to_string())
+        Some(ModifyChannelRequest::new()
+            .game_id(GameId::new("33214"))
             .title("there are helicopters in the game? REASON TO PLAY FORTNITE found".to_string())
             .broadcaster_language("en".to_string())
             .tags(vec!["LevelingUp".to_string()])
+        )
     ],
     json_contain: [
         "\"game_id\":\"33214\"",
