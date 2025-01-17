@@ -1,5 +1,8 @@
 fn_expected_request!(
-    api: twitch_highway::analytics::AnalyticsAPI,
+    modules: [
+        twitch_highway::analytics::AnalyticsAPI,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_extension_analytics,
     token_type: User,
     scopes: Some(vec![Scope::AnalyticsReadExtensions]),

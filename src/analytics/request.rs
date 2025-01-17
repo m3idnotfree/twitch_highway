@@ -2,21 +2,22 @@ use serde::Serialize;
 
 use crate::{
     base::{IntoQueryPairs, QueryParams},
-    types::{AFTER, FIRST, KIND, STARTED_AT},
+    types::{
+        constants::{GAME_ID, STARTED_AT, TYPE},
+        GameId,
+    },
 };
 
-new_request_struct!(
-    #[derive(Debug, Default, Serialize)]
+request_struct!(
+    #[derive(Serialize)]
     GameAnalyticsRequest {
-        string: {
-            game_id: String,
+        string {
             kind: String,
             started_at: String,
             ended_at: String,
-            after: String
         },
-        any: {
-           first: u64
+        any {
+            game_id: GameId
         }
     }
 );
@@ -26,12 +27,10 @@ impl IntoQueryPairs for GameAnalyticsRequest {
         let mut params = QueryParams::new();
 
         params
-            .push_opt("game_id", self.game_id)
-            .push_opt(KIND, self.kind)
+            .push_opt(GAME_ID, self.game_id)
+            .push_opt(TYPE, self.kind)
             .push_opt(STARTED_AT, self.started_at)
-            .push_opt("ended_at", self.ended_at)
-            .push_opt(FIRST, self.first.map(|x| x.to_string()))
-            .push_opt(AFTER, self.after);
+            .push_opt("ended_at", self.ended_at);
 
         params.build()
     }
