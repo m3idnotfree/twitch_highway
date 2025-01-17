@@ -1,9 +1,11 @@
 fn_expected_request!(
-    api: twitch_highway::games::GamesAPI,
+    modules: [
+        twitch_highway::games::GamesAPI
+    ],
     endpoint: get_top_games,
     token_type: Any,
     scopes: None,
-    args: [None, None, None],
+    args: [None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/games/top"
