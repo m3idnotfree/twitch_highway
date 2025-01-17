@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Id, UserId};
+use crate::types::{GameId, Id, UserId};
 
 use super::request::FulfillmentStatus;
 
@@ -11,7 +11,7 @@ pub struct DropEntitlement {
     pub benefit_id: String,
     pub timestamp: DateTime<FixedOffset>,
     pub user_id: UserId,
-    pub game_id: String,
+    pub game_id: GameId,
     pub fulfillment_status: FulfillmentStatus,
     pub last_updated: DateTime<FixedOffset>,
 }

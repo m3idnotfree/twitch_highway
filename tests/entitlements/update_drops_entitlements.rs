@@ -1,19 +1,24 @@
-use twitch_highway::entitlements::request::{FulfillmentStatus, UpdateEntitlementsRequest};
-
 fn_expected_request!(
-    api:twitch_highway::entitlements::EntitlementsAPI,
+    modules: [
+        twitch_highway::entitlements::EntitlementsAPI,
+        twitch_highway::entitlements::request::FulfillmentStatus,
+        twitch_highway::entitlements::request::UpdateEntitlementsRequest
+    ],
     endpoint: update_drops_entitlements,
     token_type: Any,
     scopes: None,
     args: [
-        UpdateEntitlementsRequest::new()
-        .fulfillment_status(FulfillmentStatus::FULFILLED)
-        .entitlement_ids(vec![
-            "fb78259e-fb81-4d1b-8333-34a06ffc24c0".to_string(),
-            "862750a5-265e-4ab6-9f0a-c64df3d54dd0".to_string(),
-            "d8879baa-3966-4d10-8856-15fdd62cce02".to_string(),
-            "9a290126-7e3b-4f66-a9ae-551537893b65".to_string()
-        ])
+        Some(
+            UpdateEntitlementsRequest::new()
+                .fulfillment_status(FulfillmentStatus::FULFILLED)
+                .entitlement_ids(vec![
+                    "fb78259e-fb81-4d1b-8333-34a06ffc24c0".to_string(),
+                    "862750a5-265e-4ab6-9f0a-c64df3d54dd0".to_string(),
+                    "d8879baa-3966-4d10-8856-15fdd62cce02".to_string(),
+                    "9a290126-7e3b-4f66-a9ae-551537893b65".to_string()
+                ]
+            )
+        )
     ],
     method: PATCH,
     header: expected_headers!(json),

@@ -1,14 +1,22 @@
-use twitch_highway::{entitlements::request::DropEntitlementRequest, types::UserId};
-
 fn_expected_request!(
-    api:twitch_highway::entitlements::EntitlementsAPI,
+    modules: [
+        twitch_highway::entitlements::EntitlementsAPI,
+        twitch_highway::entitlements::request::DropEntitlementRequest,
+        twitch_highway::types::UserId,
+        twitch_highway::types::GameId
+    ],
     endpoint: get_drops_entitlements,
     token_type: Any,
     scopes: None,
     args: [
-        DropEntitlementRequest::new()
-            .user_id(UserId::new("25009227"))
-            .game_id("33214".to_string())],
+        Some(
+            DropEntitlementRequest::new()
+                .user_id(UserId::new("25009227"))
+                .game_id(GameId::new("33214"))
+        ),
+        None
+    ],
+
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/entitlements/drops?user_id=25009227&game_id=33214"

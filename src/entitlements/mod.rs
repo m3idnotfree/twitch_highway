@@ -1,6 +1,10 @@
-use crate::{base::TwitchAPIBase, EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest};
+use crate::{
+    base::TwitchAPIBase, types::PaginationQuery, EmptyBody, EndpointType, TwitchAPI,
+    TwitchAPIRequest,
+};
 use asknothingx2_util::api::Method;
 use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
+use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
 pub mod request;
 pub mod response;
@@ -9,20 +13,24 @@ pub mod types;
 pub trait EntitlementsAPI: TwitchAPIBase {
     fn get_drops_entitlements(
         &self,
-        request: DropEntitlementRequest,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        opts: Option<DropEntitlementRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse>;
     fn update_drops_entitlements(
         &self,
-        request: UpdateEntitlementsRequest,
-    ) -> TwitchAPIRequest<UpdateEntitlementsRequest>;
+        opts: Option<UpdateEntitlementsRequest>,
+    ) -> TwitchAPIRequest<UpdateEntitlementsRequest, UpdateDropEntitlementsResponse>;
 }
 impl EntitlementsAPI for TwitchAPI {
     fn get_drops_entitlements(
         &self,
-        request: DropEntitlementRequest,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        opts: Option<DropEntitlementRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse> {
         let mut url = self.build_url();
-        url.path(["entitlements", "drops"]).query_pairs(request);
+        url.path(["entitlements", "drops"])
+            .query_opt_pairs(opts)
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetDropsEntitlements,
@@ -34,8 +42,8 @@ impl EntitlementsAPI for TwitchAPI {
     }
     fn update_drops_entitlements(
         &self,
-        request: UpdateEntitlementsRequest,
-    ) -> TwitchAPIRequest<UpdateEntitlementsRequest> {
+        opts: Option<UpdateEntitlementsRequest>,
+    ) -> TwitchAPIRequest<UpdateEntitlementsRequest, UpdateDropEntitlementsResponse> {
         let mut url = self.build_url();
         url.path(["entitlements", "drops"]);
 
@@ -47,7 +55,7 @@ impl EntitlementsAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             headers.build(),
-            request,
+            opts.unwrap_or_default(),
         )
     }
 }

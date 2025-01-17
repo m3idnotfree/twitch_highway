@@ -2,19 +2,20 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     base::{IntoQueryPairs, QueryParams},
-    types::{Id, UserId, AFTER, FIRST, ID, USER_ID},
-    RequestBody,
+    types::{
+        constants::{GAME_ID, ID, USER_ID},
+        GameId, Id, UserId,
+    },
+    IntoRequestBody,
 };
 
 request_struct!(
-    #[derive(Debug, Default, Serialize, Deserialize)]
+    #[derive(Serialize, Deserialize)]
     DropEntitlementRequest {
+        game_id: GameId,
         id: Vec<Id>,
         user_id: UserId,
-        game_id: String,
         fulfillment_status: FulfillmentStatus,
-        after: String,
-        first: u64
     }
 );
 
@@ -24,10 +25,8 @@ impl IntoQueryPairs for DropEntitlementRequest {
         params
             .extend_opt(self.id.map(|id| id.into_iter().map(|p| (ID, p))))
             .push_opt(USER_ID, self.user_id)
-            .push_opt("game_id", self.game_id)
-            .push_opt("fulfillment_status", self.fulfillment_status)
-            .push_opt(AFTER, self.after)
-            .push_opt(FIRST, self.first.map(|x| x.to_string()));
+            .push_opt(GAME_ID, self.game_id)
+            .push_opt("fulfillment_status", self.fulfillment_status);
 
         params.build()
     }
@@ -58,14 +57,14 @@ impl From<FulfillmentStatus> for String {
 }
 
 request_struct!(
-#[derive(Debug, Default,Serialize, Deserialize)]
-UpdateEntitlementsRequest{
-    entitlement_ids: Vec<String>,
-    fulfillment_status: FulfillmentStatus
-}
+    #[derive(Serialize, Deserialize)]
+    UpdateEntitlementsRequest{
+        entitlement_ids: Vec<String>,
+        fulfillment_status: FulfillmentStatus
+    }
 );
 
-impl RequestBody for UpdateEntitlementsRequest {
+impl IntoRequestBody for UpdateEntitlementsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
