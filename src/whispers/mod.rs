@@ -1,6 +1,9 @@
-use crate::{base::TwitchAPIBase, EndpointType, TwitchAPI, TwitchAPIRequest};
+use crate::{
+    base::TwitchAPIBase, types::constants::WHISPERS, EmptyBody, EndpointType, TwitchAPI,
+    TwitchAPIRequest,
+};
 use asknothingx2_util::api::Method;
-use request::SendWhisperRequest;
+use request::SendWhisperBody;
 
 pub mod request;
 
@@ -11,7 +14,7 @@ pub trait WhisperAPI: TwitchAPIBase {
         from_user_id: &str,
         to_user_id: &str,
         message: &str,
-    ) -> TwitchAPIRequest<SendWhisperRequest>;
+    ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody>;
 }
 
 impl WhisperAPI for TwitchAPI {
@@ -20,9 +23,9 @@ impl WhisperAPI for TwitchAPI {
         from_user_id: &str,
         to_user_id: &str,
         message: &str,
-    ) -> TwitchAPIRequest<SendWhisperRequest> {
+    ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody> {
         let mut url = self.build_url();
-        url.path(["whispers"])
+        url.path([WHISPERS])
             .query_extend([("from_user_id", from_user_id), ("to_user_id", to_user_id)]);
 
         let mut headers = self.build_headers();
@@ -33,7 +36,7 @@ impl WhisperAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            SendWhisperRequest::new(message.to_string()),
+            SendWhisperBody::new(message),
         )
     }
 }

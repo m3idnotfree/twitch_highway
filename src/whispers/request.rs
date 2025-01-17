@@ -1,19 +1,21 @@
 use serde::Serialize;
 
-use crate::RequestBody;
+use crate::IntoRequestBody;
 
 #[derive(Debug, Serialize)]
-pub struct SendWhisperRequest {
+pub struct SendWhisperBody {
     message: String,
 }
 
-impl SendWhisperRequest {
-    pub fn new(message: String) -> Self {
-        Self { message }
+impl SendWhisperBody {
+    pub fn new<T: Into<String>>(message: T) -> Self {
+        Self {
+            message: message.into(),
+        }
     }
 }
 
-impl RequestBody for SendWhisperRequest {
+impl IntoRequestBody for SendWhisperBody {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
