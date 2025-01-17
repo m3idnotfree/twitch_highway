@@ -1,10 +1,16 @@
 use asknothingx2_util::api::Method;
 use request::{EndPollRequest, PollsRequest};
+use response::PollsResponse;
+use serde_json::Value;
 use types::PollStatus;
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, Id, AFTER, BROADCASTER_ID, FIRST, ID},
+    request::RequestBody,
+    types::{
+        constants::{BROADCASTER_ID, ID},
+        BroadcasterId, Id, PaginationQuery, Title,
+    },
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -17,16 +23,22 @@ pub trait PollsAPI: TwitchAPIBase {
         &self,
         broadcaster_id: BroadcasterId,
         id: Option<Id>,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    fn create_poll(&self, request: PollsRequest) -> TwitchAPIRequest<PollsRequest>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, PollsResponse>;
+    fn create_poll(
+        &self,
+        broadcaster_id: BroadcasterId,
+        title: &str,
+        choices: Vec<Title>,
+        duration: u64,
+        opts: Option<PollsRequest>,
+    ) -> TwitchAPIRequest<RequestBody<Value, PollsRequest>, PollsResponse>;
     fn end_poll(
         &self,
         broadcaster_id: BroadcasterId,
         id: Id,
         status: PollStatus,
-    ) -> TwitchAPIRequest<EndPollRequest>;
+    ) -> TwitchAPIRequest<EndPollRequest, PollsResponse>;
 }
 
 impl PollsAPI for TwitchAPI {
@@ -34,15 +46,13 @@ impl PollsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         id: Option<Id>,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, PollsResponse> {
         let mut url = self.build_url();
         url.path(["polls"])
             .query(BROADCASTER_ID, broadcaster_id)
             .query_opt(ID, id)
-            .query_opt(FIRST, first)
-            .query_opt(AFTER, after);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetPolls,
@@ -52,9 +62,24 @@ impl PollsAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn create_poll(&self, request: PollsRequest) -> TwitchAPIRequest<PollsRequest> {
+    fn create_poll(
+        &self,
+        broadcaster_id: BroadcasterId,
+        title: &str,
+        choices: Vec<Title>,
+        duration: u64,
+        opts: Option<PollsRequest>,
+    ) -> TwitchAPIRequest<RequestBody<Value, PollsRequest>, PollsResponse> {
         let mut url = self.build_url();
         url.path(["polls"]);
+        let required = serde_json::json!({
+            "broadcaster_id": broadcaster_id,
+            "title": title,
+            "choices": choices,
+            "duration": duration,
+        });
+
+        let request_body = RequestBody::new(required, opts);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -64,7 +89,7 @@ impl PollsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            request,
+            request_body,
         )
     }
     fn end_poll(
@@ -72,7 +97,7 @@ impl PollsAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         id: Id,
         status: PollStatus,
-    ) -> TwitchAPIRequest<EndPollRequest> {
+    ) -> TwitchAPIRequest<EndPollRequest, PollsResponse> {
         let mut url = self.build_url();
         url.path(["polls"]);
 

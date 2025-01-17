@@ -1,22 +1,24 @@
-use twitch_highway::{
-    polls::request::PollsRequest,
-    types::{BroadcasterId, Title},
-};
-
 fn_expected_request!(
-    api: twitch_highway::polls::PollsAPI,
+    modules: [
+        twitch_highway::polls::PollsAPI,
+        twitch_highway::polls::request::PollsRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Title,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: create_poll,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManagePolls]),
     args: [
-        PollsRequest::new(
-            BroadcasterId::new("141981764"),
-            "Heads or Tails?".to_string(),
-            vec![Title::new("Heads".to_string()), Title::new("Tails".to_string())],
-            1800
+        BroadcasterId::new("141981764"),
+        "Heads or Tails?",
+        vec![Title::new("Heads".to_string()), Title::new("Tails".to_string())],
+        1800,
+        Some(
+            PollsRequest::new()
+                .channel_points_voting_enabled(true)
+                .channel_points_per_vote(100)
         )
-        .channel_points_voting_enabled(true)
-        .channel_points_per_vote(100)
     ],
     json_contain: [
         "\"broadcaster_id\":\"141981764\"",

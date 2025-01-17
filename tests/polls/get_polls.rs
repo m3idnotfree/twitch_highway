@@ -1,14 +1,16 @@
-use twitch_highway::types::{BroadcasterId, Id};
-
 fn_expected_request!(
-    api: twitch_highway::polls::PollsAPI,
+    modules: [
+        twitch_highway::polls::PollsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_polls,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadPolls]),
     args: [
         BroadcasterId::new("141981764"),
         Some(Id::new("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a")),
-        None,
         None
     ],
     method: GET,

@@ -1,39 +1,30 @@
 use serde::Serialize;
 
 use crate::{
-    types::{BroadcasterId, Id, Title},
-    RequestBody,
+    types::{BroadcasterId, Id},
+    IntoRequestBody,
 };
 
 use super::types::PollStatus;
 
 request_struct!(
-    #[derive(Debug,Serialize)]
+    #[derive(Serialize)]
     PollsRequest {
-    required {
-        broadcaster_id: BroadcasterId,
-        title: String,
-        choices:Vec<Title>,
-        duration:u64
-    },
-    optional {
         #[serde(skip_serializing_if = "Option::is_none")]
-        channel_points_voting_enabled:bool,
+        channel_points_voting_enabled: bool,
         #[serde(skip_serializing_if = "Option::is_none")]
-        channel_points_per_vote:u64,
-
+        channel_points_per_vote: u64,
     }
-}
 );
 
-impl RequestBody for PollsRequest {
+impl IntoRequestBody for PollsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug,Serialize)]
+    #[derive(Serialize)]
     EndPollRequest {
         required {
             broadcaster_id: BroadcasterId,
@@ -43,7 +34,7 @@ request_struct!(
     }
 );
 
-impl RequestBody for EndPollRequest {
+impl IntoRequestBody for EndPollRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }

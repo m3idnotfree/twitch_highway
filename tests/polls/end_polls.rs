@@ -1,10 +1,11 @@
-use twitch_highway::{
-    polls::types::PollStatus,
-    types::{BroadcasterId, Id},
-};
-
 fn_expected_request!(
-    api: twitch_highway::polls::PollsAPI,
+    modules: [
+        twitch_highway::polls::PollsAPI,
+        twitch_highway::polls::types::PollStatus,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: end_poll,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManagePolls]),
