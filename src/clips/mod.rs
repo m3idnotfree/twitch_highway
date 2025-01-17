@@ -1,10 +1,11 @@
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, BROADCASTER_ID},
+    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 use asknothingx2_util::api::Method;
-use request::GetClipsRequest;
+use request::{ClipsFilter, GetClipsRequest};
+use response::{ClipsInfoResponse, CreateClipsResponse};
 
 pub mod request;
 pub mod response;
@@ -15,8 +16,13 @@ pub trait ClipsAPI: TwitchAPIBase {
         &self,
         broadcaster_id: BroadcasterId,
         has_delay: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    fn get_clips(&self, request: GetClipsRequest) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, CreateClipsResponse>;
+    fn get_clips(
+        &self,
+        clips_filter: ClipsFilter,
+        opts: Option<GetClipsRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse>;
 }
 
 impl ClipsAPI for TwitchAPI {
@@ -24,7 +30,7 @@ impl ClipsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         has_delay: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, CreateClipsResponse> {
         let mut url = self.build_url();
         url.path(["clips"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -38,9 +44,17 @@ impl ClipsAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn get_clips(&self, request: GetClipsRequest) -> TwitchAPIRequest<EmptyBody> {
+    fn get_clips(
+        &self,
+        clips_filter: ClipsFilter,
+        opts: Option<GetClipsRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse> {
         let mut url = self.build_url();
-        url.path(["clips"]).query_pairs(request);
+        url.path(["clips"])
+            .query_pairs(clips_filter)
+            .query_opt_pairs(opts)
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetClips,

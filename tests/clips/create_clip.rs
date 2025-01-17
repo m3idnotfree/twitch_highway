@@ -1,10 +1,12 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::clips::ClipsAPI,
+    modules: [
+        twitch_highway::clips::ClipsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: create_clip,
-    token_type: Any,
-    scopes: None,
+    token_type: User,
+    scopes: Some(vec![Scope::ClipsEdit]),
     args: [BroadcasterId::new("44322889"), None],
     method: POST,
     header: expected_headers!(),

@@ -8,9 +8,10 @@ pub struct CreateClip {
     pub id: Id,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Clip {
     pub id: Id,
+    pub url: String,
     pub embed_url: String,
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_name: String,

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Pagination;
 
-use super::types::CreateClip;
+use super::types::{Clip, CreateClip};
 
 #[derive(Debug, Deserialize)]
 pub struct CreateClipsResponse {
@@ -12,7 +12,7 @@ pub struct CreateClipsResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ClipsInfoResponse {
-    pub data: Vec<CreateClip>,
+    pub data: Vec<Clip>,
     #[serde(
         default,
         serialize_with = "serialize_none_as_empty_object",
