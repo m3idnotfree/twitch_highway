@@ -18,9 +18,9 @@ pub struct Emote {
     pub emote_set_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub owner_id: Option<String>,
-    pub format: Vec<EmoteFormat>,
-    pub scale: Vec<EmoteScale>,
-    pub theme_mode: Vec<EmoteThemeMode>,
+    pub format: Vec<Format>,
+    pub scale: Vec<Scale>,
+    pub theme_mode: Vec<ThemeMode>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -119,20 +119,20 @@ pub enum EmoteType {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum EmoteFormat {
+pub enum Format {
     Animated,
     Static,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum EmoteThemeMode {
+pub enum ThemeMode {
     Dark,
     Light,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum EmoteScale {
+pub enum Scale {
     #[serde(rename(serialize = "1.0", deserialize = "1.0"))]
     Small,
     #[serde(rename(serialize = "2.0", deserialize = "2.0"))]

@@ -1,9 +1,11 @@
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI
+    ],
     endpoint: emote_sets,
     token_type: Any,
     scopes: None,
-    args: [["1234"]],
+    args: [&["1234"]],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=1234",
@@ -14,11 +16,13 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: id_vec,
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI
+    ],
     endpoint: emote_sets,
     token_type: Any,
     scopes: None,
-    args: [["1234", "4567"]],
+    args: [&["1234", "4567"]],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/emotes/set?emote_set_id=1234&emote_set_id=4567",

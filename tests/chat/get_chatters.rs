@@ -1,11 +1,14 @@
-use twitch_highway::types::{BroadcasterId, ModeratorId};
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_chatters,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorReadChatters]),
-    args: [BroadcasterId::new("123456"), ModeratorId::new("654321"), None, None],
+    args: [BroadcasterId::new("123456"), ModeratorId::new("654321"), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321",
@@ -16,11 +19,17 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: set_first,
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::PaginationQuery,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_chatters,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorReadChatters]),
-    args: [BroadcasterId::new("123456"), ModeratorId::new("654321"), Some(40), None],
+    args: [BroadcasterId::new("123456"), ModeratorId::new("654321"), Some(PaginationQuery::new().first(40))],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=123456&moderator_id=654321&first=40",
@@ -31,15 +40,20 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: set_after,
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::PaginationQuery,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_chatters,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorReadChatters]),
     args: [
         BroadcasterId::new("123456"),
         ModeratorId::new("654321"),
-        None,
-        Some("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19")
+        Some(PaginationQuery::new().after("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"))
     ],
     method: GET,
     header: expected_headers!(),
@@ -51,15 +65,20 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: set_first_after,
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::PaginationQuery,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_chatters,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorReadChatters]),
     args: [
         BroadcasterId::new("123456"),
         ModeratorId::new("654321"),
-        Some(40),
-        Some("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19")
+        Some(PaginationQuery::new().first(40).after("eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"))
     ],
     method: GET,
     header: expected_headers!(),

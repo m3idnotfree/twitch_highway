@@ -1,5 +1,7 @@
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI
+    ],
     endpoint: global_emotes,
     token_type: Any,
     scopes: None,

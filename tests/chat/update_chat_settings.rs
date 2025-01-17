@@ -1,17 +1,18 @@
-use twitch_highway::{
-    chat::request::UpdateChatSettingsRequest,
-    types::{BroadcasterId, ModeratorId},
-};
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::chat::request::UpdateChatSettingsRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_chat_settings,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageChatSettings]),
     args: [
         BroadcasterId::new("1234"),
         ModeratorId::new("5678"),
-        UpdateChatSettingsRequest::default().follower_mode(false)
+        Some(UpdateChatSettingsRequest::default().follower_mode(false))
     ],
     method: PATCH,
     header: expected_headers!(json),

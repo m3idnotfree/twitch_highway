@@ -1,9 +1,9 @@
 use serde::Serialize;
 
-use crate::{types::BroadcasterId, RequestBody};
+use crate::{types::BroadcasterId, IntoRequestBody};
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     SendChatMessageRequest {
         required {
             broadcaster_id: BroadcasterId,
@@ -13,7 +13,7 @@ request_struct!(
     }
 );
 
-impl RequestBody for SendChatMessageRequest {
+impl IntoRequestBody for SendChatMessageRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
@@ -21,7 +21,7 @@ impl RequestBody for SendChatMessageRequest {
 
 request_struct!(
     /// https://dev.twitch.tv/docs/api/reference/#update-chat-settings
-    #[derive(Debug, Default, Serialize)]
+    #[derive(Serialize)]
     UpdateChatSettingsRequest {
         #[serde(skip_serializing_if = "Option::is_none")]
         emote_mode: bool,
@@ -44,7 +44,7 @@ request_struct!(
     }
 );
 
-impl RequestBody for UpdateChatSettingsRequest {
+impl IntoRequestBody for UpdateChatSettingsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }

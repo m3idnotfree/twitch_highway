@@ -1,11 +1,12 @@
-use twitch_highway::types::UserId;
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::UserId
+    ],
     endpoint: user_chat_color,
     token_type: Any,
     scopes: None,
-    args: [[UserId::new("11111"), UserId::new("44444")]],
+    args: [&[UserId::new("11111"), UserId::new("44444")]],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/chat/color?user_id=11111&user_id=44444",

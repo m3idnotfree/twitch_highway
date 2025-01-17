@@ -1,7 +1,8 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: get_chat_settings,
     token_type: Any,
     scopes: None,

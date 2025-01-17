@@ -1,140 +1,250 @@
-//fn_mock_server!(
-//    token_type: user_token,
-//    name: get_chatters,
-//    endpoint: get_chatters,
-//    scopes: twitch_highway::EndpointType::GetChatters.required_scopes().unwrap_or_default(),
-//    args: |user_id| {&user_id, &user_id, None, None},
-//    url: TestUrlHold::chat_url(None, Some(&["chatters"])),
-//    response: twitch_highway::chat::response::ChattersResponse
-//);
+new_fn_mock_server_f!(
+    name: get_chatters,
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_chatters
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: get_chatters,
+        args: |broadcaster_id|{
+            broadcaster_id.clone(),
+            broadcaster_id.to_moderator(),
+            None
+        }
+    }
+);
 
-use twitch_highway::{
-    chat::request::UpdateChatSettingsRequest,
-    types::{BroadcasterId, ModeratorId, UserId},
-};
-
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: channel_emotes,
-    endpoint: channel_emotes,
-    scopes: twitch_highway::EndpointType::GetChannelEmotes.required_scopes().unwrap_or_default(),
-    args: |user_id| {BroadcasterId::new(user_id)},
-    url: TestUrlHold::chat_url(None, Some(&["emotes"])),
-    response: twitch_highway::chat::response::EmotesResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_channel_emotes
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: channel_emotes,
+        args: |broadcaster_id|{
+            broadcaster_id
+        }
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: global_emotes,
-    endpoint: global_emotes,
-    scopes: twitch_highway::EndpointType::GetGlobalEmotes.required_scopes().unwrap_or_default(),
-    args: |_user_id| {},
-    url: TestUrlHold::chat_url(None, Some(&["emotes","global"])),
-    response: twitch_highway::chat::response::EmotesResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_global_emotes
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: global_emotes,
+        args: |_a|{}
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: emote_sets,
-    endpoint: emote_sets,
-    scopes: twitch_highway::EndpointType::GetEmoteSets.required_scopes().unwrap_or_default(),
-    args: |user_id| {[user_id.as_str()]},
-    url: TestUrlHold::chat_url(None, Some(&["emotes","set"])),
-    response: twitch_highway::chat::response::EmotesResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_user_emotes_read
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: emote_sets,
+        args: |broadcaster_id|{
+            &[broadcaster_id.as_str()]
+        }
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: channel_badge,
-    endpoint: channel_badge,
-    scopes: twitch_highway::EndpointType::GetChannelChatBadges.required_scopes().unwrap_or_default(),
-    args: |user_id| {BroadcasterId::new(user_id)},
-    url: TestUrlHold::chat_url(None, Some(&["badges"])),
-    response: twitch_highway::chat::response::BadgesResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_channel_badges
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: channel_badge,
+        args: |broadcaster_id|{
+            broadcaster_id
+        }
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: global_badge,
-    endpoint: global_badge,
-    scopes: twitch_highway::EndpointType::GetGlobalChatBadges.required_scopes().unwrap_or_default(),
-    args: |_user_id| {},
-    url: TestUrlHold::chat_url(None, Some(&["badges","global"])),
-    response: twitch_highway::chat::response::BadgesResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_global_badges
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: global_badge,
+        args: |_a|{}
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
-    name: get_chat_setting,
-    endpoint: get_chat_settings,
-    scopes: twitch_highway::EndpointType::GetChatSettings.required_scopes().unwrap_or_default(),
-    args: |user_id| {BroadcasterId::new(user_id), None},
-    url: TestUrlHold::chat_url(None, Some(&["settings"])),
-    response: twitch_highway::chat::response::ChatSettingResponse
+new_fn_mock_server_f!(
+    name: get_chat_settings,
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_chat_setting_read
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: get_chat_settings,
+        args: |broadcaster_id|{
+            broadcaster_id,
+            None
+        },
+    }
 );
 
-//fn_mock_server!( // 404
-//    token_type: user_token,
-//    name: get_shared_chat_session,
-//    endpoint: get_shared_chat_session,
-//    scopes: twitch_highway::EndpointType::GetShardChatSession.required_scopes().unwrap_or_default(),
-//    args: |user_id| {&user_id},
-//    url: TestUrlHold::base_url(None, Some(&["shared_chat","session"])),
-//    response: twitch_highway::chat::response::SharedChatSessionResponse
-//);
+new_fn_mock_server_f!(
+    #[allow(non_snake_case)]
+    name: NOT_FOUND_get_shared_chat_session,
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_shard_chat_session_read
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI,
 
-//fn_mock_server!( // missing a access token
-//    token_type: user_token,
-//    name: user_emotes,
-//    endpoint: user_emotes,
-//    scopes: twitch_highway::EndpointType::GetUserEmotes.required_scopes().unwrap_or_default(),
-//    args: |user_id| {user_id.as_str(), None, None},
-//    url: TestUrlHold::chat_url(None, Some(&["emotes","user"])),
-//    response: twitch_highway::chat::response::EmotesResponse
-//);
+        ],
+        endpoint: get_shared_chat_session,
+        args: |broadcaster_id|{
+            broadcaster_id
+        },
+        //paths: ["shared_chat", "session"]
+        status:NOT_FOUND,
+        rep: false
+    }
+);
 
-//fn_mock_server!( // missing a access token
-//    token_type: user_token,
-//    name: chat_write,
-//    endpoint: chat_write,
-//    scopes: twitch_highway::EndpointType::SendChatMessage.required_scopes().unwrap_or_default(),
-//    args: |user_id| {&user_id,&user_id,"Hello"},
-//    url: TestUrlHold::chat_url(None, Some(&["messages",])),
-//    response: twitch_highway::chat::response::SendChatMessageResponse
-//);
+new_fn_mock_server_f!(
+    name: error_user_emotes,
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_user_emotes_read
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: user_emotes,
+        args: |broadcaster_id|{
+            broadcaster_id.to_user_id(),
+            None,
+            None
+        },
+        check: true
+        //paths: ["chat","emotes","user"]
+    }
+);
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: update_chat_settings,
-    endpoint: update_chat_settings,
-    scopes: twitch_highway::EndpointType::UpdateChatSettings.required_scopes().unwrap_or_default(),
-    args: |user_id| {
-        BroadcasterId::new(user_id.clone()),
-        ModeratorId::new(user_id),
-        UpdateChatSettingsRequest::new().follower_mode(false)
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_chat_setting_manage
     },
-    url: TestUrlHold::chat_url(None, Some(&["settings",])),
-    response: twitch_highway::chat::response::ChatSettingResponse
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: update_chat_settings,
+        args: |broadcaster_id|{
+            broadcaster_id.clone(),
+            broadcaster_id.to_moderator(),
+            None
+        },
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
+    name: error_chat_write,
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_chat_write
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: chat_write,
+        args: |broadcaster_id|{
+            broadcaster_id,
+            "ssf".to_string(),
+            "hell".to_string()
+        },
+        check: true
+        //paths: ["chat","messages"]
+    }
+);
+
+new_fn_mock_server_f!(
     name: user_chat_color,
-    endpoint: user_chat_color,
-    scopes: twitch_highway::EndpointType::GetUserChatColor.required_scopes().unwrap_or_default(),
-    args: |user_id| {[UserId::new(user_id)]},
-    url: TestUrlHold::chat_url(None, Some(&["color"])),
-    response: twitch_highway::chat::response::UsersColorResponse
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_user_color_read
+    },
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI
+        ],
+        endpoint: user_chat_color,
+        args: |broadcaster_id|{
+            &[broadcaster_id.to_user_id()]
+        }
+    }
 );
 
-fn_mock_server!(
-    token_type: user_token,
+new_fn_mock_server_f!(
     name: update_user_chat_color,
-    endpoint: update_user_chat_color,
-    scopes: twitch_highway::EndpointType::UpdateUserChatColor.required_scopes().unwrap_or_default(),
-    args: |user_id| {
-        UserId::new(user_id),
-        twitch_highway::chat::request::ChatColor::Blue
+    oauth: {
+        @user,
+        module: ChatScopes,
+        scopes: with_user_color_manage
     },
-    url: TestUrlHold::chat_url(None, Some(&["color"]))
+    api: {
+        modules: [
+            twitch_highway::chat::ChatAPI,
+            twitch_highway::chat::request::ChatColor
+        ],
+        endpoint: update_user_chat_color,
+        args: |broadcaster_id|{
+            broadcaster_id.to_user_id(),
+            ChatColor::Red
+        },
+        status:NO_CONTENT
+    }
 );

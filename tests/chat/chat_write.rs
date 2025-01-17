@@ -1,7 +1,9 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: chat_write,
     token_type: Any,
     scopes: Some(vec![Scope::UserWriteChat, Scope::UserBot, Scope::ChannelBot]),

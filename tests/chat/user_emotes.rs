@@ -1,7 +1,9 @@
-use twitch_highway::types::UserId;
-
 fn_expected_request!(
-    api: twitch_highway::chat::ChatAPI,
+    modules: [
+        twitch_highway::chat::ChatAPI,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: user_emotes,
     token_type: User,
     scopes: Some(vec![Scope::UserReadEmotes]),
