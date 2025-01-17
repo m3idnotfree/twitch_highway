@@ -1,7 +1,9 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api:twitch_highway::ads::AdsAPI,
+    modules: [
+        twitch_highway::ads::AdsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_ad_schedule,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadAds]),

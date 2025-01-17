@@ -1,14 +1,14 @@
 use chrono::{DateTime, FixedOffset};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StartCommercial {
     pub length: u64,
     pub message: String,
     pub retry_after: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AdSchedule {
     pub snooze_count: String,
     pub snooze_refresh_at: Option<DateTime<FixedOffset>>,
@@ -18,7 +18,7 @@ pub struct AdSchedule {
     pub preroll_free_time: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SnoozeNextAd {
     pub snooze_count: String,
     pub snooze_refresh_at: DateTime<FixedOffset>,

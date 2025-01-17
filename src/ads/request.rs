@@ -1,19 +1,14 @@
 use serde::Serialize;
 
-use crate::{types::BroadcasterId, RequestBody};
+use crate::types::BroadcasterId;
 
 request_struct!(
-    #[derive(Debug, Serialize)]
-    StartCommercialRequestBody {
+    #[derive(Serialize)]
+    StartCommercialBody {
         required {
              broadcaster_id: BroadcasterId,
              length: u64
         }
-    }
+    };
+    impl_body: true
 );
-
-impl RequestBody for StartCommercialRequestBody {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
