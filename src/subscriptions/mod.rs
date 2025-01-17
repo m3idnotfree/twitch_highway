@@ -1,8 +1,12 @@
 use asknothingx2_util::api::Method;
+use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, UserId, AFTER, BROADCASTER_ID, FIRST, USER_ID},
+    types::{
+        constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
+        BroadcasterId, PaginationQuery, UserId,
+    },
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -14,15 +18,13 @@ pub trait SubscriptionsAPI: TwitchAPIBase {
         &self,
         broadcaster_id: BroadcasterId,
         user_id: Option<&[UserId]>,
-        first: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, BroadcasterSubscriptionResponse>;
     fn check_user_subscpition(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, UserSubscriptionResponse>;
 }
 
 impl SubscriptionsAPI for TwitchAPI {
@@ -30,17 +32,13 @@ impl SubscriptionsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         user_id: Option<&[UserId]>,
-        first: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, BroadcasterSubscriptionResponse> {
         let mut url = self.build_url();
-        url.path(["subscriptions"])
+        url.path([SUBSCRIPTIONS])
             .query(BROADCASTER_ID, broadcaster_id)
             .query_opt_extend(user_id.map(|ids| ids.iter().map(|id| (USER_ID, id))))
-            .query_opt(FIRST, first)
-            .query_opt(AFTER, after)
-            .query_opt("before", before);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetBroadcasterSubscriptions,
@@ -54,9 +52,9 @@ impl SubscriptionsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, UserSubscriptionResponse> {
         let mut url = self.build_url();
-        url.path(["subscriptions", "user"])
+        url.path([SUBSCRIPTIONS, "user"])
             .query(BROADCASTER_ID, broadcaster_id)
             .query(USER_ID, user_id);
 

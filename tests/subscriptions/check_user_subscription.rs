@@ -1,7 +1,10 @@
-use twitch_highway::types::{BroadcasterId, UserId};
-
 fn_expected_request!(
-    api: twitch_highway::subscriptions::SubscriptionsAPI,
+    modules: [
+        twitch_highway::subscriptions::SubscriptionsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: check_user_subscpition,
     token_type: User,
     scopes: Some(vec![Scope::UserReadSubscriptions]),

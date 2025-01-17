@@ -14,7 +14,7 @@ pub struct UserSubscription {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub gifter_name: Option<String>,
     pub is_gift: bool,
-    pub tier: SubscptionTier,
+    pub tier: Tier,
 
     // get broadcaster subscriptions fields
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -28,7 +28,7 @@ pub struct UserSubscription {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum SubscptionTier {
+pub enum Tier {
     #[serde(rename(deserialize = "1000"))]
     Tier1,
     #[serde(rename(deserialize = "2000"))]

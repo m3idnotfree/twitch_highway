@@ -1,14 +1,14 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::subscriptions::SubscriptionsAPI,
+    modules: [
+        twitch_highway::subscriptions::SubscriptionsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_broadcaster_subscriptions,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadSubscriptions]),
     args: [
         BroadcasterId::new("141981764"),
-        None,
-        None,
         None,
         None
     ],
