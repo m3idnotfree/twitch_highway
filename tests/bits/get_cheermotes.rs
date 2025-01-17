@@ -1,7 +1,5 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::bits::BitsAPI,
+    modules: [twitch_highway::bits::BitsAPI],
     endpoint: get_cheermotes,
     token_type: Any,
     scopes: None,
@@ -16,7 +14,10 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: broadcaster_id,
-    api: twitch_highway::bits::BitsAPI,
+    modules: [
+        twitch_highway::bits::BitsAPI,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: get_cheermotes,
     token_type: Any,
     scopes: None,

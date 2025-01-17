@@ -245,8 +245,6 @@ macro_rules! request_struct {
 }
 
 #[cfg(any(
-    feature = "analytics",
-    feature = "bits",
     feature = "channel_points",
     feature = "channels",
     feature = "clips",

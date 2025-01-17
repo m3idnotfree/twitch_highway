@@ -1,11 +1,12 @@
-use twitch_highway::bits::request::ExtensionTransactionRequest;
-
 fn_expected_request!(
-    api: twitch_highway::bits::BitsAPI,
+    modules: [
+        twitch_highway::bits::BitsAPI,
+        twitch_highway::types::ExtensionId
+    ],
     endpoint: get_extension_transactions,
     token_type: App,
     scopes: None,
-    args: [ExtensionTransactionRequest::new("1234".to_string())],
+    args: [ExtensionId::new("1234"), None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/extensions/transactions?extension_id=1234",

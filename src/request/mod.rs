@@ -13,8 +13,6 @@ pub use empty_body::EmptyBody;
 pub use endpoint_type::{EndpointType, TokenType};
 
 #[cfg(any(
-    feature = "analytics",
-    feature = "bits",
     feature = "ccls",
     feature = "channel_points",
     feature = "channels",
@@ -29,8 +27,6 @@ pub use endpoint_type::{EndpointType, TokenType};
 ))]
 mod request_body;
 #[cfg(any(
-    feature = "analytics",
-    feature = "bits",
     feature = "ccls",
     feature = "channel_points",
     feature = "channels",

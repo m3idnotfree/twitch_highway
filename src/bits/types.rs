@@ -2,9 +2,9 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Cost, UserId};
+use crate::types::{BroadcasterId, Cost, Id, UserId};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct BitsLeaderboard {
     pub user_id: UserId,
     pub user_login: String,
@@ -13,9 +13,9 @@ pub struct BitsLeaderboard {
     pub score: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ExtensionTransaction {
-    pub id: String,
+    pub id: Id,
     pub timestamp: String,
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -24,32 +24,33 @@ pub struct ExtensionTransaction {
     pub user_login: String,
     pub user_name: String,
     pub product_type: String,
-    pub product_data: ProductData,
+    pub product_data: TransactionProductData,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Cheermotes {
     pub prefix: String,
-    pub tiers: Vec<CheermotesTiers>,
+    pub tiers: Vec<Tier>,
     #[serde(rename = "type")]
-    pub kind: CheermotesTypes,
+    pub kind: Type,
     pub order: u64,
     pub last_updated: DateTime<FixedOffset>,
     pub is_charitable: bool,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct CheermotesTiers {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Tier {
     pub min_bits: u64,
-    pub id: CheermotesID,
+    //pub id: ID,
+    pub id: String,
     pub color: String,
-    pub images: CheermotesImages,
+    pub images: Images,
     pub can_cheer: bool,
     pub show_in_bits_card: bool,
 }
 
-#[derive(Debug, Deserialize)]
-pub enum CheermotesID {
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ID {
     #[serde(rename = "1")]
     One,
     #[serde(rename = "100")]
@@ -68,7 +69,7 @@ pub enum CheermotesID {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CheermotesTypes {
+pub enum Type {
     GlobalFirstParty,
     GlobalThirdParty,
     ChannelCustom,
@@ -77,24 +78,24 @@ pub enum CheermotesTypes {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CheermotesImages {
-    pub dark: CheermotesDark,
-    pub light: CheermotesLight,
+pub struct Images {
+    pub dark: Dark,
+    pub light: Light,
 }
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CheermotesDark {
-    pub animated: CheermotesImagess,
+pub struct Dark {
+    pub animated: Imagess,
     #[serde(rename = "static")]
-    pub static_image: CheermotesImagess,
+    pub static_image: Imagess,
 }
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CheermotesLight {
-    pub animated: CheermotesImagess,
+pub struct Light {
+    pub animated: Imagess,
     #[serde(rename = "static")]
-    pub static_image: CheermotesImagess,
+    pub static_image: Imagess,
 }
 #[derive(Debug, Serialize, Deserialize)]
-pub struct CheermotesImagess {
+pub struct Imagess {
     #[serde(rename(serialize = "1", deserialize = "1"))]
     One: String,
     #[serde(rename(serialize = "1.5", deserialize = "1.5"))]
@@ -107,34 +108,10 @@ pub struct CheermotesImagess {
     Four: String,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct ProductData {
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TransactionProductData {
     pub domain: String,
     pub sku: String,
-    pub cost: Cost,
-    pub inDevelopment: bool,
-    pub displayName: String,
-    pub expiration: String,
-    pub broadcast: bool,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ExtensionTransactions {
-    pub id: String,
-    pub timestamp: DateTime<FixedOffset>,
-    pub broadcaster_id: BroadcasterId,
-    pub broadcaster_login: String,
-    pub broadcaster_name: String,
-    pub user_id: UserId,
-    pub user_login: String,
-    pub product_type: ExtensionTransactionsProductType,
-    pub product_data: ExtensionTransactionsProduct,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ExtensionTransactionsProduct {
-    pub sku: String,
-    pub domain: String,
     pub cost: Cost,
     pub inDevelopment: bool,
     pub displayName: String,
@@ -144,6 +121,6 @@ pub struct ExtensionTransactionsProduct {
 
 #[allow(non_camel_case_types)]
 #[derive(Debug, Deserialize)]
-pub enum ExtensionTransactionsProductType {
+pub enum ProductType {
     BITS_IN_EXTENSION,
 }
