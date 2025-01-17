@@ -1,7 +1,10 @@
-use twitch_highway::types::{BroadcasterId, Id};
-
 fn_expected_request!(
-    api: twitch_highway::schedule::ScheduleAPI,
+    modules: [
+        twitch_highway::schedule::ScheduleAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: delete_channel_stream_schedule_segment,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageSchedule]),

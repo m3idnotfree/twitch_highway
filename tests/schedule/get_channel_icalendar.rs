@@ -1,7 +1,8 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::schedule::ScheduleAPI,
+    modules: [
+        twitch_highway::schedule::ScheduleAPI,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: get_channel_icalendar,
     token_type: Any,
     scopes: None,
