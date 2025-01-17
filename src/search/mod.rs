@@ -1,8 +1,9 @@
 use asknothingx2_util::api::Method;
+use response::{CategoriesResponse, ChannelsResponse};
 
 use crate::{
     base::TwitchAPIBase,
-    types::{AFTER, FIRST},
+    types::{constants::CHANNELS, PaginationQuery},
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -13,30 +14,26 @@ pub trait SearchAPI: TwitchAPIBase {
     fn search_categories(
         &self,
         query: &str,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse>;
     fn search_channels(
         &self,
         query: &str,
         live_only: Option<bool>,
-        first: Option<u64>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ChannelsResponse>;
 }
 
 impl SearchAPI for TwitchAPI {
     fn search_categories(
         &self,
         query: &str,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse> {
         let mut url = self.build_url();
         url.path(["search", "categories"])
             .query("query", query)
-            .query_opt(FIRST, first)
-            .query_opt(AFTER, after);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::SearchCategories,
@@ -50,15 +47,13 @@ impl SearchAPI for TwitchAPI {
         &self,
         query: &str,
         live_only: Option<bool>,
-        first: Option<u64>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ChannelsResponse> {
         let mut url = self.build_url();
-        url.path(["search", "channels"])
+        url.path(["search", CHANNELS])
             .query("query", query)
             .query_opt("live_only", live_only.map(|x| x.to_string()))
-            .query_opt(FIRST, first.map(|x| x.to_string()))
-            .query_opt(AFTER, after);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::SearchCategories,

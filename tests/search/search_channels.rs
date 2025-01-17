@@ -1,9 +1,9 @@
 fn_expected_request!(
-    api: twitch_highway::search::SearchAPI,
+    modules: [twitch_highway::search::SearchAPI],
     endpoint: search_channels,
     token_type: Any,
     scopes: None,
-    args: ["twitchdev", None, None, None],
+    args: ["twitchdev", None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/search/channels?query=twitchdev"
@@ -11,11 +11,11 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: request_url_encoded,
-    api: twitch_highway::search::SearchAPI,
+    modules: [twitch_highway::search::SearchAPI],
     endpoint: search_channels,
     token_type: Any,
     scopes: None,
-    args: ["#archery", None, None, None],
+    args: ["#archery", None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/search/channels?query=%23archery"

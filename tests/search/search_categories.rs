@@ -1,9 +1,9 @@
 fn_expected_request!(
-    api: twitch_highway::search::SearchAPI,
+    modules: [twitch_highway::search::SearchAPI],
     endpoint: search_categories,
     token_type: Any,
     scopes: None,
-    args: ["fort", None, None],
+    args: ["fort", None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/search/categories?query=fort"
@@ -11,11 +11,11 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: request_url_encoded,
-    api: twitch_highway::search::SearchAPI,
+    modules: [twitch_highway::search::SearchAPI],
     endpoint: search_categories,
     token_type: Any,
     scopes: None,
-    args: ["#archery", None, None],
+    args: ["#archery", None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/search/categories?query=%23archery"
