@@ -25,6 +25,7 @@
     feature = "subscriptions",
     feature = "teams",
     feature = "users",
+    feature = "videos",
     ))]
 macro_rules! request_struct {
     (
@@ -187,7 +188,60 @@ macro_rules! request_struct {
                 Some(serde_json::to_string(self).unwrap())
             }
         }
+    };
+            (
+        $(#[$struct_meta:meta])*
+        $struct_name:ident {
+    $(  string {
+            $($(#[$string_meta:meta])*
+                $string_vis:vis $string_field:ident: $string_type:ty),*$(,)?
+        }
+    )?
+    $(,
+        any {
+            $($(#[$any_meta:meta])*
+                $any_vis:vis $any_field:ident: $any_type:ty),*$(,)?
+        }
+    )?
     }
+    ) => {
+        #[derive(Debug, Default)]
+        $(#[$struct_meta])*
+        pub struct $struct_name {
+            $(
+        $($(#[$string_meta])*
+            $string_vis $string_field: Option<$string_type>,)*
+            )?
+        $($($(#[$any_meta])*
+            $any_vis $any_field: Option<$any_type>,
+        )*)?
+        }
+
+        impl $struct_name {
+            pub fn new() -> Self {
+                Self::default()
+            }
+
+        $(
+         $(pub fn $string_field<T: Into<String>>(mut self, value: T) -> Self
+            {
+                self.$string_field = Some(value.into());
+                self
+            }
+         )*
+        )?
+
+        $(
+         $(pub fn $any_field(mut self, value: $any_type) -> Self
+            {
+                self.$any_field = Some(value);
+                self
+            }
+         )*
+        )?
+        }
+    };
+
 }
 
 #[cfg(any(
@@ -200,7 +254,6 @@ macro_rules! request_struct {
     feature = "extensions",
     feature = "schedule",
     feature = "streams",
-    feature = "videos",
 ))]
 macro_rules! new_request_struct {
     (

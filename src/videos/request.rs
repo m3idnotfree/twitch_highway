@@ -1,24 +1,66 @@
 use crate::{
     base::{IntoQueryPairs, QueryParams},
-    types::{Id, UserId, ID, USER_ID},
+    types::{
+        constants::{GAME_ID, ID, TYPE, USER_ID},
+        GameId, Id, UserId,
+    },
 };
 
-use super::types::{VideoPeriod, VideoSort, VideoType};
+use super::types::{Period, Sort, Type};
+
+pub struct VideoFilter {
+    ids: Option<Vec<Id>>,
+    user_id: Option<UserId>,
+    game_id: Option<GameId>,
+}
+
+impl VideoFilter {
+    pub fn by_ids(ids: Vec<Id>) -> Self {
+        Self {
+            ids: Some(ids),
+            user_id: None,
+            game_id: None,
+        }
+    }
+    pub fn by_user_id(user_id: UserId) -> Self {
+        Self {
+            ids: None,
+            user_id: Some(user_id),
+            game_id: None,
+        }
+    }
+    pub fn by_game_id(game_id: GameId) -> Self {
+        Self {
+            ids: None,
+            user_id: None,
+            game_id: Some(game_id),
+        }
+    }
+}
+
+impl IntoQueryPairs for VideoFilter {
+    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
+        let mut params = QueryParams::new();
+        params
+            .extend_opt(self.ids.map(|id| id.into_iter().map(|x| (ID, x))))
+            .push_opt(USER_ID, self.user_id)
+            .push_opt(GAME_ID, self.game_id);
+
+        params.build()
+    }
+}
 
 request_struct!(
-    #[derive(Debug, Default)]
-    VideosRequest {
-        id:Vec<Id>,
-        user_id:UserId,
-        game_id:String,
+VideosRequest {
+    string {
         language: String,
-        period: VideoPeriod,
-        sort: VideoSort,
-        kind: VideoType,
-        first: String,
-        after: String,
-        before: String
+    },
+    any {
+        period: Period,
+        sort: Sort,
+        kind: Type,
     }
+}
 );
 
 impl IntoQueryPairs for VideosRequest {
@@ -26,16 +68,10 @@ impl IntoQueryPairs for VideosRequest {
         let mut params = QueryParams::new();
 
         params
-            .extend_opt(self.id.map(|ids| ids.into_iter().map(|id| (ID, id))))
-            .push_opt(USER_ID, self.user_id)
-            .push_opt("game_id", self.game_id)
             .push_opt("language", self.language)
             .push_opt("period", self.period.map(|x| x.to_string()))
             .push_opt("sort", self.sort.map(|x| x.to_string()))
-            .push_opt("type", self.kind.map(|x| x.to_string()))
-            .push_opt("first", self.first)
-            .push_opt("after", self.after)
-            .push_opt("before", self.before);
+            .push_opt(TYPE, self.kind.map(|x| x.to_string()));
 
         params.build()
     }

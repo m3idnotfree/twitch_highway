@@ -22,27 +22,27 @@ pub struct Video {
     pub view_count: u64,
     pub language: String,
     #[serde(rename = "type")]
-    pub kind: VideoType,
+    pub kind: Type,
     pub duration: String,
-    pub muted_segments: Vec<MutedSegments>,
+    pub muted_segments: Vec<MutedSegment>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct MutedSegments {
+pub struct MutedSegment {
     pub duration: u64,
     pub offset: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum VideoPeriod {
+pub enum Period {
     All,
     Day,
     Month,
     Week,
 }
 
-impl VideoPeriod {
+impl Period {
     pub fn as_str(&self) -> &str {
         match self {
             Self::All => "all",
@@ -53,7 +53,7 @@ impl VideoPeriod {
     }
 }
 
-impl fmt::Display for VideoPeriod {
+impl fmt::Display for Period {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -61,13 +61,13 @@ impl fmt::Display for VideoPeriod {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum VideoSort {
+pub enum Sort {
     Time,
     Trending,
     Views,
 }
 
-impl VideoSort {
+impl Sort {
     pub fn as_str(&self) -> &str {
         match self {
             Self::Time => "time",
@@ -77,7 +77,7 @@ impl VideoSort {
     }
 }
 
-impl fmt::Display for VideoSort {
+impl fmt::Display for Sort {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }
@@ -85,14 +85,14 @@ impl fmt::Display for VideoSort {
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum VideoType {
+pub enum Type {
     All,
     Archive,
     Highlight,
     Upload,
 }
 
-impl VideoType {
+impl Type {
     pub fn as_str(&self) -> &str {
         match self {
             Self::All => "all",
@@ -103,7 +103,7 @@ impl VideoType {
     }
 }
 
-impl fmt::Display for VideoType {
+impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.as_str())
     }

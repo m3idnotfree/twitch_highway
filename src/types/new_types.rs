@@ -2,7 +2,10 @@ use serde::{de::Visitor, Deserialize, Serialize};
 use std::fmt;
 
 macro_rules! new_type {
-    ($name:ident) => {
+    (
+    $name:ident
+    $(, $impl_id:ident: $check:expr)*
+    ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct $name(String);
 
@@ -14,6 +17,11 @@ macro_rules! new_type {
             pub fn as_str(&self) -> &str {
                 &self.0
             }
+
+            //pub fn to_user_id(&self) -> UserId {
+            //    UserId::new(self.0.clone())
+            //}
+            $(new_type!(@$impl_id $check);)*
         }
 
         impl fmt::Display for $name {
@@ -87,9 +95,23 @@ macro_rules! new_type {
             }
         }
     };
+    (@user $check:expr) => {
+        pub fn to_user_id(&self) -> UserId {
+            UserId::new(self.0.clone())
+        }
+    };
+    (@id $check:expr) => {
+        pub fn to_id(&self) -> Id {
+            Id::new(self.0.clone())
+        }
+    };
 }
 
-new_type!(BroadcasterId);
+new_type!(
+BroadcasterId,
+    user: true,
+    id: true
+);
 new_type!(ModeratorId);
 new_type!(UserId);
 new_type!(Id);

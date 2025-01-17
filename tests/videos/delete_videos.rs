@@ -1,7 +1,9 @@
-use twitch_highway::types::Id;
-
 fn_expected_request!(
-    api: twitch_highway::videos::VideosAPI,
+    modules: [
+        twitch_highway::videos::VideosAPI,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: delete_videos,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageVideos]),

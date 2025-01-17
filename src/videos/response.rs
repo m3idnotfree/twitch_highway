@@ -15,3 +15,8 @@ pub struct VideosResponse {
     )]
     pub pagination: Option<Pagination>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteVideosResponse {
+    pub data: Vec<String>,
+}

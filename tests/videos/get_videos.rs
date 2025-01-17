@@ -1,11 +1,17 @@
-use twitch_highway::{types::Id, videos::request::VideosRequest};
-
 fn_expected_request!(
-    api: twitch_highway::videos::VideosAPI,
+    modules: [
+        twitch_highway::videos::VideosAPI,
+        twitch_highway::videos::request::VideoFilter,
+        twitch_highway::types::Id
+    ],
     endpoint: get_videos,
     token_type: Any,
     scopes: None,
-    args: [VideosRequest::new().id(vec![Id::new("335921245")])],
+    args: [
+        VideoFilter::by_ids(vec![Id::new("335921245")]),
+        None,
+        None
+    ],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/videos?id=335921245"
