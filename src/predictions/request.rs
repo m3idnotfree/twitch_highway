@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     types::{BroadcasterId, Id, Title},
-    RequestBody,
+    IntoRequestBody,
 };
 
 use super::types::PredictionStatus;
@@ -18,7 +18,7 @@ request_struct!(
         }
     }
 );
-impl RequestBody for CreatePredictionRequest {
+impl IntoRequestBody for CreatePredictionRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
@@ -36,7 +36,7 @@ request_struct!(
         }
     }
 );
-impl RequestBody for EndPredictionRequest {
+impl IntoRequestBody for EndPredictionRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }

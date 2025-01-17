@@ -1,14 +1,16 @@
-use twitch_highway::types::{BroadcasterId, Id};
-
 fn_expected_request!(
-    api: twitch_highway::predictions::PredictionsAPI,
+    modules: [
+        twitch_highway::predictions::PredictionsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_predictions,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadPredictions]),
     args: [
         BroadcasterId::new("55696719"),
         Some(vec![Id::new("d6676d5c-c86e-44d2-bfc4-100fb48f0656")]),
-        None,
         None
     ],
     method: GET,

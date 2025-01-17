@@ -1,20 +1,18 @@
-use twitch_highway::{
-    predictions::request::CreatePredictionRequest,
-    types::{BroadcasterId, Title},
-};
-
 fn_expected_request!(
-    api: twitch_highway::predictions::PredictionsAPI,
+    modules: [
+        twitch_highway::predictions::PredictionsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types:: Title,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: create_prediction,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManagePredictions]),
     args: [
-        CreatePredictionRequest::new(
-            BroadcasterId::new("141981764"),
-            "Any leeks in the stream?".to_string(),
-            vec![Title::new("Yes, give it time.".to_string()), Title::new("Definitely not.".to_string())],
-            120
-       )
+        BroadcasterId::new("141981764"),
+        "Any leeks in the stream?",
+        vec![Title::new("Yes, give it time.".to_string()), Title::new("Definitely not.".to_string())],
+        120
     ],
     json_contain: [
         "\"broadcaster_id\":\"141981764\"",

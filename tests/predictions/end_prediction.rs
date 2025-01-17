@@ -1,20 +1,19 @@
-use twitch_highway::{
-    predictions::{request::EndPredictionRequest, types::PredictionStatus},
-    types::{BroadcasterId, Id},
-};
-
 fn_expected_request!(
-    api: twitch_highway::predictions::PredictionsAPI,
+    modules: [
+        twitch_highway::predictions::PredictionsAPI,
+        twitch_highway::predictions::types::PredictionStatus,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: end_prediction,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManagePredictions]),
     args: [
-        EndPredictionRequest::new(
-            BroadcasterId::new("141981764"),
-            Id::new("bc637af0-7766-4525-9308-4112f4cbf178"),
-            PredictionStatus::RESOLVED
-       )
-        .winning_outcome_id("73085848-a94d-4040-9d21-2cb7a89374b7".to_string())
+        BroadcasterId::new("141981764"),
+        Id::new("bc637af0-7766-4525-9308-4112f4cbf178"),
+        PredictionStatus::RESOLVED,
+        Some("73085848-a94d-4040-9d21-2cb7a89374b7")
     ],
     json_contain: [
         "\"broadcaster_id\":\"141981764\"",
