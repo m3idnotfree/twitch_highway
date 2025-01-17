@@ -2,24 +2,70 @@ mod cost;
 mod date_range;
 mod image;
 mod new_types;
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
 mod pagination;
 mod title;
 
 pub use cost::{Cost, CostType};
 pub use date_range::DateRange;
 pub use image::Images;
-pub use pagination::Pagination;
+pub use new_types::{BroadcasterId, ExtensionId, GameId, Id, JWTToken, ModeratorId, UserId};
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
+pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
 
-pub use new_types::{BroadcasterId, ExtensionId, Id, JWTToken, ModeratorId, UserId};
-
-pub(crate) const BROADCASTER_ID: &str = "broadcaster_id";
-pub(crate) const MODERATOR_ID: &str = "moderator_id";
-pub(crate) const KIND: &str = "type";
-pub(crate) const FIRST: &str = "first";
-pub(crate) const AFTER: &str = "after";
-pub(crate) const STARTED_AT: &str = "started_at";
-pub(crate) const USER_ID: &str = "user_id";
-pub(crate) const ID: &str = "id";
-pub(crate) const EXTENSIONS: &str = "extensions";
-pub(crate) const CHANNELS: &str = "channels";
+pub(crate) mod constants;

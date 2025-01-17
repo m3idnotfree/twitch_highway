@@ -1,10 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-request_struct!(
-    #[derive(Debug, Serialize, Deserialize)]
-    Title {
-        required {
-            title: String
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Title {
+    pub title: String,
+}
+
+impl Title {
+    pub fn new<T: Into<String>>(title: T) -> Self {
+        Self {
+            title: title.into(),
         }
     }
-);
+}
