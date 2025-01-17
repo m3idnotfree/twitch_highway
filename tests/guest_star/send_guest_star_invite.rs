@@ -1,7 +1,10 @@
-use twitch_highway::types::{BroadcasterId, ModeratorId};
-
 fn_expected_request!(
-    api: twitch_highway::guest_star::GuestStarAPI,
+    modules: [
+        twitch_highway::guest_star::GuestStarAPI,
+        twitch_highway::types::BroadcasterId ,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: send_guest_star_invites,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageGuestStar]),

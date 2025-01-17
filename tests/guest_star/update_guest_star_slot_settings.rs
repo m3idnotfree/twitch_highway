@@ -1,10 +1,11 @@
-use twitch_highway::{
-    guest_star::request::UpdateSlotSettingsRequest,
-    types::{BroadcasterId, ModeratorId},
-};
-
 fn_expected_request!(
-    api: twitch_highway::guest_star::GuestStarAPI,
+    modules: [
+        twitch_highway::guest_star::GuestStarAPI,
+        twitch_highway::guest_star::request::UpdateSlotSettingsRequest,
+        twitch_highway::types::BroadcasterId ,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_guest_star_slot_settings,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageGuestStar]),

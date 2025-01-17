@@ -1,14 +1,17 @@
-use twitch_highway::types::{BroadcasterId, ModeratorId};
-
 fn_expected_request!(
-    api: twitch_highway::guest_star::GuestStarAPI,
+    modules: [
+        twitch_highway::guest_star::GuestStarAPI,
+        twitch_highway::types::BroadcasterId ,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_guest_star_session,
     token_type: User,
     scopes: Some(vec![
-                    Scope::ChannelReadGuestStar,
-                    Scope::ChannelManageGuestStar,
-                    Scope::ModeratorReadGuestStar
-            ]),
+        Scope::ChannelReadGuestStar,
+        Scope::ChannelManageGuestStar,
+        Scope::ModeratorReadGuestStar
+    ]),
     args: [BroadcasterId::new("9321049"), ModeratorId::new("9321049")],
     method: GET,
     header: expected_headers!(),

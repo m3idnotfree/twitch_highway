@@ -5,7 +5,7 @@ use crate::base::{IntoQueryPairs, QueryParams};
 use super::types::GroupLayout;
 
 request_struct!(
-    #[derive(Debug, Default, Serialize, Deserialize)]
+    #[derive(Serialize, Deserialize)]
     GustStarSettingRequest {
         #[serde(skip_serializing_if = "Option::is_none")]
         is_moderator_send_live_enabled: bool,
@@ -43,7 +43,7 @@ impl IntoQueryPairs for GustStarSettingRequest {
     }
 }
 request_struct!(
-    #[derive(Debug, Default, Serialize, Deserialize)]
+    #[derive(Serialize, Deserialize)]
     UpdateSlotSettingsRequest {
         is_audio_enabled: bool,
         is_video_enabled: bool,

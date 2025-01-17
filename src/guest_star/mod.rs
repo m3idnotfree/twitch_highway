@@ -1,9 +1,13 @@
 use asknothingx2_util::api::Method;
 use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
+use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, ModeratorId, BROADCASTER_ID, MODERATOR_ID},
+    types::{
+        constants::{BROADCASTER_ID, MODERATOR_ID},
+        BroadcasterId, ModeratorId,
+    },
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -18,46 +22,46 @@ pub trait GuestStarAPI: TwitchAPIBase {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, GuestStarSettingsResponse>;
     fn update_channel_guest_star_settings(
         &self,
         broadcaster_id: BroadcasterId,
         request: GustStarSettingRequest,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn get_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
     fn create_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
     fn end_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         session_id: String,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
     fn get_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, GustStarInvitesResponse>;
     fn send_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn delete_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn assign_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -65,7 +69,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         session_id: &str,
         guest_id: &str,
         slot_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn update_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -73,7 +77,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         session_id: &str,
         source_slot_id: &str,
         destination_slot_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn delete_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -82,15 +86,15 @@ pub trait GuestStarAPI: TwitchAPIBase {
         guest_id: &str,
         slot_id: &str,
         should_reinvite_guest: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     fn update_guest_star_slot_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
         slot_id: &str,
-        request: UpdateSlotSettingsRequest,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        opts: UpdateSlotSettingsRequest,
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
 }
 
 impl GuestStarAPI for TwitchAPI {
@@ -98,7 +102,7 @@ impl GuestStarAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, GuestStarSettingsResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "channel_settings"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -116,7 +120,7 @@ impl GuestStarAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         request: GustStarSettingRequest,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "channel_settings"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -134,7 +138,7 @@ impl GuestStarAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -151,7 +155,7 @@ impl GuestStarAPI for TwitchAPI {
     fn create_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -168,7 +172,7 @@ impl GuestStarAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         session_id: String,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -187,7 +191,7 @@ impl GuestStarAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, GustStarInvitesResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -208,7 +212,7 @@ impl GuestStarAPI for TwitchAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -230,7 +234,7 @@ impl GuestStarAPI for TwitchAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -253,7 +257,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         guest_id: &str,
         slot_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -277,7 +281,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         source_slot_id: &str,
         destination_slot_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -302,7 +306,7 @@ impl GuestStarAPI for TwitchAPI {
         guest_id: &str,
         slot_id: &str,
         should_reinvite_guest: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -327,7 +331,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         slot_id: &str,
         request: UpdateSlotSettingsRequest,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot_settings"])
             .query(BROADCASTER_ID, broadcaster_id)

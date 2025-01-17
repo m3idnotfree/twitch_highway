@@ -10,3 +10,6 @@ mod send_guest_star_invite;
 mod update_channel_guest_star_settings;
 mod update_guest_star_slot;
 mod update_guest_star_slot_settings;
+
+//#[cfg(feature = "test")]
+//mod mock_server;
