@@ -1,4 +1,5 @@
 use asknothingx2_util::api::Method;
+use response::CclsResponse;
 use serde::{Deserialize, Serialize};
 
 use crate::{base::TwitchAPIBase, EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest};
@@ -10,14 +11,14 @@ pub trait CclsAPI: TwitchAPIBase {
     fn get_content_classification_labels(
         &self,
         locale: Option<CclsLocale>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, CclsResponse>;
 }
 
 impl CclsAPI for TwitchAPI {
     fn get_content_classification_labels(
         &self,
         locale: Option<CclsLocale>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, CclsResponse> {
         let mut url = self.build_url();
         url.path(["content_classification_labels"])
             .query_opt("locale", locale);
