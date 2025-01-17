@@ -1,5 +1,5 @@
 use twitch_highway::{
-    channel_points::{request::UpdateRedemptionStatusRequest, types::RedemptionStatus},
+    channel_points::{request::RedemptionStatusQuery, types::RedemptionStatus},
     types::{BroadcasterId, Id},
 };
 
@@ -12,7 +12,7 @@ fn_expected_request!(
         BroadcasterId::new("274637212"),
         [Id::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
         "92af127c-7326-4483-a52b-b0da0be61c01",
-        UpdateRedemptionStatusRequest::new(RedemptionStatus::CANCELED)
+        RedemptionStatusQuery::new(RedemptionStatus::CANCELED)
     ],
     json_contain: ["\"status\":\"CANCELED\""],
     method: PATCH,

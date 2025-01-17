@@ -12,7 +12,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("274637212"),
         Id::new("92af127c-7326-4483-a52b-b0da0be61c01"),
-        UpdateCustomRewardRequest::new().is_enabled(false)
+        Some(UpdateCustomRewardRequest::new().is_enabled(false))
     ],
     json_contain: ["\"is_enabled\":false"],
     method: PATCH,
@@ -36,7 +36,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("274637212"),
         Id::new("92af127c-7326-4483-a52b-b0da0be61c01"),
-        UpdateCustomRewardRequest::new().title("game analysis 2v2".to_string())
+        Some(UpdateCustomRewardRequest::new().title("game analysis 2v2".to_string()))
     ],
     json_contain: ["\"title\":\"game analysis 2v2\""],
     method: PATCH,

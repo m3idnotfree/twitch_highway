@@ -1,5 +1,5 @@
 use twitch_highway::{
-    channel_points::{request::CustomRewardRedemptionRequest, types::RedemptionStatus},
+    channel_points::{request::CustomRewardRedemptionQuery, types::RedemptionStatus},
     types::{BroadcasterId, Id},
 };
 
@@ -9,11 +9,11 @@ fn_expected_request!(
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
     args: [
-        CustomRewardRedemptionRequest::new(
-            BroadcasterId::new("274637212"),
-            "92af127c-7326-4483-a52b-b0da0be61c01".to_string()
-        )
-        .status( RedemptionStatus::CANCELED)
+    BroadcasterId::new("274637212"),
+    "92af127c-7326-4483-a52b-b0da0be61c01",
+    Some(CustomRewardRedemptionQuery::new()
+            .status( RedemptionStatus::CANCELED)),
+    None
     ],
     method: GET,
     header: expected_headers!(),
@@ -26,11 +26,13 @@ fn_expected_request!(
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
     args: [
-        CustomRewardRedemptionRequest::new(
-            BroadcasterId::new("274637212"),
-            "92af127c-7326-4483-a52b-b0da0be61c01".to_string()
+    BroadcasterId::new("274637212"),
+"92af127c-7326-4483-a52b-b0da0be61c01",
+        Some(CustomRewardRedemptionQuery::new(
         )
         .id(Id::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63"))
+    ),
+    None
     ],
     method: GET,
     header: expected_headers!(),

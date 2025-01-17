@@ -1,4 +1,4 @@
-use twitch_highway::{channel_points::request::CreateCustomRewardsRequest, types::BroadcasterId};
+use twitch_highway::types::BroadcasterId;
 
 fn_expected_request!(
     api: twitch_highway::channel_points::ChannelPointsAPI,
@@ -7,7 +7,9 @@ fn_expected_request!(
     scopes: Some(vec![Scope::ChannelManageRedemptions]),
     args: [
         BroadcasterId::new("274637212"),
-        CreateCustomRewardsRequest::new("game analysis 1v1".to_string(), 50000)
+        "game analysis 1v1",
+        50000,
+        None
     ],
     json_contain: ["\"title\":\"game analysis 1v1\"","\"cost\":50000"],
     method: POST,
