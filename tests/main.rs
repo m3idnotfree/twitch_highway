@@ -51,7 +51,7 @@ mod subscriptions;
 #[cfg(feature = "teams")]
 mod teams;
 #[cfg(feature = "users")]
-mod user;
+mod users;
 #[cfg(feature = "videos")]
 mod videos;
 #[cfg(feature = "whispers")]

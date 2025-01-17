@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::types::{BlockUser, User, UserExtension};
+use crate::IntoRequestBody;
+
+use super::types::{BlockUser, User, UserActiveExtensions, UserExtension};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UsersInfoResponse {
@@ -9,7 +11,7 @@ pub struct UsersInfoResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BlockUserListResponse {
-    data: Vec<BlockUser>,
+    pub data: Vec<BlockUser>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -19,16 +21,16 @@ pub struct UpdateUsersResponse {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserExtensionsResponse {
-    data: Vec<UserExtension>,
+    pub data: Vec<UserExtension>,
 }
 
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct UserActiveExtensionsData {
-//    data: Vec<UserActiveExtensions>,
-//}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserActiveExtensionsResponse {
+    pub data: UserActiveExtensions,
+}
 
-//impl RequestBody for UserActiveExtensionsData {
-//    fn as_body(&self) -> Option<String> {
-//        Some(serde_json::to_string(self).unwrap())
-//    }
-//}
+impl IntoRequestBody for UserActiveExtensionsResponse {
+    fn as_body(&self) -> Option<String> {
+        Some(serde_json::to_string(self).unwrap())
+    }
+}

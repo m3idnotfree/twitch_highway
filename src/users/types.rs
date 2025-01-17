@@ -1,8 +1,13 @@
+use std::collections::HashMap;
+
 use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Id, UserId};
+use crate::{
+    types::{Id, UserId},
+    IntoRequestBody,
+};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
@@ -10,7 +15,7 @@ pub struct User {
     pub login: String,
     pub display_name: String,
     #[serde(rename = "type")]
-    pub kind: GetUserType,
+    pub kind: UserType,
     pub broadcaster_type: BroadcasterType,
     pub description: String,
     pub profile_image_url: String,
@@ -26,7 +31,7 @@ pub struct User {
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum GetUserType {
+pub enum UserType {
     Admin,
     GlobalMod,
     Staff,
@@ -45,19 +50,19 @@ pub enum BroadcasterType {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BlockUser {
-    user_id: UserId,
-    user_login: String,
-    display_name: String,
+    pub user_id: UserId,
+    pub user_login: String,
+    pub display_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserExtension {
-    id: Id,
-    version: String,
-    name: String,
-    can_activate: bool,
+    pub id: Id,
+    pub version: String,
+    pub name: String,
+    pub can_activate: bool,
     #[serde(rename = "type")]
-    kind: Vec<ExtensionType>,
+    pub kind: Vec<ExtensionType>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -69,46 +74,84 @@ pub enum ExtensionType {
     Panel,
 }
 
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct UserActiveExtensions {
-//    panel: HashMap<String, Panel>,
-//    overlay: HashMap<String, Overlay>,
-//    component: HashMap<String, Component>,
-//}
-//
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct Panel {
-//    active: bool,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    id: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    version: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    name: Option<String>,
-//}
-//
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct Overlay {
-//    active: bool,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    id: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    version: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    name: Option<String>,
-//}
-//
-//#[derive(Debug, Serialize, Deserialize)]
-//pub struct Component {
-//    active: bool,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    id: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    version: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    name: Option<String>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    x: Option<u64>,
-//    #[serde(skip_serializing_if = "Option::is_none")]
-//    y: Option<u64>,
-//}
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserActiveExtensions {
+    pub panel: HashMap<String, Panel>,
+    pub overlay: HashMap<String, Overlay>,
+    pub component: HashMap<String, Component>,
+}
+
+impl UserActiveExtensions {
+    pub fn new(
+        panel: HashMap<String, Panel>,
+        overlay: HashMap<String, Overlay>,
+        component: HashMap<String, Component>,
+    ) -> Self {
+        Self {
+            panel,
+            overlay,
+            component,
+        }
+    }
+}
+
+impl IntoRequestBody for UserActiveExtensions {
+    fn as_body(&self) -> Option<String> {
+        Some(serde_json::to_string(self).unwrap())
+    }
+}
+
+request_struct!(
+    #[derive( Serialize, Deserialize)]
+    Panel {
+        required {
+            pub active: bool,
+        },
+        optional {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub id: Id,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub version: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub name: String,
+        }
+    }
+);
+
+request_struct!(
+    #[derive(Serialize, Deserialize)]
+    Overlay {
+        required {
+            pub active: bool,
+        },
+        optional {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub id: Id,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub version: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub name: String,
+        }
+    }
+);
+
+request_struct!(
+    #[derive(Serialize, Deserialize)]
+    Component {
+        required {
+            pub active: bool
+        },
+        optional {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub id: Id,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub version: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub name: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub x: u64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            pub y: u64
+        }
+    }
+);

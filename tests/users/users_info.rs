@@ -1,8 +1,10 @@
-use twitch_highway::types::Id;
-
 fn_expected_request!(
     name: id,
-    api: twitch_highway::users::UserAPI,
+    modules: [
+        twitch_highway::users::UserAPI,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),
@@ -17,7 +19,10 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: login,
-    api: twitch_highway::users::UserAPI,
+    modules: [
+        twitch_highway::users::UserAPI,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),
@@ -32,7 +37,11 @@ fn_expected_request!(
 
 fn_expected_request!(
     name: users_id_login,
-    api: twitch_highway::users::UserAPI,
+    modules: [
+        twitch_highway::users::UserAPI,
+        twitch_highway::types::Id,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: users_info,
     token_type: Any,
     scopes: Some(vec![Scope::UserReadEmail]),

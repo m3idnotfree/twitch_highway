@@ -1,19 +1,23 @@
 use asknothingx2_util::api::Method;
 use request::{BlockReason, BlockSourceContext};
+use response::{
+    BlockUserListResponse, UpdateUsersResponse, UserActiveExtensionsResponse,
+    UserExtensionsResponse, UsersInfoResponse,
+};
+use types::UserActiveExtensions;
 
 use crate::{
     base::{TwitchAPI, TwitchAPIBase},
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
-    types::{BroadcasterId, Id, UserId, AFTER, BROADCASTER_ID, EXTENSIONS, FIRST, ID, USER_ID},
+    types::{
+        constants::{BLOCKS, BROADCASTER_ID, EXTENSIONS, ID, LOGIN, USERS, USER_ID},
+        BroadcasterId, Id, PaginationQuery, UserId,
+    },
 };
 
 pub mod request;
 pub mod response;
 pub mod types;
-
-const USERS: &str = "users";
-const BLOCKS: &str = "blocks";
-const LOGIN: &str = "login";
 
 pub trait UserAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#get-users
@@ -24,7 +28,7 @@ pub trait UserAPI: TwitchAPIBase {
         &self,
         ids: Option<&[Id]>,
         logins: Option<&[String]>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, UsersInfoResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#update-user
     /// Requires a user access token that includes the user:edit scope.
     ///
@@ -32,32 +36,37 @@ pub trait UserAPI: TwitchAPIBase {
     /// The description is limited to a maximum of 300 characters.
     ///
     /// To remove the description, specify this parameter but don’t set it’s value (for example, ?description=).
-    fn update_user(&self, description: Option<&str>) -> TwitchAPIRequest<EmptyBody>;
+    fn update_user(
+        &self,
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<EmptyBody, UpdateUsersResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#get-user-block-list
     fn block_list(
         &self,
         broadcaster_id: BroadcasterId,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, BlockUserListResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#block-user
     fn block_user(
         &self,
         target_user_id: &str,
         source_context: Option<BlockSourceContext>,
         reason: Option<BlockReason>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#unblock-user
-    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody>;
+    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#get-user-extensions
-    fn user_extensions(&self) -> TwitchAPIRequest<EmptyBody>;
+    fn user_extensions(&self) -> TwitchAPIRequest<EmptyBody, UserExtensionsResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions
-    fn user_active_extensions(&self, user_id: Option<UserId>) -> TwitchAPIRequest<EmptyBody>;
+    fn user_active_extensions(
+        &self,
+        user_id: Option<UserId>,
+    ) -> TwitchAPIRequest<EmptyBody, UserActiveExtensionsResponse>;
     // https://dev.twitch.tv/docs/api/reference/#update-user-extensions
-    //fn update_user_extensions(
-    //    &self,
-    //    data: UserActiveExtensionsData,
-    //) -> TwitchAPIRequest<UserActiveExtensionsData>;
+    fn update_user_extensions(
+        &self,
+        data: UserActiveExtensions,
+    ) -> TwitchAPIRequest<UserActiveExtensions, UserActiveExtensionsResponse>;
 }
 
 impl UserAPI for TwitchAPI {
@@ -65,7 +74,7 @@ impl UserAPI for TwitchAPI {
         &self,
         ids: Option<&[Id]>,
         logins: Option<&[String]>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, UsersInfoResponse> {
         let mut url = self.build_url();
         url.path([USERS])
             .query_opt_extend(ids.map(|ids| ids.iter().map(|id| (ID, id))))
@@ -80,7 +89,10 @@ impl UserAPI for TwitchAPI {
         )
     }
 
-    fn update_user(&self, description: Option<&str>) -> TwitchAPIRequest<EmptyBody> {
+    fn update_user(
+        &self,
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<EmptyBody, UpdateUsersResponse> {
         let mut url = self.build_url();
         url.path([USERS]).query_opt("description", description);
 
@@ -96,14 +108,12 @@ impl UserAPI for TwitchAPI {
     fn block_list(
         &self,
         broadcaster_id: BroadcasterId,
-        first: Option<&str>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, BlockUserListResponse> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt(FIRST, first)
-            .query_opt(AFTER, after);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetUserBlockList,
@@ -119,7 +129,7 @@ impl UserAPI for TwitchAPI {
         target_user_id: &str,
         source_context: Option<BlockSourceContext>,
         reason: Option<BlockReason>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
             .query("target_user_id", target_user_id)
@@ -135,7 +145,7 @@ impl UserAPI for TwitchAPI {
         )
     }
 
-    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody> {
+    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
             .query("target_user_id", target_user_id);
@@ -149,7 +159,7 @@ impl UserAPI for TwitchAPI {
         )
     }
 
-    fn user_extensions(&self) -> TwitchAPIRequest<EmptyBody> {
+    fn user_extensions(&self) -> TwitchAPIRequest<EmptyBody, UserExtensionsResponse> {
         let mut url = self.build_url();
         url.path([USERS, EXTENSIONS, "list"]);
 
@@ -162,7 +172,10 @@ impl UserAPI for TwitchAPI {
         )
     }
 
-    fn user_active_extensions(&self, user_id: Option<UserId>) -> TwitchAPIRequest<EmptyBody> {
+    fn user_active_extensions(
+        &self,
+        user_id: Option<UserId>,
+    ) -> TwitchAPIRequest<EmptyBody, UserActiveExtensionsResponse> {
         let mut url = self.build_url();
         url.path([USERS, EXTENSIONS]).query_opt(USER_ID, user_id);
 
@@ -175,16 +188,22 @@ impl UserAPI for TwitchAPI {
         )
     }
 
-    //fn update_user_extensions(
-    //    &self,
-    //    data: UserActiveExtensionsData,
-    //) -> TwitchAPIRequest<UserActiveExtensionsData> {
-    //    TwitchAPIRequest::new(
-    //        EndpointType::UpdateUserExtensions,
-    //        self.build_url().path(["users", "extensions"]).build(),
-    //        Method::PUT,
-    //        self.build_headers().build(),
-    //        data,
-    //    )
-    //}
+    fn update_user_extensions(
+        &self,
+        data: UserActiveExtensions,
+    ) -> TwitchAPIRequest<UserActiveExtensions, UserActiveExtensionsResponse> {
+        let mut url = self.build_url();
+        url.path([USERS, EXTENSIONS]);
+
+        let mut headers = self.build_headers();
+        headers.json();
+
+        TwitchAPIRequest::new(
+            EndpointType::UpdateUserExtensions,
+            url.build(),
+            Method::PUT,
+            headers.build(),
+            data,
+        )
+    }
 }

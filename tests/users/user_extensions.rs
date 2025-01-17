@@ -1,5 +1,8 @@
 fn_expected_request!(
-    api: twitch_highway::users::UserAPI,
+    modules: [
+        twitch_highway::users::UserAPI,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: user_extensions,
     token_type: User,
     scopes: Some(vec![Scope::UserReadBroadcast, Scope::UserEditBroadcast]),
