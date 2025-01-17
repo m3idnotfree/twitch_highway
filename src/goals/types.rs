@@ -25,4 +25,6 @@ pub enum GoalType {
     SubscriptionCount,
     NewSubscription,
     NewSubscriptionCount,
+    #[cfg(feature = "test")]
+    Subscriber,
 }

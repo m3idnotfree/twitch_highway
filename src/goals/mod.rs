@@ -1,8 +1,9 @@
 use asknothingx2_util::api::Method;
+use response::GoalsResponse;
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, BROADCASTER_ID},
+    types::{constants::BROADCASTER_ID, BroadcasterId},
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -10,11 +11,17 @@ pub mod response;
 pub mod types;
 
 pub trait GoalsAPI: TwitchAPIBase {
-    fn get_creator_goals(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody>;
+    fn get_creator_goals(
+        &self,
+        broadcaster_id: BroadcasterId,
+    ) -> TwitchAPIRequest<EmptyBody, GoalsResponse>;
 }
 
 impl GoalsAPI for TwitchAPI {
-    fn get_creator_goals(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
+    fn get_creator_goals(
+        &self,
+        broadcaster_id: BroadcasterId,
+    ) -> TwitchAPIRequest<EmptyBody, GoalsResponse> {
         let mut url = self.build_url();
         url.path(["goals"]).query(BROADCASTER_ID, broadcaster_id);
 

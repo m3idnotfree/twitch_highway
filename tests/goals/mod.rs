@@ -16,3 +16,21 @@ fn_expected_resopnse!(
     module: twitch_highway::goals::response::GoalsResponse,
     de: GoalsResponse
 );
+
+new_fn_mock_server_f!(
+    name: mock_server_get_creator_goals,
+    oauth: {
+        @user,
+        module: GoalsScopes,
+        scopes: with_creator_goals_read
+    },
+    api: {
+        modules: [
+            twitch_highway::goals::GoalsAPI
+        ],
+        endpoint: get_creator_goals,
+        args: |broadcaster_id|{
+            broadcaster_id
+        }
+    }
+);
