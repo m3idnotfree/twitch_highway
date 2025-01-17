@@ -1,69 +1,54 @@
 use url::Url;
 
 pub trait TestUrl {
-    fn with_url<T: Into<String>>(self, url: T) -> Self;
-    fn get_test_url(&self) -> Result<Url, crate::Error>;
+    fn with_url(self, port: Option<u16>, endpoint: Option<String>) -> Self;
 }
 
 #[derive(Default, Debug)]
-pub struct TestUrlHold(Option<String>);
+pub struct TestUrlHold {
+    endpoint: Option<String>,
+    port: Option<u16>,
+}
 
 impl TestUrlHold {
-    pub fn with_url<T: Into<String>>(&mut self, url: T) -> &mut Self {
-        self.0 = Some(url.into());
+    /// defualt 'mock'
+    pub fn with_endpoint(&mut self, endpoint: Option<String>) -> &mut Self {
+        if let Some(endpoint) = endpoint {
+            self.endpoint = Some(endpoint);
+        } else {
+            self.endpoint = Some("mock".to_string());
+        }
         self
     }
 
-    pub fn get_test_url(&self) -> Result<Url, crate::Error> {
-        self.0
-            .as_ref()
-            .ok_or(crate::Error::MissingTestUrl)
-            .and_then(|url| Ok(Url::parse(url)?))
+    /// default '8080'
+    pub fn with_port(&mut self, port: Option<u16>) -> &mut Self {
+        if let Some(port) = port {
+            self.port = Some(port);
+        } else {
+            self.port = Some(8080);
+        }
+        self
     }
 
-    pub fn base_url(port: Option<u16>, query: Option<&[&str]>) -> String {
-        let mut url = Url::parse("http://localhost:8080/mock").unwrap();
-        if let Some(port) = port {
-            url.set_port(Some(port)).unwrap();
+    pub fn from_url(&self, url: &Url) -> Result<Url, crate::Error> {
+        if self.endpoint.is_none() && self.port.is_none() {
+            Err(crate::Error::MissingTestUrl)
+        } else {
+            let mut test_url = Url::parse("http://localhost:8080").unwrap();
+
+            test_url.set_port(self.port).unwrap();
+            let paths = url
+                .path_segments()
+                .unwrap()
+                .skip(1)
+                .fold(self.endpoint.clone().unwrap(), |acc, x| {
+                    format!("{acc}/{x}")
+                });
+            test_url.set_path(&paths);
+            test_url.set_query(url.query());
+
+            Ok(test_url)
         }
-
-        if let Some(query) = query {
-            url.path_segments_mut().unwrap().extend(query);
-        }
-
-        url.to_string()
-    }
-
-    pub fn users_url(port: Option<u16>, query: Option<&[&str]>) -> String {
-        let mut url = Url::parse("http://localhost:8080/mock/users").unwrap();
-        if let Some(port) = port {
-            url.set_port(Some(port)).unwrap();
-        }
-
-        if let Some(query) = query {
-            url.path_segments_mut().unwrap().extend(query);
-        }
-
-        url.to_string()
-    }
-
-    pub fn chat_url(port: Option<u16>, query: Option<&[&str]>) -> String {
-        let mut url = Url::parse("http://localhost:8080/mock/chat").unwrap();
-        if let Some(port) = port {
-            url.set_port(Some(port)).unwrap();
-        }
-
-        if let Some(query) = query {
-            url.path_segments_mut().unwrap().extend(query);
-        }
-
-        url.to_string()
-    }
-
-    pub fn eventsub_url(port: Option<u16>) -> String {
-        if let Some(port) = port {
-            return format!("http://localhost:{}/eventsub/subscriptions", port);
-        }
-        "http://localhost:8080/eventsub/subscriptions".to_string()
     }
 }

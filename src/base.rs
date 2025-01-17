@@ -7,6 +7,7 @@ use url::Url;
 use crate::types::JWTToken;
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
+const BEARER: &str = "Bearer";
 
 pub trait TwitchAPIBase {
     fn access_token(&self) -> &AccessToken;
@@ -52,14 +53,14 @@ impl HeadersBuilder {
     pub fn base(access_token: &AccessToken, client_id: &ClientId) -> Self {
         let mut headers = HeaderBuilder::new();
         headers
-            .authorization("Bearer", access_token.secret().as_str())
+            .authorization(BEARER, access_token.secret().as_str())
             .client_id(client_id.as_str());
         Self(headers)
     }
     pub fn base_with_jwt(jwt_token: &JWTToken, client_id: &ClientId) -> Self {
         let mut headers = HeaderBuilder::new();
         headers
-            .authorization("Bearer", jwt_token.as_str())
+            .authorization(BEARER, jwt_token.as_str())
             .client_id(client_id.as_str());
         Self(headers)
     }
@@ -129,6 +130,15 @@ impl UrlBuilder {
         self
     }
 
+    pub fn query_opt_pairs<T: IntoQueryPairs>(&mut self, querys: Option<T>) -> &mut Self {
+        if let Some(querys) = querys {
+            self.0
+                .query_pairs_mut()
+                .extend_pairs(querys.into_query_pairs());
+        }
+        self
+    }
+
     pub fn build(self) -> Url {
         self.0
     }
@@ -138,35 +148,117 @@ pub trait IntoQueryPairs {
     fn into_query_pairs(self) -> Vec<(&'static str, String)>;
 }
 
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
 #[derive(Debug, Default)]
 pub struct QueryParams(Vec<(&'static str, String)>);
 
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
 impl QueryParams {
     pub fn new() -> Self {
         Self::default()
     }
-
+    #[cfg(any(feature = "bits", feature = "channel_points",))]
     pub fn push<T: Into<String>>(&mut self, key: &'static str, value: T) -> &mut Self {
         self.0.push((key, value.into()));
         self
     }
-
+    #[cfg(any(
+        feature = "ads",
+        feature = "analytics",
+        feature = "bits",
+        feature = "ccls",
+        feature = "channel_points",
+        feature = "channels",
+        feature = "charity",
+        feature = "chat",
+        feature = "clips",
+        feature = "entitlements",
+        feature = "extensions",
+        feature = "games",
+        feature = "goals",
+        feature = "guest-star",
+        feature = "hype-train",
+        feature = "moderation",
+        feature = "polls",
+        feature = "predictions",
+        feature = "raid",
+        feature = "schedule",
+        feature = "search",
+        feature = "streams",
+        feature = "subscriptions",
+        feature = "teams",
+        feature = "users",
+        feature = "videos",
+        feature = "whispers",
+    ))]
     pub fn push_opt<T: Into<String>>(&mut self, key: &'static str, value: Option<T>) -> &mut Self {
         if let Some(v) = value {
             self.0.push((key, v.into()));
         }
         self
     }
-
-    pub fn extend<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
-        &mut self,
-        extend: L,
-    ) -> &mut Self {
-        self.0
-            .extend(extend.into_iter().map(|(x, y)| (x, y.into())));
-        self
-    }
-
+    #[cfg(any(
+        feature = "clips",
+        feature = "entitlements",
+        feature = "games",
+        feature = "schedule",
+        feature = "streams",
+        feature = "videos",
+    ))]
     pub fn extend_opt<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
         &mut self,
         extend: Option<L>,

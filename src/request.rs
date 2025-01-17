@@ -1,32 +1,94 @@
-use std::fmt;
+use std::{fmt, marker::PhantomData};
 
 use asknothingx2_util::api::{api_request, APIRequest, APIResponse, HeaderMap, Method, StatusCode};
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use twitch_oauth_token::types::Scope;
 use url::Url;
 
-use crate::Error;
+use crate::{Error, Response};
 
 // https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
-pub trait RequestBody {
+pub trait IntoRequestBody {
     fn as_body(&self) -> Option<String> {
         None
     }
 }
 
-pub struct TwitchAPIRequest<T> {
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "polls",
+    feature = "predictions",
+    feature = "schedule",
+))]
+#[derive(Serialize, Deserialize)]
+pub struct RequestBody<T, K> {
+    #[serde(flatten)]
+    required: T,
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    optional: Option<K>,
+}
+
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "polls",
+    feature = "predictions",
+    feature = "schedule",
+))]
+impl<T, K> RequestBody<T, K>
+where
+    T: Serialize,
+    K: Serialize,
+{
+    pub fn new(required: T, opts: Option<K>) -> Self {
+        Self {
+            required,
+            optional: opts,
+        }
+    }
+}
+impl<T, K> IntoRequestBody for RequestBody<T, K>
+where
+    T: Serialize,
+    K: Serialize,
+{
+    fn as_body(&self) -> Option<String> {
+        Some(serde_json::to_string(&self).unwrap())
+    }
+}
+
+pub struct TwitchAPIRequest<T, D> {
     kind: EndpointType,
     url: Url,
     method: Method,
     header: HeaderMap,
     body: T,
+    _phatom: PhantomData<D>,
     #[cfg(feature = "test")]
-    test_url: crate::test_url::TestUrlHold,
+    pub test_url: crate::test_url::TestUrlHold,
 }
 
-impl<T> TwitchAPIRequest<T>
+impl<T, D> TwitchAPIRequest<T, D>
 where
-    T: RequestBody,
+    T: IntoRequestBody,
+    D: DeserializeOwned,
 {
     pub fn new(kind: EndpointType, url: Url, method: Method, header: HeaderMap, body: T) -> Self {
         Self {
@@ -35,6 +97,7 @@ where
             method,
             url,
             body,
+            _phatom: PhantomData,
             #[cfg(feature = "test")]
             test_url: crate::test_url::TestUrlHold::default(),
         }
@@ -50,8 +113,7 @@ where
     }
     pub fn url(&self) -> Url {
         #[cfg(feature = "test")]
-        if let Ok(mut url) = self.test_url.get_test_url() {
-            url.set_query(self.url.query());
+        if let Ok(url) = self.test_url.from_url(&self.url) {
             return url;
         }
         self.url.clone()
@@ -60,10 +122,9 @@ where
         &self.body
     }
 
-    pub async fn request(self) -> Result<APIResponse, Error> {
+    pub async fn request(self) -> Result<Response<D>, Error> {
         let response = api_request(self).await?;
-
-        Ok(APIResponse::from_response(response).await?)
+        Ok(Response::new(APIResponse::from_response(response).await?))
     }
 }
 
@@ -105,9 +166,10 @@ impl fmt::Display for APIError {
     }
 }
 
-impl<T> APIRequest for TwitchAPIRequest<T>
+impl<T, D> APIRequest for TwitchAPIRequest<T, D>
 where
-    T: RequestBody,
+    T: IntoRequestBody,
+    D: DeserializeOwned,
 {
     fn url(&self) -> Url {
         self.url()
@@ -130,19 +192,49 @@ where
 }
 
 #[cfg(feature = "test")]
-impl<L> crate::test_url::TestUrl for TwitchAPIRequest<L> {
-    fn with_url<T: Into<String>>(mut self, url: T) -> Self {
-        self.test_url.with_url(url);
-        self
-    }
+impl<L, D> crate::test_url::TestUrl for TwitchAPIRequest<L, D> {
+    fn with_url(mut self, port: Option<u16>, endpoint: Option<String>) -> Self {
+        self.test_url.with_endpoint(endpoint);
+        self.test_url.with_port(port);
 
-    fn get_test_url(&self) -> Result<Url, crate::Error> {
-        self.test_url.get_test_url()
+        self
     }
 }
 
+#[derive(Debug, Serialize)]
 pub struct EmptyBody;
-impl RequestBody for EmptyBody {}
+impl IntoRequestBody for EmptyBody {}
+impl<'de> Deserialize<'de> for EmptyBody {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct EmptyVisitor;
+        impl serde::de::Visitor<'_> for EmptyVisitor {
+            type Value = EmptyBody;
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                formatter.write_str("empty body")
+            }
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                if v.is_empty() {
+                    Ok(EmptyBody)
+                } else {
+                    Err(E::custom("expected empty string"))
+                }
+            }
+            fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                self.visit_str(&v)
+            }
+        }
+        deserializer.deserialize_str(EmptyVisitor)
+    }
+}
 
 #[derive(Debug)]
 pub enum EndpointType {

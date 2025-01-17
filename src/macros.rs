@@ -1,3 +1,31 @@
+#[cfg(any(
+    feature = "ads",
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    //feature = "eventsub",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    ))]
 macro_rules! request_struct {
     (
         $(#[$struct_meta:meta])*
@@ -7,6 +35,7 @@ macro_rules! request_struct {
         ),*$(,)?
         }
     ) => {
+        #[derive(Debug, Default)]
         $(#[$struct_meta])*
         pub struct $struct_name {
         $($(#[$field_meta])*
@@ -39,8 +68,10 @@ macro_rules! request_struct {
             }
         )?
         }
+        $(; impl_body: $into_body:expr )?
     ) => {
         $(#[$struct_meta])*
+        #[derive(Debug)]
         pub struct $struct_name {
             $($(#[$req_meta])*
                $fv $req_field: $req_type,
@@ -68,9 +99,109 @@ macro_rules! request_struct {
                 }
             )*)?
         }
+
+        $(request_struct!(@into_request_body $struct_name $into_body);)?
     };
+        (
+        $(#[$struct_meta:meta])*
+        $struct_name:ident {
+            required {
+                $(string {
+                    $($(#[$req_str_meta:meta])*
+                    $fv_str:vis $req_str_field:ident: $req_str_type:ty ),*$(,)?
+                },)?
+                $(any {
+                    $($(#[$req_any_meta:meta])*
+                    $fv_any:vis $req_any_field:ident: $req_any_type:ty ),*$(,)?
+
+                })?
+            }
+        $(, optional {
+                $(string {
+                    $($(#[$opt_str_meta:meta])*
+                    $fv_opt_str:vis $opt_str_field:ident: $opt_str_type:ty ),*$(,)?
+                },)?
+                $(any {
+                    $($(#[$opt_any_meta:meta])*
+                    $fv_opt_any:vis $opt_any_field:ident: $opt_any_type:ty ),*$(,)?
+
+                })?
+
+            }
+        )?
+        }
+        $(; impl_body: $into_body:expr )?
+    ) => {
+        $(#[$struct_meta])*
+        #[derive(Debug)]
+        pub struct $struct_name {
+            $($(#[$req_str_meta])*
+               $fv_str $req_str_field: $req_str_type,
+            )*
+            $($(#[$req_any_meta])*
+               $fv_any $req_any_field: $req_any_type,
+            )*
+         $($($(#[$opt_str_meta])*
+               $fv_opt_str $opt_str_field: Option<$opt_str_type>,
+         )*)?
+         $($($(#[$opt_any_meta])*
+               $fv_opt_any $opt_any_field: Option<$opt_any_type>,
+         )*)?
+        }
+
+        impl $struct_name {
+            pub fn new(
+            $($req_str_field: impl Into<String>,)*
+            $($req_any_field: $req_any_type,)*
+            ) -> Self {
+                Self {
+                $($req_field,)*
+                $($req_any_field,)*
+                $($($opt_str_field: None,)*)?
+                $($($opt_any_field: None,)*)?
+                }
+            }
+
+            $($(
+                pub fn $opt_str_field(mut self, value: $opt_str_type) -> Self
+                {
+                    self.$opt_str_field = Some(value);
+                    self
+                }
+            )*)?
+            $($(
+                pub fn $opt_any_field(mut self, value: $opt_any_type) -> Self
+                {
+                    self.$opt_any_field = Some(value);
+                    self
+                }
+            )*)?
+        }
+
+        $(request_struct!(@into_request_body $struct_name $into_body);)?
+    };
+
+    (@into_request_body $struct_name:ident $into_body:expr)=>{
+        impl crate::IntoRequestBody for $struct_name {
+            fn as_body(&self) -> Option<String> {
+                Some(serde_json::to_string(self).unwrap())
+            }
+        }
+    }
 }
 
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "channel_points",
+    feature = "channels",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "schedule",
+    feature = "streams",
+    feature = "videos",
+))]
 macro_rules! new_request_struct {
     (
         $(#[$struct_meta:meta])*
@@ -88,6 +219,7 @@ macro_rules! new_request_struct {
     )?
     }
     ) => {
+        #[derive(Debug, Default)]
         $(#[$struct_meta])*
         pub struct $struct_name {
             $(

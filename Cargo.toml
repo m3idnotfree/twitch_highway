@@ -71,7 +71,6 @@ full = [
 ]
 
 [dependencies]
-anyhow = "1.0.95"
 asknothingx2-eventsub = { version = "0.0.9", features = ["twitch"] }
 asknothingx2-util = { version = "0.0.28", features = ["api", "oauth", "serde"] }
 chrono = { version = "0.4.39", features = ["serde"] }
@@ -79,12 +78,11 @@ http-serde = "2.1.1"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.135"
 thiserror = "2.0.11"
-twitch_oauth_token = { version = "1.1.9", default-features = false, features = ["types"] }
+twitch_oauth_token = { version = "1.1.10", default-features = false, features = ["types"] }
 url = "2.5.4"
-urlencoding = "2.1.3"
 
 [dev-dependencies]
-twitch_oauth_token = { version = "1.1.9", features = ["full"] }
+twitch_oauth_token = { version = "1.1.10", features = ["full"] }
 dotenv = "0.15.0"
 pretty_assertions = "1.4.1"
 tokio = { version = "1.43.0", features = ["full"] }
