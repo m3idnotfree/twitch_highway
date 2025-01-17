@@ -1,22 +1,23 @@
-use twitch_highway::{
-    extensions::types::BitsProductExtension,
-    types::{Cost, CostType},
-};
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::extensions::request::UpdateExtensoinBitsProductsRequest,
+        twitch_highway::types::Cost,
+        twitch_highway::types::CostType
+    ],
     endpoint: update_extension_bits_products,
     token_type: Any,
     scopes: None,
     args: [
-        BitsProductExtension::new(
-            "1010".to_string(),
-            Cost::new(990, CostType::Bits),
-            "Rusty Crate 2".to_string()
+        "1010",
+        Cost::new(990, CostType::Bits),
+        "Rusty Crate 2",
+        Some(
+            UpdateExtensoinBitsProductsRequest::new()
+                .in_development(true)
+                .is_broadcast(true)
+                .expiration("2021-05-18T09:10:13.397Z".to_string())
         )
-        .in_development(true)
-        .is_broadcast(true)
-        .expiration("2021-05-18T09:10:13.397Z".to_string())
     ],
     method: PUT,
     header: expected_headers!(json),

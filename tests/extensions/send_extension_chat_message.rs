@@ -1,17 +1,17 @@
-use twitch_highway::{extensions::request::ExtensionChatMessageRequestBody, types::BroadcasterId};
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::types::ExtensionId,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: send_extension_chat_message,
     token_type: Any,
     scopes: None,
     args: [
         BroadcasterId::new("237757755"),
-        ExtensionChatMessageRequestBody::new(
-            "Hello".to_string(),
-            "uo6dggojyb8d6soh92zknwmi5ej1q2".to_string(),
-            "0.0.9".to_string()
-        )
+        "Hello",
+        ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+        "0.0.9"
     ],
     method: POST,
     header: expected_headers!(json),

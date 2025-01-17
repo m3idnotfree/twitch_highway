@@ -1,5 +1,7 @@
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI
+    ],
     endpoint: get_extension_bits_products,
     token_type: Any,
     scopes: None,

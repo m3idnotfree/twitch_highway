@@ -1,20 +1,17 @@
-use twitch_highway::{
-    extensions::request::RequiredConfiguration,
-    types::{BroadcasterId, ExtensionId},
-};
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ExtensionId
+    ],
     endpoint: set_extension_required_configuration,
     token_type: Any,
     scopes: None,
     args: [
         BroadcasterId::new("274637212"),
-        RequiredConfiguration::new(
-            ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
-            "0.0.1".to_string(),
-            "RCS".to_string()
-        )
+        ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+        "0.0.1",
+        "RCS"
     ],
     json_contain: [
         "\"required_configuration\":\"RCS\"",

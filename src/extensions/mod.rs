@@ -1,21 +1,28 @@
 use asknothingx2_util::api::Method;
 use request::{
-    ExtensionChatMessageRequestBody, PubSubMessageRequest, RequiredConfiguration,
-    SetConfigurationSegment,
+    ExtensionChatMessageIntoRequestBody, RequiredConfiguration, SetConfigurationSegment,
+    UpdateExtensoinBitsProductsRequest,
 };
-use types::{BitsProductExtension, Segment};
+use response::{
+    ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose, ExtensionSecretsResponse,
+    ExtensionsBitsProductsResponse, ExtensionsResponse,
+};
+use serde_json::Value;
+use types::Segment;
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, ExtensionId, JWTToken, AFTER, BROADCASTER_ID, EXTENSIONS, FIRST},
+    request::RequestBody,
+    types::{
+        constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
+        BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery,
+    },
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
 pub mod request;
 pub mod response;
 pub mod types;
-
-const EXTENSION_ID: &str = "extension_id";
 
 pub trait ExtensionsAPI: TwitchAPIBase {
     fn get_extension_configuration_segment(
@@ -24,55 +31,72 @@ pub trait ExtensionsAPI: TwitchAPIBase {
         broadcaster_id: Option<BroadcasterId>,
         extension_id: ExtensionId,
         segment: &[Segment],
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, ConfigurationSegmentResponse>;
     fn set_extension_configuration_segment(
         &self,
-        configuration: SetConfigurationSegment,
-    ) -> TwitchAPIRequest<SetConfigurationSegment>;
+        extension_id: ExtensionId,
+        segment: Segment,
+        opts: Option<SetConfigurationSegment>,
+    ) -> TwitchAPIRequest<RequestBody<Value, SetConfigurationSegment>, EmptyBody>;
     fn set_extension_required_configuration(
         &self,
         broadcaster_id: BroadcasterId,
-        request: RequiredConfiguration,
-    ) -> TwitchAPIRequest<RequiredConfiguration>;
+        extension_id: ExtensionId,
+        extension_version: &str,
+        required_configuration: &str,
+    ) -> TwitchAPIRequest<RequiredConfiguration, EmptyBody>;
     fn send_extension_pubsub_message(
         &self,
-        request: PubSubMessageRequest,
-    ) -> TwitchAPIRequest<PubSubMessageRequest>;
-    fn get_extension_livemchannels(
+        target: &[&str],
+        message: &str,
+        broadcaster_id: BroadcasterId,
+        is_global_broadcast: Option<bool>,
+    ) -> TwitchAPIRequest<RequestBody<Value, EmptyBody>, EmptyBody>;
+    fn get_extension_live_channels(
         &self,
         extension_id: ExtensionId,
-        first: Option<u64>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    fn get_extension_secrets(&self, extension_id: ExtensionId) -> TwitchAPIRequest<EmptyBody>;
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionLiveChannelsRespnose>;
+    fn get_extension_secrets(
+        &self,
+        extension_id: ExtensionId,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse>;
     fn create_extension_secret(
         &self,
         extension_id: ExtensionId,
         delay: Option<u64>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse>;
     fn send_extension_chat_message(
         &self,
         broadcaster_id: BroadcasterId,
-        request: ExtensionChatMessageRequestBody,
-    ) -> TwitchAPIRequest<ExtensionChatMessageRequestBody>;
+        text: &str,
+        extension_id: ExtensionId,
+        extension_version: &str,
+    ) -> TwitchAPIRequest<ExtensionChatMessageIntoRequestBody, EmptyBody>;
     fn get_extensions(
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse>;
     fn get_released_extensions(
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse>;
     fn get_extension_bits_products(
         &self,
         should_inclue_all: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsBitsProductsResponse>;
     fn update_extension_bits_products(
         &self,
-        request: BitsProductExtension,
-    ) -> TwitchAPIRequest<BitsProductExtension>;
+        sku: &str,
+        cost: Cost,
+        display_name: &str,
+        opts: Option<UpdateExtensoinBitsProductsRequest>,
+    ) -> TwitchAPIRequest<
+        RequestBody<Value, UpdateExtensoinBitsProductsRequest>,
+        ExtensionsBitsProductsResponse,
+    >;
 }
 
 impl ExtensionsAPI for TwitchAPI {
@@ -82,7 +106,7 @@ impl ExtensionsAPI for TwitchAPI {
         broadcaster_id: Option<BroadcasterId>,
         extension_id: ExtensionId,
         segments: &[Segment],
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, ConfigurationSegmentResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "configurations"])
             .query_opt(BROADCASTER_ID, broadcaster_id)
@@ -99,24 +123,35 @@ impl ExtensionsAPI for TwitchAPI {
     }
     fn set_extension_configuration_segment(
         &self,
-        configuration: SetConfigurationSegment,
-    ) -> TwitchAPIRequest<SetConfigurationSegment> {
+        extension_id: ExtensionId,
+        segment: Segment,
+        opts: Option<SetConfigurationSegment>,
+    ) -> TwitchAPIRequest<RequestBody<Value, SetConfigurationSegment>, EmptyBody> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "configurations"]);
+
+        let required = serde_json::json!({
+            "extension_id": extension_id,
+            "segment": segment,
+        });
+
+        let request_body = RequestBody::new(required, opts);
 
         TwitchAPIRequest::new(
             EndpointType::SetExtensionConfigurationSegment,
             url.build(),
             Method::PUT,
             self.build_headers().build(),
-            configuration,
+            request_body,
         )
     }
     fn set_extension_required_configuration(
         &self,
         broadcaster_id: BroadcasterId,
-        request: RequiredConfiguration,
-    ) -> TwitchAPIRequest<RequiredConfiguration> {
+        extension_id: ExtensionId,
+        extension_version: &str,
+        required_configuration: &str, //request: RequiredConfiguration,
+    ) -> TwitchAPIRequest<RequiredConfiguration, EmptyBody> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "required_configuration"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -128,15 +163,39 @@ impl ExtensionsAPI for TwitchAPI {
             url.build(),
             Method::PUT,
             headers.build(),
-            request,
+            RequiredConfiguration::new(
+                extension_id,
+                extension_version.to_string(),
+                required_configuration.to_string(),
+            ),
         )
     }
     fn send_extension_pubsub_message(
         &self,
-        request: PubSubMessageRequest,
-    ) -> TwitchAPIRequest<PubSubMessageRequest> {
+        target: &[&str],
+        message: &str,
+        broadcaster_id: BroadcasterId,
+        is_global_broadcast: Option<bool>,
+    ) -> TwitchAPIRequest<RequestBody<Value, EmptyBody>, EmptyBody> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "pubsub"]);
+
+        let required = if is_global_broadcast.is_some() {
+            serde_json::json!({
+                "target": target,
+                "message": message,
+                "broadcaster_id": broadcaster_id,
+                "is_global_broadcast": is_global_broadcast.unwrap()
+            })
+        } else {
+            serde_json::json!({
+                "target": target,
+                "message": message,
+                "broadcaster_id": broadcaster_id,
+            })
+        };
+
+        let request_body = RequestBody::new(required, None::<EmptyBody>);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -146,20 +205,18 @@ impl ExtensionsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            request,
+            request_body,
         )
     }
-    fn get_extension_livemchannels(
+    fn get_extension_live_channels(
         &self,
         extension_id: ExtensionId,
-        first: Option<u64>,
-        after: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionLiveChannelsRespnose> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "live"])
             .query(EXTENSION_ID, extension_id)
-            .query_opt(FIRST, first.map(|x| x.to_string()))
-            .query_opt(AFTER, after);
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetExtensionLiveChannels,
@@ -169,7 +226,10 @@ impl ExtensionsAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn get_extension_secrets(&self, extension_id: ExtensionId) -> TwitchAPIRequest<EmptyBody> {
+    fn get_extension_secrets(
+        &self,
+        extension_id: ExtensionId,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "jwt", "secrets"])
             .query(EXTENSION_ID, extension_id);
@@ -186,7 +246,7 @@ impl ExtensionsAPI for TwitchAPI {
         &self,
         extension_id: ExtensionId,
         delay: Option<u64>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "jwt", "secrets"])
             .query(EXTENSION_ID, extension_id)
@@ -203,10 +263,12 @@ impl ExtensionsAPI for TwitchAPI {
     fn send_extension_chat_message(
         &self,
         broadcaster_id: BroadcasterId,
-        request: ExtensionChatMessageRequestBody,
-    ) -> TwitchAPIRequest<ExtensionChatMessageRequestBody> {
+        text: &str,
+        extension_id: ExtensionId,
+        extension_version: &str,
+    ) -> TwitchAPIRequest<ExtensionChatMessageIntoRequestBody, EmptyBody> {
         let mut url = self.build_url();
-        url.path([EXTENSIONS, "chat"])
+        url.path([EXTENSIONS, CHAT])
             .query(BROADCASTER_ID, broadcaster_id);
 
         let mut headers = self.build_headers();
@@ -217,14 +279,18 @@ impl ExtensionsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            request,
+            ExtensionChatMessageIntoRequestBody::new(
+                text.to_string(),
+                extension_id,
+                extension_version.to_string(),
+            ),
         )
     }
     fn get_extensions(
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS])
             .query(EXTENSION_ID, extension_id)
@@ -242,7 +308,7 @@ impl ExtensionsAPI for TwitchAPI {
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "released"])
             .query(EXTENSION_ID, extension_id)
@@ -259,9 +325,9 @@ impl ExtensionsAPI for TwitchAPI {
     fn get_extension_bits_products(
         &self,
         should_inclue_all: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionsBitsProductsResponse> {
         let mut url = self.build_url();
-        url.path(["bits", EXTENSIONS]).query_opt(
+        url.path([BITS, EXTENSIONS]).query_opt(
             "should_include_all",
             should_inclue_all.map(|x| x.to_string()),
         );
@@ -276,20 +342,33 @@ impl ExtensionsAPI for TwitchAPI {
     }
     fn update_extension_bits_products(
         &self,
-        request: BitsProductExtension,
-    ) -> TwitchAPIRequest<BitsProductExtension> {
+        sku: &str,
+        cost: Cost,
+        display_name: &str,
+        opts: Option<UpdateExtensoinBitsProductsRequest>,
+    ) -> TwitchAPIRequest<
+        RequestBody<Value, UpdateExtensoinBitsProductsRequest>,
+        ExtensionsBitsProductsResponse,
+    > {
         let mut url = self.build_url();
-        url.path(["bits", EXTENSIONS]);
+        url.path([BITS, EXTENSIONS]);
 
         let mut headers = self.build_headers();
         headers.json();
+        let required = serde_json::json!({
+            "sku": sku,
+            "cost": cost,
+            "display_name": display_name,
+        });
+
+        let request_body = RequestBody::new(required, opts);
 
         TwitchAPIRequest::new(
             EndpointType::GetReleasedExtensions,
             url.build(),
             Method::PUT,
             headers.build(),
-            request,
+            request_body,
         )
     }
 }

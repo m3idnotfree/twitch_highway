@@ -1,12 +1,12 @@
-use twitch_highway::types::ExtensionId;
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
-    endpoint: get_extension_livemchannels,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::types::ExtensionId
+    ],
+    endpoint: get_extension_live_channels,
     token_type: Any,
     scopes: None,
-    args: [ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"), None, None
-    ],
+    args: [ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/extensions/live?extension_id=uo6dggojyb8d6soh92zknwmi5ej1q2"

@@ -1,7 +1,8 @@
-use twitch_highway::types::ExtensionId;
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::types::ExtensionId
+    ],
     endpoint: get_released_extensions,
     token_type: Any,
     scopes: None,

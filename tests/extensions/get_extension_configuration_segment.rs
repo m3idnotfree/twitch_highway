@@ -1,10 +1,10 @@
-use twitch_highway::{
-    extensions::types::Segment,
-    types::{ExtensionId, JWTToken},
-};
-
 fn_expected_request!(
-    api: twitch_highway::extensions::ExtensionsAPI,
+    modules: [
+        twitch_highway::extensions::ExtensionsAPI,
+        twitch_highway::extensions::types::Segment,
+        twitch_highway::types::ExtensionId,
+        twitch_highway::types::JWTToken
+    ],
     endpoint: get_extension_configuration_segment,
     token_type: Any,
     scopes: None,

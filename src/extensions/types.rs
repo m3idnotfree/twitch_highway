@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     types::{BroadcasterId, Cost, Id},
-    RequestBody,
+    IntoRequestBody,
 };
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -24,6 +24,13 @@ impl AsRef<str> for Segment {
         }
     }
 }
+
+impl From<Segment> for String {
+    fn from(value: Segment) -> Self {
+        value.as_ref().to_string()
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ConfigurationSegment {
     pub segment: Segment,
@@ -143,24 +150,33 @@ pub struct Component {
     pub zoom_pixels: u64,
     pub can_link_external_content: bool,
 }
-
-request_struct!(
 #[derive(Debug, Serialize, Deserialize)]
-BitsProductExtension {
-    required {
-        pub sku: String,
-        pub cost: Cost,
-        pub display_name: String,
-    },
-    optional {
-        pub in_development: bool,
-        pub expiration: String,
-        pub is_broadcast: bool,
-    }
+pub struct BitsProductExtension {
+    pub sku: String,
+    pub cost: Cost,
+    pub display_name: String,
+    pub in_development: bool,
+    pub expiration: String,
+    pub is_broadcast: bool,
 }
-);
 
-impl RequestBody for BitsProductExtension {
+//request_struct!(
+//#[derive(Debug, Serialize, Deserialize)]
+//BitsProductExtension {
+//    required {
+//        pub sku: String,
+//        pub cost: Cost,
+//        pub display_name: String,
+//    },
+//    optional {
+//        pub in_development: bool,
+//        pub expiration: String,
+//        pub is_broadcast: bool,
+//    }
+//}
+//);
+
+impl IntoRequestBody for BitsProductExtension {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
