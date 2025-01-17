@@ -1,8 +1,9 @@
 use asknothingx2_util::api::Method;
+use response::StartRaidResponse;
 
 use crate::{
     base::TwitchAPIBase,
-    types::{BroadcasterId, BROADCASTER_ID},
+    types::{constants::BROADCASTER_ID, BroadcasterId},
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -14,8 +15,8 @@ pub trait RaidAPI: TwitchAPIBase {
         &self,
         from_broadcaster_id: &str,
         to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody, StartRaidResponse>;
+    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
 }
 
 impl RaidAPI for TwitchAPI {
@@ -23,7 +24,7 @@ impl RaidAPI for TwitchAPI {
         &self,
         from_broadcaster_id: &str,
         to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody, StartRaidResponse> {
         let mut url = self.build_url();
         url.path(["raids"]).query_extend([
             ("from_broadcaster_id", from_broadcaster_id),
@@ -38,7 +39,7 @@ impl RaidAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
+    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path(["raids"]).query(BROADCASTER_ID, broadcaster_id);
 

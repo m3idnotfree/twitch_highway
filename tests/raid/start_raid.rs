@@ -1,5 +1,8 @@
 fn_expected_request!(
-    api: twitch_highway::raid::RaidAPI,
+    modules: [
+        twitch_highway::raid::RaidAPI,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: start_raid,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageRaids]),
