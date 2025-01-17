@@ -5,3 +5,6 @@ mod get_banned_users;
 mod manage_held_automod_messages;
 mod unban_user;
 mod update_audomod_settings;
+
+#[cfg(feature = "test")]
+mod mock_server;

@@ -1,7 +1,10 @@
-use twitch_highway::types::{BroadcasterId, ModeratorId};
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_auto_mod_settings,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorReadAutomodSettings]),

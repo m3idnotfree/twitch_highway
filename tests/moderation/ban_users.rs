@@ -1,22 +1,20 @@
-use twitch_highway::{
-    moderation::request::{BanUserRequest, BanUsersRequest},
-    types::{BroadcasterId, ModeratorId, UserId},
-};
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::moderation::request::BanUserRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: ban_users,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageBannedUsers]),
     args: [
         BroadcasterId::new("1234"),
         ModeratorId::new("5678"),
-        BanUsersRequest::new(
-            vec![
-                BanUserRequest::new(UserId::new("9876"))
-                    .reason("no reason".to_string())
-            ]
-        )
+        BanUserRequest::new(UserId::new("9876"))
+            .reason("no reason".to_string())
     ],
     json_contain: ["\"user_id\":\"9876\"","\"reason\":\"no reason\""],
     method: POST,
@@ -32,22 +30,31 @@ fn_expected_resopnse!(
 
 fn_expected_request!(
     name: second_request,
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::moderation::request::BanUserRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: ban_users,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageBannedUsers]),
     args: [
         BroadcasterId::new("1234"),
         ModeratorId::new("5678"),
-        BanUsersRequest::new(
-            vec![
-                BanUserRequest::new(UserId::new("9876"))
-                    .duration(300)
-                    .reason("no reason".to_string())
-            ]
-        )
+        BanUserRequest::new(UserId::new("9876"))
+            .duration(300)
+            .reason("no reason".to_string())
     ],
-    json_contain: ["\"user_id\":\"9876\"","\"reason\":\"no reason\"","\"duration\":300"],
+    json_contain: [
+        //"{\"data\":{\"user_id\":\"9876\",\"reason\":\"no reason\"}}",
+        "{\"data\":{",
+        "\"user_id\":\"9876\"",
+        "\"reason\":\"no reason\"",
+        "\"duration\":300"
+    ],
     method: POST,
     header: expected_headers!(json),
     url: "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=1234&moderator_id=5678"

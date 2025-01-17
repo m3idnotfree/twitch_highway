@@ -1,9 +1,9 @@
 use serde::Serialize;
 
-use crate::{types::UserId, RequestBody};
+use crate::{types::UserId, IntoRequestBody};
 
 request_struct!(
-    #[derive(Debug,Serialize)]
+    #[derive(Serialize)]
     CheckAutoModStatusRequest {
         required {
             data: Vec<CheckAutoMod>
@@ -11,14 +11,14 @@ request_struct!(
     }
 );
 
-impl RequestBody for CheckAutoModStatusRequest {
+impl IntoRequestBody for CheckAutoModStatusRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug,Serialize)]
+    #[derive(Serialize)]
      CheckAutoMod {
         required {
             msg_id: String,
@@ -28,7 +28,7 @@ request_struct!(
 );
 
 request_struct!(
-    #[derive(Debug,Serialize)]
+    #[derive(Serialize)]
      ManageHeldAutoModMeussageRequest {
         required {
             user_id: UserId,
@@ -37,7 +37,7 @@ request_struct!(
         }
     }
 );
-impl RequestBody for ManageHeldAutoModMeussageRequest {
+impl IntoRequestBody for ManageHeldAutoModMeussageRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
@@ -50,7 +50,7 @@ pub enum AutoModAction {
 }
 
 request_struct!(
-    #[derive(Debug, Default, Serialize)]
+    #[derive(Serialize)]
     UpdateAutoModSettingsRequest {
         #[serde(skip_serializing_if = "Option::is_none")]
         aggression: u64,
@@ -73,28 +73,28 @@ request_struct!(
     }
 );
 
-impl RequestBody for UpdateAutoModSettingsRequest {
+impl IntoRequestBody for UpdateAutoModSettingsRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     BanUsersRequest{
         required {
-            data: Vec<BanUserRequest>
+            data: BanUserRequest
         }
     }
 );
-impl RequestBody for BanUsersRequest {
+impl IntoRequestBody for BanUsersRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     BanUserRequest {
         required {
             user_id: UserId
@@ -107,7 +107,7 @@ request_struct!(
 
 );
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     AddBlockedTermRequest {
         required {
             text: String
@@ -115,14 +115,14 @@ request_struct!(
     }
 );
 
-impl RequestBody for AddBlockedTermRequest {
+impl IntoRequestBody for AddBlockedTermRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     UpdateShieldModeStatusRequest {
         required {
             is_active: bool
@@ -130,14 +130,14 @@ request_struct!(
     }
 );
 
-impl RequestBody for UpdateShieldModeStatusRequest {
+impl IntoRequestBody for UpdateShieldModeStatusRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }
 }
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     WarnChatUserRequest {
         required {
             data: Vec<WarnChatUser>
@@ -146,7 +146,7 @@ request_struct!(
 );
 
 request_struct!(
-    #[derive(Debug, Serialize)]
+    #[derive(Serialize)]
     WarnChatUser {
         required {
             user_id: UserId,
@@ -155,7 +155,7 @@ request_struct!(
     }
 );
 
-impl RequestBody for WarnChatUserRequest {
+impl IntoRequestBody for WarnChatUserRequest {
     fn as_body(&self) -> Option<String> {
         Some(serde_json::to_string(&self).unwrap())
     }

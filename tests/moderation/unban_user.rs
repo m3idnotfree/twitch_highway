@@ -1,7 +1,11 @@
-use twitch_highway::types::{BroadcasterId, ModeratorId, UserId};
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: unban_user,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageBannedUsers]),

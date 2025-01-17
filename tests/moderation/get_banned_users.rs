@@ -1,11 +1,13 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_banned_users,
     token_type: User,
     scopes: Some(vec![Scope::ModerationRead]),
-    args: [BroadcasterId::new("198704263"), None, None, None, None],
+    args: [BroadcasterId::new("198704263"), None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/moderation/banned?broadcaster_id=198704263"

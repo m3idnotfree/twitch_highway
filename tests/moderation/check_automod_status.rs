@@ -1,23 +1,21 @@
-use twitch_highway::{
-    moderation::request::{CheckAutoMod, CheckAutoModStatusRequest},
-    types::BroadcasterId,
-};
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::moderation::request::CheckAutoMod,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: check_automod_status,
     token_type: User,
     scopes: Some(vec![Scope::ModerationRead]),
     args: [
         BroadcasterId::new("12345"),
-        CheckAutoModStatusRequest::new(
-            vec![
-                CheckAutoMod::new(
-                    "123".to_string(),
-                    "Hello World!".to_string()),
-                    CheckAutoMod::new("393".to_string(),"Boooooo!".to_string())
-            ]
-       )
+        vec![
+            CheckAutoMod::new(
+                "123".to_string(),
+                "Hello World!".to_string()),
+                CheckAutoMod::new("393".to_string(),"Boooooo!".to_string())
+        ]
     ],
     json_contain: ["\"msg_id\":\"123\"","\"msg_text\":\"Hello World!\"","\"msg_id\":\"393\"","\"msg_text\":\"Boooooo!\""],
     method: POST,

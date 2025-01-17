@@ -1,18 +1,18 @@
-use twitch_highway::{
-    moderation::request::UpdateAutoModSettingsRequest,
-    types::{BroadcasterId, ModeratorId},
-};
-
 fn_expected_request!(
-    api: twitch_highway::moderation::ModerationAPI,
+    modules: [
+        twitch_highway::moderation::ModerationAPI,
+        twitch_highway::moderation::request::UpdateAutoModSettingsRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::ModeratorId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_auto_mod_settings,
     token_type: User,
     scopes: Some(vec![Scope::ModeratorManageAutomodSettings]),
     args: [
         BroadcasterId::new("1234"),
         ModeratorId::new("5678"),
-        UpdateAutoModSettingsRequest::new()
-            .overall_level(3)
+        Some(UpdateAutoModSettingsRequest::new().overall_level(3))
     ],
     json_contain: ["\"overall_level\":3"],
     method: PUT,
