@@ -1,11 +1,13 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::charity::CharityAPI,
+    modules: [
+        twitch_highway::charity::CharityAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_charity_campaign_donations,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadCharity]),
-    args: [BroadcasterId::new("123456"), None, None],
+    args: [BroadcasterId::new("123456"), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/charity/donations?broadcaster_id=123456",
