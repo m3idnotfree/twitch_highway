@@ -1,7 +1,9 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::streams::StreamsAPI,
+    modules: [
+        twitch_highway::streams::StreamsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_stream_key,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadStreamKey]),

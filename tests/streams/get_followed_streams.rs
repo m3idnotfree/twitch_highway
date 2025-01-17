@@ -1,11 +1,13 @@
-use twitch_highway::types::UserId;
-
 fn_expected_request!(
-    api: twitch_highway::streams::StreamsAPI,
+    modules: [
+        twitch_highway::streams::StreamsAPI,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_followed_streams,
     token_type: User,
     scopes: Some(vec![Scope::UserReadFollows]),
-    args: [UserId::new("141981764"), None, None],
+    args: [UserId::new("141981764"), None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/streams/followed?user_id=141981764",

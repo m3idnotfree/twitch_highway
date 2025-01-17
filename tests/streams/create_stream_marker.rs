@@ -1,14 +1,13 @@
-use twitch_highway::{streams::request::CreateStreamMarkerRequest, types::UserId};
-
 fn_expected_request!(
-    api: twitch_highway::streams::StreamsAPI,
+    modules: [
+        twitch_highway::streams::StreamsAPI,
+        twitch_highway::types::UserId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: create_stream_marker,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageBroadcast]),
-    args: [
-        CreateStreamMarkerRequest::new(UserId::new("123"))
-            .description("hello, this is a marker!".to_string())
-    ],
+    args: [UserId::new("123"), Some("hello, this is a marker!".to_string())],
     json_contain: ["\"user_id\":\"123\"","\"description\":\"hello, this is a marker!\""],
     method: POST,
     header: expected_headers!(json),

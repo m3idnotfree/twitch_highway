@@ -1,13 +1,15 @@
-use twitch_highway::streams::request::GetStreamsRequest;
-
 fn_expected_request!(
-    api: twitch_highway::streams::StreamsAPI,
+    modules: [
+        twitch_highway::streams::StreamsAPI,
+        twitch_highway::streams::request::GetStreamsRequest
+    ],
     endpoint: get_streams,
     token_type: Any,
     scopes: None,
     args: [
-        GetStreamsRequest::new()
-            .user_login(vec!["afro".to_string(), "cohhcarnage".to_string(), "lana_lux".to_string()])
+        Some(GetStreamsRequest::new()
+            .user_login(vec!["afro".to_string(), "cohhcarnage".to_string(), "lana_lux".to_string()])),
+        None
     ],
     method: GET,
     header: expected_headers!(),

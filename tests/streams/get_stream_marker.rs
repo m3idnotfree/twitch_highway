@@ -1,11 +1,18 @@
-use twitch_highway::{streams::request::GetStreamMarkerRequest, types::UserId};
-
 fn_expected_request!(
-    api: twitch_highway::streams::StreamsAPI,
+    modules: [
+        twitch_highway::streams::StreamsAPI,
+        twitch_highway::streams::request::StreamMarkerFilter,
+        twitch_highway::types::UserId,
+        twitch_highway::types::PaginationQuery,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_stream_marker,
     token_type: User,
     scopes: Some(vec![Scope::UserReadBroadcast]),
-    args: [GetStreamMarkerRequest::new().user_id(UserId::new("123")).first(5)],
+    args: [
+        StreamMarkerFilter::by_user_id(UserId::new("123")),
+        Some(PaginationQuery::new().first(5))
+    ],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/streams/markers?user_id=123&first=5",
