@@ -1,7 +1,8 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::teams::TeamsAPI,
+    modules: [
+        twitch_highway::teams::TeamsAPI,
+        twitch_highway::types::BroadcasterId
+    ],
     endpoint: get_channel_teams,
     token_type: Any,
     scopes: None,
