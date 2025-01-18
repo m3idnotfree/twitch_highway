@@ -1,10 +1,13 @@
 use asknothingx2_util::api::Method;
-use request::GameAnalyticsRequest;
+use request::AnalyticsRequest;
 use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
 use crate::{
     base::TwitchAPIBase,
-    types::{constants::EXTENSIONS, PaginationQuery},
+    types::{
+        constants::{ANALYTICS, EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
+        ExtensionId, GameId, PaginationQuery,
+    },
     EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
@@ -12,23 +15,35 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-const ANALYTICS: &str = "analytics";
-
 pub trait AnalyticsAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#get-extension-analytics
-    fn get_extension_analytics(&self) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse>;
+    fn get_extension_analytics(
+        &self,
+        extension_id: Option<ExtensionId>,
+        opts: Option<AnalyticsRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#get-game-analytics
     fn get_game_analytics(
         &self,
-        opts: Option<GameAnalyticsRequest>,
+        game_id: Option<GameId>,
+        opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GameAnalyticsResponse>;
 }
 
 impl AnalyticsAPI for TwitchAPI {
-    fn get_extension_analytics(&self) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse> {
+    fn get_extension_analytics(
+        &self,
+        extension_id: Option<ExtensionId>,
+        opts: Option<AnalyticsRequest>,
+        pagination: Option<PaginationQuery>,
+    ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse> {
         let mut url = self.build_url();
-        url.path([ANALYTICS, EXTENSIONS]);
+        url.path([ANALYTICS, EXTENSIONS])
+            .query_opt(EXTENSION_ID, extension_id)
+            .query_opt_pairs(opts)
+            .query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetExtensionAnalytics,
@@ -40,11 +55,13 @@ impl AnalyticsAPI for TwitchAPI {
     }
     fn get_game_analytics(
         &self,
-        opts: Option<GameAnalyticsRequest>,
+        game_id: Option<GameId>,
+        opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GameAnalyticsResponse> {
         let mut url = self.build_url();
-        url.path([ANALYTICS, "games"])
+        url.path([ANALYTICS, GAMES])
+            .query_opt(GAME_ID, game_id)
             .query_opt_pairs(opts)
             .query_opt_pairs(pagination);
 

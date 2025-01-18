@@ -11,7 +11,7 @@ new_fn_mock_server_f!(
             twitch_highway::analytics::AnalyticsAPI
         ],
         endpoint: get_extension_analytics,
-        args:|_a|{},
+        args:|_a|{None, None, None},
         status: NOT_FOUND,
         rep: false
     }
@@ -31,7 +31,7 @@ new_fn_mock_server_f!(
 
         ],
         endpoint: get_game_analytics,
-        args: |_a|{ None, None },
+        args: |_a|{ None, None, None},
         status: NOT_FOUND,
         rep: false
     }

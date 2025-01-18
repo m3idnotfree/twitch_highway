@@ -1,24 +1,25 @@
 fn_expected_request!(
     modules: [
         twitch_highway::analytics::AnalyticsAPI,
-        twitch_highway::analytics::request::GameAnalyticsRequest,
+        twitch_highway::analytics::request::AnalyticsRequest,
         twitch_highway::types::GameId,
-        twitch_oauth_token::types::Scope
+        twitch_oauth_token::types::Scope,
+        chrono::DateTime
     ],
     endpoint: get_game_analytics,
     token_type: User,
     scopes: Some(vec![Scope::AnalyticsReadGames]),
     args: [
-        Some(GameAnalyticsRequest::new()
-            .game_id(GameId::new("493057"))
-            .started_at("2018-01-01T00:00:00Z")
-            .ended_at("2018-03-01T00:00:00Z")
+        Some(GameId::new("493057")),
+        Some(AnalyticsRequest::new()
+            .started_at(DateTime::parse_from_rfc3339("2018-01-01T00:00:00Z").unwrap())
+            .ended_at(DateTime::parse_from_rfc3339("2018-03-01T00:00:00Z").unwrap())
         ),
         None
     ],
     method: GET,
     header: expected_headers!(),
-    url: "https://api.twitch.tv/helix/analytics/games?game_id=493057&started_at=2018-01-01T00%3A00%3A00Z&ended_at=2018-03-01T00%3A00%3A00Z",
+    url: "https://api.twitch.tv/helix/analytics/games?game_id=493057&started_at=2018-01-01T00%3A00%3A00%2B00%3A00&ended_at=2018-03-01T00%3A00%3A00%2B00%3A00",
     json: None,
     text: None,
     urlencoded: None

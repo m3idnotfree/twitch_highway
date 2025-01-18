@@ -6,6 +6,7 @@ fn_expected_request!(
     endpoint: get_extension_analytics,
     token_type: User,
     scopes: Some(vec![Scope::AnalyticsReadExtensions]),
+    args: [None, None, None],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/analytics/extensions",
