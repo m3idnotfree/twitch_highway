@@ -70,26 +70,21 @@ pub trait ChatAPI: TwitchAPIBase {
         opts: Option<UpdateChatSettingsRequest>,
     ) -> TwitchAPIRequest<UpdateChatSettingsRequest, ChatSettingResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#send-chat-announcement
-    fn send_chat_announcement(&self) {
-        unimplemented!()
-    }
+    fn send_chat_announcement(
+        &self,
+        broadcaster_id: BroadcasterId,
+        moderator_id: ModeratorId,
+        message: impl Into<String>,
+        color: Option<AnnouncementColor>,
+    ) -> TwitchAPIRequest<ChatAnnouncementBody, EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#send-a-shoutout
-    fn send_a_shoutout(&self) {
-        unimplemented!()
-    }
+    fn send_a_shoutout(
+        &self,
+        from_broadcaster_id: BroadcasterId,
+        to_broadcaster_id: BroadcasterId,
+        moderator_id: ModeratorId,
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
     /// https://dev.twitch.tv/docs/api/reference/#send-chat-message
-    /// Requires an app access token or user access token that includes the user:write:chat scope.
-    /// If app access token used,
-    /// then additionally requires user:bot scope from chatting user,
-    /// and either channel:bot scope from broadcaster or moderator status.
-    /// The message is limited to a maximum of 500 characters.
-    /// Chat messages can also include emoticons.
-    /// To include emoticons,
-    /// use the name of the emote.
-    /// The names are case sensitive.
-    /// Don’t include colons around the name (e.g., :bleedPurple:).
-    /// If Twitch recognizes the name,
-    /// Twitch converts the name to the emote before writing the chat message to the chat room
     fn chat_write(
         &self,
         broadcaster_id: BroadcasterId,
@@ -279,6 +274,54 @@ impl ChatAPI for TwitchAPI {
             Method::PATCH,
             headers.build(),
             configuration.unwrap_or_default(),
+        )
+    }
+
+    fn send_chat_announcement(
+        &self,
+        broadcaster_id: BroadcasterId,
+        moderator_id: ModeratorId,
+        message: impl Into<String>,
+        color: Option<AnnouncementColor>,
+    ) -> TwitchAPIRequest<ChatAnnouncementBody, EmptyBody> {
+        let mut url = self.build_url();
+        url.path([CHAT, "announcements"])
+            .query(BROADCASTER_ID, broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
+
+        let mut headers = self.build_headers();
+        headers.json();
+
+        TwitchAPIRequest::new(
+            EndpointType::SendChatAnnouncement,
+            url.build(),
+            Method::POST,
+            headers.build(),
+            ChatAnnouncementBody::new(message.into(), color),
+        )
+    }
+
+    fn send_a_shoutout(
+        &self,
+        from_broadcaster_id: BroadcasterId,
+        to_broadcaster_id: BroadcasterId,
+        moderator_id: ModeratorId,
+    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+        let mut url = self.build_url();
+        url.path([CHAT, "shoutouts"])
+            .query("from_broadcaster_id", from_broadcaster_id)
+            .query("to_broadcaster_id", to_broadcaster_id)
+            .query(MODERATOR_ID, moderator_id);
+
+        let mut headers = self.build_headers();
+        headers.json();
+
+        TwitchAPIRequest::new(
+            EndpointType::SendAShoutout,
+            url.build(),
+            Method::POST,
+            self.build_headers().build(),
+            EmptyBody,
         )
     }
 
