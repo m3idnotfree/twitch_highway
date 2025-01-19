@@ -25,6 +25,7 @@ pub mod response;
 pub mod types;
 
 pub trait ExtensionsAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-extension-configuration-segment
     fn get_extension_configuration_segment(
         &self,
         jwt_token: JWTToken,
@@ -32,12 +33,14 @@ pub trait ExtensionsAPI: TwitchAPIBase {
         extension_id: ExtensionId,
         segment: &[Segment],
     ) -> TwitchAPIRequest<EmptyBody, ConfigurationSegmentResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#set-extension-configuration-segment
     fn set_extension_configuration_segment(
         &self,
         extension_id: ExtensionId,
         segment: Segment,
         opts: Option<SetConfigurationSegment>,
     ) -> TwitchAPIRequest<RequestBody<Value, SetConfigurationSegment>, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#set-extension-required-configuration
     fn set_extension_required_configuration(
         &self,
         broadcaster_id: BroadcasterId,
@@ -45,6 +48,7 @@ pub trait ExtensionsAPI: TwitchAPIBase {
         extension_version: &str,
         required_configuration: &str,
     ) -> TwitchAPIRequest<RequiredConfiguration, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#send-extension-pubsub-message
     fn send_extension_pubsub_message(
         &self,
         target: &[&str],
@@ -52,20 +56,24 @@ pub trait ExtensionsAPI: TwitchAPIBase {
         broadcaster_id: BroadcasterId,
         is_global_broadcast: Option<bool>,
     ) -> TwitchAPIRequest<RequestBody<Value, EmptyBody>, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-extension-live-channels
     fn get_extension_live_channels(
         &self,
         extension_id: ExtensionId,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionLiveChannelsRespnose>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-extension-secrets
     fn get_extension_secrets(
         &self,
         extension_id: ExtensionId,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#create-extension-secret
     fn create_extension_secret(
         &self,
         extension_id: ExtensionId,
         delay: Option<u64>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionSecretsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#send-extension-chat-message
     fn send_extension_chat_message(
         &self,
         broadcaster_id: BroadcasterId,
@@ -73,20 +81,24 @@ pub trait ExtensionsAPI: TwitchAPIBase {
         extension_id: ExtensionId,
         extension_version: &str,
     ) -> TwitchAPIRequest<ExtensionChatMessageIntoRequestBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-extensions
     fn get_extensions(
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-released-extensions
     fn get_released_extensions(
         &self,
         extension_id: ExtensionId,
         extension_version: Option<&str>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-extension-bits-products
     fn get_extension_bits_products(
         &self,
         should_inclue_all: Option<bool>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionsBitsProductsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-extension-bits-product
     fn update_extension_bits_products(
         &self,
         sku: &str,

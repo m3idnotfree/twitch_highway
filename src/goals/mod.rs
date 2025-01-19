@@ -11,6 +11,7 @@ pub mod response;
 pub mod types;
 
 pub trait GoalsAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-creator-goals
     fn get_creator_goals(
         &self,
         broadcaster_id: BroadcasterId,

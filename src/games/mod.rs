@@ -3,8 +3,9 @@ use request::GetGamesRequest;
 use response::GamesResponse;
 
 use crate::{
-    base::TwitchAPIBase, types::PaginationQuery, EmptyBody, EndpointType, TwitchAPI,
-    TwitchAPIRequest,
+    base::TwitchAPIBase,
+    types::{constants::GAMES, PaginationQuery},
+    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
 };
 
 pub mod request;
@@ -12,10 +13,12 @@ pub mod response;
 pub mod types;
 
 pub trait GamesAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-top-games
     fn get_top_games(
         &self,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GamesResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-games
     fn get_games(&self, request: GetGamesRequest) -> TwitchAPIRequest<EmptyBody, GamesResponse>;
 }
 
@@ -25,7 +28,7 @@ impl GamesAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GamesResponse> {
         let mut url = self.build_url();
-        url.path(["games", "top"]).query_opt_pairs(pagination);
+        url.path([GAMES, "top"]).query_opt_pairs(pagination);
 
         TwitchAPIRequest::new(
             EndpointType::GetTopGames,
@@ -37,7 +40,7 @@ impl GamesAPI for TwitchAPI {
     }
     fn get_games(&self, request: GetGamesRequest) -> TwitchAPIRequest<EmptyBody, GamesResponse> {
         let mut url = self.build_url();
-        url.path(["games"]).query_pairs(request);
+        url.path([GAMES]).query_pairs(request);
 
         TwitchAPIRequest::new(
             EndpointType::GetGames,

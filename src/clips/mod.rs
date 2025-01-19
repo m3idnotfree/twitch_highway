@@ -12,11 +12,13 @@ pub mod response;
 pub mod types;
 
 pub trait ClipsAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#create-clip
     fn create_clip(
         &self,
         broadcaster_id: BroadcasterId,
         has_delay: Option<bool>,
     ) -> TwitchAPIRequest<EmptyBody, CreateClipsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-clips
     fn get_clips(
         &self,
         clips_filter: ClipsFilter,

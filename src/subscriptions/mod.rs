@@ -14,12 +14,14 @@ pub mod response;
 pub mod types;
 
 pub trait SubscriptionsAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions
     fn get_broadcaster_subscriptions(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: Option<&[UserId]>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, BroadcasterSubscriptionResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#check-user-subscription
     fn check_user_subscpition(
         &self,
         broadcaster_id: BroadcasterId,

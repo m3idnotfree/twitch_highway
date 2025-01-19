@@ -18,36 +18,43 @@ pub mod types;
 const GUEST_STAR: &str = "guest_star";
 
 pub trait GuestStarAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-channel-guest-star-settings
     fn get_channel_guest_star_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
     ) -> TwitchAPIRequest<EmptyBody, GuestStarSettingsResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings
     fn update_channel_guest_star_settings(
         &self,
         broadcaster_id: BroadcasterId,
         request: GustStarSettingRequest,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-guest-star-session
     fn get_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
     ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#create-guest-star-session
     fn create_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#end-guest-star-session
     fn end_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         session_id: String,
     ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites
     fn get_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
     ) -> TwitchAPIRequest<EmptyBody, GustStarInvitesResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite
     fn send_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
@@ -55,6 +62,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         session_id: &str,
         guest_id: &str,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite
     fn delete_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
@@ -62,6 +70,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         session_id: &str,
         guest_id: &str,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot
     fn assign_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -70,6 +79,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         guest_id: &str,
         slot_id: &str,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot
     fn update_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -78,6 +88,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         source_slot_id: &str,
         destination_slot_id: Option<&str>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot
     fn delete_guest_star_slot(
         &self,
         broadcaster_id: BroadcasterId,
@@ -87,6 +98,7 @@ pub trait GuestStarAPI: TwitchAPIBase {
         slot_id: &str,
         should_reinvite_guest: Option<&str>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot-settings
     fn update_guest_star_slot_settings(
         &self,
         broadcaster_id: BroadcasterId,

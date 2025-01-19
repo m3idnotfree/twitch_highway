@@ -11,6 +11,7 @@ pub mod response;
 pub mod types;
 
 pub trait HypeTrainAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-hype-train-events
     fn get_hype_train_events(
         &self,
         broadcaster_id: BroadcasterId,

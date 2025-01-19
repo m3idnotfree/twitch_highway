@@ -21,22 +21,25 @@ pub mod response;
 pub mod types;
 
 pub trait ScheduleAPI: TwitchAPIBase {
+    /// https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule
     fn get_channel_stream_schedule(
         &self,
         broadcaster_id: BroadcasterId,
         opts: Option<ChannelStreamScheduleRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ScheduleResponse>;
-    //
+    /// https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar
     fn get_channel_icalendar(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule
     fn update_channel_stream_schedule(
         &self,
         broadcaster_id: BroadcasterId,
         opts: Option<UpdateScheduleRequest>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment
     fn create_channel_stream_schedule_segment(
         &self,
         broadcaster_id: BroadcasterId,
@@ -45,12 +48,14 @@ pub trait ScheduleAPI: TwitchAPIBase {
         duration: &str,
         opts: Option<CreateScheduleSegmentRequest>,
     ) -> TwitchAPIRequest<RequestBody<Value, CreateScheduleSegmentRequest>, ScheduleResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule-segment
     fn update_channel_stream_schedule_segment(
         &self,
         broadcaster_id: BroadcasterId,
         id: Id,
         opts: Option<UpdateScheduleSegmentRequest>,
     ) -> TwitchAPIRequest<UpdateScheduleSegmentRequest, ScheduleResponse>;
+    /// https://dev.twitch.tv/docs/api/reference/#delete-channel-stream-schedule-segment
     fn delete_channel_stream_schedule_segment(
         &self,
         broadcaster_id: BroadcasterId,
