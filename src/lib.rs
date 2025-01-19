@@ -88,7 +88,6 @@ mod request;
 mod response;
 
 pub use base::TwitchAPI;
-pub use chrono::{Datelike, Timelike};
 pub use error::Error;
 pub use request::{
     APIError, EmptyBody, EndpointType, IntoRequestBody, TokenType, TwitchAPIRequest,
