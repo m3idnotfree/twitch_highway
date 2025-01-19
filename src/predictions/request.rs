@@ -1,9 +1,6 @@
 use serde::Serialize;
 
-use crate::{
-    types::{BroadcasterId, Id, Title},
-    IntoRequestBody,
-};
+use crate::types::{BroadcasterId, Id, Title};
 
 use super::types::PredictionStatus;
 
@@ -16,13 +13,10 @@ request_struct!(
             outcomes: Vec<Title>,
             prediction_window:u64,
         }
-    }
+    };
+    impl_body: true
 );
-impl IntoRequestBody for CreatePredictionRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
+
 request_struct!(
     #[derive(Serialize)]
     EndPredictionRequest {
@@ -34,10 +28,6 @@ request_struct!(
         optional {
             winning_outcome_id:String
         }
-    }
+    };
+    impl_body: true
 );
-impl IntoRequestBody for EndPredictionRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}

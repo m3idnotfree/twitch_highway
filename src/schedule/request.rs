@@ -3,7 +3,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     base::{IntoQueryPairs, QueryParams},
     types::{constants::ID, Id},
-    IntoRequestBody,
 };
 
 request_struct!(
@@ -75,14 +74,9 @@ request_struct!(
             #[serde(skip_serializing_if = "Option::is_none")]
             is_recurring: bool,
         }
-    }
+    };
+    impl_body: true
 );
-
-impl IntoRequestBody for CreateScheduleSegmentRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
-    }
-}
 
 request_struct!(
     #[derive(Serialize, Deserialize)]
@@ -103,11 +97,6 @@ request_struct!(
             #[serde(skip_serializing_if = "Option::is_none")]
             is_canceled: bool,
         }
-    }
+    };
+    impl_body: true
 );
-
-impl IntoRequestBody for UpdateScheduleSegmentRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
-    }
-}

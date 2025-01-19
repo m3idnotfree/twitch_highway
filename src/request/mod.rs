@@ -13,13 +13,7 @@ pub use empty_body::EmptyBody;
 pub use endpoint_type::{EndpointType, TokenType};
 
 #[cfg(any(
-    feature = "ccls",
     feature = "channel_points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
     feature = "extensions",
     feature = "polls",
     feature = "predictions",
@@ -27,13 +21,7 @@ pub use endpoint_type::{EndpointType, TokenType};
 ))]
 mod request_body;
 #[cfg(any(
-    feature = "ccls",
     feature = "channel_points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
     feature = "extensions",
     feature = "polls",
     feature = "predictions",

@@ -21,10 +21,13 @@
     feature = "users",
 ))]
 pub(crate) const BROADCASTER_ID: &str = "broadcaster_id";
+
+#[cfg(any(feature = "analytics", feature = "bits", feature = "extensions"))]
+pub(crate) const EXTENSION_ID: &str = "extension_id";
+
 #[cfg(any(feature = "chat", feature = "guest-star", feature = "moderation",))]
 pub(crate) const MODERATOR_ID: &str = "moderator_id";
-#[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
-pub(crate) const STARTED_AT: &str = "started_at";
+
 #[cfg(any(
     feature = "bits",
     feature = "channels",
@@ -53,6 +56,14 @@ pub(crate) const USER_ID: &str = "user_id";
 ))]
 pub(crate) const ID: &str = "id";
 #[cfg(any(
+    feature = "streams",
+    feature = "videos",
+    feature = "analytics",
+    feature = "clips",
+    feature = "entitlements"
+))]
+pub(crate) const GAME_ID: &str = "game_id";
+#[cfg(any(
     feature = "bits",
     feature = "analytics",
     feature = "extensions",
@@ -66,6 +77,9 @@ pub(crate) const EXTENSIONS: &str = "extensions";
     feature = "search"
 ))]
 pub(crate) const CHANNELS: &str = "channels";
+
+#[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
+pub(crate) const STARTED_AT: &str = "started_at";
 
 #[cfg(any(
     feature = "analytics",
@@ -177,14 +191,6 @@ pub(crate) const WHISPERS: &str = "whispers";
 #[cfg(feature = "videos")]
 pub(crate) const VIDEOS: &str = "videos";
 
-#[cfg(any(
-    feature = "streams",
-    feature = "videos",
-    feature = "analytics",
-    feature = "clips"
-))]
-pub(crate) const GAME_ID: &str = "game_id";
-
 #[cfg(any(feature = "analytics", feature = "videos"))]
 pub(crate) const TYPE: &str = "type";
 
@@ -206,5 +212,8 @@ pub(crate) const EMOTES: &str = "emotes";
 #[cfg(any(feature = "chat", feature = "moderation", feature = "schedule"))]
 pub(crate) const SETTINGS: &str = "settings";
 
-#[cfg(any(feature = "bits", feature = "extensions"))]
-pub(crate) const EXTENSION_ID: &str = "extension_id";
+#[cfg(any(feature = "games", feature = "analytics"))]
+pub(crate) const GAMES: &str = "games";
+
+#[cfg(feature = "analytics")]
+pub(crate) const ANALYTICS: &str = "analytics";

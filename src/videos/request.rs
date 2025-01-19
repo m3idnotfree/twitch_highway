@@ -51,16 +51,16 @@ impl IntoQueryPairs for VideoFilter {
 }
 
 request_struct!(
-VideosRequest {
-    string {
-        language: String,
-    },
-    any {
-        period: Period,
-        sort: Sort,
-        kind: Type,
+    VideosRequest {
+        string {
+            language: String,
+        },
+        any {
+            period: Period,
+            sort: Sort,
+            kind: Type,
+        }
     }
-}
 );
 
 impl IntoQueryPairs for VideosRequest {

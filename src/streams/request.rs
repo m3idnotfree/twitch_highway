@@ -6,7 +6,6 @@ use crate::{
         constants::{GAME_ID, USER_ID},
         GameId, UserId,
     },
-    IntoRequestBody,
 };
 
 request_struct!(
@@ -46,18 +45,18 @@ impl IntoQueryPairs for GetStreamsRequest {
         params.build()
     }
 }
-#[derive(Debug, Serialize)]
-pub struct CreateStreamMarkerRequest {
-    pub user_id: UserId,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-}
 
-impl IntoRequestBody for CreateStreamMarkerRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
-    }
-}
+request_struct!(
+    #[derive(Serialize)]
+    CreateStreamMarkerRequest {
+        required {
+        user_id: UserId,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        description: Option<String>,
+        }
+    };
+    impl_body: true
+);
 
 #[derive(Debug, Serialize)]
 pub struct StreamMarkerFilter {

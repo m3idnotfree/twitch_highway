@@ -4,7 +4,7 @@ use std::fmt;
 macro_rules! new_type {
     (
     $name:ident
-    $(, $impl_id:ident: $check:expr)*
+    $({ $($impl_id:ident: $check:expr),* $(,)?})?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct $name(String);
@@ -18,10 +18,7 @@ macro_rules! new_type {
                 &self.0
             }
 
-            //pub fn to_user_id(&self) -> UserId {
-            //    UserId::new(self.0.clone())
-            //}
-            $(new_type!(@$impl_id $check);)*
+            $($(new_type!(@$impl_id $check);)*)?
         }
 
         impl fmt::Display for $name {
@@ -96,24 +93,42 @@ macro_rules! new_type {
         }
     };
     (@user $check:expr) => {
-        pub fn to_user_id(&self) -> UserId {
+        pub fn as_user(&self) -> UserId {
             UserId::new(self.0.clone())
         }
     };
     (@id $check:expr) => {
-        pub fn to_id(&self) -> Id {
+        pub fn as_id(&self) -> Id {
             Id::new(self.0.clone())
+        }
+    };
+    (@moderator $check:expr) => {
+        pub fn as_moderator(&self) -> ModeratorId {
+            ModeratorId::new(self.0.clone())
+        }
+    };
+    (@broadcaster $check:expr) => {
+        pub fn as_broadcaster(&self) -> BroadcasterId {
+            BroadcasterId::new(self.0.clone())
         }
     };
 }
 
-new_type!(
-BroadcasterId,
+new_type!(BroadcasterId {
     user: true,
-    id: true
-);
-new_type!(ModeratorId);
-new_type!(UserId);
+    id: true,
+    moderator: true
+});
+new_type!(ModeratorId {
+    user: true,
+    id: true,
+    broadcaster: true
+});
+new_type!(UserId {
+    id: true,
+    broadcaster: true,
+    moderator: true
+});
 new_type!(Id);
 new_type!(ExtensionId);
 new_type!(GameId);

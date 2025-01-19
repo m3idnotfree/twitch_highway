@@ -217,7 +217,7 @@ impl EndpointType {
             Self::GetUserEmotes => Some(vec![Scope::UserReadEmotes]),
             Self::UpdateChatSettings => Some(vec![Scope::ModeratorManageChatSettings]),
             Self::SendChatAnnouncement => Some(vec![Scope::ModeratorManageAnnouncements]),
-            Self::SendAShoutout => None,
+            Self::SendAShoutout => Some(vec![Scope::ModeratorManageShoutouts]),
             Self::SendChatMessage => Some(vec![
                 Scope::UserWriteChat,
                 Scope::UserBot,
