@@ -8,12 +8,12 @@ use request::SendWhisperBody;
 pub mod request;
 
 pub trait WhisperAPI: TwitchAPIBase {
-    /// NOTE: The user sending the whisper must have a verified phone number (see the Phone Number setting in your Security and Privacy settings).
+    /// https://dev.twitch.tv/docs/api/reference/#send-whisper
     fn send_whisper(
         &self,
         from_user_id: &str,
         to_user_id: &str,
-        message: &str,
+        message: impl Into<String>,
     ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody>;
 }
 
@@ -22,7 +22,7 @@ impl WhisperAPI for TwitchAPI {
         &self,
         from_user_id: &str,
         to_user_id: &str,
-        message: &str,
+        message: impl Into<String>,
     ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([WHISPERS])
@@ -36,7 +36,7 @@ impl WhisperAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            SendWhisperBody::new(message),
+            SendWhisperBody::new(message.into()),
         )
     }
 }
