@@ -6,6 +6,8 @@ use crate::types::Id;
 pub struct Category {
     pub id: Id,
     pub name: String,
-    pub box_art_url: String,
-    pub igdb_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub box_art_url: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub igdb_id: Option<String>,
 }

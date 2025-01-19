@@ -1,9 +1,9 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::types::{Category, Pagination};
 
-use super::types::{Category, Channel};
+use super::types::Channel;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CategoriesResponse {

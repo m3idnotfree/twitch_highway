@@ -2,6 +2,8 @@ mod cost;
 mod date_range;
 mod image;
 mod new_types;
+mod title;
+
 #[cfg(any(
     feature = "analytics",
     feature = "bits",
@@ -31,12 +33,7 @@ mod new_types;
     feature = "whispers",
 ))]
 mod pagination;
-mod title;
 
-pub use cost::{Cost, CostType};
-pub use date_range::DateRange;
-pub use image::Images;
-pub use new_types::{BroadcasterId, ExtensionId, GameId, Id, JWTToken, ModeratorId, UserId};
 #[cfg(any(
     feature = "analytics",
     feature = "bits",
@@ -66,11 +63,27 @@ pub use new_types::{BroadcasterId, ExtensionId, GameId, Id, JWTToken, ModeratorI
     feature = "whispers",
 ))]
 pub use pagination::{Pagination, PaginationQuery};
-pub use title::Title;
 
-#[cfg(any(feature = "games", feature = "test"))]
+#[cfg(any(
+    feature = "schedule",
+    feature = "search",
+    feature = "games",
+    feature = "test"
+))]
 mod category;
-#[cfg(any(feature = "games", feature = "test"))]
+
+#[cfg(any(
+    feature = "schedule",
+    feature = "search",
+    feature = "games",
+    feature = "test"
+))]
 pub use category::Category;
+
+pub use cost::{Cost, CostType};
+pub use date_range::DateRange;
+pub use image::Images;
+pub use new_types::{BroadcasterId, ExtensionId, GameId, Id, JWTToken, ModeratorId, UserId};
+pub use title::Title;
 
 pub(crate) mod constants;
