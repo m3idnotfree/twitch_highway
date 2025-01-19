@@ -1,4 +1,3 @@
-#![allow(non_snake_case)]
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
@@ -41,8 +40,7 @@ pub struct Cheermotes {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Tier {
     pub min_bits: u64,
-    //pub id: ID,
-    pub id: String,
+    pub id: TierLevel,
     pub color: String,
     pub images: Images,
     pub can_cheer: bool,
@@ -50,9 +48,11 @@ pub struct Tier {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum ID {
+pub enum TierLevel {
     #[serde(rename = "1")]
     One,
+    #[serde(rename = "10")]
+    Ten,
     #[serde(rename = "100")]
     Hundred,
     #[serde(rename = "500")]
@@ -94,6 +94,8 @@ pub struct Light {
     #[serde(rename = "static")]
     pub static_image: Imagess,
 }
+
+#[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Imagess {
     #[serde(rename(serialize = "1", deserialize = "1"))]
@@ -108,6 +110,7 @@ pub struct Imagess {
     Four: String,
 }
 
+#[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TransactionProductData {
     pub domain: String,
