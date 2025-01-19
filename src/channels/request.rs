@@ -1,17 +1,17 @@
 use serde::Serialize;
 
-use crate::{types::GameId, IntoRequestBody};
+use crate::types::GameId;
 
-new_request_struct!(
+request_struct!(
     #[derive(Serialize)]
     ModifyChannelRequest {
-        string: {
+        string {
             #[serde(skip_serializing_if = "Option::is_none")]
             broadcaster_language: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             title: String
         },
-        any: {
+        any {
             #[serde(skip_serializing_if = "Option::is_none")]
             game_id: GameId,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -23,26 +23,19 @@ new_request_struct!(
             #[serde(skip_serializing_if = "Option::is_none")]
             is_branded_content: bool
         }
-    }
+    };
+    impl_body: true
 );
 
-impl IntoRequestBody for ModifyChannelRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
+request_struct!(
+    #[derive(Serialize)]
+    ContentClassificationLabel {
+        required {
+            id: ContentClassificationLabelsID,
+            is_enabled: bool,
+       }
     }
-}
-
-#[derive(Debug, Serialize)]
-pub struct ContentClassificationLabel {
-    id: ContentClassificationLabelsID,
-    is_enabled: bool,
-}
-
-impl ContentClassificationLabel {
-    pub fn new(id: ContentClassificationLabelsID, is_enabled: bool) -> Self {
-        Self { id, is_enabled }
-    }
-}
+);
 
 #[derive(Debug, Serialize)]
 pub enum ContentClassificationLabelsID {
