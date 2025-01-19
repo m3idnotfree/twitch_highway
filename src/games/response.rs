@@ -1,13 +1,11 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
-
-use super::types::Game;
+use crate::types::{Category, Pagination};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GamesResponse {
-    pub data: Vec<Game>,
+    pub data: Vec<Category>,
     #[serde(
         default,
         serialize_with = "serialize_none_as_empty_object",

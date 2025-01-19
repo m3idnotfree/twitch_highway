@@ -10,7 +10,6 @@ use crate::{
 
 pub mod request;
 pub mod response;
-pub mod types;
 
 pub trait GamesAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#get-top-games

@@ -68,4 +68,9 @@ pub use new_types::{BroadcasterId, ExtensionId, GameId, Id, JWTToken, ModeratorI
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
 
+#[cfg(any(feature = "games", feature = "test"))]
+mod category;
+#[cfg(any(feature = "games", feature = "test"))]
+pub use category::Category;
+
 pub(crate) mod constants;
