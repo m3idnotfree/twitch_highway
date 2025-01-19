@@ -6,7 +6,6 @@ use crate::{
         constants::{GAME_ID, ID, USER_ID},
         GameId, Id, UserId,
     },
-    IntoRequestBody,
 };
 
 request_struct!(
@@ -61,11 +60,6 @@ request_struct!(
     UpdateEntitlementsRequest{
         entitlement_ids: Vec<String>,
         fulfillment_status: FulfillmentStatus
-    }
+    };
+    impl_body: true
 );
-
-impl IntoRequestBody for UpdateEntitlementsRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
-    }
-}
