@@ -1,5 +1,8 @@
 use asknothingx2_util::api::Method;
-use request::{ChatColor, SendChatMessageRequest, UpdateChatSettingsRequest};
+use request::{
+    AnnouncementColor, ChatAnnouncementBody, ChatColor, SendChatMessageRequest,
+    UpdateChatSettingsRequest,
+};
 use response::{
     BadgesResponse, ChatSettingResponse, ChattersResponse, EmotesResponse, SendChatMessageResponse,
     SharedChatSessionResponse, UsersColorResponse,
@@ -20,8 +23,6 @@ pub mod types;
 
 pub trait ChatAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#get-chatters
-    /// Authorization
-    /// Requires a user access token that includes the moderator:read:chatters scope.
     fn get_chatters(
         &self,
         broadcaster_id: BroadcasterId,
@@ -88,8 +89,8 @@ pub trait ChatAPI: TwitchAPIBase {
     fn chat_write(
         &self,
         broadcaster_id: BroadcasterId,
-        sender_id: String,
-        message: String,
+        sender_id: impl Into<String>,
+        message: impl Into<String>,
     ) -> TwitchAPIRequest<SendChatMessageRequest, SendChatMessageResponse>;
     /// https://dev.twitch.tv/docs/api/reference/#get-user-chat-color
     fn user_chat_color(
@@ -328,8 +329,8 @@ impl ChatAPI for TwitchAPI {
     fn chat_write(
         &self,
         broadcaster_id: BroadcasterId,
-        sender_id: String,
-        message: String,
+        sender_id: impl Into<String>,
+        message: impl Into<String>,
     ) -> TwitchAPIRequest<SendChatMessageRequest, SendChatMessageResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "messages"]);
@@ -342,7 +343,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            SendChatMessageRequest::new(broadcaster_id, sender_id, message),
+            SendChatMessageRequest::new(broadcaster_id, sender_id.into(), message.into()),
         )
     }
 

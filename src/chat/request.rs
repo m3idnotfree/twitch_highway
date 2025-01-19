@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-use crate::{types::BroadcasterId, IntoRequestBody};
+use crate::types::BroadcasterId;
 
 request_struct!(
     #[derive(Serialize)]
@@ -8,16 +8,11 @@ request_struct!(
         required {
             broadcaster_id: BroadcasterId,
             sender_id: String,
-            message: String,
+            message: String
         }
-    }
+    };
+    impl_body: true
 );
-
-impl IntoRequestBody for SendChatMessageRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
 
 request_struct!(
     /// https://dev.twitch.tv/docs/api/reference/#update-chat-settings
@@ -41,14 +36,9 @@ request_struct!(
         subscriber_mode: bool,
         #[serde(skip_serializing_if = "Option::is_none")]
         unique_chat_mode: bool,
-    }
+    };
+    impl_body: true
 );
-
-impl IntoRequestBody for UpdateChatSettingsRequest {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
 
 #[derive(Debug, Serialize)]
 pub enum ChatColor {
@@ -87,6 +77,39 @@ impl ChatColor {
             Self::SeaGreen => "sea_green",
             Self::SpringGreen => "spring_green",
             Self::YellowGreen => "yellow_green",
+        }
+    }
+}
+
+request_struct!(
+    #[derive(Serialize)]
+    ChatAnnouncementBody {
+        required {
+            message: String,
+            color: Option<AnnouncementColor>
+        }
+    };
+    impl_body: true
+);
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AnnouncementColor {
+    Blue,
+    Green,
+    Orange,
+    Purple,
+    Primary,
+}
+
+impl AnnouncementColor {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Blue => "blue",
+            Self::Green => "green",
+            Self::Orange => "orange",
+            Self::Purple => "purple",
+            Self::Primary => "primary",
         }
     }
 }
