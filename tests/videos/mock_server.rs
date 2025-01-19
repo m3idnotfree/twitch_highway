@@ -11,7 +11,7 @@ new_fn_mock_server_f!(
             twitch_highway::videos::request::VideoFilter
         ],
         endpoint: get_videos,
-        args: |a| {VideoFilter::by_user_id(a.to_user_id()), None, None}
+        args: |a| {VideoFilter::by_user_id(a.as_user()), None, None}
     }
 );
 
@@ -27,6 +27,6 @@ new_fn_mock_server_f!(
             twitch_highway::videos::VideosAPI
         ],
         endpoint: delete_videos,
-        args:|a| {&[a.to_id()]}
+        args:|a| {&[a.as_id()]}
     }
 );

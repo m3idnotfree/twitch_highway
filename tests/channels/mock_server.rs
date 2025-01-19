@@ -67,7 +67,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: get_followed_channels,
         args: |broadcaster_id|{
-            broadcaster_id.to_user_id(),
+            broadcaster_id.as_user(),
             None,
             None
         }

@@ -11,7 +11,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: users_info,
         args: |broadcaster_id|{
-            Some(&[broadcaster_id.to_id()]),
+            Some(&[broadcaster_id.as_id()]),
             None
         }
     }

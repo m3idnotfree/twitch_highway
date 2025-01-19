@@ -42,7 +42,7 @@ new_fn_mock_server_f!(
             twitch_highway::streams::StreamsAPI
         ],
         endpoint: get_followed_streams,
-        args: |broadcaster_id|{broadcaster_id.to_user_id(), None}
+        args: |broadcaster_id|{broadcaster_id.as_user(), None}
     }
 );
 
@@ -58,7 +58,7 @@ new_fn_mock_server_f!(
             twitch_highway::streams::StreamsAPI
         ],
         endpoint: create_stream_marker,
-        args: |broadcaster_id|{broadcaster_id.to_user_id(), None}
+        args: |broadcaster_id|{broadcaster_id.as_user(), None}
     }
 );
 
@@ -75,6 +75,6 @@ new_fn_mock_server_f!(
             twitch_highway::streams::request::StreamMarkerFilter
         ],
         endpoint: get_stream_marker,
-        args: |broadcaster_id|{StreamMarkerFilter::by_user_id(broadcaster_id.to_user_id()), None}
+        args: |broadcaster_id|{StreamMarkerFilter::by_user_id(broadcaster_id.as_user()), None}
     }
 );

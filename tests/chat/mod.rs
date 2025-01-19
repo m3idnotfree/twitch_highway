@@ -7,6 +7,8 @@ mod get_chatters;
 mod get_shared_chat_session;
 mod global_badge;
 mod global_emotes;
+mod send_a_shoutout;
+mod send_chat_announcement;
 mod update_chat_settings;
 mod update_user_chat_color;
 mod user_chat_color;

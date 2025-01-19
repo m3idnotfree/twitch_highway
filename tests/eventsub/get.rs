@@ -1,9 +1,11 @@
+use twitch_highway::eventsub::request::EventSubRequest;
+
 fn_expected_request!(
     api:twitch_highway::eventsub::EventSubAPI,
     endpoint: get,
     token_type: App,
     scopes: None,
-    args: [None],
+    args: [EventSubRequest::new()],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/eventsub/subscriptions",

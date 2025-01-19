@@ -8,5 +8,5 @@ fn_expected_request!(
     method: POST,
     header: expected_headers!(json),
     url: "https://api.twitch.tv/helix/eventsub/subscriptions",
-    json: Some("{\"type\":\"channel.raid\",\"version\":\"1\",\"condition\":{\"to_broadcaster_user_id\":\"1337\"},\"transport\":{\"method\":\"webhook\",\"callback\":\"https://example.com/webhooks/callback\",\"secret\":\"s3cRe7\"}}".to_string()),
+    json: Some("{\"type\":\"channel.raid\",\"version\":\"1\",\"condition\":{\"to_broadcaster_user_id\":\"1337\"},\"transport\":{\"method\":\"webhook\",\"callback\":\"https://example.com/webhooks/callback\",\"secret\":\"s3cRe7\"}}".to_string())
 );

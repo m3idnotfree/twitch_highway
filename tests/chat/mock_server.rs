@@ -12,7 +12,7 @@ new_fn_mock_server_f!(
         endpoint: get_chatters,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             None
         }
     }
@@ -159,7 +159,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: user_emotes,
         args: |broadcaster_id|{
-            broadcaster_id.to_user_id(),
+            broadcaster_id.as_user(),
             None,
             None
         },
@@ -182,7 +182,7 @@ new_fn_mock_server_f!(
         endpoint: update_chat_settings,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             None
         },
     }
@@ -223,7 +223,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: user_chat_color,
         args: |broadcaster_id|{
-            &[broadcaster_id.to_user_id()]
+            &[broadcaster_id.as_user()]
         }
     }
 );
@@ -242,7 +242,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: update_user_chat_color,
         args: |broadcaster_id|{
-            broadcaster_id.to_user_id(),
+            broadcaster_id.as_user(),
             ChatColor::Red
         },
         status:NO_CONTENT

@@ -2,12 +2,18 @@ fn_expected_request!(
     modules: [
         twitch_highway::bits::BitsAPI,
         twitch_highway::bits::request::BitsLeaderboardRequest,
-        twitch_oauth_token::types::Scope
+        twitch_oauth_token::types::Scope,
+        chrono::DateTime
     ],
     endpoint: get_bits_leaderboard,
     token_type: User,
     scopes: Some(vec![Scope::BitsRead]),
-    args: [Some(BitsLeaderboardRequest::new().count(2).period("week".to_string()).started_at("2018-02-05T08:00:00Z".to_string()))],
+    args: [Some(
+        BitsLeaderboardRequest::new()
+            .count(2)
+            .period("week".to_string())
+            .started_at(DateTime::parse_from_rfc3339("2018-02-05T08:00:00Z").unwrap())
+    )],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/bits/leaderboard?count=2&period=week&started_at=2018-02-05T08%3A00%3A00Z",

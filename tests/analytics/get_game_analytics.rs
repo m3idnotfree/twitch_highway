@@ -19,7 +19,7 @@ fn_expected_request!(
     ],
     method: GET,
     header: expected_headers!(),
-    url: "https://api.twitch.tv/helix/analytics/games?game_id=493057&started_at=2018-01-01T00%3A00%3A00%2B00%3A00&ended_at=2018-03-01T00%3A00%3A00%2B00%3A00",
+    url: "https://api.twitch.tv/helix/analytics/games?game_id=493057&started_at=2018-01-01T00%3A00%3A00Z&ended_at=2018-03-01T00%3A00%3A00Z",
     json: None,
     text: None,
     urlencoded: None

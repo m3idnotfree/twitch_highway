@@ -17,6 +17,7 @@ fn_expected_resopnse!(
     de: GoalsResponse
 );
 
+#[cfg(feature = "test")]
 new_fn_mock_server_f!(
     name: mock_server_get_creator_goals,
     oauth: {

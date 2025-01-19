@@ -30,7 +30,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: get_games,
         args: |broadcaster_id|{
-            GetGamesRequest::new().ids(vec![broadcaster_id.to_id()])
+            GetGamesRequest::new().ids(vec![broadcaster_id.as_id()])
         }
     }
 );

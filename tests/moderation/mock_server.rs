@@ -32,7 +32,7 @@ new_fn_mock_server_f!(
         ],
         endpoint: manage_held_automod_messages,
         args: |broadcaster_id|{
-            broadcaster_id.to_user_id(),
+            broadcaster_id.as_user(),
             "836013710",
             AutoModAction::ALLOW
         },
@@ -55,7 +55,7 @@ new_fn_mock_server_f!(
         endpoint: get_auto_mod_settings,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator()
+            broadcaster_id.as_moderator()
         },
         status: NOT_FOUND,
         rep: false
@@ -77,7 +77,7 @@ new_fn_mock_server_f!(
         endpoint: update_auto_mod_settings,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             None
         },
         status: NOT_FOUND,
@@ -214,7 +214,7 @@ new_fn_mock_server_f!(
         endpoint: get_blocked_terms,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             None
         },
         status: NOT_FOUND,
@@ -237,7 +237,7 @@ new_fn_mock_server_f!(
         endpoint: add_blocked_term,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             "ff"
         },
         status: NOT_FOUND,
@@ -261,7 +261,7 @@ new_fn_mock_server_f!(
         endpoint: remove_blocked_term,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             Id::new("35249427")
         },
         status: NOT_FOUND,
@@ -283,7 +283,7 @@ new_fn_mock_server_f!(
         endpoint: delete_chat_messages,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator(),
+            broadcaster_id.as_moderator(),
             Some("ffus")
         },
         //check: true,
@@ -477,7 +477,7 @@ new_fn_mock_server_f!(
         endpoint: get_shield_mode_status,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_moderator()
+            broadcaster_id.as_moderator()
         },
     }
 );

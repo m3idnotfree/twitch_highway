@@ -58,7 +58,7 @@ new_fn_mock_server_f!(
         endpoint: end_prediction,
         args: |broadcaster_id|{
             broadcaster_id.clone(),
-            broadcaster_id.to_id(),
+            broadcaster_id.as_id(),
             PredictionStatus::CANCELED,
             None
         }
