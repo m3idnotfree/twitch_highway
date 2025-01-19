@@ -9,11 +9,10 @@ use crate::{
 };
 use asknothingx2_util::api::Method;
 use request::{
-    CustomRewardRedemptionQuery, CustomRewardsBody, RedemptionStatusQuery,
-    UpdateCustomRewardRequest,
+    CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
+    RedemptionStatusQuery, UpdateCustomRewardRequest,
 };
 use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
-use serde_json::Value;
 
 pub mod request;
 pub mod response;
@@ -26,7 +25,10 @@ pub trait ChannelPointsAPI: TwitchAPIBase {
         title: &str,
         cost: u64,
         opts: Option<CustomRewardsBody>,
-    ) -> TwitchAPIRequest<RequestBody<Value, CustomRewardsBody>, CustomRewardsResponse>;
+    ) -> TwitchAPIRequest<
+        RequestBody<CustomRewardsRequiredBody, CustomRewardsBody>,
+        CustomRewardsResponse,
+    >;
     fn delete_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
@@ -67,17 +69,18 @@ impl ChannelPointsAPI for TwitchAPI {
         title: &str,
         cost: u64,
         opts: Option<CustomRewardsBody>,
-    ) -> TwitchAPIRequest<RequestBody<Value, CustomRewardsBody>, CustomRewardsResponse> {
+    ) -> TwitchAPIRequest<
+        RequestBody<CustomRewardsRequiredBody, CustomRewardsBody>,
+        CustomRewardsResponse,
+    > {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
             .query(BROADCASTER_ID, broadcaster_id);
 
-        let json = serde_json::json!({
-            "title": title,
-            "cost":cost
-        });
-
-        let request_body = RequestBody::new(json, opts);
+        let request_body = RequestBody::new(
+            CustomRewardsRequiredBody::new(title.to_string(), cost),
+            opts,
+        );
 
         let mut headers = self.build_headers();
         headers.json();

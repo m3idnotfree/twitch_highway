@@ -6,6 +6,18 @@ use crate::{
 };
 
 use super::types::RedemptionStatus;
+
+request_struct!(
+    #[derive(Serialize)]
+    CustomRewardsRequiredBody {
+        required {
+            title: String,
+            cost: u64
+        }
+    };
+    impl_body: true
+);
+
 request_struct!(
     #[derive(Serialize)]
     CustomRewardsBody {
