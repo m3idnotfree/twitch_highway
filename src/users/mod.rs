@@ -49,7 +49,7 @@ pub trait UserAPI: TwitchAPIBase {
     /// https://dev.twitch.tv/docs/api/reference/#block-user
     fn block_user(
         &self,
-        target_user_id: &str,
+        target_user_id: UserId,
         source_context: Option<BlockSourceContext>,
         reason: Option<BlockReason>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
@@ -126,7 +126,7 @@ impl UserAPI for TwitchAPI {
 
     fn block_user(
         &self,
-        target_user_id: &str,
+        target_user_id: UserId,
         source_context: Option<BlockSourceContext>,
         reason: Option<BlockReason>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {

@@ -61,11 +61,12 @@ new_fn_mock_server_f!(
     },
     api: {
         modules: [
-            twitch_highway::users::UserAPI
+            twitch_highway::users::UserAPI,
+            twitch_highway::types::UserId
         ],
         endpoint: block_user,
         args: |_a|{
-            "11265581",
+            UserId::new("11265581"),
             None,
             None
         },
