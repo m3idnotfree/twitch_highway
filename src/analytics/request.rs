@@ -22,8 +22,8 @@ impl IntoQueryPairs for AnalyticsRequest {
 
         params
             .push_opt(TYPE, self.kind)
-            .push_opt(STARTED_AT, self.started_at.map(|x| x.to_rfc3339()))
-            .push_opt("ended_at", self.ended_at.map(|x| x.to_rfc3339()));
+            .date_opt(STARTED_AT, self.started_at)
+            .date_opt("ended_at", self.ended_at);
 
         params.build()
     }
