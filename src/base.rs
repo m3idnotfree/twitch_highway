@@ -4,8 +4,6 @@ use asknothingx2_util::{
 };
 use url::Url;
 
-use chrono::{DateTime, FixedOffset, SecondsFormat};
-
 use crate::types::JWTToken;
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
@@ -164,7 +162,7 @@ pub trait IntoQueryPairs {
     feature = "analytics",
     feature = "bits",
     feature = "ccls",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -195,7 +193,7 @@ pub struct QueryParams(Vec<(&'static str, String)>);
     feature = "analytics",
     feature = "bits",
     feature = "ccls",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -229,7 +227,7 @@ impl QueryParams {
         feature = "analytics",
         feature = "bits",
         feature = "ccls",
-        feature = "channel_points",
+        feature = "channel-points",
         feature = "channels",
         feature = "charity",
         feature = "chat",
@@ -260,14 +258,22 @@ impl QueryParams {
         }
         self
     }
-    #[cfg(any(
-        feature = "clips",
-        feature = "entitlements",
-        feature = "games",
-        feature = "schedule",
-        feature = "streams",
-        feature = "videos",
-    ))]
+
+    #[inline]
+    pub fn build(self) -> Vec<(&'static str, String)> {
+        self.0
+    }
+}
+
+#[cfg(any(
+    feature = "clips",
+    feature = "entitlements",
+    feature = "games",
+    feature = "schedule",
+    feature = "streams",
+    feature = "videos",
+))]
+impl QueryParams {
     pub fn extend_opt<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
         &mut self,
         extend: Option<L>,
@@ -277,7 +283,12 @@ impl QueryParams {
         }
         self
     }
+}
 
+#[cfg(any(feature = "analytics", feature = "bits"))]
+use chrono::{DateTime, FixedOffset, SecondsFormat};
+#[cfg(any(feature = "analytics", feature = "bits"))]
+impl QueryParams {
     pub fn date_opt(
         &mut self,
         key: &'static str,
@@ -288,10 +299,5 @@ impl QueryParams {
                 .push((key, date.to_rfc3339_opts(SecondsFormat::Secs, true)));
         }
         self
-    }
-
-    #[inline]
-    pub fn build(self) -> Vec<(&'static str, String)> {
-        self.0
     }
 }
