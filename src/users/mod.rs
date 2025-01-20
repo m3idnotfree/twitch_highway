@@ -20,49 +20,40 @@ pub mod response;
 pub mod types;
 
 pub trait UserAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-users
-    /// To include the user’s verified email address in the response,
-    /// you must use a user access token that includes the
-    /// user:read:email scope.
+    /// <https://dev.twitch.tv/docs/api/reference/#get-users>
     fn users_info(
         &self,
         ids: Option<&[Id]>,
         logins: Option<&[String]>,
     ) -> TwitchAPIRequest<EmptyBody, UsersInfoResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#update-user
-    /// Requires a user access token that includes the user:edit scope.
-    ///
-    /// The string to update the channel’s description to.
-    /// The description is limited to a maximum of 300 characters.
-    ///
-    /// To remove the description, specify this parameter but don’t set it’s value (for example, ?description=).
+    /// <https://dev.twitch.tv/docs/api/reference/#update-user>
     fn update_user(
         &self,
         description: Option<&str>,
     ) -> TwitchAPIRequest<EmptyBody, UpdateUsersResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-user-block-list
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
     fn block_list(
         &self,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, BlockUserListResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#block-user
+    /// <https://dev.twitch.tv/docs/api/reference/#block-user>
     fn block_user(
         &self,
         target_user_id: UserId,
         source_context: Option<BlockSourceContext>,
         reason: Option<BlockReason>,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
-    /// https://dev.twitch.tv/docs/api/reference/#unblock-user
+    /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
     fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-user-extensions
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
     fn user_extensions(&self) -> TwitchAPIRequest<EmptyBody, UserExtensionsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
     fn user_active_extensions(
         &self,
         user_id: Option<UserId>,
     ) -> TwitchAPIRequest<EmptyBody, UserActiveExtensionsResponse>;
-    // https://dev.twitch.tv/docs/api/reference/#update-user-extensions
+    // <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
     fn update_user_extensions(
         &self,
         data: UserActiveExtensions,

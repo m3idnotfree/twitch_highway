@@ -15,7 +15,7 @@ request_struct!(
 );
 
 request_struct!(
-    /// https://dev.twitch.tv/docs/api/reference/#update-chat-settings
+    /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
     #[derive(Serialize)]
     UpdateChatSettingsRequest {
         #[serde(skip_serializing_if = "Option::is_none")]

@@ -18,30 +18,30 @@ pub mod response;
 pub mod types;
 
 pub trait StreamsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-stream-key
+    /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
     fn get_stream_key(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, StreamKeyResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-streams
+    /// <https://dev.twitch.tv/docs/api/reference/#get-streams>
     fn get_streams(
         &self,
         opts: Option<GetStreamsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, StreamsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-followed-streams
+    /// <https://dev.twitch.tv/docs/api/reference/#get-followed-streams>
     fn get_followed_streams(
         &self,
         user_id: UserId,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, StreamsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#create-stream-marker
+    /// <https://dev.twitch.tv/docs/api/reference/#create-stream-marker>
     fn create_stream_marker(
         &self,
         user_id: UserId,
         description: Option<String>,
     ) -> TwitchAPIRequest<CreateStreamMarkerRequest, CreateStreamMarkerResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-stream-markers
+    /// <https://dev.twitch.tv/docs/api/reference/#get-stream-markers>
     fn get_stream_marker(
         &self,
         filter: StreamMarkerFilter,

@@ -12,12 +12,12 @@ pub mod request;
 pub mod response;
 
 pub trait GamesAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-top-games
+    /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
     fn get_top_games(
         &self,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GamesResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-games
+    /// <https://dev.twitch.tv/docs/api/reference/#get-games>
     fn get_games(&self, request: GetGamesRequest) -> TwitchAPIRequest<EmptyBody, GamesResponse>;
 }
 

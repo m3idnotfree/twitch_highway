@@ -19,25 +19,30 @@ pub mod response;
 pub mod types;
 
 pub trait ChannelsAPI: TwitchAPIBase {
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
     fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
     ) -> TwitchAPIRequest<EmptyBody, ChannelInfoResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
     fn modify_channel_info(
         &self,
         broadcaster_id: BroadcasterId,
         opts: Option<ModifyChannelRequest>,
     ) -> TwitchAPIRequest<ModifyChannelRequest, EmptyBody>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
     fn get_channel_editors(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, ChannelEditorsResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
     fn get_followed_channels(
         &self,
         user_id: UserId,
         broadcaster_id: Option<BroadcasterId>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, FollowerdChannelsResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
     fn get_channel_followers(
         &self,
         user_id: Option<UserId>,

@@ -11,13 +11,13 @@ pub mod response;
 pub mod types;
 
 pub trait RaidAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#start-a-raid
+    /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
     fn start_raid(
         &self,
         from_broadcaster_id: &str,
         to_broadcaster_id: &str,
     ) -> TwitchAPIRequest<EmptyBody, StartRaidResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#cancel-a-raid
+    /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
     fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
 }
 

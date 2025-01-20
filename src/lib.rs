@@ -1,10 +1,12 @@
 //! # I'm on the highway to hell
 //!
 //! By default, no API endpoints are enabled.
-//! https://dev.twitch.tv/docs/api/reference/
+//!
+//! <https://dev.twitch.tv/docs/api/reference/>
 //!
 //! # Usage
 //! ```toml
+//! [dependencies]
 //! twitch_highway = { version = "0.1", features = ["users"] }
 //! asknothingx2-util = { version = "0.0.28", features = ["oauth"] }
 //! ```
@@ -25,41 +27,41 @@
 //!
 //!     let user_block = api.block_user(UserId::new("user_id"), None, Some(BlockReason::Harassment));
 //!     let response = user_block.request().await.unwrap();
+//!     let response = response.parse_response().unwrap();
 //! }
 //! ```
 //!
 //! # Features
-//! - [`AdsAPI`]
-//! - [`AnalyticsAPI`]
-//! - [`BitsAPI`]
-//! - [`CclsAPI`]
-//! - [`ChannelPointsAPI`]
-//! - [`ChannelsAPI`]
-//! - [`CharityAPI`]
-//! - [`ChatAPI`]
-//! - [`ClipsAPI`]
-//! - [x] Conduits
-//! - [`CclsAPI`]
-//! - [`EntitlementsAPI`]
-//! - [`ExtensionsAPI`]
-//! - [x] EventSub
-//! - [`GamesAPI`]
-//! - [`GoalsAPI`]
-//! - [`GuestStarAPI`]
-//! - [`HypeTrainAPI`]
-//! - [`ModerationAPI`]
-//! - [`PollsAPI`]
-//! - [`PredictionsAPI`]
-//! - [`RaidAPI`]
-//! - [`ScheduleAPI`]
-//! - [`SearchAPI`]
-//! - [`StreamsAPI`]
-//! - [`SubscriptionsAPI`]
-//! - [x] Tags
-//! - [`TeamsAPI`]
-//! - [`UserAPI`]
-//! - [`VideosAPI`]
-//! - [`WhisperAPI`]
+//! - [`Ads`][crate::ads::AdsAPI]
+//! - [`Analytics`][crate::analytics::AnalyticsAPI]
+//! - [`Bits`][crate::bits::BitsAPI]
+//! - [`Channels`][crate::channels::ChannelsAPI]
+//! - [`Channel Points`][crate::channel_points::ChannelPointsAPI]
+//! - [`Charity`][crate::charity::CharityAPI]
+//! - [`Chat`][crate::chat::ChatAPI]
+//! - [`Clips`][crate::clips::ClipsAPI]
+//! - [ ] Conduits
+//! - [`CCLs`][crate::ccls::CclsAPI]
+//! - [`Entitlements`][crate::entitlements::EntitlementsAPI]
+//! - [`Extensions`][crate::extensions::ExtensionsAPI]
+//! - [ ] EventSub
+//! - [`Games`][crate::games::GamesAPI]
+//! - [`Goals`][crate::goals::GoalsAPI]
+//! - [`Guest Star`][crate::guest_star::GuestStarAPI]
+//! - [`Hype Train`][crate::hype_train::HypeTrainAPI]
+//! - [`Moderation`][crate::moderation::ModerationAPI]
+//! - [`Polls`][crate::polls::PollsAPI]
+//! - [`Predictions`][crate::predictions::PredictionsAPI]
+//! - [`Raids`][crate::raid::RaidAPI]
+//! - [`Schedule`][crate::schedule::ScheduleAPI]
+//! - [`Search`][crate::search::SearchAPI]
+//! - [`Streams`][crate::streams::StreamsAPI]
+//! - [`Subscriptions`][crate::subscriptions::SubscriptionsAPI]
+//! - [ ] Tags
+//! - [`Teams`][crate::teams::TeamsAPI]
+//! - [`Users`][crate::users::UserAPI]
+//! - [`Videos`][crate::videos::VideosAPI]
+//! - [`Whispers`][crate::whispers::WhisperAPI]
 
 #[macro_use]
 mod macros;

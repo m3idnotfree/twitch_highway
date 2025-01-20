@@ -17,7 +17,7 @@ pub struct ChatSettingResponse {
     pub data: Vec<ChatSetting>,
 }
 
-/// https://dev.twitch.tv/docs/api/reference/#get-chatters
+/// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
 /// spec paginarion must include event empty.
 /// but mock server remove paginiation field
 #[derive(Debug, Serialize, Deserialize)]

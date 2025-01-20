@@ -16,18 +16,18 @@ pub mod response;
 pub mod types;
 
 pub trait AdsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#start-commercial
+    /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
     fn start_commercial(
         &self,
         broadcaster_id: BroadcasterId,
         length: u64,
     ) -> TwitchAPIRequest<StartCommercialBody, StartCommercialResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-ad-schedule
+    /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
     fn get_ad_schedule(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, AdScheduleResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#snooze-next-ad
+    /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
     fn snooze_next_ad(
         &self,
         broadcaster_id: BroadcasterId,

@@ -16,14 +16,14 @@ pub mod response;
 pub mod types;
 
 pub trait AnalyticsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-extension-analytics
+    /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
     fn get_extension_analytics(
         &self,
         extension_id: Option<ExtensionId>,
         opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-game-analytics
+    /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
     fn get_game_analytics(
         &self,
         game_id: Option<GameId>,

@@ -16,14 +16,14 @@ pub mod response;
 pub mod types;
 
 pub trait VideosAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-videos
+    /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
     fn get_videos(
         &self,
         video_filter: VideoFilter,
         opts: Option<VideosRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, VideosResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#delete-videos
+    /// <https://dev.twitch.tv/docs/api/reference/#delete-videos>
     fn delete_videos(&self, id: &[Id]) -> TwitchAPIRequest<EmptyBody, DeleteVideosResponse>;
 }
 

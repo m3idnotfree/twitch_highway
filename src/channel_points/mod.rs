@@ -19,6 +19,7 @@ pub mod response;
 pub mod types;
 
 pub trait ChannelPointsAPI: TwitchAPIBase {
+    /// <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
     fn create_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
@@ -29,17 +30,20 @@ pub trait ChannelPointsAPI: TwitchAPIBase {
         RequestBody<CustomRewardsRequiredBody, CustomRewardsBody>,
         CustomRewardsResponse,
     >;
+    /// <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
     fn delete_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
         id: Id,
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
     fn get_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
         id: Option<Vec<Id>>,
         only_manageable_rewards: Option<bool>,
     ) -> TwitchAPIRequest<EmptyBody, CustomRewardsResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
     fn get_custom_reward_redemption(
         &self,
         broadcaster_id: BroadcasterId,
@@ -47,12 +51,14 @@ pub trait ChannelPointsAPI: TwitchAPIBase {
         opts: Option<CustomRewardRedemptionQuery>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, CustomRewardsRedemptionResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
     fn update_custom_reward(
         &self,
         broadcaster_id: BroadcasterId,
         id: Id,
         opts: Option<UpdateCustomRewardRequest>,
     ) -> TwitchAPIRequest<UpdateCustomRewardRequest, CustomRewardsResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
     fn update_redemption_status<L: IntoIterator<Item = Id>>(
         &self,
         broadcaster_id: BroadcasterId,

@@ -13,10 +13,12 @@ pub mod response;
 pub mod types;
 
 pub trait CharityAPI: TwitchAPIBase {
+    /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign>
     fn get_charity_campaign(
         &self,
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, CharityCampaignResponse>;
+    /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations>
     fn get_charity_campaign_donations(
         &self,
         broadcaster_id: BroadcasterId,

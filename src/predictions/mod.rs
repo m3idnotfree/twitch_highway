@@ -19,14 +19,14 @@ pub mod response;
 pub mod types;
 
 pub trait PredictionsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-predictions
+    /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
     fn get_predictions(
         &self,
         broadcaster_id: BroadcasterId,
         id: Option<Vec<Id>>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, PredictionsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#create-prediction
+    /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
     fn create_prediction(
         &self,
         broadcaster_id: BroadcasterId,
@@ -34,7 +34,7 @@ pub trait PredictionsAPI: TwitchAPIBase {
         outcomes: Vec<Title>,
         prediction_window: u64,
     ) -> TwitchAPIRequest<CreatePredictionRequest, PredictionsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#end-prediction
+    /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
     fn end_prediction(
         &self,
         broadcaster_id: BroadcasterId,

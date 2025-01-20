@@ -8,7 +8,7 @@ use request::SendWhisperBody;
 pub mod request;
 
 pub trait WhisperAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#send-whisper
+    /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
     fn send_whisper(
         &self,
         from_user_id: &str,

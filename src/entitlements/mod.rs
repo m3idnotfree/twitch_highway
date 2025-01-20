@@ -11,13 +11,13 @@ pub mod response;
 pub mod types;
 
 pub trait EntitlementsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements
+    /// <https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements>
     fn get_drops_entitlements(
         &self,
         opts: Option<DropEntitlementRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements
+    /// <https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements>
     fn update_drops_entitlements(
         &self,
         opts: Option<UpdateEntitlementsRequest>,

@@ -16,17 +16,17 @@ pub mod response;
 pub mod types;
 
 pub trait BitsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard
+    /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
     fn get_bits_leaderboard(
         &self,
         opts: Option<BitsLeaderboardRequest>,
     ) -> TwitchAPIRequest<EmptyBody, BitsLeaderboardResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-cheermotes
+    /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
     fn get_cheermotes(
         &self,
         broadcaster_id: Option<BroadcasterId>,
     ) -> TwitchAPIRequest<EmptyBody, CheermotesResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#get-extension-transactions
+    /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
     fn get_extension_transactions(
         &self,
         extension_id: ExtensionId,

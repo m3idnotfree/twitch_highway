@@ -11,13 +11,13 @@ pub mod response;
 pub mod types;
 
 pub trait SearchAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#search-categories
+    /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
     fn search_categories(
         &self,
         query: &str,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#search-channels
+    /// <https://dev.twitch.tv/docs/api/reference/#search-channels>
     fn search_channels(
         &self,
         query: &str,

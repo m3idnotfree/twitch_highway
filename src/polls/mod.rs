@@ -19,14 +19,14 @@ pub mod response;
 pub mod types;
 
 pub trait PollsAPI: TwitchAPIBase {
-    /// https://dev.twitch.tv/docs/api/reference/#get-polls
+    /// <https://dev.twitch.tv/docs/api/reference/#get-polls>
     fn get_polls(
         &self,
         broadcaster_id: BroadcasterId,
         id: Option<Id>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, PollsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#create-poll
+    /// <https://dev.twitch.tv/docs/api/reference/#create-poll>
     fn create_poll(
         &self,
         broadcaster_id: BroadcasterId,
@@ -35,7 +35,7 @@ pub trait PollsAPI: TwitchAPIBase {
         duration: u64,
         opts: Option<PollsRequest>,
     ) -> TwitchAPIRequest<RequestBody<Value, PollsRequest>, PollsResponse>;
-    /// https://dev.twitch.tv/docs/api/reference/#end-poll
+    /// <https://dev.twitch.tv/docs/api/reference/#end-poll>
     fn end_poll(
         &self,
         broadcaster_id: BroadcasterId,

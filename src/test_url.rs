@@ -130,7 +130,7 @@ pub async fn mock_teams(
         .await
 }
 
-/// https://dev.twitch.tv/docs/cli/mock-api-command/#getting-an-access-token
+/// <https://dev.twitch.tv/docs/cli/mock-api-command/#getting-an-access-token>
 pub async fn mock_users(
     port: Option<u16>,
 ) -> Result<MockData<User>, asknothingx2_util::api::ReqwestError> {
