@@ -3,7 +3,7 @@ name = "twitch_highway"
 version = "0.0.10"
 authors = ["m3id"]
 edition = "2021"
-description = "Twitch Api reqest Http"
+description = "Twitch API"
 license = "MIT"
 repository = "https://github.com/m3idnotfree/twitch_highway.git"
 keywords = ["twitch"]
@@ -76,7 +76,7 @@ asknothingx2-util = { version = "0.0.28", features = ["api", "oauth", "serde"] }
 chrono = { version = "0.4.39", features = ["serde"] }
 http-serde = "2.1.1"
 serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.135"
+serde_json = "1.0.137"
 thiserror = "2.0.11"
 twitch_oauth_token = { version = "1.1.10", default-features = false, features = ["types"] }
 url = "2.5.4"
