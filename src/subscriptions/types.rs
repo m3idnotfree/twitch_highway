@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::{BroadcasterId, UserId};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct UserSubscription {
+pub struct Subscription {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,

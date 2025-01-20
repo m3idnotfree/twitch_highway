@@ -3,16 +3,16 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Pagination;
 
-use super::types::UserSubscription;
+use super::types::Subscription;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UserSubscriptionResponse {
-    pub data: Vec<UserSubscription>,
+    pub data: Vec<Subscription>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BroadcasterSubscriptionResponse {
-    pub data: Vec<UserSubscription>,
+    pub data: Vec<Subscription>,
     #[serde(
         default,
         serialize_with = "serialize_none_as_empty_object",
