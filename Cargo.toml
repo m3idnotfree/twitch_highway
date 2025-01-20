@@ -1,12 +1,15 @@
 [package]
 name = "twitch_highway"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["m3id"]
 edition = "2021"
 description = "Twitch API"
 license = "MIT"
 repository = "https://github.com/m3idnotfree/twitch_highway.git"
 keywords = ["twitch"]
+
+[package.metadata.docs.rs]
+all-features = true
 
 [features]
 default = []
