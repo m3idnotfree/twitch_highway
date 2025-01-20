@@ -1,92 +1,134 @@
-//! implement Endpoint
+//! https://dev.twitch.tv/docs/api/reference/
 //!
+//! By default, no API endpoints are enabled.
 //!
+//! # Usage
+//! ```toml
+//! twitch_highway = { version = "0.1", features = ["users"] }
+//! asknothingx2-util = { version = "0.0.28", features = ["oauth"] }
+//! ```
+//! ```rust,no_run
+//! use asknothingx2_util::oauth::{AccessToken, ClientId};
+//! use twitch_highway::{
+//!     types::UserId,
+//!     users::{request::BlockReason, UserAPI},
+//!     TwitchAPI,
+//! };
 //!
-//!  ㄱ: Implement
-//!  ㄷ: Pass test
-//!  ㄴ: Pass twitch mack-api
-//!  ㅐ: Failed twitch mack-api
-//!  ㅠ: Pass real world API
-//! Users
-//!  [ㄷ] Get Users
-//!  [ㄷ] Update User
-//!  [ㄷ] Get User Block List
-//!  [ㄷ] Block User
-//!  [ㄷ] Unblock User
-//!  [ㄷ] Get User Extensions
-//!  [ㄷ] Get User Active Extensions
-//!     - [ ] Response
-//!  [ ] Update User Extensions
+//! #[tokio::main]
+//! async fn main() {
+//!     let api = TwitchAPI::new(
+//!         AccessToken::new("access_token".to_string()),
+//!         ClientId::new("client_id".to_string()),
+//!     );
 //!
-//! EventSubAPI: mock server except
-//!  [ㅐ] Create EventSub Subscription
-//!     [ㄱ] drop entitlement grant
-//!     [ㄱ] extension bits transaction create
-//!     [ㄱ] conduit shard disabled
-//!     [ㄱ] channel raid
-//!  [ㅐ] Delete EventSub Subscription
-//!  [ ] Get EventSub Subscriptions
+//!     let user_block = api.block_user(UserId::new("user_id"), None, Some(BlockReason::Harassment));
+//!     let response = user_block.request().await.unwrap();
+//! }
+//! ```
 //!
-//! Chat
-//!  [ㄷ] Get Chatters
-//!  [ㄷ] Get Channel Emotes
-//!  [ㅐ] Get Global Emotes
-//!  [ㅐ] Get Emote Sets
-//!  [ㄷ] Get Channel Chat Badges
-//!  [ㅐ] Get Global Chat Badges
-//!  [ㄷ] Get Chat Settings
-//!  [ㅐ] Get Shared Chat Session
-//!  [ㄷ] Get User Emotes
-//!  [ㄷ] Update Chat Settings
-//!  [ ] Send Chat Announcement
-//!  [ ] Send a Shoutout
-//!  [ㅐ] Send Chat Message
-//!  [ㄷ] Get User Chat Color
-//!  [ㄷ] Update User Chat Color
-//!
-//! Todo
-//! Ads
-//! Bitsc
-//! Channels
-//! Channel Points
-//! Charity
-//! Clips
-//! Conduits
-//! CCLs
-//! Entitlements: mock server except
-//! Extensions: mock server except
-//! Games
-//! Goals
-//! Guest Star
-//! Hype Train
-//! Moderation
-//! Polls
-//! Predictions
-//! Raids
-//! Schedule
-//! Search
-//! Streams
-//! Subscriptions
-//! Tags
-//! Teams
-//! Videos
-//! Whispers
-//! The mock server replicates a majority of the Twitch API endpoints except
-//! for endpoints related to:
-//! Extensions
-//! Code entitlements
-//! EventSub
+//! # Features
+//! - [`AdsAPI`]
+//! - [`AnalyticsAPI`]
+//! - [`BitsAPI`]
+//! - [`CclsAPI`]
+//! - [`ChannelPointsAPI`]
+//! - [`ChannelsAPI`]
+//! - [`CharityAPI`]
+//! - [`ChatAPI`]
+//! - [`ClipsAPI`]
+//! - [x] Conduits
+//! - [`CclsAPI`]
+//! - [`EntitlementsAPI`]
+//! - [`ExtensionsAPI`]
+//! - [x] EventSub
+//! - [`GamesAPI`]
+//! - [`GoalsAPI`]
+//! - [`GuestStarAPI`]
+//! - [`HypeTrainAPI`]
+//! - [`ModerationAPI`]
+//! - [`PollsAPI`]
+//! - [`PredictionsAPI`]
+//! - [`RaidAPI`]
+//! - [`ScheduleAPI`]
+//! - [`SearchAPI`]
+//! - [`StreamsAPI`]
+//! - [`SubscriptionsAPI`]
+//! - [x] Tags
+//! - [`TeamsAPI`]
+//! - [`UserAPI`]
+//! - [`VideosAPI`]
+//! - [`WhisperAPI`]
 
 #[macro_use]
 mod macros;
 
 pub mod types;
 
-mod base;
 mod error;
 mod request;
 mod response;
 
+#[cfg(any(
+    feature = "ads",
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel-points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
+mod base;
+
+#[cfg(any(
+    feature = "ads",
+    feature = "analytics",
+    feature = "bits",
+    feature = "ccls",
+    feature = "channel-points",
+    feature = "channels",
+    feature = "charity",
+    feature = "chat",
+    feature = "clips",
+    feature = "entitlements",
+    feature = "extensions",
+    feature = "games",
+    feature = "goals",
+    feature = "guest-star",
+    feature = "hype-train",
+    feature = "moderation",
+    feature = "polls",
+    feature = "predictions",
+    feature = "raid",
+    feature = "schedule",
+    feature = "search",
+    feature = "streams",
+    feature = "subscriptions",
+    feature = "teams",
+    feature = "users",
+    feature = "videos",
+    feature = "whispers",
+))]
 pub use base::TwitchAPI;
 pub use error::Error;
 pub use request::{
