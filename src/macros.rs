@@ -3,7 +3,7 @@
     feature = "analytics",
     feature = "bits",
     feature = "channels",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "chat",
     feature = "clips",
     feature = "entitlements",
@@ -14,13 +14,11 @@
     feature = "moderation",
     feature = "polls",
     feature = "predictions",
-    feature = "raid",
     feature = "schedule",
-    feature = "search",
     feature = "streams",
-    feature = "teams",
     feature = "users",
     feature = "videos",
+    feature = "whispers",
 ))]
 macro_rules! request_struct {
     (

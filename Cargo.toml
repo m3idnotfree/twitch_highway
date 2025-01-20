@@ -14,7 +14,7 @@ ads = []
 analytics = []
 bits = []
 ccls = []
-channel_points = []
+channel-points = []
 channels = []
 charity = []
 chat = []
@@ -44,7 +44,7 @@ full = [
   "analytics",
   "bits",
   "ccls",
-  "channel_points",
+  "channel-points",
   "channels",
   "charity",
   "chat",

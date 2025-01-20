@@ -1,7 +1,7 @@
 #[cfg(any(
     feature = "ads",
     feature = "bits",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -42,7 +42,7 @@ pub(crate) const MODERATOR_ID: &str = "moderator_id";
 pub(crate) const USER_ID: &str = "user_id";
 #[cfg(any(
     feature = "bits",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "clips",
     feature = "entitlements",
     feature = "games",
@@ -85,7 +85,7 @@ pub(crate) const STARTED_AT: &str = "started_at";
     feature = "analytics",
     feature = "bits",
     feature = "ccls",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -114,7 +114,7 @@ pub(crate) const BEFORE: &str = "before";
     feature = "analytics",
     feature = "bits",
     feature = "ccls",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -143,7 +143,7 @@ pub(crate) const FIRST: &str = "first";
     feature = "analytics",
     feature = "bits",
     feature = "ccls",
-    feature = "channel_points",
+    feature = "channel-points",
     feature = "channels",
     feature = "charity",
     feature = "chat",
@@ -197,9 +197,9 @@ pub(crate) const TYPE: &str = "type";
 #[cfg(any(feature = "bits", feature = "extensions"))]
 pub(crate) const BITS: &str = "bits";
 
-#[cfg(feature = "channel_points")]
+#[cfg(feature = "channel-points")]
 pub(crate) const CHANNEL_POINTS: &str = "channel_points";
-#[cfg(feature = "channel_points")]
+#[cfg(feature = "channel-points")]
 pub(crate) const CUSTOM_REWARDS: &str = "custom_rewards";
 
 #[cfg(feature = "charity")]

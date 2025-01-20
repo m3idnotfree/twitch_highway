@@ -102,7 +102,7 @@ pub mod analytics;
 pub mod bits;
 #[cfg(feature = "ccls")]
 pub mod ccls;
-#[cfg(feature = "channel_points")]
+#[cfg(feature = "channel-points")]
 pub mod channel_points;
 #[cfg(feature = "channels")]
 pub mod channels;
