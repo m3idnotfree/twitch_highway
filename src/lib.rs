@@ -1,13 +1,14 @@
-//! https://dev.twitch.tv/docs/api/reference/
+//! # I'm on the highway to hell
 //!
 //! By default, no API endpoints are enabled.
+//! https://dev.twitch.tv/docs/api/reference/
 //!
 //! # Usage
 //! ```toml
 //! twitch_highway = { version = "0.1", features = ["users"] }
 //! asknothingx2-util = { version = "0.0.28", features = ["oauth"] }
 //! ```
-//! ```rust,no_run
+//! ```rust,ignore
 //! use asknothingx2_util::oauth::{AccessToken, ClientId};
 //! use twitch_highway::{
 //!     types::UserId,

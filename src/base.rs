@@ -289,6 +289,9 @@ impl QueryParams {
 use chrono::{DateTime, FixedOffset, SecondsFormat};
 #[cfg(any(feature = "analytics", feature = "bits"))]
 impl QueryParams {
+    /// RFC 3339 format
+    /// Includes seconds presision
+    /// Uses "Z" suffix
     pub fn date_opt(
         &mut self,
         key: &'static str,
