@@ -613,7 +613,7 @@ macro_rules! new_fn_mock_server_f {
         #[tokio::test]
         async fn $fn_name() {
             use twitch_oauth_token::types::{$scope_module, Token};
-            use twitch_highway::{APIError, TwitchAPI, TestUrl};
+            use twitch_highway::{APIError, TwitchAPI, test_url::TestUrl};
             use asknothingx2_util::{
                 oauth::ClientId,
             };

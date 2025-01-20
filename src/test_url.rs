@@ -1,7 +1,6 @@
+use asknothingx2_util::oauth::{ClientId, ClientSecret};
 use serde::{Deserialize, Serialize};
 use url::Url;
-
-use crate::types::Category;
 
 pub trait TestUrl {
     fn with_url(self, port: Option<u16>, endpoint: Option<String>) -> Self;
@@ -58,13 +57,12 @@ impl TestUrlHold {
 
 #[cfg(feature = "subscriptions")]
 use crate::subscriptions::types::Subscription;
+#[cfg(feature = "subscriptions")]
 pub async fn mock_categories(
     port: Option<u16>,
 ) -> Result<MockData<Category>, asknothingx2_util::api::ReqwestError> {
     let mut url = Url::parse("http://localhost:8080/units/categories").unwrap();
-    if port.is_some() {
-        url.set_port(port).unwrap();
-    }
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
 
     asknothingx2_util::api::get(url)
         .await?
@@ -79,9 +77,7 @@ pub async fn mock_streams(
     port: Option<u16>,
 ) -> Result<MockData<Stream>, asknothingx2_util::api::ReqwestError> {
     let mut url = Url::parse("http://localhost:8080/units/streams").unwrap();
-    if port.is_some() {
-        url.set_port(port).unwrap();
-    }
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
 
     asknothingx2_util::api::get(url)
         .await?
@@ -90,13 +86,13 @@ pub async fn mock_streams(
 }
 
 #[cfg(feature = "subscriptions")]
+use crate::types::Category;
+#[cfg(feature = "subscriptions")]
 pub async fn mock_subscriptions(
     port: Option<u16>,
 ) -> Result<MockData<Subscription>, asknothingx2_util::api::ReqwestError> {
     let mut url = Url::parse("http://localhost:8080/units/subscriptions").unwrap();
-    if port.is_some() {
-        url.set_port(port).unwrap();
-    }
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
 
     asknothingx2_util::api::get(url)
         .await?
@@ -111,9 +107,7 @@ pub async fn mock_videos(
     port: Option<u16>,
 ) -> Result<MockData<Video>, asknothingx2_util::api::ReqwestError> {
     let mut url = Url::parse("http://localhost:8080/units/videos").unwrap();
-    if port.is_some() {
-        url.set_port(port).unwrap();
-    }
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
 
     asknothingx2_util::api::get(url)
         .await?
@@ -128,14 +122,33 @@ pub async fn mock_teams(
     port: Option<u16>,
 ) -> Result<MockData<Team>, asknothingx2_util::api::ReqwestError> {
     let mut url = Url::parse("http://localhost:8080/units/teams").unwrap();
-    if port.is_some() {
-        url.set_port(port).unwrap();
-    }
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
 
     asknothingx2_util::api::get(url)
         .await?
         .json::<MockData<Team>>()
         .await
+}
+
+/// https://dev.twitch.tv/docs/cli/mock-api-command/#getting-an-access-token
+pub async fn mock_users(
+    port: Option<u16>,
+) -> Result<MockData<User>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/clients").unwrap();
+    url.set_port(Some(port.unwrap_or(8080))).unwrap();
+
+    asknothingx2_util::api::get(url).await?.json().await
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct User {
+    /// client_id
+    pub ID: ClientId,
+    /// client_secret
+    pub Secret: ClientSecret,
+    pub Name: String,
+    pub IsExtension: bool,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
