@@ -1,4 +1,7 @@
+use serde::{Deserialize, Serialize};
 use url::Url;
+
+use crate::types::Category;
 
 pub trait TestUrl {
     fn with_url(self, port: Option<u16>, endpoint: Option<String>) -> Self;
@@ -51,4 +54,93 @@ impl TestUrlHold {
             Ok(test_url)
         }
     }
+}
+
+#[cfg(feature = "subscriptions")]
+use crate::subscriptions::types::Subscription;
+pub async fn mock_categories(
+    port: Option<u16>,
+) -> Result<MockData<Category>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/categories").unwrap();
+    if port.is_some() {
+        url.set_port(port).unwrap();
+    }
+
+    asknothingx2_util::api::get(url)
+        .await?
+        .json::<MockData<Category>>()
+        .await
+}
+
+#[cfg(feature = "streams")]
+use crate::streams::types::Stream;
+#[cfg(feature = "streams")]
+pub async fn mock_streams(
+    port: Option<u16>,
+) -> Result<MockData<Stream>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/streams").unwrap();
+    if port.is_some() {
+        url.set_port(port).unwrap();
+    }
+
+    asknothingx2_util::api::get(url)
+        .await?
+        .json::<MockData<Stream>>()
+        .await
+}
+
+#[cfg(feature = "subscriptions")]
+pub async fn mock_subscriptions(
+    port: Option<u16>,
+) -> Result<MockData<Subscription>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/subscriptions").unwrap();
+    if port.is_some() {
+        url.set_port(port).unwrap();
+    }
+
+    asknothingx2_util::api::get(url)
+        .await?
+        .json::<MockData<Subscription>>()
+        .await
+}
+
+#[cfg(feature = "videos")]
+use crate::videos::types::Video;
+#[cfg(feature = "videos")]
+pub async fn mock_videos(
+    port: Option<u16>,
+) -> Result<MockData<Video>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/videos").unwrap();
+    if port.is_some() {
+        url.set_port(port).unwrap();
+    }
+
+    asknothingx2_util::api::get(url)
+        .await?
+        .json::<MockData<Video>>()
+        .await
+}
+
+#[cfg(feature = "teams")]
+use crate::teams::types::Team;
+#[cfg(feature = "teams")]
+pub async fn mock_teams(
+    port: Option<u16>,
+) -> Result<MockData<Team>, asknothingx2_util::api::ReqwestError> {
+    let mut url = Url::parse("http://localhost:8080/units/teams").unwrap();
+    if port.is_some() {
+        url.set_port(port).unwrap();
+    }
+
+    asknothingx2_util::api::get(url)
+        .await?
+        .json::<MockData<Team>>()
+        .await
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct MockData<T> {
+    pub cursor: String,
+    pub total: u64,
+    pub data: Vec<T>,
 }
