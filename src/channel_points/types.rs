@@ -3,7 +3,7 @@ use std::fmt;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, Images, UserId};
+use crate::types::{BroadcasterId, CustomRewardId, Images, RedemptionId, RewardId, UserId};
 
 #[derive(Debug, Deserialize)]
 pub struct CustomRewards {
@@ -11,7 +11,7 @@ pub struct CustomRewards {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broadcaster_login: Option<String>,
     pub broadcaster_name: String,
-    pub id: Id,
+    pub id: CustomRewardId,
     pub title: String,
     pub prompt: String,
     pub cost: u64,
@@ -36,7 +36,7 @@ pub struct CustomRewardsRedemption {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,
-    pub id: Id,
+    pub id: RedemptionId,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user_login: Option<String>,
     pub user_id: UserId,
@@ -60,7 +60,7 @@ pub struct MaxPerStreamSetting {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Reward {
-    pub id: Id,
+    pub id: RewardId,
     pub title: String,
     pub prompt: String,
     pub cost: u64,

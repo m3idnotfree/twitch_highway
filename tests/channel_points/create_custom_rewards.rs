@@ -1,7 +1,9 @@
-use twitch_highway::types::BroadcasterId;
-
 fn_expected_request!(
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: create_custom_rewards,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageRedemptions]),

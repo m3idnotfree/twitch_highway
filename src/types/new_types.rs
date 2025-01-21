@@ -132,5 +132,8 @@ new_type!(UserId {
 new_type!(Id);
 new_type!(ExtensionId);
 new_type!(GameId);
+new_type!(RewardId);
+new_type!(CustomRewardId);
+new_type!(RedemptionId);
 
 new_type!(JWTToken);

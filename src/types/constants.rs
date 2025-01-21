@@ -28,6 +28,9 @@ pub(crate) const EXTENSION_ID: &str = "extension_id";
 #[cfg(any(feature = "chat", feature = "guest-star", feature = "moderation",))]
 pub(crate) const MODERATOR_ID: &str = "moderator_id";
 
+#[cfg(feature = "channel-points")]
+pub(crate) const REWARD_ID: &str = "reward_id";
+
 #[cfg(any(
     feature = "bits",
     feature = "channels",

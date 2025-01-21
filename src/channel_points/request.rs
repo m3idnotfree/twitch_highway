@@ -2,7 +2,7 @@ use serde::Serialize;
 
 use crate::{
     base::{IntoQueryPairs, QueryParams},
-    types::{constants::ID, Id},
+    types::{constants::ID, RedemptionId},
 };
 
 use super::types::RedemptionStatus;
@@ -73,7 +73,7 @@ request_struct!(
         },
         any {
             status: RedemptionStatus,
-            id: Id,
+            id: RedemptionId,
         }
     }
 );

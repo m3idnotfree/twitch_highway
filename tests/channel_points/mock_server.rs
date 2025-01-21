@@ -29,12 +29,12 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::channel_points::ChannelPointsAPI,
-            twitch_highway::types::Id
+            twitch_highway::types::CustomRewardId
         ],
         endpoint: delete_custom_rewards,
         args: |broadcaster_id| {
             broadcaster_id,
-            Id::new("game analysis 1v1")
+            CustomRewardId::new("b045196d-9ce7-4a27-a9b9-279ed341ab28")
         },
         status: NOT_FOUND,
         rep: false
@@ -70,12 +70,13 @@ new_fn_mock_server_f!(
     },
     api: {
         modules: [
-            twitch_highway::channel_points::ChannelPointsAPI
+            twitch_highway::channel_points::ChannelPointsAPI,
+            twitch_highway::types::RewardId
         ],
         endpoint: get_custom_reward_redemption,
         args: |broadcaster_id|{
             broadcaster_id,
-            "reward_id",
+            RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
             None,
             None
         },
@@ -94,12 +95,12 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::channel_points::ChannelPointsAPI,
-            twitch_highway::types::Id
+            twitch_highway::types::CustomRewardId
         ],
         endpoint: update_custom_reward,
         args: |broadcaster_id|{
             broadcaster_id,
-            Id::new("reward_id"),
+            CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
             None
         }
     }
@@ -117,13 +118,14 @@ new_fn_mock_server_f!(
             twitch_highway::channel_points::ChannelPointsAPI,
             twitch_highway::channel_points::request::RedemptionStatusQuery,
             twitch_highway::channel_points::types::RedemptionStatus,
-            twitch_highway::types::Id
+            twitch_highway::types::RedemptionId,
+            twitch_highway::types::RewardId
         ],
         endpoint: update_redemption_status,
         args: |broadcaster_id|{
+            &[RedemptionId::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
             broadcaster_id,
-            vec![Id::new("35249427")],
-            "reward_id",
+            RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
             RedemptionStatusQuery::new(RedemptionStatus::CANCELED)
         },
         status: NOT_FOUND,

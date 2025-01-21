@@ -1,17 +1,18 @@
-use twitch_highway::{
-    channel_points::request::UpdateCustomRewardRequest,
-    types::{BroadcasterId, Id},
-};
-
 fn_expected_request!(
     name: set_is_enabled,
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::channel_points::request::UpdateCustomRewardRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::CustomRewardId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_custom_reward,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageRedemptions]),
     args: [
         BroadcasterId::new("274637212"),
-        Id::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+        CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
         Some(UpdateCustomRewardRequest::new().is_enabled(false))
     ],
     json_contain: ["\"is_enabled\":false"],
@@ -29,13 +30,19 @@ fn_expected_resopnse!(
 
 fn_expected_request!(
     name: set_title_request,
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::channel_points::request::UpdateCustomRewardRequest,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::CustomRewardId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_custom_reward,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageRedemptions]),
     args: [
         BroadcasterId::new("274637212"),
-        Id::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+        CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
         Some(UpdateCustomRewardRequest::new().title("game analysis 2v2".to_string()))
     ],
     json_contain: ["\"title\":\"game analysis 2v2\""],

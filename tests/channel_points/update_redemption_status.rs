@@ -1,17 +1,20 @@
-use twitch_highway::{
-    channel_points::{request::RedemptionStatusQuery, types::RedemptionStatus},
-    types::{BroadcasterId, Id},
-};
-
 fn_expected_request!(
-    api:twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::channel_points::request::RedemptionStatusQuery,
+        twitch_highway::channel_points::types::RedemptionStatus,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::RedemptionId,
+        twitch_highway::types::RewardId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: update_redemption_status,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageRedemptions]),
     args: [
+        &[RedemptionId::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
         BroadcasterId::new("274637212"),
-        [Id::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
-        "92af127c-7326-4483-a52b-b0da0be61c01",
+        RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
         RedemptionStatusQuery::new(RedemptionStatus::CANCELED)
     ],
     json_contain: ["\"status\":\"CANCELED\""],

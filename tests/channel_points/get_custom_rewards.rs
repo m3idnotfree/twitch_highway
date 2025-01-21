@@ -1,7 +1,9 @@
-use twitch_highway::types::{BroadcasterId, Id};
-
 fn_expected_request!(
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_custom_rewards,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
@@ -19,7 +21,11 @@ fn_expected_resopnse!(
 
 fn_expected_request!(
     name: only_manageable_rewards_request,
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_custom_rewards,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
@@ -38,13 +44,18 @@ fn_expected_resopnse!(
 
 fn_expected_request!(
     name: id_request,
-    api: twitch_highway::channel_points::ChannelPointsAPI,
+    modules: [
+        twitch_highway::channel_points::ChannelPointsAPI,
+        twitch_highway::types::BroadcasterId,
+        twitch_highway::types::CustomRewardId,
+        twitch_oauth_token::types::Scope
+    ],
     endpoint: get_custom_rewards,
     token_type: User,
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
     args: [
         BroadcasterId::new("274637212"),
-        Some(vec![Id::new("92af127c-7326-4483-a52b-b0da0be61c01")]),
+        Some(vec![CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01")]),
         None
     ],
     method: GET,
