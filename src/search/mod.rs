@@ -10,6 +10,7 @@ use crate::{
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "search")))]
 pub trait SearchAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
     fn search_categories(

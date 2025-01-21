@@ -15,6 +15,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "analytics")))]
 pub trait AnalyticsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
     fn get_extension_analytics(

@@ -18,6 +18,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
 pub trait ChannelsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
     fn get_channel_info(

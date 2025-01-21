@@ -15,6 +15,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "ads")))]
 pub trait AdsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
     fn start_commercial(

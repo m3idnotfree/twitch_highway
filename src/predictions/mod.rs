@@ -18,6 +18,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "predictions")))]
 pub trait PredictionsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
     fn get_predictions(

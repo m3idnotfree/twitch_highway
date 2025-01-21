@@ -8,6 +8,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "ccls")))]
 pub trait CclsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels>
     fn get_content_classification_labels(

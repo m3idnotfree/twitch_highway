@@ -10,6 +10,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "entitlements")))]
 pub trait EntitlementsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements>
     fn get_drops_entitlements(

@@ -26,6 +26,7 @@ pub mod types;
 
 const MODERATION: &str = "moderation";
 
+#[cfg_attr(docsrs, doc(cfg(feature = "moderation")))]
 pub trait ModerationAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
     fn check_automod_status(

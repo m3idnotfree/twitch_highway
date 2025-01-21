@@ -21,6 +21,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "chat")))]
 pub trait ChatAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
     fn get_chatters(

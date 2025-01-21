@@ -15,6 +15,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "teams")))]
 pub trait TeamsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-teams>
     fn get_channel_teams(

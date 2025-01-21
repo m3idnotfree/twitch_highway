@@ -10,6 +10,7 @@ use crate::{
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "goals")))]
 pub trait GoalsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-creator-goals>
     fn get_creator_goals(

@@ -11,6 +11,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "clips")))]
 pub trait ClipsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#create-clip>
     fn create_clip(

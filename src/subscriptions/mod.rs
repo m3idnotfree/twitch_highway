@@ -13,6 +13,7 @@ use crate::{
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
 pub trait SubscriptionsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions>
     fn get_broadcaster_subscriptions(

@@ -19,6 +19,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "users")))]
 pub trait UserAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-users>
     fn users_info(

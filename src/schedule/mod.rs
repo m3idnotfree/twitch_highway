@@ -20,6 +20,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "schedule")))]
 pub trait ScheduleAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule>
     fn get_channel_stream_schedule(

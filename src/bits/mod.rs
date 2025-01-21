@@ -15,6 +15,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
 pub trait BitsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
     fn get_bits_leaderboard(

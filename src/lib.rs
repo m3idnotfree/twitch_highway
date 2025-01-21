@@ -32,36 +32,39 @@
 //! ```
 //!
 //! # Features
-//! - [`Ads`][crate::ads::AdsAPI]
-//! - [`Analytics`][crate::analytics::AnalyticsAPI]
-//! - [`Bits`][crate::bits::BitsAPI]
-//! - [`Channels`][crate::channels::ChannelsAPI]
-//! - [`Channel Points`][crate::channel_points::ChannelPointsAPI]
-//! - [`Charity`][crate::charity::CharityAPI]
+//! - [`ads`][crate::ads::AdsAPI]
+//! - [`analytics`][crate::analytics::AnalyticsAPI]
+//! - [`bits`][crate::bits::BitsAPI]
+//! - [`channels`][crate::channels::ChannelsAPI]
+//! - [`channel-points`][crate::channel_points::ChannelPointsAPI]
+//! - [`charity`][crate::charity::CharityAPI]
 //! - [`Chat`][crate::chat::ChatAPI]
-//! - [`Clips`][crate::clips::ClipsAPI]
-//! - [ ] Conduits
-//! - [`CCLs`][crate::ccls::CclsAPI]
-//! - [`Entitlements`][crate::entitlements::EntitlementsAPI]
-//! - [`Extensions`][crate::extensions::ExtensionsAPI]
-//! - [ ] EventSub
-//! - [`Games`][crate::games::GamesAPI]
-//! - [`Goals`][crate::goals::GoalsAPI]
-//! - [`Guest Star`][crate::guest_star::GuestStarAPI]
-//! - [`Hype Train`][crate::hype_train::HypeTrainAPI]
-//! - [`Moderation`][crate::moderation::ModerationAPI]
-//! - [`Polls`][crate::polls::PollsAPI]
-//! - [`Predictions`][crate::predictions::PredictionsAPI]
-//! - [`Raids`][crate::raid::RaidAPI]
-//! - [`Schedule`][crate::schedule::ScheduleAPI]
-//! - [`Search`][crate::search::SearchAPI]
-//! - [`Streams`][crate::streams::StreamsAPI]
-//! - [`Subscriptions`][crate::subscriptions::SubscriptionsAPI]
-//! - [ ] Tags
-//! - [`Teams`][crate::teams::TeamsAPI]
-//! - [`Users`][crate::users::UserAPI]
-//! - [`Videos`][crate::videos::VideosAPI]
-//! - [`Whispers`][crate::whispers::WhisperAPI]
+//! - [`clips`][crate::clips::ClipsAPI]
+//! - [`ccls`][crate::ccls::CclsAPI]
+//! - [`entitlements`][crate::entitlements::EntitlementsAPI]
+//! - [`extensions`][crate::extensions::ExtensionsAPI]
+//! - [`games`][crate::games::GamesAPI]
+//! - [`goals`][crate::goals::GoalsAPI]
+//! - [`guest-star`][crate::guest_star::GuestStarAPI]
+//! - [`hype-train`][crate::hype_train::HypeTrainAPI]
+//! - [`moderation`][crate::moderation::ModerationAPI]
+//! - [`polls`][crate::polls::PollsAPI]
+//! - [`predictions`][crate::predictions::PredictionsAPI]
+//! - [`raid`][crate::raid::RaidAPI]
+//! - [`schedule`][crate::schedule::ScheduleAPI]
+//! - [`search`][crate::search::SearchAPI]
+//! - [`streams`][crate::streams::StreamsAPI]
+//! - [`subscriptions`][crate::subscriptions::SubscriptionsAPI]
+//! - [`teams`][crate::teams::TeamsAPI]
+//! - [`users`][crate::users::UserAPI]
+//! - [`videos`][crate::videos::VideosAPI]
+//! - [`whispers`][crate::whispers::WhisperAPI]
+//!
+//! - Conduits: coming soom
+//! - EventSub: coming soom
+//! - Tags: deprecated
+
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[macro_use]
 mod macros;
@@ -140,61 +143,90 @@ pub use request::{
 pub use response::Response;
 
 #[cfg(feature = "ads")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ads")))]
 pub mod ads;
 #[cfg(feature = "analytics")]
+#[cfg_attr(docsrs, doc(cfg(feature = "analytics")))]
 pub mod analytics;
 #[cfg(feature = "bits")]
+#[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
 pub mod bits;
 #[cfg(feature = "ccls")]
+#[cfg_attr(docsrs, doc(cfg(feature = "ccls")))]
 pub mod ccls;
 #[cfg(feature = "channel-points")]
+#[cfg_attr(docsrs, doc(cfg(feature = "channel-points")))]
 pub mod channel_points;
 #[cfg(feature = "channels")]
+#[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
 pub mod channels;
 #[cfg(feature = "charity")]
+#[cfg_attr(docsrs, doc(cfg(feature = "charity")))]
 pub mod charity;
 #[cfg(feature = "chat")]
+#[cfg_attr(docsrs, doc(cfg(feature = "chat")))]
 pub mod chat;
 #[cfg(feature = "clips")]
+#[cfg_attr(docsrs, doc(cfg(feature = "clips")))]
 pub mod clips;
 #[cfg(feature = "entitlements")]
+#[cfg_attr(docsrs, doc(cfg(feature = "entitlements")))]
 pub mod entitlements;
 //#[cfg(feature = "eventsub")]
+//#[cfg_attr(docsrs, doc(cfg(feature = "eventsub")))]
 //pub mod eventsub;
 #[cfg(feature = "extensions")]
+#[cfg_attr(docsrs, doc(cfg(feature = "extensions")))]
 pub mod extensions;
 #[cfg(feature = "games")]
+#[cfg_attr(docsrs, doc(cfg(feature = "games")))]
 pub mod games;
 #[cfg(feature = "goals")]
+#[cfg_attr(docsrs, doc(cfg(feature = "goals")))]
 pub mod goals;
 #[cfg(feature = "guest-star")]
+#[cfg_attr(docsrs, doc(cfg(feature = "guest-star")))]
 pub mod guest_star;
 #[cfg(feature = "hype-train")]
+#[cfg_attr(docsrs, doc(cfg(feature = "hype-train")))]
 pub mod hype_train;
 #[cfg(feature = "moderation")]
+#[cfg_attr(docsrs, doc(cfg(feature = "moderation")))]
 pub mod moderation;
 #[cfg(feature = "polls")]
+#[cfg_attr(docsrs, doc(cfg(feature = "polls")))]
 pub mod polls;
 #[cfg(feature = "predictions")]
+#[cfg_attr(docsrs, doc(cfg(feature = "predictions")))]
 pub mod predictions;
 #[cfg(feature = "raid")]
+#[cfg_attr(docsrs, doc(cfg(feature = "raid")))]
 pub mod raid;
 #[cfg(feature = "schedule")]
+#[cfg_attr(docsrs, doc(cfg(feature = "schedule")))]
 pub mod schedule;
 #[cfg(feature = "search")]
+#[cfg_attr(docsrs, doc(cfg(feature = "search")))]
 pub mod search;
 #[cfg(feature = "streams")]
+#[cfg_attr(docsrs, doc(cfg(feature = "streams")))]
 pub mod streams;
 #[cfg(feature = "subscriptions")]
+#[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
 pub mod subscriptions;
 #[cfg(feature = "teams")]
+#[cfg_attr(docsrs, doc(cfg(feature = "teams")))]
 pub mod teams;
 #[cfg(feature = "users")]
+#[cfg_attr(docsrs, doc(cfg(feature = "users")))]
 pub mod users;
 #[cfg(feature = "videos")]
+#[cfg_attr(docsrs, doc(cfg(feature = "videos")))]
 pub mod videos;
 #[cfg(feature = "whispers")]
+#[cfg_attr(docsrs, doc(cfg(feature = "whispers")))]
 pub mod whispers;
 
 #[cfg(feature = "test")]
+#[cfg_attr(docsrs, doc(cfg(feature = "test")))]
 pub mod test_url;

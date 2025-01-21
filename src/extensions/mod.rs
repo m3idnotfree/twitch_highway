@@ -24,6 +24,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "extensions")))]
 pub trait ExtensionsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-configuration-segment>
     fn get_extension_configuration_segment(

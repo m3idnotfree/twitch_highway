@@ -11,6 +11,7 @@ use crate::{
 pub mod request;
 pub mod response;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "games")))]
 pub trait GamesAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
     fn get_top_games(

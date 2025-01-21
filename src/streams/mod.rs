@@ -17,6 +17,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "streams")))]
 pub trait StreamsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
     fn get_stream_key(

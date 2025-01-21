@@ -7,6 +7,7 @@ use request::SendWhisperBody;
 
 pub mod request;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "whispers")))]
 pub trait WhisperAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
     fn send_whisper(

@@ -10,6 +10,7 @@ use crate::{
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "raid")))]
 pub trait RaidAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
     fn start_raid(

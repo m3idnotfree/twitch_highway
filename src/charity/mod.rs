@@ -12,6 +12,7 @@ use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "charity")))]
 pub trait CharityAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign>
     fn get_charity_campaign(

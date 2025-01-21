@@ -18,6 +18,7 @@ pub mod request;
 pub mod response;
 pub mod types;
 
+#[cfg_attr(docsrs, doc(cfg(feature = "channel-points")))]
 pub trait ChannelPointsAPI: TwitchAPIBase {
     /// <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
     fn create_custom_rewards(
