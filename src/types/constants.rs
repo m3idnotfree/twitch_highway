@@ -36,7 +36,6 @@ pub(crate) const REWARD_ID: &str = "reward_id";
     feature = "channels",
     feature = "chat",
     feature = "entitlements",
-    feature = "eventsub",
     feature = "moderation",
     feature = "streams",
     feature = "subscriptions",
@@ -92,7 +91,7 @@ pub(crate) const AFTER: &str = "after";
 #[cfg(feature = "streams")]
 pub(crate) const STREAMS: &str = "streams";
 
-#[cfg(any(feature = "eventsub", feature = "subscriptions"))]
+#[cfg(feature = "subscriptions")]
 pub(crate) const SUBSCRIPTIONS: &str = "subscriptions";
 
 #[cfg(feature = "teams")]
