@@ -641,7 +641,7 @@ macro_rules! new_fn_mock_server_f {
 
             let request = api
                 .$endpoint($($arg),*)
-                .with_url(None, None)
+                .with_url(None, None, true)
                 .request()
                 .await
                 .unwrap();

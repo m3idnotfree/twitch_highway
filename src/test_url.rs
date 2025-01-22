@@ -3,13 +3,14 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 pub trait TestUrl {
-    fn with_url(self, port: Option<u16>, endpoint: Option<String>) -> Self;
+    fn with_url(self, port: Option<u16>, endpoint: Option<String>, use_prefix: bool) -> Self;
 }
 
 #[derive(Default, Debug)]
 pub struct TestUrlHold {
     endpoint: Option<String>,
     port: Option<u16>,
+    use_prefix: bool,
 }
 
 impl TestUrlHold {
@@ -33,6 +34,11 @@ impl TestUrlHold {
         self
     }
 
+    pub fn use_prefix(&mut self, use_prefix: bool) -> &mut Self {
+        self.use_prefix = use_prefix;
+        self
+    }
+
     pub fn from_url(&self, url: &Url) -> Result<Url, crate::Error> {
         if self.endpoint.is_none() && self.port.is_none() {
             Err(crate::Error::MissingTestUrl)
@@ -40,13 +46,18 @@ impl TestUrlHold {
             let mut test_url = Url::parse("http://localhost:8080").unwrap();
 
             test_url.set_port(self.port).unwrap();
+
+            let mut prefix = "".to_string();
+            if self.use_prefix {
+                prefix = self.endpoint.clone().unwrap_or_default();
+            }
+
             let paths = url
                 .path_segments()
                 .unwrap()
                 .skip(1)
-                .fold(self.endpoint.clone().unwrap(), |acc, x| {
-                    format!("{acc}/{x}")
-                });
+                .fold(prefix, |acc, x| format!("{acc}/{x}"));
+
             test_url.set_path(&paths);
             test_url.set_query(url.query());
 
