@@ -1,11 +1,13 @@
-use crate::{
-    base::TwitchAPIBase,
-    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
-};
 use asknothingx2_util::api::Method;
 use request::{ClipsFilter, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
+
+use crate::{
+    base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
+    TwitchAPI,
+};
 
 pub mod request;
 pub mod response;

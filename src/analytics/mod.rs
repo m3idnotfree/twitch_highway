@@ -4,11 +4,12 @@ use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{ANALYTICS, EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
         ExtensionId, GameId, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

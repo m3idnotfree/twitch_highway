@@ -2,7 +2,11 @@ use asknothingx2_util::api::Method;
 use request::CclsLocale;
 use response::CclsResponse;
 
-use crate::{base::TwitchAPIBase, EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest};
+use crate::{
+    base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    TwitchAPI,
+};
 
 pub mod request;
 pub mod response;

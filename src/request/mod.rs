@@ -155,9 +155,10 @@ where
 
 #[cfg(feature = "test")]
 impl<L, D> crate::test_url::TestUrl for TwitchAPIRequest<L, D> {
-    fn with_url(mut self, port: Option<u16>, endpoint: Option<String>) -> Self {
+    fn with_url(mut self, port: Option<u16>, endpoint: Option<String>, use_prefix: bool) -> Self {
         self.test_url.with_endpoint(endpoint);
         self.test_url.with_port(port);
+        self.test_url.use_prefix(use_prefix);
 
         self
     }

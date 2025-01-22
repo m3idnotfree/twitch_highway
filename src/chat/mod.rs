@@ -9,12 +9,13 @@ use response::{
 };
 
 use crate::{
-    base::{TwitchAPI, TwitchAPIBase},
+    base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{AFTER, BROADCASTER_ID, CHAT, EMOTES, MODERATOR_ID, SETTINGS, USER_ID},
         BroadcasterId, ModeratorId, PaginationQuery, UserId,
     },
-    EmptyBody, EndpointType, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

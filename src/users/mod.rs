@@ -7,12 +7,13 @@ use response::{
 use types::UserActiveExtensions;
 
 use crate::{
-    base::{TwitchAPI, TwitchAPIBase},
+    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BLOCKS, BROADCASTER_ID, EXTENSIONS, ID, LOGIN, USERS, USER_ID},
         BroadcasterId, Id, PaginationQuery, UserId,
     },
+    TwitchAPI,
 };
 
 pub mod request;

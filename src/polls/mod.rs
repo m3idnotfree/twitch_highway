@@ -6,12 +6,12 @@ use types::PollStatus;
 
 use crate::{
     base::TwitchAPIBase,
-    request::RequestBody,
+    request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

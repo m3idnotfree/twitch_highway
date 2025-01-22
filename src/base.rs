@@ -23,30 +23,6 @@ pub trait TwitchAPIBase {
     }
 }
 
-pub struct TwitchAPI {
-    access_token: AccessToken,
-    client_id: ClientId,
-}
-
-impl TwitchAPI {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        Self {
-            access_token,
-            client_id,
-        }
-    }
-}
-
-impl TwitchAPIBase for TwitchAPI {
-    fn access_token(&self) -> &AccessToken {
-        &self.access_token
-    }
-
-    fn client_id(&self) -> &ClientId {
-        &self.client_id
-    }
-}
-
 pub struct HeadersBuilder(HeaderBuilder);
 
 impl HeadersBuilder {
@@ -158,99 +134,15 @@ pub trait IntoQueryPairs {
     fn into_query_pairs(self) -> Vec<(&'static str, String)>;
 }
 
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
 #[derive(Debug, Default)]
 pub struct QueryParams(Vec<(&'static str, String)>);
 
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
 impl QueryParams {
     #[inline]
     pub fn new() -> Self {
         Self::default()
     }
-    #[cfg(any(
-        feature = "ads",
-        feature = "analytics",
-        feature = "bits",
-        feature = "ccls",
-        feature = "channel-points",
-        feature = "channels",
-        feature = "charity",
-        feature = "chat",
-        feature = "clips",
-        feature = "entitlements",
-        feature = "extensions",
-        feature = "games",
-        feature = "goals",
-        feature = "guest-star",
-        feature = "hype-train",
-        feature = "moderation",
-        feature = "polls",
-        feature = "predictions",
-        feature = "raid",
-        feature = "schedule",
-        feature = "search",
-        feature = "streams",
-        feature = "subscriptions",
-        feature = "teams",
-        feature = "users",
-        feature = "videos",
-        feature = "whispers",
-    ))]
+
     #[inline]
     pub fn push_opt<T: Into<String>>(&mut self, key: &'static str, value: Option<T>) -> &mut Self {
         if let Some(v) = value {
@@ -265,14 +157,6 @@ impl QueryParams {
     }
 }
 
-#[cfg(any(
-    feature = "clips",
-    feature = "entitlements",
-    feature = "games",
-    feature = "schedule",
-    feature = "streams",
-    feature = "videos",
-))]
 impl QueryParams {
     pub fn extend_opt<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
         &mut self,
@@ -285,9 +169,7 @@ impl QueryParams {
     }
 }
 
-#[cfg(any(feature = "analytics", feature = "bits"))]
 use chrono::{DateTime, FixedOffset, SecondsFormat};
-#[cfg(any(feature = "analytics", feature = "bits"))]
 impl QueryParams {
     /// RFC 3339 format
     /// Includes seconds presision

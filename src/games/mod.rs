@@ -4,8 +4,9 @@ use response::GamesResponse;
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::GAMES, PaginationQuery},
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

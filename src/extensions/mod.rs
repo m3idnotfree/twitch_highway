@@ -12,12 +12,12 @@ use types::Segment;
 
 use crate::{
     base::TwitchAPIBase,
-    request::RequestBody,
+    request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
         BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

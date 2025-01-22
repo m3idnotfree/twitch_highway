@@ -36,6 +36,7 @@ pub(crate) const REWARD_ID: &str = "reward_id";
     feature = "channels",
     feature = "chat",
     feature = "entitlements",
+    feature = "eventsub",
     feature = "moderation",
     feature = "streams",
     feature = "subscriptions",
@@ -84,98 +85,14 @@ pub(crate) const CHANNELS: &str = "channels";
 #[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
 pub(crate) const STARTED_AT: &str = "started_at";
 
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
 pub(crate) const BEFORE: &str = "before";
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
 pub(crate) const FIRST: &str = "first";
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
 pub(crate) const AFTER: &str = "after";
 
 #[cfg(feature = "streams")]
 pub(crate) const STREAMS: &str = "streams";
 
-#[cfg(feature = "subscriptions")]
+#[cfg(any(feature = "eventsub", feature = "subscriptions"))]
 pub(crate) const SUBSCRIPTIONS: &str = "subscriptions";
 
 #[cfg(feature = "teams")]

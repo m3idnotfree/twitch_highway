@@ -1,13 +1,15 @@
+use asknothingx2_util::api::Method;
+use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
+
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHARITY},
         BroadcasterId, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
-use asknothingx2_util::api::Method;
-use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
 pub mod response;
 pub mod types;

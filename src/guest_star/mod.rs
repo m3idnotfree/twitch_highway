@@ -4,11 +4,12 @@ use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessi
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, MODERATOR_ID},
         BroadcasterId, ModeratorId,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

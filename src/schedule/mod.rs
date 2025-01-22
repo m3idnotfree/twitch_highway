@@ -8,12 +8,12 @@ use serde_json::Value;
 
 use crate::{
     base::TwitchAPIBase,
-    request::RequestBody,
+    request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ID, SETTINGS},
         BroadcasterId, Id, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

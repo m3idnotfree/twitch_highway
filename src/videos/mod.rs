@@ -4,11 +4,12 @@ use response::{DeleteVideosResponse, VideosResponse};
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{ID, VIDEOS},
         Id, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

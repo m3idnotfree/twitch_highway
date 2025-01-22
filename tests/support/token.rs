@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 use asknothingx2_util::oauth::{ClientId, ClientSecret};
-use twitch_highway::APIError;
+use twitch_highway::request::APIError;
 use twitch_oauth_token::{
     test_url::User,
     types::{Scope, Token},

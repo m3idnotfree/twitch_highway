@@ -4,11 +4,12 @@ use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransaction
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
         BroadcasterId, ExtensionId, Id, PaginationQuery,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod request;

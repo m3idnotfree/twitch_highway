@@ -4,8 +4,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    request::IntoRequestBody,
     types::{BroadcasterId, Cost, Id},
-    IntoRequestBody,
 };
 
 #[derive(Debug, Serialize, Deserialize)]

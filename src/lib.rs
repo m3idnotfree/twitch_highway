@@ -69,78 +69,40 @@
 #[macro_use]
 mod macros;
 
+pub mod base;
+pub mod request;
 pub mod types;
 
 mod error;
-mod request;
 mod response;
 
-#[cfg(any(
-    feature = "ads",
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
-mod base;
-
-#[cfg(any(
-    feature = "ads",
-    feature = "analytics",
-    feature = "bits",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "entitlements",
-    feature = "extensions",
-    feature = "games",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "videos",
-    feature = "whispers",
-))]
-pub use base::TwitchAPI;
 pub use error::Error;
-pub use request::{
-    APIError, EmptyBody, EndpointType, IntoRequestBody, TokenType, TwitchAPIRequest,
-};
 pub use response::Response;
+
+use asknothingx2_util::oauth::{AccessToken, ClientId};
+pub struct TwitchAPI {
+    access_token: AccessToken,
+    client_id: ClientId,
+}
+
+impl TwitchAPI {
+    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
+        Self {
+            access_token,
+            client_id,
+        }
+    }
+}
+
+impl crate::base::TwitchAPIBase for TwitchAPI {
+    fn access_token(&self) -> &AccessToken {
+        &self.access_token
+    }
+
+    fn client_id(&self) -> &ClientId {
+        &self.client_id
+    }
+}
 
 #[cfg(feature = "ads")]
 #[cfg_attr(docsrs, doc(cfg(feature = "ads")))]

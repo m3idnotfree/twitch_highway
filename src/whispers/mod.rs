@@ -1,9 +1,12 @@
-use crate::{
-    base::TwitchAPIBase, types::constants::WHISPERS, EmptyBody, EndpointType, TwitchAPI,
-    TwitchAPIRequest,
-};
 use asknothingx2_util::api::Method;
 use request::SendWhisperBody;
+
+use crate::{
+    base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    types::constants::WHISPERS,
+    TwitchAPI,
+};
 
 pub mod request;
 

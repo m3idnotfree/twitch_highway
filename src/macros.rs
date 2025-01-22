@@ -174,7 +174,7 @@ macro_rules! request_struct {
         $(request_struct!(@into_request_body $struct_name $into_body);)?
     };
     (@into_request_body $struct_name:ident $into_body:expr)=>{
-        impl crate::IntoRequestBody for $struct_name {
+        impl crate::request::IntoRequestBody for $struct_name {
             fn as_body(&self) -> Option<String> {
                 Some(serde_json::to_string(self).unwrap())
             }

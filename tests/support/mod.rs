@@ -147,7 +147,7 @@ macro_rules! fn_expected_request {
         fn $sub_name() {
             $(use $module;)+
             use asknothingx2_util::api::APIRequest;
-            use twitch_highway::TokenType;
+            use twitch_highway::request::TokenType;
 
             let api = api!();
             let endpoint = api.$endpoint($($($params),+)?);
@@ -202,7 +202,7 @@ macro_rules! fn_expected_request {
             use $api;
             use asknothingx2_util::api::APIRequest;
             use twitch_oauth_token::types::Scope;
-            use twitch_highway::TokenType;
+            use twitch_highway::request::TokenType;
 
             let api = api!();
             let endpoint = api.$endpoint($($($params),+)?);
@@ -613,7 +613,7 @@ macro_rules! new_fn_mock_server_f {
         #[tokio::test]
         async fn $fn_name() {
             use twitch_oauth_token::types::{$scope_module, Token};
-            use twitch_highway::{APIError, TwitchAPI, test_url::TestUrl};
+            use twitch_highway::{request::APIError, TwitchAPI, test_url::TestUrl};
             use asknothingx2_util::{
                 oauth::ClientId,
             };

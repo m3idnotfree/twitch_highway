@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::IntoRequestBody;
+use crate::request::IntoRequestBody;
 
 use super::types::{BlockUser, User, UserActiveExtensions, UserExtension};
 

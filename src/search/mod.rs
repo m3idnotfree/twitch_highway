@@ -3,8 +3,9 @@ use response::{CategoriesResponse, ChannelsResponse};
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::CHANNELS, PaginationQuery},
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod response;

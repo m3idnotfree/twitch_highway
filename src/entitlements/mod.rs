@@ -1,10 +1,13 @@
-use crate::{
-    base::TwitchAPIBase, types::PaginationQuery, EmptyBody, EndpointType, TwitchAPI,
-    TwitchAPIRequest,
-};
 use asknothingx2_util::api::Method;
 use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
 use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
+
+use crate::{
+    base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    types::PaginationQuery,
+    TwitchAPI,
+};
 
 pub mod request;
 pub mod response;

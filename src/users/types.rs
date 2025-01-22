@@ -5,8 +5,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    request::IntoRequestBody,
     types::{Id, UserId},
-    IntoRequestBody,
 };
 
 #[derive(Debug, Serialize, Deserialize)]

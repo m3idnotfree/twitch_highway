@@ -3,11 +3,12 @@ use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
     },
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod response;

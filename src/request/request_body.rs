@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::IntoRequestBody;
+use crate::request::IntoRequestBody;
 
 #[derive(Serialize, Deserialize)]
 pub struct RequestBody<T, K> {

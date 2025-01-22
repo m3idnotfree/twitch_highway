@@ -3,8 +3,9 @@ use response::HypeTrainResponse;
 
 use crate::{
     base::TwitchAPIBase,
+    request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-    EmptyBody, EndpointType, TwitchAPI, TwitchAPIRequest,
+    TwitchAPI,
 };
 
 pub mod response;
