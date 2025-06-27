@@ -54,8 +54,10 @@ impl PredictionsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path(["predictions"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(ids.map(|id| id.into_iter().map(|id| (ID, id))))
-            .query_opt_pairs(pagination);
+            .query_opt_extend(ids.map(|id| id.into_iter().map(|id| (ID, id))));
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetPredictions,

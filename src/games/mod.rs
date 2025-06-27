@@ -28,7 +28,10 @@ impl GamesAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GamesResponse> {
         let mut url = self.build_url();
-        url.path([GAMES, "top"]).query_opt_pairs(pagination);
+        url.path([GAMES, "top"]);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetTopGames,

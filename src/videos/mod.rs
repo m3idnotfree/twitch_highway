@@ -37,9 +37,13 @@ impl VideosAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, VideosResponse> {
         let mut url = self.build_url();
         url.path([VIDEOS]).query_pairs(video_filter);
-            .query_pairs(video_filter)
+
         if let Some(opts) = opts {
             opts.apply_to_url(&mut url);
+        }
+
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
         }
 
         TwitchAPIRequest::new(

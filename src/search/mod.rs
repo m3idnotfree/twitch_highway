@@ -34,9 +34,10 @@ impl SearchAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse> {
         let mut url = self.build_url();
-        url.path(["search", "categories"])
-            .query("query", query)
-            .query_opt_pairs(pagination);
+        url.path(["search", "categories"]).query("query", query);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::SearchCategories,
@@ -55,8 +56,10 @@ impl SearchAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path(["search", CHANNELS])
             .query("query", query)
-            .query_opt("live_only", live_only.map(|x| x.to_string()))
-            .query_opt_pairs(pagination);
+            .query_opt("live_only", live_only.map(|x| x.to_string()));
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::SearchCategories,

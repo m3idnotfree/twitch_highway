@@ -153,8 +153,10 @@ impl ChannelPointsAPI for TwitchAPI {
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"])
             .query(BROADCASTER_ID, broadcaster_id)
             .query(REWARD_ID, reward_id)
-            .query_opt_pairs(opts)
-            .query_opt_pairs(pagination);
+            .query_opt_pairs(opts);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetCustomRewardRedemption,

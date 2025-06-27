@@ -112,8 +112,10 @@ impl ChannelsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([CHANNELS, "followed"])
             .query(USER_ID, user_id)
-            .query_opt(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(pagination);
+            .query_opt(BROADCASTER_ID, broadcaster_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetFollowedChannels,
@@ -132,8 +134,10 @@ impl ChannelsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([CHANNELS, "followers"])
             .query_opt(USER_ID, user_id)
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(pagination);
+            .query(BROADCASTER_ID, broadcaster_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetChannelFollowers,

@@ -227,8 +227,10 @@ impl ExtensionsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, ExtensionLiveChannelsRespnose> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "live"])
-            .query(EXTENSION_ID, extension_id)
-            .query_opt_pairs(pagination);
+            .query(EXTENSION_ID, extension_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetExtensionLiveChannels,

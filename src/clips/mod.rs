@@ -57,8 +57,10 @@ impl ClipsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path(["clips"])
             .query_pairs(clips_filter)
-            .query_opt_pairs(opts)
-            .query_opt_pairs(pagination);
+            .query_opt_pairs(opts);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetClips,

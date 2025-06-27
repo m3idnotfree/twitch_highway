@@ -40,8 +40,10 @@ impl SubscriptionsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([SUBSCRIPTIONS])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(user_id.map(|ids| ids.iter().map(|id| (USER_ID, id))))
-            .query_opt_pairs(pagination);
+            .query_opt_extend(user_id.map(|ids| ids.iter().map(|id| (USER_ID, id))));
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetBroadcasterSubscriptions,

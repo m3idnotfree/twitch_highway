@@ -28,8 +28,10 @@ impl HypeTrainAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, HypeTrainResponse> {
         let mut url = self.build_url();
         url.path(["hypetrain", "events"])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(pagination);
+            .query(BROADCASTER_ID, broadcaster_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetHypeTrainEvents,

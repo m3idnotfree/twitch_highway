@@ -33,9 +33,10 @@ impl EntitlementsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse> {
         let mut url = self.build_url();
-        url.path(["entitlements", "drops"])
-            .query_opt_pairs(opts)
-            .query_opt_pairs(pagination);
+        url.path(["entitlements", "drops"]).query_opt_pairs(opts);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetDropsEntitlements,

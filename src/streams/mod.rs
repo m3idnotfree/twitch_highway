@@ -73,9 +73,10 @@ impl StreamsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, StreamsResponse> {
         let mut url = self.build_url();
-        url.path([STREAMS])
-            .query_opt_pairs(opts)
-            .query_opt_pairs(pagination);
+        url.path([STREAMS]).query_opt_pairs(opts);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetStreams,
@@ -91,9 +92,10 @@ impl StreamsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, StreamsResponse> {
         let mut url = self.build_url();
-        url.path([STREAMS, "followed"])
-            .query(USER_ID, user_id)
-            .query_opt_pairs(pagination);
+        url.path([STREAMS, "followed"]).query(USER_ID, user_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetFollowedStreams,
@@ -128,9 +130,10 @@ impl StreamsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GetStreamMarkersResponse> {
         let mut url = self.build_url();
-        url.path([STREAMS, "markers"])
-            .query_pairs(filter)
-            .query_opt_pairs(pagination);
+        url.path([STREAMS, "markers"]).query_pairs(filter);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetStreamMarkers,

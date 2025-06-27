@@ -54,8 +54,10 @@ impl PollsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path(["polls"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt(ID, id)
-            .query_opt_pairs(pagination);
+            .query_opt(ID, id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetPolls,

@@ -277,8 +277,10 @@ impl ModerationAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([MODERATION, "banned"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(user_id.map(|ids| ids.into_iter().map(|id| (USER_ID, id))))
-            .query_opt_pairs(pagination);
+            .query_opt_extend(user_id.map(|ids| ids.into_iter().map(|id| (USER_ID, id))));
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetBannedUsers,
@@ -343,8 +345,10 @@ impl ModerationAPI for TwitchAPI {
             .query(BROADCASTER_ID, broadcaster_id)
             .query(MODERATOR_ID, moderator_id)
             .query("status", status)
-            .query_opt(USER_ID, user_id)
-            .query_opt_pairs(pagination);
+            .query_opt(USER_ID, user_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetUnbanRequests,
@@ -387,8 +391,10 @@ impl ModerationAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query(MODERATOR_ID, moderator_id)
-            .query_opt_pairs(pagination);
+            .query(MODERATOR_ID, moderator_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetBlockedTerms,
@@ -466,9 +472,10 @@ impl ModerationAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ModeratedChannelResponse> {
         let mut url = self.build_url();
-        url.path([MODERATION, CHANNELS])
-            .query(USER_ID, user_id)
-            .query_opt_pairs(pagination);
+        url.path([MODERATION, CHANNELS]).query(USER_ID, user_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetModeratedChannels,
@@ -487,8 +494,10 @@ impl ModerationAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt(USER_ID, user_id)
-            .query_opt_pairs(pagination);
+            .query_opt(USER_ID, user_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetModerators,
@@ -543,8 +552,10 @@ impl ModerationAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(user_ids.map(|ids| ids.into_iter().map(|id| (USER_ID, id))))
-            .query_opt_pairs(pagination);
+            .query_opt_extend(user_ids.map(|ids| ids.into_iter().map(|id| (USER_ID, id))));
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetVIPs,

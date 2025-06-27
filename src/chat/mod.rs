@@ -116,8 +116,10 @@ impl ChatAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([CHAT, "chatters"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query(MODERATOR_ID, moderator_id)
-            .query_opt_pairs(pagination);
+            .query(MODERATOR_ID, moderator_id);
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetChatters,

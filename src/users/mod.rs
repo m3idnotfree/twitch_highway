@@ -104,8 +104,11 @@ impl UserAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, BlockUserListResponse> {
         let mut url = self.build_url();
         url.path([USERS, BLOCKS])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(pagination);
+            .query(BROADCASTER_ID, broadcaster_id);
+
+        if let Some(pagination) = pagination {
+            pagination.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetUserBlockList,
