@@ -193,3 +193,108 @@ macro_rules! request_struct {
         }
     };
 }
+
+macro_rules! define_request_query {
+    (
+        $(#[$struct_meta:meta])*
+        $name:ident$(<$life:lifetime>)? {
+            $(req: {
+                $(
+                    $(#[$req_meta:meta])*
+                    $req_field:ident: $req_type:ty $(=> $req_key:tt)? $(as $req_conv:tt)?
+                ),* $(,)?
+            })? $(,)?
+            $(opts: {
+                $(
+                    $(#[$opt_meta:meta])*
+                    $opt_field:ident: $opt_type:ty $(=> $opt_key:tt)? $(as $opt_conv:tt)?
+                ),* $(,)?
+            })?
+        }
+    ) => {
+        $(#[$struct_meta])*
+        pub struct $name$(<$life>)? {
+            $($(
+                $(#[$req_meta])*
+                pub $req_field: $req_type,
+            )*)?
+            $($(
+                $(#[$opt_meta])*
+                pub $opt_field: Option<$opt_type>,
+            )*)?
+        }
+
+        impl$(<$life>)? $name$(<$life>)? {
+            pub fn new($($($req_field: $req_type),*)?) -> Self {
+                Self {
+                    $($($req_field,)*)?
+                    $($($opt_field: None,)*)?
+                }
+            }
+
+            $($(
+                pub fn $opt_field(mut self, value: $opt_type) -> Self {
+                    self.$opt_field = Some(value);
+                    self
+                }
+            )*)?
+
+            #[inline]
+            pub fn apply_to_url(self, url: &mut crate::base::UrlBuilder) {
+                $($(
+                    define_request_query!(@apply_req url,
+                        define_request_query!(@field_type $req_field $(, $req_key)?),
+                        self.$req_field $(, $req_conv)?
+                    );
+                )*)?
+                $($(
+                    define_request_query!(@apply_opt url,
+                        define_request_query!(@field_type $opt_field $(, $opt_key)?),
+                        self.$opt_field $(, $opt_conv)?
+                    );
+                )*)?
+            }
+        }
+
+        impl$(<$life>)? Default for $name$(<$life>)? {
+            fn default() -> Self {
+                Self::new($($($req_field::default()),*)?)
+            }
+        }
+    };
+
+    (@field_type $field:ident, $const:ident) => { crate::types::constants::$const };
+    (@field_type $field:ident, $key:literal) => { $key };
+    (@field_type $field:ident) => { stringify!($field) };
+    (@field_type $other:ty) => { $other };
+
+    (@apply_req $url:expr, $key:expr, $value:expr) => {
+        $url.query($key, $value);
+    };
+    (@apply_req $url:expr, $key:expr, $value:expr, $conv:tt) => {
+        define_request_query!(@convert $url, $key, val, $conv);
+    };
+
+    (@apply_opt $url:expr, $key:expr, $value:expr, $conv:tt) => {
+        if let Some(val) = $value {
+            define_request_query!(@convert $url, $key, val, $conv);
+        }
+    };
+    (@apply_opt $url:expr, $key:expr, $value:expr) => {
+        if let Some(val) = $value {
+            $url.query($key, val);
+        }
+    };
+
+    (@convert $url:expr, $key:expr, $value:expr, u64) => {
+        $url.query_u64($key, $value);
+    };
+    (@convert $url:expr, $key:expr, $value:expr, { $conv:expr }) => {
+        let converted = $conv($value);
+        $url.query($key, converted);
+    };
+    (@convert $url:expr, $key:expr, $value:expr, $func:ident) => {
+            let converted = $func($value);
+            $url.query($key, converted);
+    };
+}
