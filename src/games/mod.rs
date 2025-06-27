@@ -29,6 +29,7 @@ impl GamesAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, GamesResponse> {
         let mut url = self.build_url();
         url.path([GAMES, "top"]);
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }
@@ -43,7 +44,8 @@ impl GamesAPI for TwitchAPI {
     }
     fn get_games(&self, request: GetGamesRequest) -> TwitchAPIRequest<EmptyBody, GamesResponse> {
         let mut url = self.build_url();
-        url.path([GAMES]).query_pairs(request);
+        url.path([GAMES]);
+        request.apply_to_url(&mut url);
 
         TwitchAPIRequest::new(
             EndpointType::GetGames,

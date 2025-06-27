@@ -4,30 +4,30 @@ use crate::types::{BroadcasterId, Id, Title};
 
 use super::types::PredictionStatus;
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     CreatePredictionRequest {
-        required {
+        req: {
             broadcaster_id: BroadcasterId,
             title: String,
             outcomes: Vec<Title>,
             prediction_window:u64,
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     EndPredictionRequest {
-        required {
+        req: {
             broadcaster_id: BroadcasterId,
             id: Id,
             status: PredictionStatus,
         },
-        optional {
+        opts: {
             winning_outcome_id:String
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );

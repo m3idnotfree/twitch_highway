@@ -2,42 +2,44 @@ use serde::Serialize;
 
 use crate::types::BroadcasterId;
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     SendChatMessageRequest {
-        required {
+        req: {
             broadcaster_id: BroadcasterId,
             sender_id: String,
             message: String
-        }
-    };
-    impl_body: true
+        };
+    into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
-    #[derive(Serialize)]
+    #[derive(Default, Serialize)]
     UpdateChatSettingsRequest {
-        #[serde(skip_serializing_if = "Option::is_none")]
-        emote_mode: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        follower_mode: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        follower_mode_duration: u64,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        non_moderator_chat_delay: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        non_moderator_chat_delay_duration: u64,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        slow_mode: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        slow_mode_wait_time: u64,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        subscriber_mode: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        unique_chat_mode: bool,
-    };
-    impl_body: true
+        opts: {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            emote_mode: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            follower_mode: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            follower_mode_duration: u64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            non_moderator_chat_delay: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            non_moderator_chat_delay_duration: u64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            slow_mode: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            slow_mode_wait_time: u64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            subscriber_mode: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            unique_chat_mode: bool,
+        };
+        into_request_body
+    }
 );
 
 #[derive(Debug, Serialize)]
@@ -81,15 +83,15 @@ impl ChatColor {
     }
 }
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     ChatAnnouncementBody {
-        required {
+        req: {
             message: String,
             color: Option<AnnouncementColor>
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
 #[derive(Debug, Serialize)]

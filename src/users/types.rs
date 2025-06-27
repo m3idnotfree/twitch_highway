@@ -4,10 +4,7 @@ use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    request::IntoRequestBody,
-    types::{Id, UserId},
-};
+use crate::types::{Id, UserId};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
@@ -74,84 +71,69 @@ pub enum ExtensionType {
     Panel,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct UserActiveExtensions {
-    pub panel: HashMap<String, Panel>,
-    pub overlay: HashMap<String, Overlay>,
-    pub component: HashMap<String, Component>,
-}
-
-impl UserActiveExtensions {
-    pub fn new(
-        panel: HashMap<String, Panel>,
-        overlay: HashMap<String, Overlay>,
-        component: HashMap<String, Component>,
-    ) -> Self {
-        Self {
-            panel,
-            overlay,
-            component,
-        }
+define_request!(
+    #[derive(Debug, Serialize, Deserialize)]
+    UserActiveExtensions {
+        req: {
+            panel: HashMap<String, Panel>,
+            overlay: HashMap<String, Overlay>,
+            component: HashMap<String, Component>,
+        };
+        into_request_body
     }
-}
+);
 
-impl IntoRequestBody for UserActiveExtensions {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
-
-request_struct!(
-    #[derive( Serialize, Deserialize)]
+define_request!(
+    #[derive(Debug, Serialize, Deserialize)]
     Panel {
-        required {
-            pub active: bool,
+        req: {
+            active: bool,
         },
-        optional {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub id: Id,
+            id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub version: String,
+            version: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub name: String,
+            name: String,
         }
     }
 );
 
-request_struct!(
-    #[derive(Serialize, Deserialize)]
+define_request!(
+    #[derive(Debug, Serialize, Deserialize)]
     Overlay {
-        required {
-            pub active: bool,
+        req: {
+            active: bool,
         },
-        optional {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub id: Id,
+            id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub version: String,
+            version: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub name: String,
+            name: String,
         }
     }
 );
 
-request_struct!(
-    #[derive(Serialize, Deserialize)]
+define_request!(
+    #[derive(Debug, Serialize, Deserialize)]
     Component {
-        required {
-            pub active: bool
+        req: {
+            active: bool
         },
-        optional {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub id: Id,
+            id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub version: String,
+            version: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub name: String,
+            name: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub x: u64,
+            x: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub y: u64
+            y: u64
         }
     }
 );

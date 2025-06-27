@@ -42,8 +42,11 @@ impl AnalyticsAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse> {
         let mut url = self.build_url();
         url.path([ANALYTICS, EXTENSIONS])
-            .query_opt(EXTENSION_ID, extension_id)
-            .query_opt_pairs(opts);
+            .query_opt(EXTENSION_ID, extension_id);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
 
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
@@ -64,9 +67,11 @@ impl AnalyticsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GameAnalyticsResponse> {
         let mut url = self.build_url();
-        url.path([ANALYTICS, GAMES])
-            .query_opt(GAME_ID, game_id)
-            .query_opt_pairs(opts);
+        url.path([ANALYTICS, GAMES]).query_opt(GAME_ID, game_id);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
 
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);

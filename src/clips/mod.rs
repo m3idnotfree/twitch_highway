@@ -1,5 +1,5 @@
 use asknothingx2_util::api::Method;
-use request::{ClipsFilter, GetClipsRequest};
+use request::{ClipsSelector, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
 
 use crate::{
@@ -23,7 +23,7 @@ pub trait ClipsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
     fn get_clips(
         &self,
-        clips_filter: ClipsFilter,
+        clips_filter: ClipsSelector,
         opts: Option<GetClipsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse>;
@@ -50,14 +50,18 @@ impl ClipsAPI for TwitchAPI {
     }
     fn get_clips(
         &self,
-        clips_filter: ClipsFilter,
+        clips_filter: ClipsSelector,
         opts: Option<GetClipsRequest>,
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse> {
         let mut url = self.build_url();
-        url.path(["clips"])
-            .query_pairs(clips_filter)
-            .query_opt_pairs(opts);
+        url.path(["clips"]);
+        clips_filter.apply_to_url(&mut url);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }

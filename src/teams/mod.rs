@@ -1,5 +1,5 @@
 use asknothingx2_util::api::Method;
-use request::TeamFilter;
+use request::TeamSelector;
 use response::{ChannelTeamsResponse, TeamsResponse};
 
 use crate::{
@@ -23,7 +23,7 @@ pub trait TeamsAPI {
         broadcaster_id: BroadcasterId,
     ) -> TwitchAPIRequest<EmptyBody, ChannelTeamsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams(&self, team_filter: TeamFilter) -> TwitchAPIRequest<EmptyBody, TeamsResponse>;
+    fn get_teams(&self, team_filter: TeamSelector) -> TwitchAPIRequest<EmptyBody, TeamsResponse>;
 }
 
 impl TeamsAPI for TwitchAPI {
@@ -43,9 +43,10 @@ impl TeamsAPI for TwitchAPI {
             EmptyBody,
         )
     }
-    fn get_teams(&self, team_filter: TeamFilter) -> TwitchAPIRequest<EmptyBody, TeamsResponse> {
+    fn get_teams(&self, team_filter: TeamSelector) -> TwitchAPIRequest<EmptyBody, TeamsResponse> {
         let mut url = self.build_url();
-        url.path([TEAMS]).query_pairs(team_filter);
+        url.path([TEAMS]);
+        team_filter.apply_to_url(&mut url);
 
         TwitchAPIRequest::new(
             EndpointType::GetChannelTeams,

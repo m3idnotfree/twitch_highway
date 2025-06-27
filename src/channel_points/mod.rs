@@ -152,8 +152,12 @@ impl ChannelPointsAPI for TwitchAPI {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"])
             .query(BROADCASTER_ID, broadcaster_id)
-            .query(REWARD_ID, reward_id)
-            .query_opt_pairs(opts);
+            .query(REWARD_ID, reward_id);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }
@@ -179,6 +183,7 @@ impl ChannelPointsAPI for TwitchAPI {
 
         let mut headers = self.build_headers();
         headers.json();
+
         TwitchAPIRequest::new(
             EndpointType::UpdateCustomReward,
             url.build(),

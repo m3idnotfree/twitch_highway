@@ -27,11 +27,11 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::clips::ClipsAPI,
-            twitch_highway::clips::request::ClipsFilter
+            twitch_highway::clips::request::ClipsSelector
         ],
         endpoint: get_clips,
         args: |broadcaster_id|{
-            ClipsFilter::by_broadcaster(broadcaster_id),
+            ClipsSelector::by_broadcaster_id(broadcaster_id),
             None,
             None
         }

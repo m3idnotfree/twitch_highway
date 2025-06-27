@@ -12,9 +12,9 @@ fn_expected_request!(
         BroadcasterId::new("141981764"),
         Some(UpdateScheduleRequest::new()
                 .is_vacation_enabled(true)
-                .vacation_start_time("2021-05-16T00:00:00Z".to_string())
-                .vacation_end_time("2021-05-23T00:00:00Z".to_string())
-                .timezone("America/New_York".to_string())
+                .vacation_start_time("2021-05-16T00:00:00Z")
+                .vacation_end_time("2021-05-23T00:00:00Z")
+                .timezone("America/New_York")
         )
     ],
     method: PATCH,

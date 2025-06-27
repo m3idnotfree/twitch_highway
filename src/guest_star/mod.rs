@@ -136,8 +136,8 @@ impl GuestStarAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "channel_settings"])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_pairs(request);
+            .query(BROADCASTER_ID, broadcaster_id);
+        request.apply_to_url(&mut url);
 
         TwitchAPIRequest::new(
             EndpointType::UpdateChannelGuestStarSettings,
@@ -350,8 +350,8 @@ impl GuestStarAPI for TwitchAPI {
             .query(BROADCASTER_ID, broadcaster_id)
             .query(MODERATOR_ID, moderator_id)
             .query("session_id", session_id)
-            .query("slot_id", slot_id)
-            .query_pairs(request);
+            .query("slot_id", slot_id);
+        request.apply_to_url(&mut url);
 
         TwitchAPIRequest::new(
             EndpointType::UpdateGuestStarSlotSettings,

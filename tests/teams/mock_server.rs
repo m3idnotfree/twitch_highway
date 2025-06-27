@@ -8,11 +8,11 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::teams::TeamsAPI,
-            twitch_highway::teams::request::TeamFilter,
+            twitch_highway::teams::request::TeamSelector,
             twitch_highway::types::Id
         ],
         endpoint: get_teams,
-        args: |_a|{TeamFilter::by_id(Id::new("2843"))},
+        args: |_a|{TeamSelector::by_id(Id::new("2843"))},
     }
 );
 

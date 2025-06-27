@@ -2,16 +2,14 @@ use serde::Serialize;
 
 use crate::types::GameId;
 
-request_struct!(
-    #[derive(Serialize)]
+define_request!(
+    #[derive(Default, Serialize)]
     ModifyChannelRequest {
-        string {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
             broadcaster_language: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String
-        },
-        any {
+            title: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             game_id: GameId,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -22,15 +20,15 @@ request_struct!(
             content_classification_labels:Vec<ContentClassificationLabel>,
             #[serde(skip_serializing_if = "Option::is_none")]
             is_branded_content: bool
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     ContentClassificationLabel {
-        required {
+        req: {
             id: ContentClassificationLabelsID,
             is_enabled: bool,
        }

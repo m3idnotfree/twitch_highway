@@ -1,33 +1,18 @@
 use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 
-use crate::{
-    base::{IntoQueryPairs, QueryParams},
-    types::constants::{STARTED_AT, TYPE},
-};
-
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     AnalyticsRequest {
-        #[serde(rename = "type")]
-        kind: AnalyticsType,
-        started_at: DateTime<FixedOffset>,
-        ended_at: DateTime<FixedOffset>
+        opts: {
+            #[serde(rename = "type")]
+            kind: AnalyticsType => TYPE,
+            started_at: DateTime<FixedOffset> => STARTED_AT ; date,
+            ended_at: DateTime<FixedOffset> ; date
+        };
+        apply_to_url
     }
 );
-
-impl IntoQueryPairs for AnalyticsRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-
-        params
-            .push_opt(TYPE, self.kind)
-            .date_opt(STARTED_AT, self.started_at)
-            .date_opt("ended_at", self.ended_at);
-
-        params.build()
-    }
-}
 
 #[derive(Debug, Serialize)]
 pub enum AnalyticsType {
@@ -46,5 +31,11 @@ impl AnalyticsType {
 impl From<AnalyticsType> for String {
     fn from(value: AnalyticsType) -> Self {
         value.as_str().to_string()
+    }
+}
+
+impl AsRef<str> for AnalyticsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }

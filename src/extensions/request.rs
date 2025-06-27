@@ -2,55 +2,55 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, ExtensionId};
 
-request_struct!(
+define_request!(
     #[derive(Serialize, Deserialize)]
     SetConfigurationSegment {
-        #[serde(skip_serializing_if = "Option::is_none")]
-        broadcaster_id: BroadcasterId,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        content: String,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        version: String
-    };
-    impl_body: true
+        opts: {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            broadcaster_id: BroadcasterId,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            content: String,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            version: String
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize, Deserialize)]
     RequiredConfiguration {
-        required {
+        req: {
             extension_id: ExtensionId,
             extension_version: String,
             required_configuration: String
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize, Deserialize)]
     ExtensionChatMessageIntoRequestBody {
-        required {
+        req: {
             text: String,
             extension_id: ExtensionId,
             extension_version: String
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize, Deserialize)]
     UpdateExtensoinBitsProductsRequest {
-        string {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub expiration: String,
-        },
-        any {
+            expiration: String,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub in_development: bool,
+            in_development: bool,
             #[serde(skip_serializing_if = "Option::is_none")]
-            pub is_broadcast: bool,
+            is_broadcast: bool,
         }
     }
 );

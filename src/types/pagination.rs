@@ -9,14 +9,15 @@ pub struct Pagination {
     pub cursor: String,
 }
 
-define_request_query! {
+define_request! {
 #[derive(Clone, Debug, Serialize, Deserialize)]
   PaginationQuery<'a> {
         opts: {
-            first: u64 => FIRST as u64,
+            first: u64 => FIRST ; u64,
             before: &'a str => BEFORE,
             after: &'a str => AFTER,
-        }
+        };
+        apply_to_url
     }
 }
 

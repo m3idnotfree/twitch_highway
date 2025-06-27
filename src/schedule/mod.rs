@@ -71,9 +71,12 @@ impl ScheduleAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, ScheduleResponse> {
         let mut url = self.build_url();
-        url.path(["schedule"])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(opts);
+        url.path(["schedule"]).query(BROADCASTER_ID, broadcaster_id);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }
@@ -109,8 +112,11 @@ impl ScheduleAPI for TwitchAPI {
     ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
         let mut url = self.build_url();
         url.path(["schedule", SETTINGS])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_pairs(opts);
+            .query(BROADCASTER_ID, broadcaster_id);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::UpdateChannelStreamSchedule,

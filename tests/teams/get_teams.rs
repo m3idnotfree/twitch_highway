@@ -1,13 +1,13 @@
 fn_expected_request!(
     modules: [
         twitch_highway::teams::TeamsAPI,
-        twitch_highway::teams::request::TeamFilter,
+        twitch_highway::teams::request::TeamSelector,
         twitch_highway::types::Id
     ],
     endpoint: get_teams,
     token_type: Any,
     scopes: None,
-    args: [TeamFilter::by_id(Id::new("6358"))],
+    args: [TeamSelector::by_id(Id::new("6358"))],
     method: GET,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/teams?id=6358",

@@ -1,113 +1,49 @@
 use serde::Serialize;
 
-use crate::{
-    base::{IntoQueryPairs, QueryParams},
-    types::{
-        constants::{GAME_ID, USER_ID},
-        GameId, UserId,
-    },
-};
+use crate::types::{GameId, UserId};
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
-    GetStreamsRequest {
-        user_id	:Vec<UserId>,
-        user_login:Vec<String>,
-        game_id:Vec<GameId>,
-        #[serde(rename="type")]
-        kind: String,
-        language: Vec<String>,
+    GetStreamsRequest<'a> {
+        opts: {
+            user_id	:Vec<UserId> => USER_ID ; vec,
+            user_login:Vec<&'a str> => "user_login" ; vec,
+            game_id:Vec<GameId> => GAME_ID ; vec,
+            #[serde(rename="type")]
+            kind: &'a str => TYPE,
+            language: Vec<&'a str> => "language" ; vec,
+        };
+        apply_to_url
     }
 );
 
-impl IntoQueryPairs for GetStreamsRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-        params
-            .extend_opt(
-                self.user_id
-                    .map(|user| user.into_iter().map(|u| (USER_ID, u))),
-            )
-            .extend_opt(
-                self.user_login
-                    .map(|user| user.into_iter().map(|u| ("user_login", u))),
-            )
-            .extend_opt(
-                self.game_id
-                    .map(|user| user.into_iter().map(|u| (GAME_ID, u))),
-            )
-            .push_opt("type", self.kind)
-            .extend_opt(
-                self.language
-                    .map(|user| user.into_iter().map(|u| ("language", u))),
-            );
-
-        params.build()
-    }
-}
-
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     CreateStreamMarkerRequest {
-        required {
-        user_id: UserId,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        description: Option<String>,
-        }
+        req: {
+            user_id: UserId,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            description: Option<String>,
+        };
+        into_request_body
+    }
+);
+
+define_select!(
+    #[derive(Debug, Serialize)]
+    StreamMarkerFilter<'a> {
+        user_id: UserId => USER_ID as by_user_id,
+        video_id: &'a str as by_video_id,
     };
-    impl_body: true
+    apply_to_url
 );
 
-#[derive(Debug, Serialize)]
-pub struct StreamMarkerFilter {
-    user_id: Option<UserId>,
-    video_id: Option<String>,
-}
-
-impl StreamMarkerFilter {
-    pub fn by_user_id(user_id: UserId) -> Self {
-        Self {
-            user_id: Some(user_id),
-            video_id: None,
-        }
-    }
-    pub fn by_video_id<T: Into<String>>(video_id: T) -> Self {
-        Self {
-            user_id: None,
-            video_id: Some(video_id.into()),
-        }
-    }
-}
-
-impl IntoQueryPairs for StreamMarkerFilter {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-        params
-            .push_opt(USER_ID, self.user_id)
-            .push_opt("video_id", self.video_id);
-
-        params.build()
-    }
-}
-request_struct!(
+define_request!(
     #[derive(Serialize)]
-        GetStreamMarkerRequest {
-        string {
-            video_id: String
-        },
-        any {
-            user_id: UserId
+    GetStreamMarkerRequest<'a> {
+        opts: {
+            video_id: &'a str,
+            user_id: UserId => USER_ID
         }
     }
 );
-
-impl IntoQueryPairs for GetStreamMarkerRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-        params
-            .push_opt(USER_ID, self.user_id)
-            .push_opt("video_id", self.video_id);
-
-        params.build()
-    }
-}

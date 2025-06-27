@@ -1,35 +1,30 @@
 use serde::Serialize;
 
-use crate::{
-    base::{IntoQueryPairs, QueryParams},
-    types::{constants::ID, RedemptionId},
-};
+use crate::types::RedemptionId;
 
 use super::types::RedemptionStatus;
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     CustomRewardsRequiredBody {
-        required {
+        req: {
             title: String,
             cost: u64
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     CustomRewardsBody {
-        string {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
             title: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             prompt: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             background_color: String,
-        },
-        any {
             #[serde(skip_serializing_if = "Option::is_none")]
             cost: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -50,59 +45,43 @@ request_struct!(
             global_cooldown_seconds: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
             should_redemptions_skip_request_queue: bool
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     RedemptionStatusQuery {
-        required {
+        req: {
             status: RedemptionStatus
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
-    CustomRewardRedemptionQuery {
-        string {
-            sort: String,
-        },
-        any {
+    CustomRewardRedemptionQuery<'a> {
+        opts: {
+            sort: &'a str,
             status: RedemptionStatus,
             id: RedemptionId,
-        }
+        };
+        apply_to_url
     }
 );
 
-impl IntoQueryPairs for CustomRewardRedemptionQuery {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-
-        params
-            .push_opt("status", self.status.map(|x| x.to_string()))
-            .push_opt(ID, self.id)
-            .push_opt("sort", self.sort);
-
-        params.build()
-    }
-}
-
-request_struct!(
-    #[derive(Serialize)]
+define_request!(
+    #[derive(Serialize, Default)]
     UpdateCustomRewardRequest {
-        string {
+        opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
             title: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             prompt: String,
             #[serde(skip_serializing_if = "Option::is_none")]
             background_color: String,
-        },
-        any {
             #[serde(skip_serializing_if = "Option::is_none")]
             cost: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -125,7 +104,7 @@ request_struct!(
             is_paused: bool,
             #[serde(skip_serializing_if = "Option::is_none")]
             should_redemptions_skip_request_queue: bool
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );

@@ -1,36 +1,17 @@
 use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 
-use crate::{
-    base::{IntoQueryPairs, QueryParams},
-    types::{
-        constants::{STARTED_AT, USER_ID},
-        UserId,
-    },
-};
+use crate::types::UserId;
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     BitsLeaderboardRequest {
-        string {
+        opts: {
+            count: u64 ; u64,
             period: String,
-        },
-        any {
-            started_at: DateTime<FixedOffset>,
-            user_id: UserId,
-            count: u64
-        }
+            started_at: DateTime<FixedOffset> => STARTED_AT ; date,
+            user_id: UserId => USER_ID,
+        };
+        apply_to_url
     }
 );
-
-impl IntoQueryPairs for BitsLeaderboardRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-        params
-            .push_opt("count", self.count.map(|x| x.to_string()))
-            .push_opt("period", self.period)
-            .date_opt(STARTED_AT, self.started_at)
-            .push_opt(USER_ID, self.user_id);
-        params.build()
-    }
-}

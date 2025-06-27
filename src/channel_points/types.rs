@@ -88,3 +88,9 @@ impl fmt::Display for RedemptionStatus {
         write!(f, "{}", self.as_str())
     }
 }
+
+impl AsRef<str> for RedemptionStatus {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}

@@ -1,11 +1,11 @@
 use serde::Serialize;
 
-request_struct!(
-    #[derive(Serialize)]
+define_request!(
+    #[derive(Debug, Serialize)]
     SendWhisperBody {
-        required {
+        req: {
            message: String
-         }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );

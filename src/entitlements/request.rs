@@ -1,35 +1,19 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    base::{IntoQueryPairs, QueryParams},
-    types::{
-        constants::{GAME_ID, ID, USER_ID},
-        GameId, Id, UserId,
-    },
-};
+use crate::types::{GameId, Id, UserId};
 
-request_struct!(
+define_request!(
     #[derive(Serialize, Deserialize)]
     DropEntitlementRequest {
-        game_id: GameId,
-        id: Vec<Id>,
-        user_id: UserId,
-        fulfillment_status: FulfillmentStatus,
+        opts: {
+            id: Vec<Id> => ID ; vec,
+            user_id: UserId => USER_ID,
+            game_id: GameId => GAME_ID,
+            fulfillment_status: FulfillmentStatus,
+        };
+        apply_to_url
     }
 );
-
-impl IntoQueryPairs for DropEntitlementRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-        params
-            .extend_opt(self.id.map(|id| id.into_iter().map(|p| (ID, p))))
-            .push_opt(USER_ID, self.user_id)
-            .push_opt(GAME_ID, self.game_id)
-            .push_opt("fulfillment_status", self.fulfillment_status);
-
-        params.build()
-    }
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum FulfillmentStatus {
@@ -55,11 +39,19 @@ impl From<FulfillmentStatus> for String {
     }
 }
 
-request_struct!(
-    #[derive(Serialize, Deserialize)]
+impl AsRef<str> for FulfillmentStatus {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+define_request!(
+    #[derive(Default, Serialize, Deserialize)]
     UpdateEntitlementsRequest{
-        entitlement_ids: Vec<String>,
-        fulfillment_status: FulfillmentStatus
-    };
-    impl_body: true
+        opts: {
+            entitlement_ids: Vec<String>,
+            fulfillment_status: FulfillmentStatus
+        };
+    into_request_body
+    }
 );

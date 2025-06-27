@@ -73,7 +73,12 @@ impl StreamsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, StreamsResponse> {
         let mut url = self.build_url();
-        url.path([STREAMS]).query_opt_pairs(opts);
+        url.path([STREAMS]);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }
@@ -130,7 +135,9 @@ impl StreamsAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, GetStreamMarkersResponse> {
         let mut url = self.build_url();
-        url.path([STREAMS, "markers"]).query_pairs(filter);
+        url.path([STREAMS, "markers"]);
+        filter.apply_to_url(&mut url);
+
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
         }

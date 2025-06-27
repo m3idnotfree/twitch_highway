@@ -4,25 +4,27 @@ use crate::types::{BroadcasterId, Id};
 
 use super::types::PollStatus;
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     PollsRequest {
-        #[serde(skip_serializing_if = "Option::is_none")]
-        channel_points_voting_enabled: bool,
-        #[serde(skip_serializing_if = "Option::is_none")]
-        channel_points_per_vote: u64,
-    };
-    impl_body: true
+        opts: {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            channel_points_voting_enabled: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            channel_points_per_vote: u64,
+        };
+        into_request_body
+    }
 );
 
-request_struct!(
+define_request!(
     #[derive(Serialize)]
     EndPollRequest {
-        required {
+        req: {
             broadcaster_id: BroadcasterId,
             id: Id,
             status: PollStatus
-        }
-    };
-    impl_body: true
+        };
+        into_request_body
+    }
 );

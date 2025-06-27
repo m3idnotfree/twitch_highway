@@ -36,7 +36,8 @@ impl VideosAPI for TwitchAPI {
         pagination: Option<PaginationQuery>,
     ) -> TwitchAPIRequest<EmptyBody, VideosResponse> {
         let mut url = self.build_url();
-        url.path([VIDEOS]).query_pairs(video_filter);
+        url.path([VIDEOS]);
+        video_filter.apply_to_url(&mut url);
 
         if let Some(opts) = opts {
             opts.apply_to_url(&mut url);

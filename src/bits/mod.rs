@@ -42,7 +42,11 @@ impl BitsAPI for TwitchAPI {
         opts: Option<BitsLeaderboardRequest>,
     ) -> TwitchAPIRequest<EmptyBody, BitsLeaderboardResponse> {
         let mut url = self.build_url();
-        url.path([BITS, "leaderboard"]).query_opt_pairs(opts);
+        url.path([BITS, "leaderboard"]);
+
+        if let Some(opts) = opts {
+            opts.apply_to_url(&mut url);
+        }
 
         TwitchAPIRequest::new(
             EndpointType::GetBitsLeaderboard,

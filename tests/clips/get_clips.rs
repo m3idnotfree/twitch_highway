@@ -1,14 +1,14 @@
 fn_expected_request!(
     modules: [
         twitch_highway::clips::ClipsAPI,
-        twitch_highway::clips::request::ClipsFilter,
+        twitch_highway::clips::request::ClipsSelector,
         twitch_highway::types::Id
     ],
     endpoint: get_clips,
     token_type: Any,
     scopes: None,
     args: [
-        ClipsFilter::by_ids(vec![Id::new("AwkwardHelplessSalamanderSwiftRage")]),
+        ClipsSelector::by_ids(vec![Id::new("AwkwardHelplessSalamanderSwiftRage")]),
         None,
         None
     ],
