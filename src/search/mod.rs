@@ -2,7 +2,6 @@ use asknothingx2_util::api::Method;
 use response::{CategoriesResponse, ChannelsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::CHANNELS, PaginationQuery},
     TwitchAPI,
@@ -12,7 +11,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "search")))]
-pub trait SearchAPI: TwitchAPIBase {
+pub trait SearchAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
     fn search_categories(
         &self,

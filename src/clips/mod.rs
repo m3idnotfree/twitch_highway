@@ -3,7 +3,6 @@ use request::{ClipsFilter, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
     TwitchAPI,
@@ -14,7 +13,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "clips")))]
-pub trait ClipsAPI: TwitchAPIBase {
+pub trait ClipsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#create-clip>
     fn create_clip(
         &self,

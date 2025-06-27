@@ -6,7 +6,6 @@ use response::{
 };
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, USER_ID},
@@ -20,7 +19,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
-pub trait ChannelsAPI: TwitchAPIBase {
+pub trait ChannelsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
     fn get_channel_info(
         &self,

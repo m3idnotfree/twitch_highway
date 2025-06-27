@@ -3,7 +3,6 @@ use request::GetGamesRequest;
 use response::GamesResponse;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::GAMES, PaginationQuery},
     TwitchAPI,
@@ -13,7 +12,7 @@ pub mod request;
 pub mod response;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "games")))]
-pub trait GamesAPI: TwitchAPIBase {
+pub trait GamesAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
     fn get_top_games(
         &self,

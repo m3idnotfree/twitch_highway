@@ -13,20 +13,6 @@ const BEARER: &str = "Bearer";
 
 static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BASE).unwrap());
 
-pub trait TwitchAPIBase {
-    fn access_token(&self) -> &AccessToken;
-    fn client_id(&self) -> &ClientId;
-    fn build_headers(&self) -> HeadersBuilder {
-        HeadersBuilder::base(self.access_token(), self.client_id())
-    }
-    fn build_jwt_headers(&self, jwt: &JWTToken) -> HeadersBuilder {
-        HeadersBuilder::base_with_jwt(jwt, self.client_id())
-    }
-    fn build_url(&self) -> UrlBuilder {
-        UrlBuilder::new()
-    }
-}
-
 pub struct HeadersBuilder(HeaderBuilder);
 
 impl HeadersBuilder {

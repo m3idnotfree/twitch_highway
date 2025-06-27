@@ -3,7 +3,6 @@ use request::{VideoFilter, VideosRequest};
 use response::{DeleteVideosResponse, VideosResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{ID, VIDEOS},
@@ -17,7 +16,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "videos")))]
-pub trait VideosAPI: TwitchAPIBase {
+pub trait VideosAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
     fn get_videos(
         &self,

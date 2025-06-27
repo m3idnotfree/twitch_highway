@@ -2,7 +2,6 @@ use asknothingx2_util::api::Method;
 use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHARITY},
@@ -15,7 +14,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "charity")))]
-pub trait CharityAPI: TwitchAPIBase {
+pub trait CharityAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign>
     fn get_charity_campaign(
         &self,

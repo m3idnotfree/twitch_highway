@@ -2,7 +2,6 @@ use asknothingx2_util::api::Method;
 use response::StartRaidResponse;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId},
     TwitchAPI,
@@ -12,7 +11,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "raid")))]
-pub trait RaidAPI: TwitchAPIBase {
+pub trait RaidAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
     fn start_raid(
         &self,

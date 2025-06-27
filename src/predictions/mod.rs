@@ -5,7 +5,6 @@ use serde_json::Value;
 use types::PredictionStatus;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ID},
@@ -19,7 +18,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "predictions")))]
-pub trait PredictionsAPI: TwitchAPIBase {
+pub trait PredictionsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
     fn get_predictions(
         &self,

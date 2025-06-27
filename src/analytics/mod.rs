@@ -3,7 +3,6 @@ use request::AnalyticsRequest;
 use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{ANALYTICS, EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
@@ -17,7 +16,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "analytics")))]
-pub trait AnalyticsAPI: TwitchAPIBase {
+pub trait AnalyticsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
     fn get_extension_analytics(
         &self,

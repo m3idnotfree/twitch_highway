@@ -3,7 +3,6 @@ use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
 use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::PaginationQuery,
     TwitchAPI,
@@ -14,7 +13,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "entitlements")))]
-pub trait EntitlementsAPI: TwitchAPIBase {
+pub trait EntitlementsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements>
     fn get_drops_entitlements(
         &self,

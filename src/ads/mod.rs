@@ -3,7 +3,6 @@ use request::StartCommercialBody;
 use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS},
@@ -17,7 +16,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "ads")))]
-pub trait AdsAPI: TwitchAPIBase {
+pub trait AdsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
     fn start_commercial(
         &self,

@@ -2,7 +2,6 @@ use asknothingx2_util::api::Method;
 use request::SendWhisperBody;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::constants::WHISPERS,
     TwitchAPI,
@@ -11,7 +10,7 @@ use crate::{
 pub mod request;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "whispers")))]
-pub trait WhisperAPI: TwitchAPIBase {
+pub trait WhisperAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
     fn send_whisper(
         &self,

@@ -76,10 +76,12 @@ pub mod types;
 mod error;
 mod response;
 
+use base::{HeadersBuilder, UrlBuilder};
 pub use error::Error;
 pub use response::Response;
 
 use asknothingx2_util::oauth::{AccessToken, ClientId};
+use types::JWTToken;
 pub struct TwitchAPI {
     access_token: AccessToken,
     client_id: ClientId,
@@ -92,15 +94,24 @@ impl TwitchAPI {
             client_id,
         }
     }
-}
-
-impl crate::base::TwitchAPIBase for TwitchAPI {
-    fn access_token(&self) -> &AccessToken {
+    pub fn access_token(&self) -> &AccessToken {
         &self.access_token
     }
 
-    fn client_id(&self) -> &ClientId {
+    pub fn client_id(&self) -> &ClientId {
         &self.client_id
+    }
+
+    pub fn build_headers(&self) -> HeadersBuilder {
+        HeadersBuilder::base(self.access_token(), self.client_id())
+    }
+
+    pub fn build_jwt_headers(&self, jwt: &JWTToken) -> HeadersBuilder {
+        HeadersBuilder::base_with_jwt(jwt, self.client_id())
+    }
+
+    pub fn build_url(&self) -> UrlBuilder {
+        UrlBuilder::new()
     }
 }
 

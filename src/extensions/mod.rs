@@ -11,7 +11,6 @@ use serde_json::Value;
 use types::Segment;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
@@ -25,7 +24,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "extensions")))]
-pub trait ExtensionsAPI: TwitchAPIBase {
+pub trait ExtensionsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-configuration-segment>
     fn get_extension_configuration_segment(
         &self,

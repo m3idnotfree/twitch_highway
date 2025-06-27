@@ -6,7 +6,6 @@ use request::{
 use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::RequestBody,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
@@ -21,7 +20,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "channel-points")))]
-pub trait ChannelPointsAPI: TwitchAPIBase {
+pub trait ChannelPointsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
     fn create_custom_rewards(
         &self,

@@ -12,7 +12,6 @@ use response::{
 use types::UnbanRequestStatus;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, CHAT, ID, MODERATOR_ID, SETTINGS, USER_ID},
@@ -28,7 +27,7 @@ pub mod types;
 const MODERATION: &str = "moderation";
 
 #[cfg_attr(docsrs, doc(cfg(feature = "moderation")))]
-pub trait ModerationAPI: TwitchAPIBase {
+pub trait ModerationAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
     fn check_automod_status(
         &self,

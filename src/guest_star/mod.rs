@@ -3,7 +3,6 @@ use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
 use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, MODERATOR_ID},
@@ -19,7 +18,7 @@ pub mod types;
 const GUEST_STAR: &str = "guest_star";
 
 #[cfg_attr(docsrs, doc(cfg(feature = "guest-star")))]
-pub trait GuestStarAPI: TwitchAPIBase {
+pub trait GuestStarAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-guest-star-settings>
     fn get_channel_guest_star_settings(
         &self,

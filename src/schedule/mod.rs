@@ -7,7 +7,6 @@ use response::ScheduleResponse;
 use serde_json::Value;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ID, SETTINGS},
@@ -21,7 +20,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "schedule")))]
-pub trait ScheduleAPI: TwitchAPIBase {
+pub trait ScheduleAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule>
     fn get_channel_stream_schedule(
         &self,

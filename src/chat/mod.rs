@@ -9,7 +9,6 @@ use response::{
 };
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{AFTER, BROADCASTER_ID, CHAT, EMOTES, MODERATOR_ID, SETTINGS, USER_ID},
@@ -23,7 +22,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "chat")))]
-pub trait ChatAPI: TwitchAPIBase {
+pub trait ChatAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
     fn get_chatters(
         &self,

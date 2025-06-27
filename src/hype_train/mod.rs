@@ -2,7 +2,6 @@ use asknothingx2_util::api::Method;
 use response::HypeTrainResponse;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
     TwitchAPI,
@@ -12,7 +11,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "hype-train")))]
-pub trait HypeTrainAPI: TwitchAPIBase {
+pub trait HypeTrainAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-hype-train-events>
     fn get_hype_train_events(
         &self,

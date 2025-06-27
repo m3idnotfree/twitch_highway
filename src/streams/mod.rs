@@ -5,7 +5,6 @@ use response::{
 };
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, STREAMS, USER_ID},
@@ -19,7 +18,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "streams")))]
-pub trait StreamsAPI: TwitchAPIBase {
+pub trait StreamsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
     fn get_stream_key(
         &self,

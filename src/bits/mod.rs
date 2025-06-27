@@ -3,7 +3,6 @@ use request::BitsLeaderboardRequest;
 use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
@@ -17,7 +16,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
-pub trait BitsAPI: TwitchAPIBase {
+pub trait BitsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
     fn get_bits_leaderboard(
         &self,

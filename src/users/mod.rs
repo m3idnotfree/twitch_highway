@@ -7,7 +7,6 @@ use response::{
 use types::UserActiveExtensions;
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BLOCKS, BROADCASTER_ID, EXTENSIONS, ID, LOGIN, USERS, USER_ID},
@@ -21,7 +20,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "users")))]
-pub trait UserAPI: TwitchAPIBase {
+pub trait UserAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-users>
     fn users_info(
         &self,

@@ -3,7 +3,6 @@ use request::TeamFilter;
 use response::{ChannelTeamsResponse, TeamsResponse};
 
 use crate::{
-    base::TwitchAPIBase,
     request::{EmptyBody, EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, TEAMS},
@@ -17,7 +16,7 @@ pub mod response;
 pub mod types;
 
 #[cfg_attr(docsrs, doc(cfg(feature = "teams")))]
-pub trait TeamsAPI: TwitchAPIBase {
+pub trait TeamsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-teams>
     fn get_channel_teams(
         &self,
