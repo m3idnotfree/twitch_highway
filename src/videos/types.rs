@@ -59,6 +59,12 @@ impl fmt::Display for Period {
     }
 }
 
+impl AsRef<str> for Period {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Sort {
@@ -74,6 +80,12 @@ impl Sort {
             Self::Trending => "trending",
             Self::Views => "views",
         }
+    }
+}
+
+impl AsRef<str> for Sort {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 
@@ -100,6 +112,12 @@ impl Type {
             Self::Highlight => "highlight",
             Self::Upload => "upload",
         }
+    }
+}
+
+impl AsRef<str> for Type {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 

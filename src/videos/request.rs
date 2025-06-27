@@ -1,7 +1,7 @@
 use crate::{
     base::{IntoQueryPairs, QueryParams},
     types::{
-        constants::{GAME_ID, ID, TYPE, USER_ID},
+        constants::{GAME_ID, ID, USER_ID},
         GameId, Id, UserId,
     },
 };
@@ -50,29 +50,13 @@ impl IntoQueryPairs for VideoFilter {
     }
 }
 
-request_struct!(
-    VideosRequest {
-        string {
-            language: String,
-        },
-        any {
+define_request_query! {
+    VideosRequest<'a> {
+        opts: {
+            language: &'a str,
             period: Period,
             sort: Sort,
-            kind: Type,
+            kind: Type => TYPE
         }
-    }
-);
-
-impl IntoQueryPairs for VideosRequest {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)> {
-        let mut params = QueryParams::new();
-
-        params
-            .push_opt("language", self.language)
-            .push_opt("period", self.period.map(|x| x.to_string()))
-            .push_opt("sort", self.sort.map(|x| x.to_string()))
-            .push_opt(TYPE, self.kind.map(|x| x.to_string()));
-
-        params.build()
     }
 }
