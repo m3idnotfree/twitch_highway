@@ -1,3 +1,5 @@
+use std::sync::LazyLock;
+
 use asknothingx2_util::{
     api::{HeaderBuilder, HeaderMap},
     oauth::{AccessToken, ClientId},
@@ -8,6 +10,8 @@ use crate::types::JWTToken;
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 const BEARER: &str = "Bearer";
+
+static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BASE).unwrap());
 
 pub trait TwitchAPIBase {
     fn access_token(&self) -> &AccessToken;
@@ -60,7 +64,7 @@ pub struct UrlBuilder(Url);
 
 impl Default for UrlBuilder {
     fn default() -> Self {
-        UrlBuilder(url::Url::parse(TWITCH_API_BASE).unwrap())
+        UrlBuilder(BASE_URL.clone())
     }
 }
 
