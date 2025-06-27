@@ -210,6 +210,7 @@ macro_rules! define_request_query {
                     $opt_field:ident: $opt_type:ty $(=> $opt_key:tt)? $(as $opt_conv:tt)?
                 ),* $(,)?
             })?
+            $(; $($flags:ident),* $(,)?)?
         }
     ) => {
         $(#[$struct_meta])*
@@ -225,6 +226,7 @@ macro_rules! define_request_query {
         }
 
         impl$(<$life>)? $name$(<$life>)? {
+            #[allow(clippy::new_without_default)]
             pub fn new($($($req_field: $req_type),*)?) -> Self {
                 Self {
                     $($($req_field,)*)?
@@ -256,11 +258,7 @@ macro_rules! define_request_query {
             }
         }
 
-        impl$(<$life>)? Default for $name$(<$life>)? {
-            fn default() -> Self {
-                Self::new($($($req_field::default()),*)?)
-            }
-        }
+        define_request_query!(@check_flags $name $(<$life>)? ; $($($flags),*)?);
     };
 
     (@field_type $field:ident, $const:ident) => { crate::types::constants::$const };
@@ -297,4 +295,20 @@ macro_rules! define_request_query {
             let converted = $func($value);
             $url.query($key, converted);
     };
+
+    (@check_flags $name:ident $(<$life:lifetime>)? ; $($flags:ident),+) => {
+        define_request_query!(@apply_flags $name $(<$life>)? ; $($flags),*);
+    };
+    (@check_flags $name:ident $(<$life:lifetime>)? ; ) => {};
+
+    (@apply_flags $name:ident $(<$life:lifetime>)? ; into_request_body $(, $rest:ident)*) => {
+        impl$(<$life>)? crate::request::IntoRequestBody for $name$(<$life>)? {
+            fn as_body(&self) -> Option<String> {
+                Some(serde_json::to_string(self).unwrap())
+            }
+        }
+
+        define_request_query!(@apply_flags $name $(<$life>)? ; $($rest),*);
+    };
+    (@apply_flags $name:ident $(<$life:lifetime>)? ; ) => {};
 }
