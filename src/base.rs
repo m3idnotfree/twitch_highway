@@ -115,6 +115,22 @@ impl UrlBuilder {
     }
 
     #[inline]
+    pub fn query_u64(&mut self, key: &str, value: u64) -> &mut Self {
+        let mut buffer = itoa::Buffer::new();
+        let s = buffer.format(value);
+        self.0.query_pairs_mut().append_pair(key, s);
+        self
+    }
+
+    #[inline]
+    pub fn query_opt_u64(&mut self, key: &str, value: Option<u64>) -> &mut Self {
+        if let Some(v) = value {
+            self.query_u64(key, v);
+        }
+        self
+    }
+
+    #[inline]
     pub fn build(self) -> Url {
         self.0
     }
