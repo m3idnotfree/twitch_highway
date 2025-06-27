@@ -312,3 +312,72 @@ macro_rules! define_request_query {
     };
     (@apply_flags $name:ident $(<$life:lifetime>)? ; ) => {};
 }
+
+macro_rules! define_new_type {
+    (
+        $(#[$struct_meta:meta])*
+        $name:ident$(<$life:lifetime>)? {
+            $(req: {
+                $(
+                    $(#[$req_meta:meta])*
+                    $req_field:ident: $req_type:ty $(=> $req_key:tt)? $(as $req_conv:tt)?
+                ),* $(,)?
+            })? $(,)?
+            $(opts: {
+                $(
+                    $(#[$opt_meta:meta])*
+                    $opt_field:ident: $opt_type:ty $(=> $opt_key:tt)? $(as $opt_conv:tt)?
+                ),* $(,)?
+            })?
+            $(; $($flags:ident),* $(,)?)?
+        }
+    ) => {
+        $(#[$struct_meta])*
+        pub struct $name$(<$life>)? {
+            $($(
+                $(#[$req_meta])*
+                pub $req_field: $req_type,
+            )*)?
+            $($(
+                $(#[$opt_meta])*
+                pub $opt_field: Option<$opt_type>,
+            )*)?
+        }
+
+        impl$(<$life>)? $name$(<$life>)? {
+            #[allow(clippy::new_without_default)]
+            pub fn new($($($req_field: $req_type),*)?) -> Self {
+                Self {
+                    $($($req_field,)*)?
+                    $($($opt_field: None,)*)?
+                }
+            }
+
+            $($(
+                pub fn $opt_field(mut self, value: $opt_type) -> Self {
+                    self.$opt_field = Some(value);
+                    self
+                }
+            )*)?
+        }
+
+        define_request_query!(@check_flags $name $(<$life>)? ; $($($flags),*)?);
+    };
+
+    (@check_flags $name:ident $(<$life:lifetime>)? ; $($flags:ident),+) => {
+        define_request_query!(@apply_flags $name $(<$life>)? ; $($flags),*);
+    };
+    (@check_flags $name:ident $(<$life:lifetime>)? ; ) => {};
+
+    (@apply_flags $name:ident $(<$life:lifetime>)? ; into_request_body $(, $rest:ident)*) => {
+        impl$(<$life>)? crate::request::IntoRequestBody for $name$(<$life>)? {
+            fn as_body(&self) -> Option<String> {
+                Some(serde_json::to_string(self).unwrap())
+            }
+        }
+
+        define_request_query!(@apply_flags $name $(<$life>)? ; $($rest),*);
+    };
+    (@apply_flags $name:ident $(<$life:lifetime>)? ; ) => {};
+
+}
