@@ -4,6 +4,7 @@ use asknothingx2_util::{
     api::{HeaderBuilder, HeaderMap},
     oauth::{AccessToken, ClientId},
 };
+use chrono::{DateTime, FixedOffset, SecondsFormat};
 use url::Url;
 
 use crate::types::JWTToken;
@@ -98,22 +99,6 @@ impl UrlBuilder {
         self
     }
 
-    pub fn query_pairs<T: IntoQueryPairs>(&mut self, querys: T) -> &mut Self {
-        self.0
-            .query_pairs_mut()
-            .extend_pairs(querys.into_query_pairs());
-        self
-    }
-
-    pub fn query_opt_pairs<T: IntoQueryPairs>(&mut self, querys: Option<T>) -> &mut Self {
-        if let Some(querys) = querys {
-            self.0
-                .query_pairs_mut()
-                .extend_pairs(querys.into_query_pairs());
-        }
-        self
-    }
-
     #[inline]
     pub fn query_u64(&mut self, key: &str, value: u64) -> &mut Self {
         let mut buffer = itoa::Buffer::new();
@@ -129,66 +114,27 @@ impl UrlBuilder {
         }
         self
     }
+    /// RFC 3339 format
+    /// Includes seconds presision
+    /// Uses "Z" suffix
+    pub fn date(&mut self, key: &str, value: DateTime<FixedOffset>) -> &mut Self {
+        self.0
+            .query_pairs_mut()
+            .append_pair(key, &value.to_rfc3339_opts(SecondsFormat::Secs, true));
+        self
+    }
+
+    pub fn date_opt(&mut self, key: &str, value: Option<DateTime<FixedOffset>>) -> &mut Self {
+        if let Some(date) = value {
+            self.0
+                .query_pairs_mut()
+                .append_pair(key, &date.to_rfc3339_opts(SecondsFormat::Secs, true));
+        }
+        self
+    }
 
     #[inline]
     pub fn build(self) -> Url {
         self.0
-    }
-}
-
-pub trait IntoQueryPairs {
-    fn into_query_pairs(self) -> Vec<(&'static str, String)>;
-}
-
-#[derive(Debug, Default)]
-pub struct QueryParams(Vec<(&'static str, String)>);
-
-impl QueryParams {
-    #[inline]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    #[inline]
-    pub fn push_opt<T: Into<String>>(&mut self, key: &'static str, value: Option<T>) -> &mut Self {
-        if let Some(v) = value {
-            self.0.push((key, v.into()));
-        }
-        self
-    }
-
-    #[inline]
-    pub fn build(self) -> Vec<(&'static str, String)> {
-        self.0
-    }
-}
-
-impl QueryParams {
-    pub fn extend_opt<V: Into<String>, L: IntoIterator<Item = (&'static str, V)>>(
-        &mut self,
-        extend: Option<L>,
-    ) -> &mut Self {
-        if let Some(v) = extend {
-            self.0.extend(v.into_iter().map(|(x, y)| (x, y.into())));
-        }
-        self
-    }
-}
-
-use chrono::{DateTime, FixedOffset, SecondsFormat};
-impl QueryParams {
-    /// RFC 3339 format
-    /// Includes seconds presision
-    /// Uses "Z" suffix
-    pub fn date_opt(
-        &mut self,
-        key: &'static str,
-        value: Option<DateTime<FixedOffset>>,
-    ) -> &mut Self {
-        if let Some(date) = value {
-            self.0
-                .push((key, date.to_rfc3339_opts(SecondsFormat::Secs, true)));
-        }
-        self
     }
 }
