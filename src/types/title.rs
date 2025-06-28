@@ -6,7 +6,7 @@ pub struct Title {
 }
 
 impl Title {
-    pub fn new<T: Into<String>>(title: T) -> Self {
+    pub fn new(title: impl Into<String>) -> Self {
         Self {
             title: title.into(),
         }
