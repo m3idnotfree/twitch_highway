@@ -52,6 +52,6 @@ define_request!(
             entitlement_ids: Vec<String>,
             fulfillment_status: FulfillmentStatus
         };
-    into_request_body
+        to_json
     }
 );

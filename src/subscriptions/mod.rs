@@ -2,7 +2,7 @@ use asknothingx2_util::api::Method;
 use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
@@ -21,13 +21,13 @@ pub trait SubscriptionsAPI {
         broadcaster_id: BroadcasterId,
         user_id: Option<&[UserId]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, BroadcasterSubscriptionResponse>;
+    ) -> TwitchAPIRequest<BroadcasterSubscriptionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#check-user-subscription>
     fn check_user_subscpition(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, UserSubscriptionResponse>;
+    ) -> TwitchAPIRequest<UserSubscriptionResponse>;
 }
 
 impl SubscriptionsAPI for TwitchAPI {
@@ -36,7 +36,7 @@ impl SubscriptionsAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         user_id: Option<&[UserId]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, BroadcasterSubscriptionResponse> {
+    ) -> TwitchAPIRequest<BroadcasterSubscriptionResponse> {
         let mut url = self.build_url();
         url.path([SUBSCRIPTIONS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -50,14 +50,14 @@ impl SubscriptionsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn check_user_subscpition(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, UserSubscriptionResponse> {
+    ) -> TwitchAPIRequest<UserSubscriptionResponse> {
         let mut url = self.build_url();
         url.path([SUBSCRIPTIONS, "user"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -68,7 +68,7 @@ impl SubscriptionsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

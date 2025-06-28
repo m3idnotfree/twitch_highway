@@ -2,7 +2,7 @@ use asknothingx2_util::api::Method;
 use response::HypeTrainResponse;
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
     TwitchAPI,
 };
@@ -17,7 +17,7 @@ pub trait HypeTrainAPI {
         &self,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, HypeTrainResponse>;
+    ) -> TwitchAPIRequest<HypeTrainResponse>;
 }
 
 impl HypeTrainAPI for TwitchAPI {
@@ -25,7 +25,7 @@ impl HypeTrainAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, HypeTrainResponse> {
+    ) -> TwitchAPIRequest<HypeTrainResponse> {
         let mut url = self.build_url();
         url.path(["hypetrain", "events"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -38,7 +38,7 @@ impl HypeTrainAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

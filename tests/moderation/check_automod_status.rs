@@ -10,7 +10,7 @@ fn_expected_request!(
     scopes: Some(vec![Scope::ModerationRead]),
     args: [
         BroadcasterId::new("12345"),
-        vec![
+        &[
             CheckAutoMod::new(
                 "123".to_string(),
                 "Hello World!".to_string()),

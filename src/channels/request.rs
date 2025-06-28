@@ -4,24 +4,24 @@ use crate::types::GameId;
 
 define_request!(
     #[derive(Default, Serialize)]
-    ModifyChannelRequest {
+    ModifyChannelRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            broadcaster_language: String,
+            broadcaster_language: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String,
+            title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             game_id: GameId,
             #[serde(skip_serializing_if = "Option::is_none")]
             delay: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
-            tags:Vec<String>,
+            tags: &'a [&'a str],
             #[serde(skip_serializing_if = "Option::is_none")]
-            content_classification_labels:Vec<ContentClassificationLabel>,
+            content_classification_labels: &'a [&'a ContentClassificationLabel],
             #[serde(skip_serializing_if = "Option::is_none")]
             is_branded_content: bool
         };
-        into_request_body
+        to_json
     }
 );
 

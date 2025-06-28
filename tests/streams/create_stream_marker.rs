@@ -7,7 +7,7 @@ fn_expected_request!(
     endpoint: create_stream_marker,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageBroadcast]),
-    args: [UserId::new("123"), Some("hello, this is a marker!".to_string())],
+    args: [UserId::new("123"), Some("hello, this is a marker!")],
     json_contain: ["\"user_id\":\"123\"","\"description\":\"hello, this is a marker!\""],
     method: POST,
     header: expected_headers!(json),

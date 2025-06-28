@@ -11,7 +11,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("141981764"),
         "Any leeks in the stream?",
-        vec![Title::new("Yes, give it time.".to_string()), Title::new("Definitely not.".to_string())],
+        &[Title::new("Yes, give it time."), Title::new("Definitely not.")],
         120
     ],
     json_contain: [

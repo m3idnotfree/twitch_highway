@@ -3,7 +3,7 @@ use request::TeamSelector;
 use response::{ChannelTeamsResponse, TeamsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, TEAMS},
         BroadcasterId,
@@ -21,16 +21,16 @@ pub trait TeamsAPI {
     fn get_channel_teams(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelTeamsResponse>;
+    ) -> TwitchAPIRequest<ChannelTeamsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams(&self, team_filter: TeamSelector) -> TwitchAPIRequest<EmptyBody, TeamsResponse>;
+    fn get_teams(&self, team_selector: TeamSelector) -> TwitchAPIRequest<TeamsResponse>;
 }
 
 impl TeamsAPI for TwitchAPI {
     fn get_channel_teams(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelTeamsResponse> {
+    ) -> TwitchAPIRequest<ChannelTeamsResponse> {
         let mut url = self.build_url();
         url.path([TEAMS, "channel"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -40,20 +40,20 @@ impl TeamsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn get_teams(&self, team_filter: TeamSelector) -> TwitchAPIRequest<EmptyBody, TeamsResponse> {
+    fn get_teams(&self, team_selector: TeamSelector) -> TwitchAPIRequest<TeamsResponse> {
         let mut url = self.build_url();
         url.path([TEAMS]);
-        team_filter.apply_to_url(&mut url);
+        team_selector.apply_to_url(&mut url);
 
         TwitchAPIRequest::new(
             EndpointType::GetChannelTeams,
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

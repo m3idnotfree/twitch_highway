@@ -1,14 +1,14 @@
 fn_expected_request!(
     modules: [
         twitch_highway::videos::VideosAPI,
-        twitch_highway::videos::request::VideoFilter,
+        twitch_highway::videos::request::VideoSelector,
         twitch_highway::types::Id
     ],
     endpoint: get_videos,
     token_type: Any,
     scopes: None,
     args: [
-        VideoFilter::by_ids(vec![Id::new("335921245")]),
+        VideoSelector::by_ids(&[Id::new("335921245")]),
         None,
         None
     ],

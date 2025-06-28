@@ -249,11 +249,11 @@ macro_rules! automatic_impl {
     (@impl $name:ident$(<$life:lifetime>)? ;
         req: [$($req_field:ident : $req_field_type:ty $(=> $req_key:tt)? $(; $req_conv:tt)?),*] ;
         opts: [$($opt_field:ident : $opt_field_type:ty $(=> $opt_key:tt)? $(; $opt_conv:tt)?),*] ;
-        into_request_body $(, $rest:ident)*
+        to_json $(, $rest:ident)*
     ) => {
 
-        impl$(<$life>)? crate::request::IntoRequestBody for $name$(<$life>)? {
-            fn as_body(&self) -> Option<String> {
+        impl$(<$life>)? $name$(<$life>)? {
+            pub fn to_json(&self) -> Option<String> {
                 Some(serde_json::to_string(self).unwrap())
             }
         }

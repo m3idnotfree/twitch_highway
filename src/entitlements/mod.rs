@@ -3,7 +3,7 @@ use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
 use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::PaginationQuery,
     TwitchAPI,
 };
@@ -19,19 +19,19 @@ pub trait EntitlementsAPI {
         &self,
         opts: Option<DropEntitlementRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse>;
+    ) -> TwitchAPIRequest<DropsEntitlementsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements>
     fn update_drops_entitlements(
         &self,
         opts: Option<UpdateEntitlementsRequest>,
-    ) -> TwitchAPIRequest<UpdateEntitlementsRequest, UpdateDropEntitlementsResponse>;
+    ) -> TwitchAPIRequest<UpdateDropEntitlementsResponse>;
 }
 impl EntitlementsAPI for TwitchAPI {
     fn get_drops_entitlements(
         &self,
         opts: Option<DropEntitlementRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, DropsEntitlementsResponse> {
+    ) -> TwitchAPIRequest<DropsEntitlementsResponse> {
         let mut url = self.build_url();
 
         if let Some(opts) = opts {
@@ -48,25 +48,31 @@ impl EntitlementsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_drops_entitlements(
         &self,
         opts: Option<UpdateEntitlementsRequest>,
-    ) -> TwitchAPIRequest<UpdateEntitlementsRequest, UpdateDropEntitlementsResponse> {
+    ) -> TwitchAPIRequest<UpdateDropEntitlementsResponse> {
         let mut url = self.build_url();
         url.path(["entitlements", "drops"]);
 
         let mut headers = self.build_headers();
         headers.json();
 
+        let opts = if let Some(opts) = opts {
+            opts.to_json()
+        } else {
+            None
+        };
+
         TwitchAPIRequest::new(
             EndpointType::UpdateDropsEntitlements,
             url.build(),
             Method::PATCH,
             headers.build(),
-            opts.unwrap_or_default(),
+            opts,
         )
     }
 }

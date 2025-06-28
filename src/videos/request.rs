@@ -3,8 +3,8 @@ use crate::types::{GameId, Id, UserId};
 use super::types::{Period, Sort, Type};
 
 define_select!(
-    VideoFilter {
-        ids: Vec<Id> => ID as by_ids ; vec,
+    VideoSelector<'a> {
+        ids: &'a [Id] => ID as by_ids ; vec,
         user_id: UserId => USER_ID as by_user_id,
         game_id: GameId => GAME_ID as by_game_id
     };

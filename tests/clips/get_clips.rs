@@ -8,7 +8,7 @@ fn_expected_request!(
     token_type: Any,
     scopes: None,
     args: [
-        ClipsSelector::by_ids(vec![Id::new("AwkwardHelplessSalamanderSwiftRage")]),
+        ClipsSelector::by_ids(&[Id::new("AwkwardHelplessSalamanderSwiftRage")]),
         None,
         None
     ],

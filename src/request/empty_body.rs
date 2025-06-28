@@ -1,10 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::IntoRequestBody;
-
 #[derive(Debug, Serialize)]
 pub struct EmptyBody;
-impl IntoRequestBody for EmptyBody {}
+
 impl<'de> Deserialize<'de> for EmptyBody {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where

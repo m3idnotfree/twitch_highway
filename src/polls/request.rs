@@ -13,7 +13,6 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             channel_points_per_vote: u64,
         };
-        into_request_body
     }
 );
 
@@ -25,6 +24,6 @@ define_request!(
             id: Id,
             status: PollStatus
         };
-        into_request_body
+        to_json
     }
 );

@@ -32,49 +32,49 @@ pub trait ModerationAPI {
     fn check_automod_status(
         &self,
         broadcaster_id: BroadcasterId,
-        data: Vec<CheckAutoMod>,
-    ) -> TwitchAPIRequest<CheckAutoModStatusRequest, CheckAutoModStatusResponse>;
+        data: &[CheckAutoMod],
+    ) -> TwitchAPIRequest<CheckAutoModStatusResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
     fn manage_held_automod_messages(
         &self,
         user_id: UserId,
         msg_id: &str,
         action: AutoModAction,
-    ) -> TwitchAPIRequest<ManageHeldAutoModMeussageRequest, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
     fn get_auto_mod_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, AutoModSettingsResponse>;
+    ) -> TwitchAPIRequest<AutoModSettingsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
     fn update_auto_mod_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         opts: Option<UpdateAutoModSettingsRequest>,
-    ) -> TwitchAPIRequest<UpdateAutoModSettingsRequest, AutoModSettingsResponse>;
+    ) -> TwitchAPIRequest<AutoModSettingsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
     fn get_banned_users(
         &self,
         broadcaster_id: BroadcasterId,
-        user_id: Option<Vec<UserId>>,
+        user_id: Option<&[UserId]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GetBannedUsersResponse>;
+    ) -> TwitchAPIRequest<GetBannedUsersResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#ban-user>
     fn ban_users(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         data: BanUserRequest,
-    ) -> TwitchAPIRequest<BanUsersRequest, BanUsersResponse>;
+    ) -> TwitchAPIRequest<BanUsersResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#unban-user>
     fn unban_user(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
     fn get_unban_requests(
         &self,
@@ -83,7 +83,7 @@ pub trait ModerationAPI {
         status: UnbanRequestStatus,
         user_id: Option<UserId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, UnbanRequestResponse>;
+    ) -> TwitchAPIRequest<UnbanRequestResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
     fn resolve_unban_requests(
         &self,
@@ -92,107 +92,107 @@ pub trait ModerationAPI {
         unban_request_id: &str,
         status: UnbanRequestStatus,
         resolution_text: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, UnbanRequestResponse>;
+    ) -> TwitchAPIRequest<UnbanRequestResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
     fn get_blocked_terms(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, BlockedTermsResponse>;
+    ) -> TwitchAPIRequest<BlockedTermsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
     fn add_blocked_term(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         text: &str,
-    ) -> TwitchAPIRequest<AddBlockedTermRequest, BlockedTermsResponse>;
+    ) -> TwitchAPIRequest<BlockedTermsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
     fn remove_blocked_term(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         id: Id,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
     fn delete_chat_messages(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         message_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
     fn get_moderated_channels(
         &self,
         user_id: UserId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratedChannelResponse>;
+    ) -> TwitchAPIRequest<ModeratedChannelResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
     fn get_moderators(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: Option<UserId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratorsResponse>;
+    ) -> TwitchAPIRequest<ModeratorsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
     fn add_channel_moderator(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
     fn remove_channel_moderator(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
     fn get_vips(
         &self,
-        user_ids: Option<Vec<UserId>>,
+        user_ids: Option<&[UserId]>,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratorsResponse>;
+    ) -> TwitchAPIRequest<ModeratorsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
     fn add_channel_vip(
         &self,
         user_id: UserId,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
     fn remove_channel_vip(
         &self,
         user_id: UserId,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
     fn update_shield_mode_status(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         is_active: bool,
-    ) -> TwitchAPIRequest<UpdateShieldModeStatusRequest, ShieldModeStatusResponse>;
+    ) -> TwitchAPIRequest<ShieldModeStatusResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
     fn get_shield_mode_status(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, ShieldModeStatusResponse>;
+    ) -> TwitchAPIRequest<ShieldModeStatusResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
     fn warm_chat_user(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-        data: Vec<WarnChatUser>,
-    ) -> TwitchAPIRequest<WarnChatUserRequest, WarnChatUsersResponse>;
+        data: &[WarnChatUser],
+    ) -> TwitchAPIRequest<WarnChatUsersResponse>;
 }
 
 impl ModerationAPI for TwitchAPI {
     fn check_automod_status(
         &self,
         broadcaster_id: BroadcasterId,
-        data: Vec<CheckAutoMod>,
-    ) -> TwitchAPIRequest<CheckAutoModStatusRequest, CheckAutoModStatusResponse> {
+        data: &[CheckAutoMod],
+    ) -> TwitchAPIRequest<CheckAutoModStatusResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "enforcements", "status"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -205,7 +205,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            CheckAutoModStatusRequest::new(data),
+            CheckAutoModStatusRequest::new(data).to_json(),
         )
     }
     fn manage_held_automod_messages(
@@ -213,7 +213,7 @@ impl ModerationAPI for TwitchAPI {
         user_id: UserId,
         msg_id: &str,
         action: AutoModAction,
-    ) -> TwitchAPIRequest<ManageHeldAutoModMeussageRequest, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "automod", "message"]);
 
@@ -225,14 +225,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            ManageHeldAutoModMeussageRequest::new(user_id, msg_id.to_string(), action),
+            ManageHeldAutoModMeussageRequest::new(user_id, msg_id, action).to_json(),
         )
     }
     fn get_auto_mod_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, AutoModSettingsResponse> {
+    ) -> TwitchAPIRequest<AutoModSettingsResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "automod", SETTINGS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -243,7 +243,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_auto_mod_settings(
@@ -251,7 +251,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         opts: Option<UpdateAutoModSettingsRequest>,
-    ) -> TwitchAPIRequest<UpdateAutoModSettingsRequest, AutoModSettingsResponse> {
+    ) -> TwitchAPIRequest<AutoModSettingsResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "automod", SETTINGS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -260,20 +260,26 @@ impl ModerationAPI for TwitchAPI {
         let mut headers = self.build_headers();
         headers.json();
 
+        let opts = if let Some(opts) = opts {
+            opts.to_json()
+        } else {
+            None
+        };
+
         TwitchAPIRequest::new(
             EndpointType::UpdateAutoModSettings,
             url.build(),
             Method::PUT,
             headers.build(),
-            opts.unwrap_or_default(),
+            opts,
         )
     }
     fn get_banned_users(
         &self,
         broadcaster_id: BroadcasterId,
-        user_id: Option<Vec<UserId>>,
+        user_id: Option<&[UserId]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GetBannedUsersResponse> {
+    ) -> TwitchAPIRequest<GetBannedUsersResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "banned"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -287,7 +293,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn ban_users(
@@ -295,7 +301,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         data: BanUserRequest,
-    ) -> TwitchAPIRequest<BanUsersRequest, BanUsersResponse> {
+    ) -> TwitchAPIRequest<BanUsersResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "bans"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -309,7 +315,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            BanUsersRequest::new(data),
+            BanUsersRequest::new(data).to_json(),
         )
     }
     fn unban_user(
@@ -317,7 +323,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "bans"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -329,7 +335,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_unban_requests(
@@ -339,7 +345,7 @@ impl ModerationAPI for TwitchAPI {
         status: UnbanRequestStatus,
         user_id: Option<UserId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, UnbanRequestResponse> {
+    ) -> TwitchAPIRequest<UnbanRequestResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "unban_requests"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -355,7 +361,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn resolve_unban_requests(
@@ -365,7 +371,7 @@ impl ModerationAPI for TwitchAPI {
         unban_request_id: &str,
         status: UnbanRequestStatus,
         resolution_text: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, UnbanRequestResponse> {
+    ) -> TwitchAPIRequest<UnbanRequestResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "unban_requests"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -379,7 +385,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_blocked_terms(
@@ -387,7 +393,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, BlockedTermsResponse> {
+    ) -> TwitchAPIRequest<BlockedTermsResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -401,7 +407,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn add_blocked_term(
@@ -409,7 +415,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         text: &str,
-    ) -> TwitchAPIRequest<AddBlockedTermRequest, BlockedTermsResponse> {
+    ) -> TwitchAPIRequest<BlockedTermsResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -423,7 +429,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            AddBlockedTermRequest::new(text.to_string()),
+            AddBlockedTermRequest::new(text).to_json(),
         )
     }
     fn remove_blocked_term(
@@ -431,7 +437,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         id: Id,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "blocked_terms"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -443,7 +449,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn delete_chat_messages(
@@ -451,7 +457,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         message_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, CHAT])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -463,14 +469,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_moderated_channels(
         &self,
         user_id: UserId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratedChannelResponse> {
+    ) -> TwitchAPIRequest<ModeratedChannelResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, CHANNELS]).query(USER_ID, user_id);
         if let Some(pagination) = pagination {
@@ -482,7 +488,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_moderators(
@@ -490,7 +496,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         user_id: Option<UserId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratorsResponse> {
+    ) -> TwitchAPIRequest<ModeratorsResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -504,14 +510,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn add_channel_moderator(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -522,14 +528,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn remove_channel_moderator(
         &self,
         broadcaster_id: BroadcasterId,
         user_id: UserId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([MODERATION, "moderators"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -540,15 +546,15 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_vips(
         &self,
-        user_ids: Option<Vec<UserId>>,
+        user_ids: Option<&[UserId]>,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ModeratorsResponse> {
+    ) -> TwitchAPIRequest<ModeratorsResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -562,14 +568,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn add_channel_vip(
         &self,
         user_id: UserId,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
             .query(USER_ID, user_id)
@@ -580,14 +586,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn remove_channel_vip(
         &self,
         user_id: UserId,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS, "vips"])
             .query(USER_ID, user_id)
@@ -598,7 +604,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_shield_mode_status(
@@ -606,7 +612,7 @@ impl ModerationAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         is_active: bool,
-    ) -> TwitchAPIRequest<UpdateShieldModeStatusRequest, ShieldModeStatusResponse> {
+    ) -> TwitchAPIRequest<ShieldModeStatusResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "shield_mode"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -619,14 +625,14 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::PUT,
             headers.build(),
-            UpdateShieldModeStatusRequest::new(is_active),
+            UpdateShieldModeStatusRequest::new(is_active).to_json(),
         )
     }
     fn get_shield_mode_status(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, ShieldModeStatusResponse> {
+    ) -> TwitchAPIRequest<ShieldModeStatusResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "shield_mode"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -637,15 +643,15 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn warm_chat_user(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-        data: Vec<WarnChatUser>,
-    ) -> TwitchAPIRequest<WarnChatUserRequest, WarnChatUsersResponse> {
+        data: &[WarnChatUser],
+    ) -> TwitchAPIRequest<WarnChatUsersResponse> {
         let mut url = self.build_url();
         url.path([MODERATION, "warnings"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -656,7 +662,7 @@ impl ModerationAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            WarnChatUserRequest::new(data),
+            WarnChatUserRequest::new(data).to_json(),
         )
     }
 }

@@ -10,7 +10,7 @@ fn_expected_request!(
     scopes: Some(vec![Scope::ChannelReadPredictions]),
     args: [
         BroadcasterId::new("55696719"),
-        Some(vec![Id::new("d6676d5c-c86e-44d2-bfc4-100fb48f0656")]),
+        Some(&[Id::new("d6676d5c-c86e-44d2-bfc4-100fb48f0656")]),
         None
     ],
     method: GET,

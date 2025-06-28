@@ -2,10 +2,10 @@ use crate::types::{BroadcasterId, GameId, Id};
 
 define_select!(
     #[derive(Debug)]
-    ClipsSelector {
+    ClipsSelector<'a> {
             broadcaster_id: BroadcasterId => BROADCASTER_ID as by_broadcaster_id,
             game_id: GameId => GAME_ID as by_game_id,
-            ids: Vec<Id> => ID  as by_ids ; vec,
+            ids: &'a[Id] => ID  as by_ids ; vec,
     };
     apply_to_url
 );

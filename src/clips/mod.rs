@@ -3,7 +3,7 @@ use request::{ClipsSelector, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
     TwitchAPI,
 };
@@ -19,14 +19,14 @@ pub trait ClipsAPI {
         &self,
         broadcaster_id: BroadcasterId,
         has_delay: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody, CreateClipsResponse>;
+    ) -> TwitchAPIRequest<CreateClipsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
     fn get_clips(
         &self,
-        clips_filter: ClipsSelector,
+        clips_selector: ClipsSelector,
         opts: Option<GetClipsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse>;
+    ) -> TwitchAPIRequest<ClipsInfoResponse>;
 }
 
 impl ClipsAPI for TwitchAPI {
@@ -34,7 +34,7 @@ impl ClipsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         has_delay: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody, CreateClipsResponse> {
+    ) -> TwitchAPIRequest<CreateClipsResponse> {
         let mut url = self.build_url();
         url.path(["clips"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -45,18 +45,18 @@ impl ClipsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_clips(
         &self,
-        clips_filter: ClipsSelector,
+        clips_selector: ClipsSelector,
         opts: Option<GetClipsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ClipsInfoResponse> {
+    ) -> TwitchAPIRequest<ClipsInfoResponse> {
         let mut url = self.build_url();
         url.path(["clips"]);
-        clips_filter.apply_to_url(&mut url);
+        clips_selector.apply_to_url(&mut url);
 
         if let Some(opts) = opts {
             opts.apply_to_url(&mut url);
@@ -71,7 +71,7 @@ impl ClipsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

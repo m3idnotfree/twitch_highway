@@ -14,7 +14,7 @@ fn_expected_request!(
         BroadcasterId::new("1234"),
         ModeratorId::new("5678"),
         BanUserRequest::new(UserId::new("9876"))
-            .reason("no reason".to_string())
+            .reason("no reason")
     ],
     json_contain: ["\"user_id\":\"9876\"","\"reason\":\"no reason\""],
     method: POST,
@@ -46,7 +46,7 @@ fn_expected_request!(
         ModeratorId::new("5678"),
         BanUserRequest::new(UserId::new("9876"))
             .duration(300)
-            .reason("no reason".to_string())
+            .reason("no reason")
     ],
     json_contain: [
         //"{\"data\":{\"user_id\":\"9876\",\"reason\":\"no reason\"}}",

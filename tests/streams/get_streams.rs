@@ -8,7 +8,7 @@ fn_expected_request!(
     scopes: None,
     args: [
         Some(GetStreamsRequest::new()
-            .user_login(vec!["afro", "cohhcarnage", "lana_lux"])),
+            .user_login(&["afro", "cohhcarnage", "lana_lux"])),
         None
     ],
     method: GET,

@@ -12,7 +12,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("141981764"),
         "Heads or Tails?",
-        vec![Title::new("Heads".to_string()), Title::new("Tails".to_string())],
+        &[Title::new("Heads"), Title::new("Tails")],
         1800,
         Some(
             PollsRequest::new()

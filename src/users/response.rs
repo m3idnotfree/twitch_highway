@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::request::IntoRequestBody;
-
 use super::types::{BlockUser, User, UserActiveExtensions, UserExtension};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -29,8 +27,8 @@ pub struct UserActiveExtensionsResponse {
     pub data: UserActiveExtensions,
 }
 
-impl IntoRequestBody for UserActiveExtensionsResponse {
-    fn as_body(&self) -> Option<String> {
+impl UserActiveExtensionsResponse {
+    fn to_json(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
 }

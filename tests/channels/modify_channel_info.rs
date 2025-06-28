@@ -13,9 +13,9 @@ fn_expected_request!(
         BroadcasterId::new("41245072"),
         Some(ModifyChannelRequest::new()
             .game_id(GameId::new("33214"))
-            .title("there are helicopters in the game? REASON TO PLAY FORTNITE found".to_string())
-            .broadcaster_language("en".to_string())
-            .tags(vec!["LevelingUp".to_string()])
+            .title("there are helicopters in the game? REASON TO PLAY FORTNITE found")
+            .broadcaster_language("en")
+            .tags(&["LevelingUp"])
         )
     ],
     json_contain: [

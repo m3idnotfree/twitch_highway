@@ -5,10 +5,10 @@ use crate::types::UserId;
 
 define_request!(
     #[derive(Serialize)]
-    BitsLeaderboardRequest {
+    BitsLeaderboardRequest<'a> {
         opts: {
             count: u64 ; u64,
-            period: String,
+            period: &'a str,
             started_at: DateTime<FixedOffset> => STARTED_AT ; date,
             user_id: UserId => USER_ID,
         };

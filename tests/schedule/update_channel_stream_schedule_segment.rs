@@ -12,7 +12,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("141981764"),
         Id::new("eyJzZWdtZW50SUQiOiJlNGFjYzcyNC0zNzFmLTQwMmMtODFjYS0yM2FkYTc5NzU5ZDQiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyNn0="),
-        Some(UpdateScheduleSegmentRequest::new().duration("120".to_string()))
+        Some(UpdateScheduleSegmentRequest::new().duration("120"))
     ],
     json_contain: [
         "\"duration\":\"120\""

@@ -29,36 +29,36 @@ define_request!(
 
 define_request!(
     #[derive(Serialize, Deserialize)]
-    CreateScheduleSegmentRequest {
+    CreateScheduleSegmentRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            category_id: String,
+            category_id: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String,
+            title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             is_recurring: bool
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Default, Serialize, Deserialize)]
-    UpdateScheduleSegmentRequest {
+    UpdateScheduleSegmentRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            start_time: String,
+            start_time: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            duration: String,
+            duration: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            category_id: String,
+            category_id: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String,
+            title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            timezone: String,
+            timezone: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             is_canceled: bool,
         };
-        into_request_body
+        to_json
     }
 );

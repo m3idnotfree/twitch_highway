@@ -7,7 +7,7 @@ fn_expected_request!(
     endpoint: end_guest_star_session,
     token_type: User,
     scopes: Some(vec![Scope::ChannelManageGuestStar]),
-    args: [BroadcasterId::new("9321049"), "2KFRQbFtpmfyD3IevNRnCzOPRJI".to_string()],
+    args: [BroadcasterId::new("9321049"), "2KFRQbFtpmfyD3IevNRnCzOPRJI"],
     method: DELETE,
     header: expected_headers!(),
     url: "https://api.twitch.tv/helix/guest_star/session?broadcaster_id=9321049&session_id=2KFRQbFtpmfyD3IevNRnCzOPRJI"

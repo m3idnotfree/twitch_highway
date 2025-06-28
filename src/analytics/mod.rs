@@ -3,7 +3,7 @@ use request::AnalyticsRequest;
 use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{ANALYTICS, EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
         ExtensionId, GameId, PaginationQuery,
@@ -23,14 +23,14 @@ pub trait AnalyticsAPI {
         extension_id: Option<ExtensionId>,
         opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse>;
+    ) -> TwitchAPIRequest<ExtensionAnalyticsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
     fn get_game_analytics(
         &self,
         game_id: Option<GameId>,
         opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GameAnalyticsResponse>;
+    ) -> TwitchAPIRequest<GameAnalyticsResponse>;
 }
 
 impl AnalyticsAPI for TwitchAPI {
@@ -39,7 +39,7 @@ impl AnalyticsAPI for TwitchAPI {
         extension_id: Option<ExtensionId>,
         opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ExtensionAnalyticsResponse> {
+    ) -> TwitchAPIRequest<ExtensionAnalyticsResponse> {
         let mut url = self.build_url();
         url.path([ANALYTICS, EXTENSIONS])
             .query_opt(EXTENSION_ID, extension_id);
@@ -57,7 +57,7 @@ impl AnalyticsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_game_analytics(
@@ -65,7 +65,7 @@ impl AnalyticsAPI for TwitchAPI {
         game_id: Option<GameId>,
         opts: Option<AnalyticsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GameAnalyticsResponse> {
+    ) -> TwitchAPIRequest<GameAnalyticsResponse> {
         let mut url = self.build_url();
         url.path([ANALYTICS, GAMES]).query_opt(GAME_ID, game_id);
 
@@ -82,7 +82,7 @@ impl AnalyticsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

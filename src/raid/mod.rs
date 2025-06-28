@@ -17,9 +17,9 @@ pub trait RaidAPI {
         &self,
         from_broadcaster_id: &str,
         to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, StartRaidResponse>;
+    ) -> TwitchAPIRequest<StartRaidResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody>;
 }
 
 impl RaidAPI for TwitchAPI {
@@ -27,7 +27,7 @@ impl RaidAPI for TwitchAPI {
         &self,
         from_broadcaster_id: &str,
         to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, StartRaidResponse> {
+    ) -> TwitchAPIRequest<StartRaidResponse> {
         let mut url = self.build_url();
         url.path(["raids"]).query_extend([
             ("from_broadcaster_id", from_broadcaster_id),
@@ -39,10 +39,10 @@ impl RaidAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path(["raids"]).query(BROADCASTER_ID, broadcaster_id);
 
@@ -51,7 +51,7 @@ impl RaidAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

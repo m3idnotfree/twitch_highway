@@ -1,9 +1,9 @@
 use asknothingx2_util::api::Method;
-use request::{VideoFilter, VideosRequest};
+use request::{VideoSelector, VideosRequest};
 use response::{DeleteVideosResponse, VideosResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{ID, VIDEOS},
         Id, PaginationQuery,
@@ -20,24 +20,24 @@ pub trait VideosAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
     fn get_videos(
         &self,
-        video_filter: VideoFilter,
+        video_selector: VideoSelector,
         opts: Option<VideosRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, VideosResponse>;
+    ) -> TwitchAPIRequest<VideosResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#delete-videos>
-    fn delete_videos(&self, id: &[Id]) -> TwitchAPIRequest<EmptyBody, DeleteVideosResponse>;
+    fn delete_videos(&self, id: &[Id]) -> TwitchAPIRequest<DeleteVideosResponse>;
 }
 
 impl VideosAPI for TwitchAPI {
     fn get_videos(
         &self,
-        video_filter: VideoFilter,
+        video_selector: VideoSelector,
         opts: Option<VideosRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, VideosResponse> {
+    ) -> TwitchAPIRequest<VideosResponse> {
         let mut url = self.build_url();
         url.path([VIDEOS]);
-        video_filter.apply_to_url(&mut url);
+        video_selector.apply_to_url(&mut url);
 
         if let Some(opts) = opts {
             opts.apply_to_url(&mut url);
@@ -52,10 +52,10 @@ impl VideosAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn delete_videos(&self, ids: &[Id]) -> TwitchAPIRequest<EmptyBody, DeleteVideosResponse> {
+    fn delete_videos(&self, ids: &[Id]) -> TwitchAPIRequest<DeleteVideosResponse> {
         let mut url = self.build_url();
         url.path([VIDEOS])
             .query_extend(ids.iter().map(|id| (ID, id)));
@@ -65,7 +65,7 @@ impl VideosAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

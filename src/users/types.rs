@@ -79,7 +79,7 @@ define_request!(
             overlay: HashMap<String, Overlay>,
             component: HashMap<String, Component>,
         };
-        into_request_body
+        to_json
     }
 );
 

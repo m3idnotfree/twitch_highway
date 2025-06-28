@@ -30,36 +30,35 @@ mod request_body;
 pub use request_body::RequestBody;
 
 // https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
-pub trait IntoRequestBody {
-    fn as_body(&self) -> Option<String> {
-        None
-    }
-}
-
-pub struct TwitchAPIRequest<T, D> {
+pub struct TwitchAPIRequest<ResBody> {
     kind: EndpointType,
     url: Url,
     method: Method,
     header: HeaderMap,
-    body: T,
-    _phatom: PhantomData<D>,
+    body: Option<String>,
+    _phantom: PhantomData<ResBody>,
     #[cfg(feature = "test")]
     pub test_url: crate::test_url::TestUrlHold,
 }
 
-impl<T, D> TwitchAPIRequest<T, D>
+impl<ResBody> TwitchAPIRequest<ResBody>
 where
-    T: IntoRequestBody,
-    D: DeserializeOwned,
+    ResBody: DeserializeOwned,
 {
-    pub fn new(kind: EndpointType, url: Url, method: Method, header: HeaderMap, body: T) -> Self {
+    pub fn new(
+        kind: EndpointType,
+        url: Url,
+        method: Method,
+        header: HeaderMap,
+        body: Option<String>,
+    ) -> Self {
         Self {
             kind,
             header,
             method,
             url,
             body,
-            _phatom: PhantomData,
+            _phantom: PhantomData,
             #[cfg(feature = "test")]
             test_url: crate::test_url::TestUrlHold::default(),
         }
@@ -80,11 +79,11 @@ where
         }
         self.url.clone()
     }
-    pub fn body(&self) -> &T {
+    pub fn body(&self) -> &Option<String> {
         &self.body
     }
 
-    pub async fn request(self) -> Result<Response<D>, Error> {
+    pub async fn request(self) -> Result<Response<ResBody>, Error> {
         let response = api_request(self).await?;
         Ok(Response::new(APIResponse::from_response(response).await?))
     }
@@ -128,9 +127,8 @@ impl fmt::Display for APIError {
     }
 }
 
-impl<T, D> APIRequest for TwitchAPIRequest<T, D>
+impl<D> APIRequest for TwitchAPIRequest<D>
 where
-    T: IntoRequestBody,
     D: DeserializeOwned,
 {
     fn url(&self) -> Url {
@@ -143,18 +141,18 @@ where
         self.header.clone()
     }
     fn json(&self) -> Option<String> {
-        self.body.as_body()
+        self.body.clone()
     }
     fn text(&self) -> Option<Vec<u8>> {
-        self.body.as_body().map(|x| x.into_bytes())
+        self.body.clone().map(|x| x.into_bytes())
     }
     fn urlencoded(&self) -> Option<Vec<u8>> {
-        self.body.as_body().map(|x| x.into_bytes())
+        self.body.clone().map(|x| x.into_bytes())
     }
 }
 
 #[cfg(feature = "test")]
-impl<L, D> crate::test_url::TestUrl for TwitchAPIRequest<L, D> {
+impl<D> crate::test_url::TestUrl for TwitchAPIRequest<D> {
     fn with_url(mut self, port: Option<u16>, endpoint: Option<String>, use_prefix: bool) -> Self {
         self.test_url.with_endpoint(endpoint);
         self.test_url.with_port(port);

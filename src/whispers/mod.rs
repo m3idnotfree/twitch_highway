@@ -16,8 +16,8 @@ pub trait WhisperAPI {
         &self,
         from_user_id: &str,
         to_user_id: &str,
-        message: impl Into<String>,
-    ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody>;
+        message: &str,
+    ) -> TwitchAPIRequest<EmptyBody>;
 }
 
 impl WhisperAPI for TwitchAPI {
@@ -25,8 +25,8 @@ impl WhisperAPI for TwitchAPI {
         &self,
         from_user_id: &str,
         to_user_id: &str,
-        message: impl Into<String>,
-    ) -> TwitchAPIRequest<SendWhisperBody, EmptyBody> {
+        message: &str,
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([WHISPERS])
             .query_extend([("from_user_id", from_user_id), ("to_user_id", to_user_id)]);
@@ -39,7 +39,7 @@ impl WhisperAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            SendWhisperBody::new(message.into()),
+            SendWhisperBody::new(message).to_json(),
         )
     }
 }

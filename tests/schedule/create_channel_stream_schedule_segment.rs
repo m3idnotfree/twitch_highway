@@ -15,8 +15,8 @@ fn_expected_request!(
         "60",
         Some(CreateScheduleSegmentRequest::new()
                 .is_recurring(false)
-                .category_id("509670".to_string())
-                .title("TwitchDev Monthly Update // July 1, 2021".to_string())
+                .category_id("509670")
+                .title("TwitchDev Monthly Update // July 1, 2021")
         )
     ],
     json_contain: [

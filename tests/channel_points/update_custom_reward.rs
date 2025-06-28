@@ -43,7 +43,7 @@ fn_expected_request!(
     args: [
         BroadcasterId::new("274637212"),
         CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
-        Some(UpdateCustomRewardRequest::new().title("game analysis 2v2".to_string()))
+        Some(UpdateCustomRewardRequest::new().title("game analysis 2v2"))
     ],
     json_contain: ["\"title\":\"game analysis 2v2\""],
     method: PATCH,

@@ -29,81 +29,72 @@ pub trait ChatAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChattersResponse>;
+    ) -> TwitchAPIRequest<ChattersResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
-    fn channel_emotes(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmotesResponse>;
+    fn channel_emotes(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmotesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
-    fn global_emotes(&self) -> TwitchAPIRequest<EmptyBody, EmotesResponse>;
+    fn global_emotes(&self) -> TwitchAPIRequest<EmotesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
-    fn emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmptyBody, EmotesResponse>;
+    fn emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
-    fn channel_badge(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, BadgesResponse>;
+    fn channel_badge(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<BadgesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
-    fn global_badge(&self) -> TwitchAPIRequest<EmptyBody, BadgesResponse>;
+    fn global_badge(&self) -> TwitchAPIRequest<BadgesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
     fn get_chat_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: Option<ModeratorId>,
-    ) -> TwitchAPIRequest<EmptyBody, ChatSettingResponse>;
+    ) -> TwitchAPIRequest<ChatSettingResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
     fn get_shared_chat_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, SharedChatSessionResponse>;
+    ) -> TwitchAPIRequest<SharedChatSessionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
     fn user_emotes(
         &self,
         user_id: UserId,
         after: Option<&str>,
         broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<EmptyBody, EmotesResponse>;
+    ) -> TwitchAPIRequest<EmotesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
     fn update_chat_settings(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         opts: Option<UpdateChatSettingsRequest>,
-    ) -> TwitchAPIRequest<UpdateChatSettingsRequest, ChatSettingResponse>;
+    ) -> TwitchAPIRequest<ChatSettingResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
     fn send_chat_announcement(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-        message: impl Into<String>,
+        message: &str,
         color: Option<AnnouncementColor>,
-    ) -> TwitchAPIRequest<ChatAnnouncementBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
     fn send_a_shoutout(
         &self,
         from_broadcaster_id: BroadcasterId,
         to_broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
     fn chat_write(
         &self,
         broadcaster_id: BroadcasterId,
-        sender_id: impl Into<String>,
-        message: impl Into<String>,
-    ) -> TwitchAPIRequest<SendChatMessageRequest, SendChatMessageResponse>;
+        sender_id: &str,
+        message: &str,
+    ) -> TwitchAPIRequest<SendChatMessageResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
-    fn user_chat_color(
-        &self,
-        user_id: &[UserId],
-    ) -> TwitchAPIRequest<EmptyBody, UsersColorResponse>;
+    fn user_chat_color(&self, user_id: &[UserId]) -> TwitchAPIRequest<UsersColorResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
     fn update_user_chat_color(
         &self,
         user_id: UserId,
         color: ChatColor,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
 }
 
 impl ChatAPI for TwitchAPI {
@@ -112,7 +103,7 @@ impl ChatAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChattersResponse> {
+    ) -> TwitchAPIRequest<ChattersResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "chatters"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -126,13 +117,10 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn channel_emotes(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, EmotesResponse> {
+    fn channel_emotes(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmotesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, EMOTES])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -142,11 +130,11 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
-    fn global_emotes(&self) -> TwitchAPIRequest<EmptyBody, EmotesResponse> {
+    fn global_emotes(&self) -> TwitchAPIRequest<EmotesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, EMOTES, "global"]);
 
@@ -155,11 +143,11 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
-    fn emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmptyBody, EmotesResponse> {
+    fn emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, EMOTES, "set"])
             .query_extend(emote_set_ids.iter().map(|x| ("emote_set_id", x)));
@@ -169,13 +157,10 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn channel_badge(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, BadgesResponse> {
+    fn channel_badge(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<BadgesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "badges"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -185,10 +170,10 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
-    fn global_badge(&self) -> TwitchAPIRequest<EmptyBody, BadgesResponse> {
+    fn global_badge(&self) -> TwitchAPIRequest<BadgesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "badges", "global"]);
 
@@ -197,7 +182,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
@@ -205,7 +190,7 @@ impl ChatAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: Option<ModeratorId>,
-    ) -> TwitchAPIRequest<EmptyBody, ChatSettingResponse> {
+    ) -> TwitchAPIRequest<ChatSettingResponse> {
         let mut url = self.build_url();
         url.path([CHAT, SETTINGS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -216,14 +201,14 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
     fn get_shared_chat_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, SharedChatSessionResponse> {
+    ) -> TwitchAPIRequest<SharedChatSessionResponse> {
         let mut url = self.build_url();
         url.path(["shared_chat", "session"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -233,7 +218,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
@@ -242,7 +227,7 @@ impl ChatAPI for TwitchAPI {
         user_id: UserId,
         after: Option<&str>,
         broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<EmptyBody, EmotesResponse> {
+    ) -> TwitchAPIRequest<EmotesResponse> {
         let mut url = self.build_url();
         url.path([CHAT, EMOTES, "user"])
             .query(USER_ID, user_id)
@@ -254,7 +239,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
@@ -263,7 +248,7 @@ impl ChatAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         configuration: Option<UpdateChatSettingsRequest>,
-    ) -> TwitchAPIRequest<UpdateChatSettingsRequest, ChatSettingResponse> {
+    ) -> TwitchAPIRequest<ChatSettingResponse> {
         let mut url = self.build_url();
         url.path([CHAT, SETTINGS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -272,12 +257,18 @@ impl ChatAPI for TwitchAPI {
         let mut headers = self.build_headers();
         headers.json();
 
+        let configuration = if let Some(conf) = configuration {
+            conf.to_json()
+        } else {
+            None
+        };
+
         TwitchAPIRequest::new(
             EndpointType::UpdateChatSettings,
             url.build(),
             Method::PATCH,
             headers.build(),
-            configuration.unwrap_or_default(),
+            configuration,
         )
     }
 
@@ -285,9 +276,9 @@ impl ChatAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-        message: impl Into<String>,
+        message: &str,
         color: Option<AnnouncementColor>,
-    ) -> TwitchAPIRequest<ChatAnnouncementBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHAT, "announcements"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -301,7 +292,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            ChatAnnouncementBody::new(message.into(), color),
+            ChatAnnouncementBody::new(message, color).to_json(),
         )
     }
 
@@ -310,7 +301,7 @@ impl ChatAPI for TwitchAPI {
         from_broadcaster_id: BroadcasterId,
         to_broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHAT, "shoutouts"])
             .query("from_broadcaster_id", from_broadcaster_id)
@@ -325,16 +316,16 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
     fn chat_write(
         &self,
         broadcaster_id: BroadcasterId,
-        sender_id: impl Into<String>,
-        message: impl Into<String>,
-    ) -> TwitchAPIRequest<SendChatMessageRequest, SendChatMessageResponse> {
+        sender_id: &str,
+        message: &str,
+    ) -> TwitchAPIRequest<SendChatMessageResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "messages"]);
 
@@ -346,14 +337,11 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            SendChatMessageRequest::new(broadcaster_id, sender_id.into(), message.into()),
+            SendChatMessageRequest::new(broadcaster_id, sender_id, message).to_json(),
         )
     }
 
-    fn user_chat_color(
-        &self,
-        user_ids: &[UserId],
-    ) -> TwitchAPIRequest<EmptyBody, UsersColorResponse> {
+    fn user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse> {
         let mut url = self.build_url();
         url.path([CHAT, "color"])
             .query_extend(user_ids.iter().map(|x| (USER_ID, x)));
@@ -363,7 +351,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 
@@ -371,7 +359,7 @@ impl ChatAPI for TwitchAPI {
         &self,
         user_id: UserId,
         color: ChatColor,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHAT, "color"])
             .query(USER_ID, user_id)
@@ -382,7 +370,7 @@ impl ChatAPI for TwitchAPI {
             url.build(),
             Method::PUT,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

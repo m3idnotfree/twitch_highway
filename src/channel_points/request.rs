@@ -6,25 +6,24 @@ use super::types::RedemptionStatus;
 
 define_request!(
     #[derive(Serialize)]
-    CustomRewardsRequiredBody {
+    CustomRewardsRequiredBody<'a> {
         req: {
-            title: String,
+            title: &'a str,
             cost: u64
         };
-        into_request_body
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    CustomRewardsBody {
+    CustomRewardsBody<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String,
+            title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            prompt: String,
+            prompt: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            background_color: String,
+            background_color: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             cost: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -46,7 +45,6 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             should_redemptions_skip_request_queue: bool
         };
-        into_request_body
     }
 );
 
@@ -56,7 +54,7 @@ define_request!(
         req: {
             status: RedemptionStatus
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -74,14 +72,14 @@ define_request!(
 
 define_request!(
     #[derive(Serialize, Default)]
-    UpdateCustomRewardRequest {
+    UpdateCustomRewardRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            title: String,
+            title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            prompt: String,
+            prompt: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            background_color: String,
+            background_color: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             cost: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -105,6 +103,6 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             should_redemptions_skip_request_queue: bool
         };
-        into_request_body
+        to_json
     }
 );

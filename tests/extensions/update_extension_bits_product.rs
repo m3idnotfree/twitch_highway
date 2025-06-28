@@ -16,7 +16,7 @@ fn_expected_request!(
             UpdateExtensoinBitsProductsRequest::new()
                 .in_development(true)
                 .is_broadcast(true)
-                .expiration("2021-05-18T09:10:13.397Z".to_string())
+                .expiration("2021-05-18T09:10:13.397Z")
         )
     ],
     method: PUT,

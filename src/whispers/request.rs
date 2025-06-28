@@ -2,10 +2,10 @@ use serde::Serialize;
 
 define_request!(
     #[derive(Debug, Serialize)]
-    SendWhisperBody {
+    SendWhisperBody<'a> {
         req: {
-           message: String
+           message: &'a str
         };
-        into_request_body
+        to_json
     }
 );

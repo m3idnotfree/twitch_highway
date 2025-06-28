@@ -13,7 +13,7 @@ new_fn_mock_server_f!(
         endpoint: get_predictions,
         args:|broadcaster_id|{
             broadcaster_id,
-                Some(vec![Id::new("11265581")]), None
+                Some(&[Id::new("11265581")]), None
         }
     }
 );
@@ -34,7 +34,7 @@ new_fn_mock_server_f!(
         args: |broadcaster_id|{
             broadcaster_id,
             "Any leeks in the stream?",
-            vec![
+            &[
                 Title::new("Yes, give it time."),
                 Title::new("Definitely not.")
             ],

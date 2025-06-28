@@ -4,13 +4,13 @@ use crate::types::BroadcasterId;
 
 define_request!(
     #[derive(Serialize)]
-    SendChatMessageRequest {
+    SendChatMessageRequest<'a> {
         req: {
             broadcaster_id: BroadcasterId,
-            sender_id: String,
-            message: String
+            sender_id: &'a str,
+            message: &'a str
         };
-    into_request_body
+        to_json
     }
 );
 
@@ -38,7 +38,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             unique_chat_mode: bool,
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -85,12 +85,12 @@ impl ChatColor {
 
 define_request!(
     #[derive(Serialize)]
-    ChatAnnouncementBody {
+    ChatAnnouncementBody<'a> {
         req: {
-            message: String,
+            message: &'a str,
             color: Option<AnnouncementColor>
         };
-        into_request_body
+        to_json
     }
 );
 

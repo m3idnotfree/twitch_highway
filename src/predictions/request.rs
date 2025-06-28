@@ -6,14 +6,14 @@ use super::types::PredictionStatus;
 
 define_request!(
     #[derive(Serialize)]
-    CreatePredictionRequest {
+    CreatePredictionRequest<'a> {
         req: {
             broadcaster_id: BroadcasterId,
-            title: String,
-            outcomes: Vec<Title>,
+            title: &'a str,
+            outcomes: &'a[Title],
             prediction_window:u64,
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -28,6 +28,5 @@ define_request!(
         opts: {
             winning_outcome_id:String
         };
-        into_request_body
     }
 );

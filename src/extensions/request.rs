@@ -4,49 +4,49 @@ use crate::types::{BroadcasterId, ExtensionId};
 
 define_request!(
     #[derive(Serialize, Deserialize)]
-    SetConfigurationSegment {
+    SetConfigurationSegment<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
             broadcaster_id: BroadcasterId,
             #[serde(skip_serializing_if = "Option::is_none")]
-            content: String,
+            content: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            version: String
+            version: &'a str
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize, Deserialize)]
-    RequiredConfiguration {
+    RequiredConfiguration<'a> {
         req: {
             extension_id: ExtensionId,
-            extension_version: String,
-            required_configuration: String
+            extension_version: &'a str,
+            required_configuration: &'a str
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize, Deserialize)]
-    ExtensionChatMessageIntoRequestBody {
+    ExtensionChatMessageIntoRequestBody<'a> {
         req: {
-            text: String,
+            text: &'a str,
             extension_id: ExtensionId,
-            extension_version: String
+            extension_version: &'a str
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize, Deserialize)]
-    UpdateExtensoinBitsProductsRequest {
+    UpdateExtensoinBitsProductsRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            expiration: String,
+            expiration: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
             in_development: bool,
             #[serde(skip_serializing_if = "Option::is_none")]

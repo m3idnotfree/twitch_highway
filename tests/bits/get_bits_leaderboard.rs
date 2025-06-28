@@ -11,7 +11,7 @@ fn_expected_request!(
     args: [Some(
         BitsLeaderboardRequest::new()
             .count(2)
-            .period("week".to_string())
+            .period("week")
             .started_at(DateTime::parse_from_rfc3339("2018-02-05T08:00:00Z").unwrap())
     )],
     method: GET,

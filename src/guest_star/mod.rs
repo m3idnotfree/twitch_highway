@@ -24,37 +24,37 @@ pub trait GuestStarAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, GuestStarSettingsResponse>;
+    ) -> TwitchAPIRequest<GuestStarSettingsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings>
     fn update_channel_guest_star_settings(
         &self,
         broadcaster_id: BroadcasterId,
         request: GustStarSettingRequest,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-session>
     fn get_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+    ) -> TwitchAPIRequest<GustStarSessionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#create-guest-star-session>
     fn create_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+    ) -> TwitchAPIRequest<GustStarSessionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#end-guest-star-session>
     fn end_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-        session_id: String,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse>;
+        session_id: &str,
+    ) -> TwitchAPIRequest<GustStarSessionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites>
     fn get_guest_star_invites(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarInvitesResponse>;
+    ) -> TwitchAPIRequest<GustStarInvitesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite>
     fn send_guest_star_invites(
         &self,
@@ -62,7 +62,7 @@ pub trait GuestStarAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite>
     fn delete_guest_star_invites(
         &self,
@@ -70,7 +70,7 @@ pub trait GuestStarAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot>
     fn assign_guest_star_slot(
         &self,
@@ -79,7 +79,7 @@ pub trait GuestStarAPI {
         session_id: &str,
         guest_id: &str,
         slot_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot>
     fn update_guest_star_slot(
         &self,
@@ -88,7 +88,7 @@ pub trait GuestStarAPI {
         session_id: &str,
         source_slot_id: &str,
         destination_slot_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot>
     fn delete_guest_star_slot(
         &self,
@@ -98,7 +98,7 @@ pub trait GuestStarAPI {
         guest_id: &str,
         slot_id: &str,
         should_reinvite_guest: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot-settings>
     fn update_guest_star_slot_settings(
         &self,
@@ -107,7 +107,7 @@ pub trait GuestStarAPI {
         session_id: &str,
         slot_id: &str,
         opts: UpdateSlotSettingsRequest,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
 }
 
 impl GuestStarAPI for TwitchAPI {
@@ -115,7 +115,7 @@ impl GuestStarAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, GuestStarSettingsResponse> {
+    ) -> TwitchAPIRequest<GuestStarSettingsResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "channel_settings"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -126,14 +126,14 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_channel_guest_star_settings(
         &self,
         broadcaster_id: BroadcasterId,
         request: GustStarSettingRequest,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "channel_settings"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -144,14 +144,14 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::PUT,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
+    ) -> TwitchAPIRequest<GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -162,13 +162,13 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn create_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
+    ) -> TwitchAPIRequest<GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -178,14 +178,14 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn end_guest_star_session(
         &self,
         broadcaster_id: BroadcasterId,
-        session_id: String,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarSessionResponse> {
+        session_id: &str,
+    ) -> TwitchAPIRequest<GustStarSessionResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "session"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -196,7 +196,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_guest_star_invites(
@@ -204,7 +204,7 @@ impl GuestStarAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         moderator_id: ModeratorId,
         session_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, GustStarInvitesResponse> {
+    ) -> TwitchAPIRequest<GustStarInvitesResponse> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -216,7 +216,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn send_guest_star_invites(
@@ -225,7 +225,7 @@ impl GuestStarAPI for TwitchAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -238,7 +238,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn delete_guest_star_invites(
@@ -247,7 +247,7 @@ impl GuestStarAPI for TwitchAPI {
         moderator_id: ModeratorId,
         session_id: &str,
         guest_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "invites"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -260,7 +260,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn assign_guest_star_slot(
@@ -270,7 +270,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         guest_id: &str,
         slot_id: &str,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -284,7 +284,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_guest_star_slot(
@@ -294,7 +294,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         source_slot_id: &str,
         destination_slot_id: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -308,7 +308,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn delete_guest_star_slot(
@@ -319,7 +319,7 @@ impl GuestStarAPI for TwitchAPI {
         guest_id: &str,
         slot_id: &str,
         should_reinvite_guest: Option<&str>,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -334,7 +334,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_guest_star_slot_settings(
@@ -344,7 +344,7 @@ impl GuestStarAPI for TwitchAPI {
         session_id: &str,
         slot_id: &str,
         request: UpdateSlotSettingsRequest,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([GUEST_STAR, "slot_settings"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -358,7 +358,7 @@ impl GuestStarAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

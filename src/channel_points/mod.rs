@@ -6,8 +6,7 @@ use request::{
 use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 
 use crate::{
-    request::RequestBody,
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REWARD_ID},
         BroadcasterId, CustomRewardId, PaginationQuery, RedemptionId, RewardId,
@@ -28,23 +27,20 @@ pub trait ChannelPointsAPI {
         title: &str,
         cost: u64,
         opts: Option<CustomRewardsBody>,
-    ) -> TwitchAPIRequest<
-        RequestBody<CustomRewardsRequiredBody, CustomRewardsBody>,
-        CustomRewardsResponse,
-    >;
+    ) -> TwitchAPIRequest<CustomRewardsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
     fn delete_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
         custom_reward_id: CustomRewardId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
     fn get_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
-        custom_reward_ids: Option<Vec<CustomRewardId>>,
+        custom_reward_ids: Option<&[CustomRewardId]>,
         only_manageable_rewards: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody, CustomRewardsResponse>;
+    ) -> TwitchAPIRequest<CustomRewardsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
     fn get_custom_reward_redemption(
         &self,
@@ -52,14 +48,14 @@ pub trait ChannelPointsAPI {
         reward_id: RewardId,
         opts: Option<CustomRewardRedemptionQuery>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CustomRewardsRedemptionResponse>;
+    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
     fn update_custom_reward(
         &self,
         broadcaster_id: BroadcasterId,
         custom_reward_id: CustomRewardId,
         opts: Option<UpdateCustomRewardRequest>,
-    ) -> TwitchAPIRequest<UpdateCustomRewardRequest, CustomRewardsResponse>;
+    ) -> TwitchAPIRequest<CustomRewardsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
     fn update_redemption_status(
         &self,
@@ -67,7 +63,7 @@ pub trait ChannelPointsAPI {
         broadcaster_id: BroadcasterId,
         reward_id: RewardId,
         status: RedemptionStatusQuery,
-    ) -> TwitchAPIRequest<RedemptionStatusQuery, CustomRewardsRedemptionResponse>;
+    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse>;
 }
 
 impl ChannelPointsAPI for TwitchAPI {
@@ -77,18 +73,12 @@ impl ChannelPointsAPI for TwitchAPI {
         title: &str,
         cost: u64,
         opts: Option<CustomRewardsBody>,
-    ) -> TwitchAPIRequest<
-        RequestBody<CustomRewardsRequiredBody, CustomRewardsBody>,
-        CustomRewardsResponse,
-    > {
+    ) -> TwitchAPIRequest<CustomRewardsResponse> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
             .query(BROADCASTER_ID, broadcaster_id);
 
-        let request_body = RequestBody::new(
-            CustomRewardsRequiredBody::new(title.to_string(), cost),
-            opts,
-        );
+        let request_body = RequestBody::new(CustomRewardsRequiredBody::new(title, cost), opts);
 
         let mut headers = self.build_headers();
         headers.json();
@@ -98,14 +88,14 @@ impl ChannelPointsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            request_body,
+            request_body.to_json(),
         )
     }
     fn delete_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
         custom_reward_id: CustomRewardId,
-    ) -> TwitchAPIRequest<EmptyBody, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -116,15 +106,15 @@ impl ChannelPointsAPI for TwitchAPI {
             url.build(),
             Method::DELETE,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_custom_rewards(
         &self,
         broadcaster_id: BroadcasterId,
-        custom_reward_ids: Option<Vec<CustomRewardId>>,
+        custom_reward_ids: Option<&[CustomRewardId]>,
         only_manageable_rewards: Option<bool>,
-    ) -> TwitchAPIRequest<EmptyBody, CustomRewardsResponse> {
+    ) -> TwitchAPIRequest<CustomRewardsResponse> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -139,7 +129,7 @@ impl ChannelPointsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_custom_reward_redemption(
@@ -148,7 +138,7 @@ impl ChannelPointsAPI for TwitchAPI {
         reward_id: RewardId,
         opts: Option<CustomRewardRedemptionQuery>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CustomRewardsRedemptionResponse> {
+    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -167,7 +157,7 @@ impl ChannelPointsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn update_custom_reward(
@@ -175,7 +165,7 @@ impl ChannelPointsAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         reward_id: CustomRewardId,
         opts: Option<UpdateCustomRewardRequest>,
-    ) -> TwitchAPIRequest<UpdateCustomRewardRequest, CustomRewardsResponse> {
+    ) -> TwitchAPIRequest<CustomRewardsResponse> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -184,12 +174,18 @@ impl ChannelPointsAPI for TwitchAPI {
         let mut headers = self.build_headers();
         headers.json();
 
+        let opts = if let Some(opts) = opts {
+            opts.to_json()
+        } else {
+            None
+        };
+
         TwitchAPIRequest::new(
             EndpointType::UpdateCustomReward,
             url.build(),
             Method::PATCH,
             headers.build(),
-            opts.unwrap_or_default(),
+            opts,
         )
     }
     fn update_redemption_status(
@@ -198,7 +194,7 @@ impl ChannelPointsAPI for TwitchAPI {
         broadcaster_id: BroadcasterId,
         reward_id: RewardId,
         status: RedemptionStatusQuery,
-    ) -> TwitchAPIRequest<RedemptionStatusQuery, CustomRewardsRedemptionResponse> {
+    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse> {
         let mut url = self.build_url();
         url.path([CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"])
             .query(BROADCASTER_ID, broadcaster_id.as_str())
@@ -213,7 +209,7 @@ impl ChannelPointsAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             headers.build(),
-            status,
+            status.to_json(),
         )
     }
 }

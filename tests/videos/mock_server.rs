@@ -8,10 +8,10 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::videos::VideosAPI,
-            twitch_highway::videos::request::VideoFilter
+            twitch_highway::videos::request::VideoSelector
         ],
         endpoint: get_videos,
-        args: |a| {VideoFilter::by_user_id(a.as_user()), None, None}
+        args: |a| {VideoSelector::by_user_id(a.as_user()), None, None}
     }
 );
 

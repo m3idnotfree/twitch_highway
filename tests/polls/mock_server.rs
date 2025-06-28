@@ -34,7 +34,7 @@ new_fn_mock_server_f!(
         args: |broadcaster_id|{
             broadcaster_id,
             "hello",
-            vec![Title::new("Heads"), Title::new("Tails")],
+            &[Title::new("Heads"), Title::new("Tails")],
             15,
             None
         }

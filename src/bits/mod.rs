@@ -3,7 +3,7 @@ use request::BitsLeaderboardRequest;
 use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
         BroadcasterId, ExtensionId, Id, PaginationQuery,
@@ -21,26 +21,26 @@ pub trait BitsAPI {
     fn get_bits_leaderboard(
         &self,
         opts: Option<BitsLeaderboardRequest>,
-    ) -> TwitchAPIRequest<EmptyBody, BitsLeaderboardResponse>;
+    ) -> TwitchAPIRequest<BitsLeaderboardResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
     fn get_cheermotes(
         &self,
         broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<EmptyBody, CheermotesResponse>;
+    ) -> TwitchAPIRequest<CheermotesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
     fn get_extension_transactions(
         &self,
         extension_id: ExtensionId,
         id: Option<Id>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ExtensionTransactionsResponse>;
+    ) -> TwitchAPIRequest<ExtensionTransactionsResponse>;
 }
 
 impl BitsAPI for TwitchAPI {
     fn get_bits_leaderboard(
         &self,
         opts: Option<BitsLeaderboardRequest>,
-    ) -> TwitchAPIRequest<EmptyBody, BitsLeaderboardResponse> {
+    ) -> TwitchAPIRequest<BitsLeaderboardResponse> {
         let mut url = self.build_url();
         url.path([BITS, "leaderboard"]);
 
@@ -53,13 +53,13 @@ impl BitsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_cheermotes(
         &self,
         broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<EmptyBody, CheermotesResponse> {
+    ) -> TwitchAPIRequest<CheermotesResponse> {
         let mut url = self.build_url();
         url.path([BITS, "cheermotes"])
             .query_opt(BROADCASTER_ID, broadcaster_id);
@@ -69,7 +69,7 @@ impl BitsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_extension_transactions(
@@ -77,7 +77,7 @@ impl BitsAPI for TwitchAPI {
         extension_id: ExtensionId,
         id: Option<Id>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ExtensionTransactionsResponse> {
+    ) -> TwitchAPIRequest<ExtensionTransactionsResponse> {
         let mut url = self.build_url();
         url.path([EXTENSIONS, "transactions"])
             .query(EXTENSION_ID, extension_id)
@@ -92,7 +92,7 @@ impl BitsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

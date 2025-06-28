@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-use crate::request::IntoRequestBody;
-
 #[derive(Serialize, Deserialize)]
 pub struct RequestBody<T, K> {
     #[serde(flatten)]
@@ -21,14 +19,8 @@ where
             optional: opts,
         }
     }
-}
 
-impl<T, K> IntoRequestBody for RequestBody<T, K>
-where
-    T: Serialize,
-    K: Serialize,
-{
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
+    pub fn to_json(&self) -> Option<String> {
+        Some(serde_json::to_string(self).unwrap())
     }
 }

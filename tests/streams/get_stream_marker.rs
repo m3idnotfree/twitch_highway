@@ -1,7 +1,7 @@
 fn_expected_request!(
     modules: [
         twitch_highway::streams::StreamsAPI,
-        twitch_highway::streams::request::StreamMarkerFilter,
+        twitch_highway::streams::request::StreamMarkerSelector,
         twitch_highway::types::UserId,
         twitch_highway::types::PaginationQuery,
         twitch_oauth_token::types::Scope
@@ -10,7 +10,7 @@ fn_expected_request!(
     token_type: User,
     scopes: Some(vec![Scope::UserReadBroadcast]),
     args: [
-        StreamMarkerFilter::by_user_id(UserId::new("123")),
+        StreamMarkerSelector::by_user_id(UserId::new("123")),
         Some(PaginationQuery::new().first(5))
     ],
     method: GET,

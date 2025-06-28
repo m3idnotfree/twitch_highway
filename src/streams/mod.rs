@@ -1,11 +1,11 @@
 use asknothingx2_util::api::Method;
-use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerFilter};
+use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
 use response::{
     CreateStreamMarkerResponse, GetStreamMarkersResponse, StreamKeyResponse, StreamsResponse,
 };
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, STREAMS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
@@ -20,41 +20,35 @@ pub mod types;
 #[cfg_attr(docsrs, doc(cfg(feature = "streams")))]
 pub trait StreamsAPI {
     /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
-    fn get_stream_key(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, StreamKeyResponse>;
+    fn get_stream_key(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<StreamKeyResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-streams>
     fn get_streams(
         &self,
         opts: Option<GetStreamsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, StreamsResponse>;
+    ) -> TwitchAPIRequest<StreamsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-followed-streams>
     fn get_followed_streams(
         &self,
         user_id: UserId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, StreamsResponse>;
+    ) -> TwitchAPIRequest<StreamsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#create-stream-marker>
     fn create_stream_marker(
         &self,
         user_id: UserId,
-        description: Option<String>,
-    ) -> TwitchAPIRequest<CreateStreamMarkerRequest, CreateStreamMarkerResponse>;
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<CreateStreamMarkerResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-stream-markers>
     fn get_stream_marker(
         &self,
-        filter: StreamMarkerFilter,
+        selector: StreamMarkerSelector,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GetStreamMarkersResponse>;
+    ) -> TwitchAPIRequest<GetStreamMarkersResponse>;
 }
 
 impl StreamsAPI for TwitchAPI {
-    fn get_stream_key(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, StreamKeyResponse> {
+    fn get_stream_key(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<StreamKeyResponse> {
         let mut url = self.build_url();
         url.path([STREAMS, "key"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -64,14 +58,14 @@ impl StreamsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_streams(
         &self,
         opts: Option<GetStreamsRequest>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, StreamsResponse> {
+    ) -> TwitchAPIRequest<StreamsResponse> {
         let mut url = self.build_url();
         url.path([STREAMS]);
 
@@ -88,14 +82,14 @@ impl StreamsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_followed_streams(
         &self,
         user_id: UserId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, StreamsResponse> {
+    ) -> TwitchAPIRequest<StreamsResponse> {
         let mut url = self.build_url();
         url.path([STREAMS, "followed"]).query(USER_ID, user_id);
         if let Some(pagination) = pagination {
@@ -107,14 +101,14 @@ impl StreamsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn create_stream_marker(
         &self,
         user_id: UserId,
-        description: Option<String>,
-    ) -> TwitchAPIRequest<CreateStreamMarkerRequest, CreateStreamMarkerResponse> {
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<CreateStreamMarkerResponse> {
         let mut url = self.build_url();
         url.path([STREAMS, "markers"]);
 
@@ -126,17 +120,17 @@ impl StreamsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            CreateStreamMarkerRequest::new(user_id, description),
+            CreateStreamMarkerRequest::new(user_id, description).to_json(),
         )
     }
     fn get_stream_marker(
         &self,
-        filter: StreamMarkerFilter,
+        selector: StreamMarkerSelector,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, GetStreamMarkersResponse> {
+    ) -> TwitchAPIRequest<GetStreamMarkersResponse> {
         let mut url = self.build_url();
         url.path([STREAMS, "markers"]);
-        filter.apply_to_url(&mut url);
+        selector.apply_to_url(&mut url);
 
         if let Some(pagination) = pagination {
             pagination.apply_to_url(&mut url);
@@ -147,7 +141,7 @@ impl StreamsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

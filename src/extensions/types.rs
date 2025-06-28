@@ -3,10 +3,7 @@ use std::collections::HashMap;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    request::IntoRequestBody,
-    types::{BroadcasterId, Cost, Id},
-};
+use crate::types::{BroadcasterId, Cost, Id};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -160,24 +157,8 @@ pub struct BitsProductExtension {
     pub is_broadcast: bool,
 }
 
-//request_struct!(
-//#[derive(Debug, Serialize, Deserialize)]
-//BitsProductExtension {
-//    required {
-//        pub sku: String,
-//        pub cost: Cost,
-//        pub display_name: String,
-//    },
-//    optional {
-//        pub in_development: bool,
-//        pub expiration: String,
-//        pub is_broadcast: bool,
-//    }
-//}
-//);
-
-impl IntoRequestBody for BitsProductExtension {
-    fn as_body(&self) -> Option<String> {
-        Some(serde_json::to_string(&self).unwrap())
+impl BitsProductExtension {
+    pub fn to_json(&self) -> Option<String> {
+        Some(serde_json::to_string(self).unwrap())
     }
 }

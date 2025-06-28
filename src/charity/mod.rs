@@ -2,7 +2,7 @@ use asknothingx2_util::api::Method;
 use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHARITY},
         BroadcasterId, PaginationQuery,
@@ -19,20 +19,20 @@ pub trait CharityAPI {
     fn get_charity_campaign(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, CharityCampaignResponse>;
+    ) -> TwitchAPIRequest<CharityCampaignResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations>
     fn get_charity_campaign_donations(
         &self,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CharityCampaignDonationResponse>;
+    ) -> TwitchAPIRequest<CharityCampaignDonationResponse>;
 }
 
 impl CharityAPI for TwitchAPI {
     fn get_charity_campaign(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, CharityCampaignResponse> {
+    ) -> TwitchAPIRequest<CharityCampaignResponse> {
         let mut url = self.build_url();
         url.path([CHARITY, "campaigns"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -42,14 +42,14 @@ impl CharityAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_charity_campaign_donations(
         &self,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CharityCampaignDonationResponse> {
+    ) -> TwitchAPIRequest<CharityCampaignDonationResponse> {
         let mut url = self.build_url();
         url.path([CHARITY, "donations"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -62,7 +62,7 @@ impl CharityAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

@@ -4,11 +4,11 @@ use crate::types::UserId;
 
 define_request!(
     #[derive(Serialize)]
-    CheckAutoModStatusRequest {
+    CheckAutoModStatusRequest<'a> {
         req: {
-            data: Vec<CheckAutoMod>
+            data: &'a [CheckAutoMod]
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -24,13 +24,13 @@ define_request!(
 
 define_request!(
     #[derive(Serialize)]
-     ManageHeldAutoModMeussageRequest {
+     ManageHeldAutoModMeussageRequest<'a> {
         req: {
             user_id: UserId,
-            msg_id: String,
+            msg_id: &'a str,
             action: AutoModAction
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -63,40 +63,40 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             swearing: u64,
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    BanUsersRequest{
+    BanUsersRequest<'a>{
         req: {
-            data: BanUserRequest
+            data: BanUserRequest<'a>
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    BanUserRequest {
+    BanUserRequest<'a> {
         req: {
             user_id: UserId
         },
         opts: {
             duration: u64,
-            reason: String
+            reason: &'a str
        }
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    AddBlockedTermRequest {
+    AddBlockedTermRequest<'a> {
         req: {
-            text: String
+            text: &'a str
         };
-        into_request_body
+        to_json
     }
 );
 
@@ -106,26 +106,26 @@ define_request!(
         req: {
             is_active: bool
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    WarnChatUserRequest {
+    WarnChatUserRequest<'a> {
         req: {
-            data: Vec<WarnChatUser>
+            data: &'a[WarnChatUser<'a>]
         };
-        into_request_body
+        to_json
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    WarnChatUser {
+    WarnChatUser<'a> {
         req: {
             user_id: UserId,
-            reason: String
+            reason: &'a str
         }
     }
 );

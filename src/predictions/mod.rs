@@ -1,7 +1,6 @@
 use asknothingx2_util::api::Method;
 use request::CreatePredictionRequest;
 use response::PredictionsResponse;
-use serde_json::Value;
 use types::PredictionStatus;
 
 use crate::{
@@ -23,17 +22,17 @@ pub trait PredictionsAPI {
     fn get_predictions(
         &self,
         broadcaster_id: BroadcasterId,
-        id: Option<Vec<Id>>,
+        id: Option<&[Id]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, PredictionsResponse>;
+    ) -> TwitchAPIRequest<PredictionsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
     fn create_prediction(
         &self,
         broadcaster_id: BroadcasterId,
         title: &str,
-        outcomes: Vec<Title>,
+        outcomes: &[Title],
         prediction_window: u64,
-    ) -> TwitchAPIRequest<CreatePredictionRequest, PredictionsResponse>;
+    ) -> TwitchAPIRequest<PredictionsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
     fn end_prediction(
         &self,
@@ -41,16 +40,16 @@ pub trait PredictionsAPI {
         id: Id,
         status: PredictionStatus,
         winning_outcome_id: Option<&str>, //request: EndPredictionRequest,
-    ) -> TwitchAPIRequest<RequestBody<Value, EmptyBody>, PredictionsResponse>;
+    ) -> TwitchAPIRequest<PredictionsResponse>;
 }
 
 impl PredictionsAPI for TwitchAPI {
     fn get_predictions(
         &self,
         broadcaster_id: BroadcasterId,
-        ids: Option<Vec<Id>>,
+        ids: Option<&[Id]>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, PredictionsResponse> {
+    ) -> TwitchAPIRequest<PredictionsResponse> {
         let mut url = self.build_url();
         url.path(["predictions"])
             .query(BROADCASTER_ID, broadcaster_id)
@@ -64,16 +63,16 @@ impl PredictionsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn create_prediction(
         &self,
         broadcaster_id: BroadcasterId,
         title: &str,
-        outcomes: Vec<Title>,
+        outcomes: &[Title],
         prediction_window: u64,
-    ) -> TwitchAPIRequest<CreatePredictionRequest, PredictionsResponse> {
+    ) -> TwitchAPIRequest<PredictionsResponse> {
         let mut url = self.build_url();
         url.path(["predictions"]);
 
@@ -84,12 +83,8 @@ impl PredictionsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            CreatePredictionRequest::new(
-                broadcaster_id,
-                title.to_string(),
-                outcomes,
-                prediction_window,
-            ),
+            CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window)
+                .to_json(),
         )
     }
     fn end_prediction(
@@ -98,7 +93,7 @@ impl PredictionsAPI for TwitchAPI {
         id: Id,
         status: PredictionStatus,
         winning_outcome_id: Option<&str>,
-    ) -> TwitchAPIRequest<RequestBody<Value, EmptyBody>, PredictionsResponse> {
+    ) -> TwitchAPIRequest<PredictionsResponse> {
         let mut url = self.build_url();
         url.path(["predictions"]);
 
@@ -126,7 +121,7 @@ impl PredictionsAPI for TwitchAPI {
             url.build(),
             Method::PATCH,
             headers.build(),
-            request_body,
+            request_body.to_json(),
         )
     }
 }

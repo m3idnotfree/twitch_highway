@@ -2,7 +2,7 @@ use asknothingx2_util::api::Method;
 use response::{CategoriesResponse, ChannelsResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{constants::CHANNELS, PaginationQuery},
     TwitchAPI,
 };
@@ -17,14 +17,14 @@ pub trait SearchAPI {
         &self,
         query: &str,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse>;
+    ) -> TwitchAPIRequest<CategoriesResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#search-channels>
     fn search_channels(
         &self,
         query: &str,
         live_only: Option<bool>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelsResponse>;
+    ) -> TwitchAPIRequest<ChannelsResponse>;
 }
 
 impl SearchAPI for TwitchAPI {
@@ -32,7 +32,7 @@ impl SearchAPI for TwitchAPI {
         &self,
         query: &str,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, CategoriesResponse> {
+    ) -> TwitchAPIRequest<CategoriesResponse> {
         let mut url = self.build_url();
         url.path(["search", "categories"]).query("query", query);
         if let Some(pagination) = pagination {
@@ -44,7 +44,7 @@ impl SearchAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn search_channels(
@@ -52,7 +52,7 @@ impl SearchAPI for TwitchAPI {
         query: &str,
         live_only: Option<bool>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelsResponse> {
+    ) -> TwitchAPIRequest<ChannelsResponse> {
         let mut url = self.build_url();
         url.path(["search", CHANNELS])
             .query("query", query)
@@ -66,7 +66,7 @@ impl SearchAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

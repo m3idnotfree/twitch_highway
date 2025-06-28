@@ -13,7 +13,7 @@ new_fn_mock_server_f!(
         endpoint: check_automod_status,
         args: |broadcaster_id|{
             broadcaster_id,
-            vec![CheckAutoMod::new("123".to_string(),"Hello World!".to_string())]
+            &[CheckAutoMod::new("123".to_string(),"Hello World!".to_string())]
         }
     }
 );

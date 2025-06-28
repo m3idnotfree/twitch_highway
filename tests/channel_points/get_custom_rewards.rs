@@ -55,7 +55,7 @@ fn_expected_request!(
     scopes: Some(vec![Scope::ChannelReadRedemptions]),
     args: [
         BroadcasterId::new("274637212"),
-        Some(vec![CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01")]),
+        Some(&[CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01")]),
         None
     ],
     method: GET,

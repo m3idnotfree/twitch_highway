@@ -202,8 +202,8 @@ new_fn_mock_server_f!(
         endpoint: chat_write,
         args: |broadcaster_id|{
             broadcaster_id,
-            "ssf".to_string(),
-            "hell".to_string()
+            "ssf",
+            "hell"
         },
         check: true
         //paths: ["chat","messages"]

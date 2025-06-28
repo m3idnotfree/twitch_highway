@@ -3,7 +3,7 @@ use request::StartCommercialBody;
 use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS},
         BroadcasterId,
@@ -22,17 +22,17 @@ pub trait AdsAPI {
         &self,
         broadcaster_id: BroadcasterId,
         length: u64,
-    ) -> TwitchAPIRequest<StartCommercialBody, StartCommercialResponse>;
+    ) -> TwitchAPIRequest<StartCommercialResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
     fn get_ad_schedule(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, AdScheduleResponse>;
+    ) -> TwitchAPIRequest<AdScheduleResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
     fn snooze_next_ad(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, SnoozeNextAdResponse>;
+    ) -> TwitchAPIRequest<SnoozeNextAdResponse>;
 }
 
 impl AdsAPI for TwitchAPI {
@@ -40,7 +40,7 @@ impl AdsAPI for TwitchAPI {
         &self,
         broadcaster_id: BroadcasterId,
         length: u64,
-    ) -> TwitchAPIRequest<StartCommercialBody, StartCommercialResponse> {
+    ) -> TwitchAPIRequest<StartCommercialResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "commercial"]);
 
@@ -52,13 +52,13 @@ impl AdsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             headers.build(),
-            StartCommercialBody::new(broadcaster_id, length),
+            StartCommercialBody::new(broadcaster_id, length).to_json(),
         )
     }
     fn get_ad_schedule(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, AdScheduleResponse> {
+    ) -> TwitchAPIRequest<AdScheduleResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "ads"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -68,13 +68,13 @@ impl AdsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn snooze_next_ad(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, SnoozeNextAdResponse> {
+    ) -> TwitchAPIRequest<SnoozeNextAdResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "ads", "schedule", "snooze"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -84,7 +84,7 @@ impl AdsAPI for TwitchAPI {
             url.build(),
             Method::POST,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

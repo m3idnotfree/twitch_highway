@@ -24,39 +24,39 @@ pub trait ChannelsAPI {
     fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<EmptyBody, ChannelInfoResponse>;
+    ) -> TwitchAPIRequest<ChannelInfoResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
     fn modify_channel_info(
         &self,
         broadcaster_id: BroadcasterId,
         opts: Option<ModifyChannelRequest>,
-    ) -> TwitchAPIRequest<ModifyChannelRequest, EmptyBody>;
+    ) -> TwitchAPIRequest<EmptyBody>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
     fn get_channel_editors(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelEditorsResponse>;
+    ) -> TwitchAPIRequest<ChannelEditorsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
     fn get_followed_channels(
         &self,
         user_id: UserId,
         broadcaster_id: Option<BroadcasterId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, FollowerdChannelsResponse>;
+    ) -> TwitchAPIRequest<FollowerdChannelsResponse>;
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
     fn get_channel_followers(
         &self,
         user_id: Option<UserId>,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelFollowersResponse>;
+    ) -> TwitchAPIRequest<ChannelFollowersResponse>;
 }
 
 impl ChannelsAPI for TwitchAPI {
     fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<EmptyBody, ChannelInfoResponse> {
+    ) -> TwitchAPIRequest<ChannelInfoResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS])
             .query_extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)));
@@ -66,31 +66,37 @@ impl ChannelsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn modify_channel_info(
         &self,
         broadcaster_id: BroadcasterId,
         opts: Option<ModifyChannelRequest>,
-    ) -> TwitchAPIRequest<ModifyChannelRequest, EmptyBody> {
+    ) -> TwitchAPIRequest<EmptyBody> {
         let mut url = self.build_url();
         url.path([CHANNELS]).query(BROADCASTER_ID, broadcaster_id);
 
         let mut headers = self.build_headers();
         headers.json();
+
+        let opts = if let Some(opts) = opts {
+            opts.to_json()
+        } else {
+            None
+        };
         TwitchAPIRequest::new(
             EndpointType::ModifyChannelInformation,
             url.build(),
             Method::PATCH,
             headers.build(),
-            opts.unwrap_or_default(),
+            opts,
         )
     }
     fn get_channel_editors(
         &self,
         broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelEditorsResponse> {
+    ) -> TwitchAPIRequest<ChannelEditorsResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "editors"])
             .query(BROADCASTER_ID, broadcaster_id);
@@ -100,7 +106,7 @@ impl ChannelsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_followed_channels(
@@ -108,7 +114,7 @@ impl ChannelsAPI for TwitchAPI {
         user_id: UserId,
         broadcaster_id: Option<BroadcasterId>,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, FollowerdChannelsResponse> {
+    ) -> TwitchAPIRequest<FollowerdChannelsResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "followed"])
             .query(USER_ID, user_id)
@@ -122,7 +128,7 @@ impl ChannelsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
     fn get_channel_followers(
@@ -130,7 +136,7 @@ impl ChannelsAPI for TwitchAPI {
         user_id: Option<UserId>,
         broadcaster_id: BroadcasterId,
         pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<EmptyBody, ChannelFollowersResponse> {
+    ) -> TwitchAPIRequest<ChannelFollowersResponse> {
         let mut url = self.build_url();
         url.path([CHANNELS, "followers"])
             .query_opt(USER_ID, user_id)
@@ -144,7 +150,7 @@ impl ChannelsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

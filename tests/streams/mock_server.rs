@@ -72,9 +72,9 @@ new_fn_mock_server_f!(
     api: {
         modules: [
             twitch_highway::streams::StreamsAPI,
-            twitch_highway::streams::request::StreamMarkerFilter
+            twitch_highway::streams::request::StreamMarkerSelector
         ],
         endpoint: get_stream_marker,
-        args: |broadcaster_id|{StreamMarkerFilter::by_user_id(broadcaster_id.as_user()), None}
+        args: |broadcaster_id|{StreamMarkerSelector::by_user_id(broadcaster_id.as_user()), None}
     }
 );

@@ -3,7 +3,7 @@ use request::CclsLocale;
 use response::CclsResponse;
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, TwitchAPIRequest},
     TwitchAPI,
 };
 
@@ -17,14 +17,14 @@ pub trait CclsAPI {
     fn get_content_classification_labels(
         &self,
         locale: Option<CclsLocale>,
-    ) -> TwitchAPIRequest<EmptyBody, CclsResponse>;
+    ) -> TwitchAPIRequest<CclsResponse>;
 }
 
 impl CclsAPI for TwitchAPI {
     fn get_content_classification_labels(
         &self,
         locale: Option<CclsLocale>,
-    ) -> TwitchAPIRequest<EmptyBody, CclsResponse> {
+    ) -> TwitchAPIRequest<CclsResponse> {
         let mut url = self.build_url();
         url.path(["content_classification_labels"])
             .query_opt("locale", locale);
@@ -34,7 +34,7 @@ impl CclsAPI for TwitchAPI {
             url.build(),
             Method::GET,
             self.build_headers().build(),
-            EmptyBody,
+            None,
         )
     }
 }

@@ -9,8 +9,8 @@ fn_expected_request!(
     scopes: Some(vec![Scope::UserWriteChat, Scope::UserBot, Scope::ChannelBot]),
     args: [
         BroadcasterId::new("12826"),
-        "141981764".to_string(),
-        "Hello, world! twitchdevHype".to_string()
+        "141981764",
+        "Hello, world! twitchdevHype"
     ],
     method: POST,
     header: expected_headers!(json),
