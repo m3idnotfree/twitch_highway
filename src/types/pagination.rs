@@ -10,14 +10,14 @@ pub struct Pagination {
 }
 
 define_request! {
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
   PaginationQuery<'a> {
         opts: {
             first: u64 => FIRST ; u64,
             before: &'a str => BEFORE,
             after: &'a str => AFTER,
         };
-        apply_to_url
+        into_query
     }
 }
 
