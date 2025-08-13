@@ -1,2 +1,0 @@
-mod get_drops_entitlements;
-mod update_drops_entitlements;
