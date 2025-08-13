@@ -1,16 +1,17 @@
 use std::{fmt, marker::PhantomData};
 
-use asknothingx2_util::api::{api_request, APIRequest, APIResponse, HeaderMap, Method, StatusCode};
+use asknothingx2_util::api::{
+    preset, HeaderMap, HeaderMut, IntoRequestBuilder, Method, StatusCode,
+};
+use reqwest::{Client, RequestBuilder};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use url::Url;
 
-use crate::{Error, Response};
-
-mod empty_body;
 mod endpoint_type;
+mod no_content;
 
-pub use empty_body::EmptyBody;
 pub use endpoint_type::{EndpointType, TokenType};
+pub use no_content::NoContent;
 
 #[cfg(any(
     feature = "channel-points",
@@ -30,15 +31,15 @@ mod request_body;
 pub use request_body::RequestBody;
 
 // https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
+#[derive(Debug)]
 pub struct TwitchAPIRequest<ResBody> {
     kind: EndpointType,
     url: Url,
     method: Method,
-    header: HeaderMap,
+    headers: HeaderMap,
     body: Option<String>,
+    client: Client,
     _phantom: PhantomData<ResBody>,
-    #[cfg(feature = "test")]
-    pub test_url: crate::test_url::TestUrlHold,
 }
 
 impl<ResBody> TwitchAPIRequest<ResBody>
@@ -49,43 +50,106 @@ where
         kind: EndpointType,
         url: Url,
         method: Method,
-        header: HeaderMap,
+        headers: HeaderMap,
         body: Option<String>,
     ) -> Self {
         Self {
             kind,
-            header,
+            headers,
             method,
             url,
             body,
+            client: preset::rest_api("twitch-highway/1.0")
+                .build_client()
+                .unwrap(),
             _phantom: PhantomData,
-            #[cfg(feature = "test")]
-            test_url: crate::test_url::TestUrlHold::default(),
         }
     }
+
     pub fn kind(&self) -> &EndpointType {
         &self.kind
     }
-    pub fn header(&self) -> &HeaderMap {
-        &self.header
+
+    pub fn headers(&self) -> &HeaderMap {
+        &self.headers
     }
+
+    pub fn headers_mut(&mut self) -> HeaderMut<'_> {
+        HeaderMut::new(&mut self.headers)
+    }
+
     pub fn method(&self) -> &Method {
         &self.method
     }
-    pub fn url(&self) -> Url {
-        #[cfg(feature = "test")]
-        if let Ok(url) = self.test_url.from_url(&self.url) {
-            return url;
-        }
-        self.url.clone()
+
+    pub fn url(&self) -> &Url {
+        &self.url
     }
+
     pub fn body(&self) -> &Option<String> {
         &self.body
     }
 
-    pub async fn request(self) -> Result<Response<ResBody>, Error> {
-        let response = api_request(self).await?;
-        Ok(Response::new(APIResponse::from_response(response).await?))
+    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
+        let Self {
+            kind: _,
+            url,
+            method,
+            headers,
+            body,
+            client,
+            _phantom,
+        } = self;
+
+        let mut client = client.request(method, url).headers(headers);
+        if let Some(body) = body {
+            client = client.body(body);
+        }
+
+        client.send().await.map_err(crate::Error::from)
+    }
+
+    pub async fn json(self) -> Result<ResBody, crate::Error> {
+        let client = self.client.clone();
+        self.into_request_builder(&client)
+            .unwrap()
+            .send()
+            .await
+            .map_err(crate::Error::from)?
+            .json()
+            .await
+            .map_err(crate::Error::from)
+    }
+}
+
+#[cfg(test)]
+impl<ResBody> TwitchAPIRequest<ResBody>
+where
+    ResBody: DeserializeOwned,
+{
+    pub fn set_url(mut self, url: Url) -> Self {
+        self.url = url;
+        self
+    }
+
+    pub fn set_client(mut self, client: Client) -> Self {
+        self.client = client;
+        self
+    }
+}
+
+impl<ResBody> IntoRequestBuilder for TwitchAPIRequest<ResBody>
+where
+    ResBody: DeserializeOwned,
+{
+    type Error = crate::Error;
+
+    fn into_request_builder(self, client: &Client) -> Result<RequestBuilder, Self::Error> {
+        let mut client = client.request(self.method, self.url).headers(self.headers);
+        if let Some(body) = self.body {
+            client = client.body(body);
+        }
+        Ok(client)
     }
 }
 
@@ -124,40 +188,5 @@ impl fmt::Display for APIError {
                 .map(|e| format!(" - {}", e))
                 .unwrap_or_default()
         )
-    }
-}
-
-impl<D> APIRequest for TwitchAPIRequest<D>
-where
-    D: DeserializeOwned,
-{
-    fn url(&self) -> Url {
-        self.url()
-    }
-    fn method(&self) -> Method {
-        self.method.clone()
-    }
-    fn headers(&self) -> HeaderMap {
-        self.header.clone()
-    }
-    fn json(&self) -> Option<String> {
-        self.body.clone()
-    }
-    fn text(&self) -> Option<Vec<u8>> {
-        self.body.clone().map(|x| x.into_bytes())
-    }
-    fn urlencoded(&self) -> Option<Vec<u8>> {
-        self.body.clone().map(|x| x.into_bytes())
-    }
-}
-
-#[cfg(feature = "test")]
-impl<D> crate::test_url::TestUrl for TwitchAPIRequest<D> {
-    fn with_url(mut self, port: Option<u16>, endpoint: Option<String>, use_prefix: bool) -> Self {
-        self.test_url.with_endpoint(endpoint);
-        self.test_url.with_port(port);
-        self.test_url.use_prefix(use_prefix);
-
-        self
     }
 }
