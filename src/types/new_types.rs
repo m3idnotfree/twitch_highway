@@ -4,7 +4,10 @@ use std::fmt;
 macro_rules! new_type {
     (
     $name:ident
-    $({ $($impl_id:ident: $check:expr),* $(,)?})?
+    $({
+        $($impl_id:ident: [$($check:ident),* $(,)?]),*
+        $(,)?
+    })?
     ) => {
         #[derive(Debug, Clone, PartialEq, Eq, Hash)]
         pub struct $name(String);
@@ -18,7 +21,9 @@ macro_rules! new_type {
                 &self.0
             }
 
-            $($(new_type!(@$impl_id $check);)*)?
+            $($(
+                $(new_type!(@$impl_id $check);)*
+            )*)?
         }
 
         impl fmt::Display for $name {
@@ -92,42 +97,66 @@ macro_rules! new_type {
             }
         }
     };
-    (@user $check:expr) => {
-        pub fn as_user(&self) -> UserId {
+    (@user to) => {
+        pub fn to_user(&self) -> UserId {
             UserId::new(self.0.clone())
         }
     };
-    (@id $check:expr) => {
-        pub fn as_id(&self) -> Id {
+
+    (@user into) => {
+        pub fn into_user(self) -> UserId {
+            UserId::new(self.0)
+        }
+    };
+
+    (@id to) => {
+        pub fn to_id(&self) -> Id {
             Id::new(self.0.clone())
         }
     };
-    (@moderator $check:expr) => {
-        pub fn as_moderator(&self) -> ModeratorId {
+    (@id into) => {
+        pub fn into_id(self) -> Id {
+            Id::new(self.0)
+        }
+    };
+
+    (@moderator to) => {
+        pub fn to_moderator(&self) -> ModeratorId {
             ModeratorId::new(self.0.clone())
         }
     };
-    (@broadcaster $check:expr) => {
-        pub fn as_broadcaster(&self) -> BroadcasterId {
+    (@moderator into) => {
+        pub fn into_moderator(self) -> ModeratorId {
+            ModeratorId::new(self.0)
+        }
+    };
+
+    (@broadcaster to) => {
+        pub fn to_broadcaster(&self) -> BroadcasterId {
             BroadcasterId::new(self.0.clone())
+        }
+    };
+    (@broadcaster into) => {
+        pub fn into_broadcaster(self) -> BroadcasterId {
+            BroadcasterId::new(self.0)
         }
     };
 }
 
 new_type!(BroadcasterId {
-    user: true,
-    id: true,
-    moderator: true
+    user: [to, into],
+    id: [to, into],
+    moderator: [to, into]
 });
 new_type!(ModeratorId {
-    user: true,
-    id: true,
-    broadcaster: true
+    user: [to, into],
+    id: [to, into],
+    broadcaster: [to, into]
 });
 new_type!(UserId {
-    id: true,
-    broadcaster: true,
-    moderator: true
+    id: [to, into],
+    broadcaster: [to, into],
+    moderator: [to, into]
 });
 new_type!(Id);
 new_type!(ExtensionId);
@@ -137,3 +166,265 @@ new_type!(CustomRewardId);
 new_type!(RedemptionId);
 
 new_type!(JWTToken);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json;
+    use std::collections::HashMap;
+
+    #[test]
+    fn basic() {
+        let user_id = UserId::new("userid");
+        assert_eq!(user_id.as_str(), "userid");
+        let broadcaster_id = BroadcasterId::new("broadcasterid");
+        assert_eq!(broadcaster_id.as_str(), "broadcasterid");
+        let moderator_id = ModeratorId::new("modid");
+        assert_eq!(moderator_id.as_str(), "modid");
+        let id = Id::new("id");
+        assert_eq!(id.as_str(), "id");
+        let extension_id = ExtensionId::new("extensionid");
+        assert_eq!(extension_id.as_str(), "extensionid");
+        let game_id = GameId::new("gameid");
+        assert_eq!(game_id.as_str(), "gameid");
+        let reward_id = RewardId::new("rewardid");
+        assert_eq!(reward_id.as_str(), "rewardid");
+        let custom_reward_id = CustomRewardId::new("customrewardid");
+        assert_eq!(custom_reward_id.as_str(), "customrewardid");
+        let redemption_id = RedemptionId::new("redemptionid");
+        assert_eq!(redemption_id.as_str(), "redemptionid");
+        let jwt_token = JWTToken::new("jwttoken");
+        assert_eq!(jwt_token.as_str(), "jwttoken");
+    }
+
+    #[test]
+    fn from_string() {
+        let user_id: UserId = "userid".to_string().into();
+        assert_eq!(user_id.as_str(), "userid");
+        let broadcaster_id: BroadcasterId = "broadcasterid".into();
+        assert_eq!(broadcaster_id.as_str(), "broadcasterid");
+        let id: Id = "id".into();
+        assert_eq!(id.as_str(), "id");
+    }
+
+    #[test]
+    fn to_string() {
+        let user_id = UserId::new("userid");
+        let s: String = user_id.into();
+        assert_eq!(s, "userid");
+        let broadcaster_id = BroadcasterId::new("broadcasterid");
+        let s: String = broadcaster_id.into();
+        assert_eq!(s, "broadcasterid");
+    }
+
+    #[test]
+    fn display() {
+        let user_id = UserId::new("userid");
+        assert_eq!(format!("{}", user_id), "userid");
+        let game_id = GameId::new("gameid");
+        assert_eq!(format!("{}", game_id), "gameid");
+    }
+
+    #[test]
+    fn as_ref() {
+        let reward_id = RewardId::new("rewardid");
+        let s: &str = reward_id.as_ref();
+        assert_eq!(s, "rewardid");
+    }
+
+    #[test]
+    fn clone_and_eq() {
+        let user_id1 = UserId::new("userid");
+        let user_id2 = user_id1.clone();
+
+        assert_eq!(user_id1, user_id2);
+    }
+
+    #[test]
+    fn broadcaster_to_conversions() {
+        let broadcaster_id = BroadcasterId::new("broadcasterid");
+
+        let user_id = broadcaster_id.to_user();
+        assert_eq!(user_id.as_str(), "broadcasterid");
+
+        let id = broadcaster_id.to_id();
+        assert_eq!(id.as_str(), "broadcasterid");
+
+        let moderator_id = broadcaster_id.to_moderator();
+        assert_eq!(moderator_id.as_str(), "broadcasterid");
+
+        assert_eq!(broadcaster_id.as_str(), "broadcasterid");
+    }
+
+    #[test]
+    fn broadcaster_into_conversions() {
+        let broadcaster_id1 = BroadcasterId::new("broadcasterid1");
+        let user_id = broadcaster_id1.into_user();
+        assert_eq!(user_id.as_str(), "broadcasterid1");
+
+        let broadcaster_id2 = BroadcasterId::new("broadcasterid2");
+        let id = broadcaster_id2.into_id();
+        assert_eq!(id.as_str(), "broadcasterid2");
+
+        let broadcaster_id3 = BroadcasterId::new("broadcasterid3");
+        let moderator_id = broadcaster_id3.into_moderator();
+        assert_eq!(moderator_id.as_str(), "broadcasterid3");
+    }
+
+    #[test]
+    fn moderator_to_conversions() {
+        let moderator_id = ModeratorId::new("modid");
+
+        let user_id = moderator_id.to_user();
+        assert_eq!(user_id.as_str(), "modid");
+
+        let id = moderator_id.to_id();
+        assert_eq!(id.as_str(), "modid");
+
+        let broadcaster_id = moderator_id.to_broadcaster();
+        assert_eq!(broadcaster_id.as_str(), "modid");
+
+        assert_eq!(moderator_id.as_str(), "modid");
+    }
+
+    #[test]
+    fn moderator_into_conversions() {
+        let moderator_id1 = ModeratorId::new("modid1");
+        let user_id = moderator_id1.into_user();
+        assert_eq!(user_id.as_str(), "modid1");
+
+        let moderator_id2 = ModeratorId::new("modid2");
+        let id = moderator_id2.into_id();
+        assert_eq!(id.as_str(), "modid2");
+
+        let moderator_id3 = ModeratorId::new("modid3");
+        let broadcaster_id = moderator_id3.into_broadcaster();
+        assert_eq!(broadcaster_id.as_str(), "modid3");
+    }
+
+    #[test]
+    fn user_to_conversions() {
+        let user_id = UserId::new("userid");
+
+        let id = user_id.to_id();
+        assert_eq!(id.as_str(), "userid");
+
+        let broadcaster_id = user_id.to_broadcaster();
+        assert_eq!(broadcaster_id.as_str(), "userid");
+
+        let moderator_id = user_id.to_moderator();
+        assert_eq!(moderator_id.as_str(), "userid");
+
+        assert_eq!(user_id.as_str(), "userid");
+    }
+
+    #[test]
+    fn user_into_conversions() {
+        let user_id1 = UserId::new("userid1");
+        let id = user_id1.into_id();
+        assert_eq!(id.as_str(), "userid1");
+
+        let user_id2 = UserId::new("userid2");
+        let broadcaster_id = user_id2.into_broadcaster();
+        assert_eq!(broadcaster_id.as_str(), "userid2");
+
+        let user_id3 = UserId::new("userid3");
+        let moderator_id = user_id3.into_moderator();
+        assert_eq!(moderator_id.as_str(), "userid3");
+    }
+
+    #[test]
+    fn serialize() {
+        let user_id = UserId::new("userid");
+        let json = serde_json::to_string(&user_id).unwrap();
+        assert_eq!(json, "\"userid\"");
+
+        let game_id = GameId::new("gameid");
+        let json = serde_json::to_string(&game_id).unwrap();
+        assert_eq!(json, "\"gameid\"");
+
+        let jwt_token = JWTToken::new("jwttoken");
+        let json = serde_json::to_string(&jwt_token).unwrap();
+        assert_eq!(json, "\"jwttoken\"");
+    }
+
+    #[test]
+    fn deserialize() {
+        let user_id: UserId = serde_json::from_str("\"userid\"").unwrap();
+        assert_eq!(user_id.as_str(), "userid");
+
+        let game_id: GameId = serde_json::from_str("\"gameid\"").unwrap();
+        assert_eq!(game_id.as_str(), "gameid");
+
+        let jwt_token: JWTToken = serde_json::from_str("\"jwttoken\"").unwrap();
+        assert_eq!(jwt_token.as_str(), "jwttoken");
+    }
+
+    #[test]
+    fn roundtrip_serde() {
+        let broadcaster_id = BroadcasterId::new("broadcasterid");
+        let json = serde_json::to_string(&broadcaster_id).unwrap();
+        let deserialized: BroadcasterId = serde_json::from_str(&json).unwrap();
+        assert_eq!(broadcaster_id, deserialized);
+
+        let moderator_id = ModeratorId::new("modid");
+        let json = serde_json::to_string(&moderator_id).unwrap();
+        let deserialized: ModeratorId = serde_json::from_str(&json).unwrap();
+        assert_eq!(moderator_id, deserialized);
+    }
+
+    #[test]
+    fn hash_map() {
+        let mut map = HashMap::new();
+        let game_id1 = GameId::new("game1");
+        let game_id2 = GameId::new("game2");
+
+        map.insert(game_id1.clone(), "Game One");
+        map.insert(game_id2.clone(), "Game Two");
+
+        assert_eq!(map.get(&game_id1), Some(&"Game One"));
+        assert_eq!(map.get(&game_id2), Some(&"Game Two"));
+    }
+
+    #[test]
+    fn debug() {
+        let reward_id = RewardId::new("rewardid");
+        let debug_str = format!("{:?}", reward_id);
+        assert!(debug_str.contains("RewardId"));
+        assert!(debug_str.contains("rewardid"));
+    }
+
+    #[test]
+    fn empty_string() {
+        let empty_id = Id::new("");
+        assert_eq!(empty_id.as_str(), "");
+        assert_eq!(format!("{}", empty_id), "");
+
+        let json = serde_json::to_string(&empty_id).unwrap();
+        assert_eq!(json, "\"\"");
+        let deserialized: Id = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized, empty_id);
+    }
+
+    #[test]
+    fn conversion_chain() {
+        let broadcaster_id = BroadcasterId::new("test");
+        let user_id = broadcaster_id.to_user();
+        let moderator_id = user_id.to_moderator();
+        let id = moderator_id.to_id();
+
+        assert_eq!(id.as_str(), "test");
+    }
+
+    #[test]
+    fn serde_errors() {
+        let result: Result<UserId, _> = serde_json::from_str("123");
+        assert!(result.is_err());
+
+        let result: Result<GameId, _> = serde_json::from_str("null");
+        assert!(result.is_err());
+
+        let result: Result<RewardId, _> = serde_json::from_str("[]");
+        assert!(result.is_err());
+    }
+}
