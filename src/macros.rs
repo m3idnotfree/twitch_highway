@@ -16,7 +16,7 @@ macro_rules! field_type {
     };
 }
 
-macro_rules! apply_url {
+macro_rules! into_query {
     (@req $url:expr, $key:expr, $value:expr, $conv:tt) => {
         apply_url!(@convert $url, $key, $value, $conv);
     };
@@ -27,31 +27,34 @@ macro_rules! apply_url {
 
     (@opt $url:expr, $key:expr, $value:expr, $conv:tt) => {
         if let Some(val) = $value {
-            apply_url!(@convert $url, $key, val, $conv);
+            into_query!(@convert $url, $key, val, $conv);
         }
     };
 
     (@opt $url:expr, $key:expr, $value:expr) => {
         if let Some(val) = $value {
-            $url.query($key, val);
+            $url.append_pair($key, val.as_ref());
         }
     };
 
     (@convert $url:expr, $key:expr, $value:expr, u64) => {
-        $url.query_u64($key, $value);
+        let mut buffer = itoa::Buffer::new();
+        let s = buffer.format($value);
+
+        $url.append_pair($key, s);
     };
 
     (@convert $url:expr, $key:expr, $value:expr, bool) => {
-        $url.query($key, $value.to_string());
+        $url.append_pair($key, &$value.to_string());
     };
 
     (@convert $url:expr, $key:expr, $value:expr, date) => {
-        $url.date($key, $value);
+        $url.append_pair($key, &$value.to_rfc3339_opts(chrono::SecondsFormat::Secs, true));
     };
 
     (@convert $url:expr, $key:expr, $value:expr, vec) => {
         for item in $value {
-            $url.query($key, item);
+            $url.append_pair($key, item.as_ref());
         }
     };
 
@@ -208,6 +211,9 @@ macro_rules! define_select {
     };
 }
 
+/// ### Supported Flags:
+/// - `into_query` - Implements `into_query()` method for URL parameter generation
+/// - `into_json` - Implements `into_json()` method for JSON serialization
 macro_rules! automatic_impl {
     (
         $name:ident$(<$life:lifetime>)? ;
@@ -226,15 +232,15 @@ macro_rules! automatic_impl {
     (@impl $name:ident$(<$life:lifetime>)? ;
         req: [$($req_field:ident : $req_field_type:ty $(=> $req_key:tt)? $(; $req_conv:tt)?),*] ;
         opts: [$($opt_field:ident : $opt_field_type:ty $(=> $opt_key:tt)? $(; $opt_conv:tt)?),*] ;
-        apply_to_url $(, $rest:ident)*
+        into_query $(, $rest:ident)*
     ) => {
         impl$(<$life>)? $name$(<$life>)? {
-            pub fn apply_to_url(self, url: &mut crate::base::UrlBuilder) {
+            pub fn into_query(self, url: &mut url::form_urlencoded::Serializer<'_, url::UrlQuery<'_>>) {
                 $(
-                    apply_url!(@req url, field_type!($req_field $(, $req_key)?), self.$req_field $(, $req_conv)?);
+                    into_query!(@req url, field_type!($req_field $(, $req_key)?), self.$req_field $(, $req_conv)?);
                 )*
                 $(
-                    apply_url!(@opt url, field_type!($opt_field $(, $opt_key)?), self.$opt_field $(, $opt_conv)?);
+                    into_query!(@opt url, field_type!($opt_field $(, $opt_key)?), self.$opt_field $(, $opt_conv)?);
                 )*
             }
         }
@@ -249,11 +255,11 @@ macro_rules! automatic_impl {
     (@impl $name:ident$(<$life:lifetime>)? ;
         req: [$($req_field:ident : $req_field_type:ty $(=> $req_key:tt)? $(; $req_conv:tt)?),*] ;
         opts: [$($opt_field:ident : $opt_field_type:ty $(=> $opt_key:tt)? $(; $opt_conv:tt)?),*] ;
-        to_json $(, $rest:ident)*
+        into_json $(, $rest:ident)*
     ) => {
 
         impl$(<$life>)? $name$(<$life>)? {
-            pub fn to_json(&self) -> Option<String> {
+            pub fn into_json(&self) -> Option<String> {
                 Some(serde_json::to_string(self).unwrap())
             }
         }
@@ -270,4 +276,203 @@ macro_rules! automatic_impl {
         req: [$($req_field:ident : $req_field_type:ty $(=> $req_key:tt)? $(; $req_conv:tt)?),*] ;
         opts: [$($opt_field:ident : $opt_field_type:ty $(=> $opt_key:tt)? $(; $opt_conv:tt)?),*] ;
     ) => {}
+}
+
+/// ### Structure:
+/// ```rust,ignore
+/// twitch_api_trait! {
+///     trait TraitName {
+///         /// Method documentation
+///         fn method_name(&self, param) -> ReturnType;
+///     }
+///     impl {
+///         method_name => {
+///             endpoint_type: EndpointType,
+///             method: HttpMethod,
+///             path: ["segment1", "segment2"],
+///             ?( query_params: { /* query configuration */}, )
+///             ?( headers: [hedaers_config], )
+///             ?( body: body_expression )
+///         }
+///     }
+/// }
+/// ```
+/// ### Query Parameter Patterns:
+/// - `query("key", value)` - Add single parameter
+/// - `opt("key", optional_value)` - Add if Some
+/// - `extend(iterator)` - Add multiple key-value pairs
+/// - `opt_extend(optional_iterator)` - Add multiple if Some
+/// - `pagination(pagination_obj)` - Add pagination parameters
+/// - `into_query(query_builder)` - Use custom query builder
+/// - `opt_into_query(optional_builder)` - Use custom builder if Some
+///
+/// ### Header Patterns:
+/// - `json` - Content-Type: application/json
+/// - `jwt, token` - JWT authorization with token
+/// - (empty) - Default headers only
+///
+/// Returns `TwitchAPIRequest<ReturnType>`
+///
+macro_rules! twitch_api_trait {
+    (
+      $(#[$trait_attr:meta])*
+        trait $trait_name:ident {
+            $(
+                $(#[$method_attr:meta])*
+                fn $method_name:ident(
+                    &self
+                    $(, $param_name:ident: $param_type:ty)* $(,)?
+                ) -> $return_type:ty;
+            )+
+        }
+        impl {
+            $(
+                $impl_method_name:ident => {
+                    endpoint_type: $endpoint_type:expr,
+                    method: $http_method:expr,
+                    path: [$($path_segment:expr),* $(,)?]
+                    $(, query_params: {$($query_config:tt)*})?
+                    $(, headers: [$($header_config:tt)*])?
+                    $(, body: $body_expr:expr)?
+                    $(,)?
+                }
+            )+
+        }
+    ) => {
+        $(#[$trait_attr])*
+        pub trait $trait_name {
+            $(
+                $(#[$method_attr])*
+                fn $method_name(
+                    &self,
+                    $($param_name: $param_type),*
+                ) -> TwitchAPIRequest<$return_type>;
+            )+
+        }
+
+        impl $trait_name for TwitchAPI {
+            $(
+                fn $impl_method_name(
+                    &self
+                    $(, $param_name: $param_type)*
+                ) -> TwitchAPIRequest<$return_type> {
+                    let mut url = self.build_url();
+
+                    url.path_segments_mut().unwrap().extend([$($path_segment),*]);
+
+                    $( twitch_api_trait!(@query url.query_pairs_mut(), $($query_config)*); )?
+
+                    let headers = twitch_api_trait!(@headers self, $($($header_config)*)?);
+                    let body = twitch_api_trait!(@body_handler $($body_expr)?);
+
+                    TwitchAPIRequest::new(
+                        $endpoint_type,
+                        url,
+                        $http_method,
+                        headers,
+                        body,
+                    )
+                }
+            )+
+        }
+    };
+
+    // Query parameter handlers
+
+    // Add a single query parameter
+    (@query $url:expr, query($key:expr, $value:expr) $(, $($rest:tt)*)?) => {
+        $url.append_pair($key, $value.as_ref());
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Add optional query parameter (only if Some)
+    (@query $url:expr, opt($key:expr, $value:expr) $(, $($rest:tt)*)?) => {
+        if let Some(val) = $value {
+            $url.append_pair($key, val.as_ref());
+        }
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Extend query parameters from iterator
+    (@query $url:expr, extend($iter:expr) $(, $($rest:tt)*)?) => {
+        $url.extend_pairs($iter);
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+
+    };
+
+    // Extend query parameters from optional iterator
+    (@query $url:expr, opt_extend($iter:expr) $(, $($rest:tt)*)?) => {
+        if let Some(opts) = $iter {
+            $url.extend_pairs(opts);
+        }
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Add pagination query parameters
+    (@query $url:expr, pagination($pagination:expr) $(, $($rest:tt)*)?) => {
+        if let Some(pagination) = $pagination {
+            pagination.into_query(&mut $url);
+        }
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Use custom query parameter builder
+    (@query $url:expr, into_query($custom_applier:expr) $(, $($rest:tt)*)?) => {
+        $custom_applier.into_query(&mut $url);
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Use optional custom query parameter builder
+    (@query $url:expr, opt_into_query($custom_applier:expr) $(, $($rest:tt)*)?) => {
+        if let Some(opts) = $custom_applier {
+            opts.into_query(&mut $url);
+        }
+        $(
+            twitch_api_trait!(@query $url, $($rest)*);
+        )?
+    };
+
+    // Base case: no more query parameters
+    (@query $url:expr,) => {};
+
+    // Header configuration handlers
+
+    // JSON content type headers
+    (@headers $self:ident, json) => {
+        $self.header_json()
+    };
+
+    // JWT authorization headers
+    (@headers $self:ident, jwt, $token:expr) => {
+        $self.build_jwt_headers(&$token)
+    };
+
+    // Default headers only
+    (@headers $self:ident, ) => {
+        $self.default_headers()
+    };
+
+    // Request body handlers
+
+    // Use provided body expression
+    (@body_handler $body_expr:expr) => {
+        $body_expr
+    };
+
+    // No body (None)
+    (@body_handler) => {
+        None
+    };
 }
