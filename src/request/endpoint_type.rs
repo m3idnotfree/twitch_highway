@@ -1,6 +1,6 @@
-use twitch_oauth_token::types::Scope;
+use twitch_oauth_token::scope::Scope;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum EndpointType {
     // Ads
     StartCommercial,

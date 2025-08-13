@@ -5,7 +5,7 @@ pub struct RequestBody<T, K> {
     #[serde(flatten)]
     required: T,
     #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    optional: Option<K>,
+    opt: Option<K>,
 }
 
 impl<T, K> RequestBody<T, K>
@@ -16,11 +16,11 @@ where
     pub fn new(required: T, opts: Option<K>) -> Self {
         Self {
             required,
-            optional: opts,
+            opt: opts,
         }
     }
 
-    pub fn to_json(&self) -> Option<String> {
+    pub fn into_json(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
 }
