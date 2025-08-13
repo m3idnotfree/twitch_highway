@@ -69,22 +69,32 @@
 #[macro_use]
 mod macros;
 
-pub mod base;
 pub mod request;
 pub mod types;
 
 mod error;
-mod response;
 
-use base::{HeadersBuilder, UrlBuilder};
 pub use error::Error;
-pub use response::Response;
 
-use asknothingx2_util::oauth::{AccessToken, ClientId};
+use std::sync::LazyLock;
+
+use asknothingx2_util::{
+    api::HeaderMut,
+    oauth::{AccessToken, ClientId},
+};
+use reqwest::header::HeaderMap;
 use types::JWTToken;
+use url::Url;
+
+const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
+
+static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BASE).unwrap());
+
+#[derive(Debug)]
 pub struct TwitchAPI {
     access_token: AccessToken,
     client_id: ClientId,
+    url: Url,
 }
 
 impl TwitchAPI {
@@ -92,8 +102,23 @@ impl TwitchAPI {
         Self {
             access_token,
             client_id,
+            url: BASE_URL.clone(),
         }
     }
+
+    pub fn with_url(access_token: AccessToken, client_id: ClientId, url: Url) -> Self {
+        Self {
+            access_token,
+            client_id,
+            url,
+        }
+    }
+
+    pub fn set_url(mut self, url: Url) -> Self {
+        self.url = url;
+        self
+    }
+
     pub fn access_token(&self) -> &AccessToken {
         &self.access_token
     }
@@ -102,16 +127,33 @@ impl TwitchAPI {
         &self.client_id
     }
 
-    pub fn build_headers(&self) -> HeadersBuilder {
-        HeadersBuilder::base(self.access_token(), self.client_id())
+    pub(crate) fn default_headers(&self) -> HeaderMap {
+        let mut headers = HeaderMap::new();
+        HeaderMut::new(&mut headers)
+            .bearer_token(self.access_token.secret())
+            .client_id(&self.client_id)
+            .unwrap();
+        headers
     }
 
-    pub fn build_jwt_headers(&self, jwt: &JWTToken) -> HeadersBuilder {
-        HeadersBuilder::base_with_jwt(jwt, self.client_id())
+    pub(crate) fn header_json(&self) -> HeaderMap {
+        let mut headers = HeaderMap::new();
+        HeaderMut::new(&mut headers)
+            .bearer_token(self.access_token.secret())
+            .client_id(&self.client_id)
+            .unwrap()
+            .content_type_json();
+        headers
     }
 
-    pub fn build_url(&self) -> UrlBuilder {
-        UrlBuilder::new()
+    pub(crate) fn build_jwt_headers(&self, jwt: &JWTToken) -> HeaderMap {
+        let mut headers = HeaderMap::new();
+        HeaderMut::new(&mut headers).bearer_token(jwt.as_str());
+        headers
+    }
+
+    pub(crate) fn build_url(&self) -> Url {
+        self.url.clone()
     }
 }
 
@@ -199,7 +241,3 @@ pub mod videos;
 #[cfg(feature = "whispers")]
 #[cfg_attr(docsrs, doc(cfg(feature = "whispers")))]
 pub mod whispers;
-
-#[cfg(feature = "test")]
-#[cfg_attr(docsrs, doc(cfg(feature = "test")))]
-pub mod test_url;
