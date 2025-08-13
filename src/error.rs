@@ -1,5 +1,3 @@
-use asknothingx2_util::api;
-
 use crate::request::APIError;
 
 #[derive(Debug, thiserror::Error)]
@@ -10,10 +8,16 @@ pub enum Error {
     MissingTestUrl,
     #[error("Failed to deserialize response: {0}")]
     DeserializationError(String),
-    #[error("API request failed: {0}")]
-    APIRequestFailed(#[from] api::ReqwestError),
     #[error("Failed to deserialize successful response: {0}")]
     ResponseDeserializeError(#[from] serde_json::Error),
     #[error("API returned error response: {0}")]
     TwitchAPIError(APIError),
+    #[error(transparent)]
+    Request(reqwest::Error),
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(value: reqwest::Error) -> Self {
+        Error::Request(value)
+    }
 }
