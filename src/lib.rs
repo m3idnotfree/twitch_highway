@@ -63,6 +63,29 @@
 //! - Conduits: coming soom
 //! - EventSub: coming soom
 //! - Tags: deprecated
+//!
+//! ## Error Handling
+//!
+//! The library provides structured error handling
+//!
+//! ```rust
+//! # use twitch_highway::request::TwitchAPIRequest;
+//! # use serde::de::DeserializeOwned;
+//! # async fn run<T: DeserializeOwned>(api: TwitchAPIRequest<T>) {
+//! match api.json().await {
+//!     Ok(response) => { /* success */ }
+//!     Err(e) => {
+//!         if e.is_request() {
+//!             eprintln!("Network error: {}", e);
+//!         } else if e.is_api() {
+//!             eprintln!("Twitch API error: {}", e);
+//!         } else if e.is_decode() {
+//!             eprintln!("JSON decode error: {}", e);
+//!         }
+//!     }
+//! }
+//! # }
+//! ```
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
