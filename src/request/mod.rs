@@ -1,3 +1,6 @@
+mod endpoint_type;
+mod no_content;
+
 use std::{fmt, marker::PhantomData};
 
 use asknothingx2_util::api::{
@@ -7,30 +10,11 @@ use reqwest::{Client, RequestBuilder};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use url::Url;
 
-mod endpoint_type;
-mod no_content;
+use crate::{error, Error};
 
 pub use endpoint_type::{EndpointType, TokenType};
 pub use no_content::NoContent;
 
-#[cfg(any(
-    feature = "channel-points",
-    feature = "extensions",
-    feature = "polls",
-    feature = "predictions",
-    feature = "schedule",
-))]
-mod request_body;
-#[cfg(any(
-    feature = "channel-points",
-    feature = "extensions",
-    feature = "polls",
-    feature = "predictions",
-    feature = "schedule",
-))]
-pub use request_body::RequestBody;
-
-// https://rust-lang.github.io/rust-clippy/master/index.html#wrong_self_convention
 #[derive(Debug)]
 pub struct TwitchAPIRequest<ResBody> {
     kind: EndpointType,
@@ -90,7 +74,7 @@ where
         &self.body
     }
 
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
+    async fn send(self) -> Result<reqwest::Response, Error> {
         let Self {
             kind: _,
             url,
@@ -106,19 +90,47 @@ where
             client = client.body(body);
         }
 
-        client.send().await.map_err(crate::Error::from)
+        client.send().await.map_err(Error::from)
+    }
+
+    pub async fn text(self) -> Result<String, Error> {
+        let resp = self.send().await?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            match resp.text().await {
+                Ok(body) => {
+                    return Err(error::api_error(format!("HTTP {status}: {body}")));
+                }
+                Err(e) => {
+                    return Err(error::api_error(format!(
+                        "HTTP {status} - Failed to read error response: {e}"
+                    )));
+                }
+            }
+        }
+
+        resp.text().await.map_err(error::decode_error)
     }
 
     pub async fn json(self) -> Result<ResBody, crate::Error> {
-        let client = self.client.clone();
-        self.into_request_builder(&client)
-            .unwrap()
-            .send()
-            .await
-            .map_err(crate::Error::from)?
-            .json()
-            .await
-            .map_err(crate::Error::from)
+        let resp = self.send().await?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            match resp.text().await {
+                Ok(body) => {
+                    return Err(error::api_error(format!("HTTP {status}: {body}")));
+                }
+                Err(e) => {
+                    return Err(error::api_error(format!(
+                        "HTTP {status} - Failed to read error response: {e}"
+                    )));
+                }
+            }
+        }
+
+        resp.json().await.map_err(error::decode_error)
     }
 }
 
@@ -150,6 +162,45 @@ where
             client = client.body(body);
         }
         Ok(client)
+    }
+}
+
+#[cfg(any(
+    feature = "channel-points",
+    feature = "extensions",
+    feature = "polls",
+    feature = "predictions",
+    feature = "schedule",
+))]
+#[derive(Serialize, Deserialize)]
+pub struct RequestBody<Required, Optional> {
+    #[serde(flatten)]
+    required: Required,
+    #[serde(flatten, skip_serializing_if = "Option::is_none")]
+    opt: Option<Optional>,
+}
+
+#[cfg(any(
+    feature = "channel-points",
+    feature = "extensions",
+    feature = "polls",
+    feature = "predictions",
+    feature = "schedule",
+))]
+impl<Required, Optional> RequestBody<Required, Optional>
+where
+    Required: Serialize,
+    Optional: Serialize,
+{
+    pub fn new(required: Required, opts: Option<Optional>) -> Self {
+        Self {
+            required,
+            opt: opts,
+        }
+    }
+
+    pub fn into_json(&self) -> Option<String> {
+        Some(serde_json::to_string(self).unwrap())
     }
 }
 
