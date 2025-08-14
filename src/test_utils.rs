@@ -141,21 +141,19 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
-
-    #[track_caller]
-    pub fn assert_datetime(
-        &self,
-        actual: DateTime<FixedOffset>,
-        year: i32,
-        month: u32,
-        day: u32,
-        hour: u32,
-        min: u32,
-    ) {
-        assert_eq!(actual.year(), year, "Year mismatch");
-        assert_eq!(actual.month(), month, "Month mismatch");
-        assert_eq!(actual.day(), day, "Day mismatch");
-        assert_eq!(actual.hour(), hour, "Hour mismatch");
-        assert_eq!(actual.minute(), min, "Minute mismatch");
-    }
+}
+#[track_caller]
+pub fn assert_datetime(
+    actual: DateTime<FixedOffset>,
+    year: i32,
+    month: u32,
+    day: u32,
+    hour: u32,
+    min: u32,
+) {
+    assert_eq!(actual.year(), year, "Year mismatch");
+    assert_eq!(actual.month(), month, "Month mismatch");
+    assert_eq!(actual.day(), day, "Day mismatch");
+    assert_eq!(actual.hour(), hour, "Hour mismatch");
+    assert_eq!(actual.minute(), min, "Minute mismatch");
 }
