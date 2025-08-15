@@ -104,3 +104,96 @@ impl AsRef<str> for CclsLocale {
         self.as_str()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::ccls::request::CclsLocale;
+
+    #[test]
+    fn ccls_locale_enum_all_variants() {
+        let locales = vec![
+            (CclsLocale::bgBG, "bg-BG"),
+            (CclsLocale::csCZ, "cs-CZ"),
+            (CclsLocale::daDK, "da-DK"),
+            (CclsLocale::deDE, "de-DE"),
+            (CclsLocale::elGR, "el-GR"),
+            (CclsLocale::enGB, "en-GB"),
+            (CclsLocale::enUS, "en-US"),
+            (CclsLocale::esES, "es-ES"),
+            (CclsLocale::esMX, "es-MX"),
+            (CclsLocale::fiFI, "fi-FI"),
+            (CclsLocale::frFR, "fr-FR"),
+            (CclsLocale::huHU, "hu-HU"),
+            (CclsLocale::itIT, "it-IT"),
+            (CclsLocale::jaJP, "ja-JP"),
+            (CclsLocale::koKR, "ko-KR"),
+            (CclsLocale::nlNL, "nl-NL"),
+            (CclsLocale::noNO, "no-NO"),
+            (CclsLocale::plPL, "pl-PL"),
+            (CclsLocale::ptBT, "pt-BT"),
+            (CclsLocale::ptPT, "pt-PT"),
+            (CclsLocale::roRO, "ro-RO"),
+            (CclsLocale::ruRU, "ru-RU"),
+            (CclsLocale::skSK, "sk-SK"),
+            (CclsLocale::svSE, "sv-SE"),
+            (CclsLocale::thTH, "th-TH"),
+            (CclsLocale::trTR, "tr-TR"),
+            (CclsLocale::viVN, "vi-VN"),
+            (CclsLocale::zkCN, "zh-CN"),
+            (CclsLocale::zhTW, "zh-TW"),
+        ];
+
+        for (locale, expected_str) in locales {
+            assert_eq!(locale.as_str(), expected_str);
+            assert_eq!(locale.as_ref(), expected_str);
+
+            let serialized = serde_json::to_string(&locale).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: CclsLocale = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_str(), expected_str);
+        }
+    }
+
+    #[test]
+    fn locale_serialization_roundtrip() {
+        let test_locales = vec![
+            CclsLocale::bgBG,
+            CclsLocale::csCZ,
+            CclsLocale::daDK,
+            CclsLocale::deDE,
+            CclsLocale::elGR,
+            CclsLocale::enGB,
+            CclsLocale::enUS,
+            CclsLocale::esES,
+            CclsLocale::esMX,
+            CclsLocale::fiFI,
+            CclsLocale::frFR,
+            CclsLocale::huHU,
+            CclsLocale::itIT,
+            CclsLocale::jaJP,
+            CclsLocale::koKR,
+            CclsLocale::nlNL,
+            CclsLocale::noNO,
+            CclsLocale::plPL,
+            CclsLocale::ptBT,
+            CclsLocale::ptPT,
+            CclsLocale::roRO,
+            CclsLocale::ruRU,
+            CclsLocale::skSK,
+            CclsLocale::svSE,
+            CclsLocale::thTH,
+            CclsLocale::trTR,
+            CclsLocale::viVN,
+            CclsLocale::zkCN,
+            CclsLocale::zhTW,
+        ];
+
+        for locale in test_locales {
+            let original_str = locale.as_str();
+            let serialized = serde_json::to_string(&locale).unwrap();
+            let deserialized: CclsLocale = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_str(), original_str);
+        }
+    }
+}
