@@ -15,84 +15,162 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
-pub trait BitsAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
-    fn get_bits_leaderboard(
-        &self,
-        opts: Option<BitsLeaderboardRequest>,
-    ) -> TwitchAPIRequest<BitsLeaderboardResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
-    fn get_cheermotes(
-        &self,
-        broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<CheermotesResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
-    fn get_extension_transactions(
-        &self,
-        extension_id: ExtensionId,
-        id: Option<Id>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<ExtensionTransactionsResponse>;
+twitch_api_trait! {
+    #[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
+    trait BitsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
+        fn get_bits_leaderboard(
+            &self,
+            opts: Option<BitsLeaderboardRequest>,
+        ) -> BitsLeaderboardResponse;
+        /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
+        fn get_cheermotes(
+            &self,
+            broadcaster_id: Option<BroadcasterId>,
+        ) -> CheermotesResponse;
+        /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
+        fn get_extension_transactions(
+            &self,
+            extension_id: ExtensionId,
+            id: Option<Id>,
+            pagination: Option<PaginationQuery>,
+        ) -> ExtensionTransactionsResponse;
+    }
+    impl {
+        get_bits_leaderboard => {
+            endpoint_type: EndpointType::GetBitsLeaderboard,
+            method: Method::GET,
+            path: [BITS, "leaderboard"],
+            query_params: {
+                opt_into_query(opts)
+            }
+        }
+        get_cheermotes => {
+            endpoint_type: EndpointType::GetCheermotes,
+            method: Method::GET,
+            path: [BITS, "cheermotes"],
+            query_params: {
+                opt(BROADCASTER_ID, broadcaster_id)
+            }
+        }
+        get_extension_transactions => {
+            endpoint_type: EndpointType::GetExtensionTransactions,
+            method: Method::GET,
+            path: [EXTENSIONS, "transactions"],
+            query_params: {
+                query(EXTENSION_ID, extension_id),
+                opt(ID, id),
+                pagination(pagination)
+            }
+        }
+    }
 }
 
-impl BitsAPI for TwitchAPI {
-    fn get_bits_leaderboard(
-        &self,
-        opts: Option<BitsLeaderboardRequest>,
-    ) -> TwitchAPIRequest<BitsLeaderboardResponse> {
-        let mut url = self.build_url();
-        url.path([BITS, "leaderboard"]);
+#[cfg(test)]
+mod tests {
+    use crate::{
+        bits::{request::BitsLeaderboardRequest, BitsAPI},
+        test_utils::TwitchApiTest,
+        types::{BroadcasterId, ExtensionId, Id, PaginationQuery},
+    };
 
-        if let Some(opts) = opts {
-            opts.apply_to_url(&mut url);
-        }
+    #[tokio::test]
+    async fn get_bits_leaderboard_endpoint() {
+        let suite = TwitchApiTest::new().await;
 
-        TwitchAPIRequest::new(
-            EndpointType::GetBitsLeaderboard,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+        suite.mock_bits_success().await;
+
+        let leaderboard_request = BitsLeaderboardRequest::new().count(10).period("week");
+
+        let response = suite
+            .execute("/bits/leaderboard", |api| {
+                api.get_bits_leaderboard(Some(leaderboard_request))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert_eq!(response.data[0].user_id.as_str(), "123456789");
+        assert_eq!(response.total, 1);
     }
-    fn get_cheermotes(
-        &self,
-        broadcaster_id: Option<BroadcasterId>,
-    ) -> TwitchAPIRequest<CheermotesResponse> {
-        let mut url = self.build_url();
-        url.path([BITS, "cheermotes"])
-            .query_opt(BROADCASTER_ID, broadcaster_id);
 
-        TwitchAPIRequest::new(
-            EndpointType::GetCheermotes,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+    #[tokio::test]
+    async fn get_cheermotes_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_bits_success().await;
+
+        let response = suite
+            .execute("/bits/cheermotes", |api| {
+                api.get_cheermotes(Some(BroadcasterId::new("broadcaster123")))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert_eq!(response.data[0].prefix, "Cheer");
     }
-    fn get_extension_transactions(
-        &self,
-        extension_id: ExtensionId,
-        id: Option<Id>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<ExtensionTransactionsResponse> {
-        let mut url = self.build_url();
-        url.path([EXTENSIONS, "transactions"])
-            .query(EXTENSION_ID, extension_id)
-            .query_opt(ID, id);
 
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
+    #[tokio::test]
+    async fn get_extension_transactions_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_bits_success().await;
+
+        let pagination = PaginationQuery::new().first(20);
+
+        let response = suite
+            .execute("/extensions/transactions", |api| {
+                api.get_extension_transactions(
+                    ExtensionId::new("ext123456"),
+                    Some(Id::new("trans123456")),
+                    Some(pagination),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert_eq!(response.data[0].id.as_str(), "trans123456");
+        assert!(response.pagination.is_some());
+    }
+
+    #[tokio::test]
+    async fn get_bits_leaderboard_no_options() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_bits_extra().await;
+
+        let response = suite
+            .execute("/bits/leaderboard", |api| api.get_bits_leaderboard(None))
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 0);
+        assert_eq!(response.total, 0);
+    }
+
+    #[tokio::test]
+    async fn bits_api_error_response() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_bits_failure().await;
+        let response = suite
+            .execute("/bits/leaderboard", |api| api.get_bits_leaderboard(None))
+            .json()
+            .await;
+
+        match response {
+            Ok(response) => {
+                panic!("Expected Error, got: {response:?}")
+            }
+            Err(e) => {
+                assert!(e.is_api());
+            }
         }
-
-        TwitchAPIRequest::new(
-            EndpointType::GetExtensionTransactions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
     }
 }
