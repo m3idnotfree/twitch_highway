@@ -90,47 +90,31 @@ where
             client = client.body(body);
         }
 
-        client.send().await.map_err(Error::from)
+        let resp = client.send().await.map_err(Error::from)?;
+
+        if !resp.status().is_success() {
+            let status = resp.status();
+            match resp.text().await {
+                Ok(body) => {
+                    return Err(error::api_error(format!("HTTP {status}: {body}")));
+                }
+                Err(e) => {
+                    return Err(error::api_error(format!(
+                        "HTTP {status} - Failed to read error response: {e}"
+                    )));
+                }
+            }
+        }
+
+        Ok(resp)
     }
 
     pub async fn text(self) -> Result<String, Error> {
-        let resp = self.send().await?;
-
-        if !resp.status().is_success() {
-            let status = resp.status();
-            match resp.text().await {
-                Ok(body) => {
-                    return Err(error::api_error(format!("HTTP {status}: {body}")));
-                }
-                Err(e) => {
-                    return Err(error::api_error(format!(
-                        "HTTP {status} - Failed to read error response: {e}"
-                    )));
-                }
-            }
-        }
-
-        resp.text().await.map_err(error::decode_error)
+        self.send().await?.text().await.map_err(error::decode_error)
     }
 
     pub async fn json(self) -> Result<ResBody, crate::Error> {
-        let resp = self.send().await?;
-
-        if !resp.status().is_success() {
-            let status = resp.status();
-            match resp.text().await {
-                Ok(body) => {
-                    return Err(error::api_error(format!("HTTP {status}: {body}")));
-                }
-                Err(e) => {
-                    return Err(error::api_error(format!(
-                        "HTTP {status} - Failed to read error response: {e}"
-                    )));
-                }
-            }
-        }
-
-        resp.json().await.map_err(error::decode_error)
+        self.send().await?.json().await.map_err(error::decode_error)
     }
 }
 
