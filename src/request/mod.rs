@@ -74,7 +74,7 @@ where
         &self.body
     }
 
-    async fn send(self) -> Result<reqwest::Response, Error> {
+    pub async fn send(self) -> Result<reqwest::Response, Error> {
         let Self {
             kind: _,
             url,
@@ -139,7 +139,8 @@ impl<ResBody> TwitchAPIRequest<ResBody>
 where
     ResBody: DeserializeOwned,
 {
-    pub fn set_url(mut self, url: Url) -> Self {
+    pub fn set_url(mut self, mut url: Url) -> Self {
+        url.set_query(self.url.query());
         self.url = url;
         self
     }
