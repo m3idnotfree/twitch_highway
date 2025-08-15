@@ -423,6 +423,371 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_ccls_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "DrugsIntoxication",
+                    "description": "Excessive tobacco glorification, any marijuana consumption/use, legal drug and alcohol induced intoxication, discussions of illegal drugs.",
+                    "name": "Drugs, Intoxication, or Excessive Tobacco Use"
+                },
+                {
+                    "id": "SexualThemes",
+                    "description": "Content that focuses on sexualized physical attributes and activities, sexual topics, or experiences.",
+                    "name": "Sexual Themes"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/content_classification_labels"))
+            .and(query_param("locale", "en-US"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "ViolentGraphic",
+                    "description": "Simulated or real violence with sustained visceral content including mutilation, gore, or death.",
+                    "name": "Violent and Graphic Depictions"
+                },
+                {
+                    "id": "Gambling",
+                    "description": "Games/activities that utilize or simulate gambling/betting with real or virtual currencies or items.",
+                    "name": "Gambling"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/content_classification_labels"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_ccls_success_without_locale(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "ViolentGraphic",
+                    "description": "Simulated or real violence with sustained visceral content including mutilation, gore, or death.",
+                    "name": "Violent and Graphic Depictions"
+                },
+                {
+                    "id": "Gambling",
+                    "description": "Games/activities that utilize or simulate gambling/betting with real or virtual currencies or items.",
+                    "name": "Gambling"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/content_classification_labels"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_ccls_failure(&self) {
+        let error_response = json!({
+            "error": "Bad Request",
+            "status": 400,
+            "message": "Invalid locale parameter"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/content_classification_labels"))
+            .respond_with(ResponseTemplate::new(400).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_channel_points_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "testbroadcaster",
+                    "broadcaster_name": "TestBroadcaster",
+                    "id": "reward123",
+                    "title": "New Test Reward",
+                    "prompt": "This is a new test reward",
+                    "cost": 1500,
+                    "default_image": {
+                        "url_1x": "https://static-cdn.jtvnw.net/default-reward-images/1x.png",
+                        "url_2x": "https://static-cdn.jtvnw.net/default-reward-images/2x.png",
+                        "url_4x": "https://static-cdn.jtvnw.net/default-reward-images/4x.png"
+                    },
+                    "background_color": "#9147FF",
+                    "is_enabled": true,
+                    "is_user_input_required": true,
+                    "max_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "max_per_user_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "global_cooldown_setting": {
+                        "is_enabled": false
+                    },
+                    "is_paused": false,
+                    "is_in_stock": true,
+                    "should_redemptions_skip_request_queue": false
+                }
+            ]
+        });
+
+        let expected_request_body = json!({
+            "title": "New Test Reward",
+            "cost": 1500,
+            "prompt": "This is a new test reward",
+            "is_user_input_required": true
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/channel_points/custom_rewards"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(expected_request_body))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "testbroadcaster",
+                    "broadcaster_name": "TestBroadcaster",
+                    "id": "reward123",
+                    "title": "Existing Reward",
+                    "prompt": "An existing reward",
+                    "cost": 1000,
+                    "default_image": {
+                        "url_1x": "https://static-cdn.jtvnw.net/default-reward-images/1x.png",
+                        "url_2x": "https://static-cdn.jtvnw.net/default-reward-images/2x.png",
+                        "url_4x": "https://static-cdn.jtvnw.net/default-reward-images/4x.png"
+                    },
+                    "background_color": "#9147FF",
+                    "is_enabled": true,
+                    "is_user_input_required": false,
+                    "max_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "max_per_user_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "global_cooldown_setting": {
+                        "is_enabled": false
+                    },
+                    "is_paused": false,
+                    "is_in_stock": true,
+                    "should_redemptions_skip_request_queue": false
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channel_points/custom_rewards"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("id", "reward123"))
+            .and(query_param("only_manageable_rewards", "true"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "testbroadcaster",
+                    "broadcaster_name": "TestBroadcaster",
+                    "id": "redemption123",
+                    "user_id": "user123",
+                    "user_name": "TestUser",
+                    "user_input": "Please give me the reward!",
+                    "status": "UNFULFILLED",
+                    "redeemed_at": "2023-12-01T15:30:00Z",
+                    "reward": {
+                        "id": "reward123",
+                        "title": "Test Reward",
+                        "prompt": "Test reward prompt",
+                        "cost": 1000
+                    }
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channel_points/custom_rewards/redemptions"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("reward_id", "reward123"))
+            .and(query_param("status", "UNFULFILLED"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "testbroadcaster",
+                    "broadcaster_name": "TestBroadcaster",
+                    "id": "redemption123",
+                    "user_id": "user123",
+                    "user_name": "TestUser",
+                    "user_input": "Please give me the reward!",
+                    "status": "FULFILLED",
+                    "redeemed_at": "2023-12-01T15:30:00Z",
+                    "reward": {
+                        "id": "reward123",
+                        "title": "Test Reward",
+                        "prompt": "Test reward prompt",
+                        "cost": 1000
+                    }
+                }
+            ]
+        });
+
+        let expected_request_body = json!({
+            "status": "FULFILLED"
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/channel_points/custom_rewards/redemptions"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("reward_id", "reward123"))
+            .and(query_param("id", "redemption123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(expected_request_body))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/channel_points/custom_rewards"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("id", "reward123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204)) // No content
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "testbroadcaster",
+                    "broadcaster_name": "TestBroadcaster",
+                    "id": "reward123",
+                    "title": "Updated Reward Title",
+                    "prompt": "Updated reward prompt",
+                    "cost": 1500,
+                    "default_image": {
+                        "url_1x": "https://static-cdn.jtvnw.net/default-reward-images/1x.png",
+                        "url_2x": "https://static-cdn.jtvnw.net/default-reward-images/2x.png",
+                        "url_4x": "https://static-cdn.jtvnw.net/default-reward-images/4x.png"
+                    },
+                    "background_color": "#FF6B6B",
+                    "is_enabled": false,
+                    "is_user_input_required": true,
+                    "max_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "max_per_user_per_stream_setting": {
+                        "is_enabled": false
+                    },
+                    "global_cooldown_setting": {
+                        "is_enabled": false
+                    },
+                    "is_paused": true,
+                    "is_in_stock": true,
+                    "should_redemptions_skip_request_queue": false
+                }
+            ]
+        });
+
+        let expected_request_body = json!({
+            "title": "Updated Reward Title",
+            "prompt": "Updated reward prompt",
+            "cost": 1500,
+            "is_enabled": false,
+            "is_paused": true
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/channel_points/custom_rewards"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("id", "reward123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(expected_request_body))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_channel_points_failure(&self) {
+        let error_response = json!({
+            "error": "Bad Request",
+            "status": 400,
+            "message": "The reward cost must be between 1 and 2000000"
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/channel_points/custom_rewards"))
+            .respond_with(ResponseTemplate::new(400).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
