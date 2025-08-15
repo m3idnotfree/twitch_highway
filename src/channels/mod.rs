@@ -6,7 +6,7 @@ use response::{
 };
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, NoContent, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
@@ -18,139 +18,262 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
-pub trait ChannelsAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
-    fn get_channel_info(
-        &self,
-        broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<ChannelInfoResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
-    fn modify_channel_info(
-        &self,
-        broadcaster_id: BroadcasterId,
-        opts: Option<ModifyChannelRequest>,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
-    fn get_channel_editors(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelEditorsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
-    fn get_followed_channels(
-        &self,
-        user_id: UserId,
-        broadcaster_id: Option<BroadcasterId>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<FollowerdChannelsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
-    fn get_channel_followers(
-        &self,
-        user_id: Option<UserId>,
-        broadcaster_id: BroadcasterId,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<ChannelFollowersResponse>;
+twitch_api_trait! {
+    #[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
+    trait ChannelsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
+        fn get_channel_info(
+            &self,
+            broadcaster_ids: &[BroadcasterId],
+        ) -> ChannelInfoResponse;
+        /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
+        fn modify_channel_info(
+            &self,
+            broadcaster_id: BroadcasterId,
+            opts: Option<ModifyChannelRequest>,
+        ) -> NoContent;
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
+        fn get_channel_editors(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> ChannelEditorsResponse;
+        /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
+        fn get_followed_channels(
+            &self,
+            user_id: UserId,
+            broadcaster_id: Option<BroadcasterId>,
+            pagination: Option<PaginationQuery>,
+        ) -> FollowerdChannelsResponse;
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
+        fn get_channel_followers(
+            &self,
+            user_id: Option<UserId>,
+            broadcaster_id: BroadcasterId,
+            pagination: Option<PaginationQuery>,
+        ) -> ChannelFollowersResponse;
+    }
+    impl {
+        get_channel_info => {
+            endpoint_type: EndpointType::GetChanelInformation,
+            method: Method::GET,
+            path: [CHANNELS],
+            query_params: {
+                extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)))
+            }
+        }
+        modify_channel_info => {
+            endpoint_type: EndpointType::ModifyChannelInformation,
+            method: Method::PATCH,
+            path: [CHANNELS],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id)
+            },
+            headers: [json],
+            body: opts.and_then(|o| o.into_json())
+        }
+        get_channel_editors => {
+            endpoint_type: EndpointType::GetChannelEditors,
+            method: Method::GET,
+            path: [CHANNELS, "editors"],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id)
+            }
+        }
+        get_followed_channels => {
+            endpoint_type: EndpointType::GetFollowedChannels,
+            method: Method::GET,
+            path: [CHANNELS, "followed"],
+            query_params: {
+                query(USER_ID, user_id),
+                opt(BROADCASTER_ID, broadcaster_id),
+                pagination(pagination)
+            }
+        }
+        get_channel_followers => {
+            endpoint_type: EndpointType::GetChannelFollowers,
+            method: Method::GET,
+            path: [CHANNELS, "followers"],
+            query_params: {
+                opt(USER_ID, user_id),
+                query(BROADCASTER_ID, broadcaster_id),
+                pagination(pagination)
+            }
+        }
+    }
 }
 
-impl ChannelsAPI for TwitchAPI {
-    fn get_channel_info(
-        &self,
-        broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<ChannelInfoResponse> {
-        let mut url = self.build_url();
-        url.path([CHANNELS])
-            .query_extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)));
+#[cfg(test)]
+mod channels_api_tests {
 
-        TwitchAPIRequest::new(
-            EndpointType::GetChanelInformation,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+    use crate::{
+        channels::{request::ModifyChannelRequest, ChannelsAPI},
+        test_utils::TwitchApiTest,
+        types::{BroadcasterId, GameId, PaginationQuery, UserId},
+    };
+
+    #[tokio::test]
+    async fn get_channel_info_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_success().await;
+
+        let broadcaster_ids = vec![BroadcasterId::new("123456789")];
+
+        let response = suite
+            .execute("/channels", |api| api.get_channel_info(&broadcaster_ids))
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert_eq!(response.data[0].broadcaster_id.as_str(), "123456789");
+        assert_eq!(response.data[0].title, "Testing My Stream");
     }
-    fn modify_channel_info(
-        &self,
-        broadcaster_id: BroadcasterId,
-        opts: Option<ModifyChannelRequest>,
-    ) -> TwitchAPIRequest<EmptyBody> {
-        let mut url = self.build_url();
-        url.path([CHANNELS]).query(BROADCASTER_ID, broadcaster_id);
 
-        let mut headers = self.build_headers();
-        headers.json();
+    #[tokio::test]
+    async fn get_channel_info_multiple_broadcasters() {
+        let suite = TwitchApiTest::new().await;
 
-        let opts = if let Some(opts) = opts {
-            opts.to_json()
-        } else {
-            None
-        };
-        TwitchAPIRequest::new(
-            EndpointType::ModifyChannelInformation,
-            url.build(),
-            Method::PATCH,
-            headers.build(),
-            opts,
-        )
+        suite.mock_channels_extra().await;
+
+        let broadcaster_ids = vec![
+            BroadcasterId::new("123456789"),
+            BroadcasterId::new("987654321"),
+        ];
+
+        let response = suite
+            .execute("/channels", |api| api.get_channel_info(&broadcaster_ids))
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 2);
+        assert_eq!(response.data[0].broadcaster_id.as_str(), "123456789");
+        assert_eq!(response.data[1].broadcaster_id.as_str(), "987654321");
+        assert!(!response.data[0].is_branded_content);
+        assert!(response.data[1].is_branded_content);
     }
-    fn get_channel_editors(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelEditorsResponse> {
-        let mut url = self.build_url();
-        url.path([CHANNELS, "editors"])
-            .query(BROADCASTER_ID, broadcaster_id);
 
-        TwitchAPIRequest::new(
-            EndpointType::GetChannelEditors,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+    #[tokio::test]
+    async fn modify_channel_info_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_success().await;
+
+        let tags = vec!["Gaming", "English", "Fun"];
+
+        let modify_request = ModifyChannelRequest::new()
+            .title("Updated Stream Title")
+            .game_id(GameId::new("509658"))
+            .broadcaster_language("en")
+            .tags(&tags)
+            .is_branded_content(true);
+
+        let response = suite
+            .execute("/channels", |api| {
+                api.modify_channel_info(BroadcasterId::new("123456789"), Some(modify_request))
+            })
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), 204);
     }
-    fn get_followed_channels(
-        &self,
-        user_id: UserId,
-        broadcaster_id: Option<BroadcasterId>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<FollowerdChannelsResponse> {
-        let mut url = self.build_url();
-        url.path([CHANNELS, "followed"])
-            .query(USER_ID, user_id)
-            .query_opt(BROADCASTER_ID, broadcaster_id);
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
+
+    #[tokio::test]
+    async fn get_channel_editors_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_success().await;
+
+        let response = suite
+            .execute("/channels/editors", |api| {
+                api.get_channel_editors(BroadcasterId::new("123456789"))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert_eq!(response.data[0].user_id.as_str(), "editor123");
+        assert_eq!(response.data[0].user_name, "ChannelEditor");
+    }
+
+    #[tokio::test]
+    async fn get_followed_channels_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_success().await;
+
+        let pagination = PaginationQuery::new().first(20);
+
+        let response = suite
+            .execute("/channels/followed", |api| {
+                api.get_followed_channels(
+                    UserId::new("user123"),
+                    Some(BroadcasterId::new("123456789")),
+                    Some(pagination),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert!(response.data.is_some());
+        let followed = response.data.unwrap();
+        assert_eq!(followed.len(), 1);
+        assert_eq!(followed[0].broadcaster_id.as_str(), "123456789");
+        assert_eq!(response.total, 1);
+        assert!(response.pagination.is_some());
+    }
+
+    #[tokio::test]
+    async fn get_channel_followers_endpoint() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_success().await;
+
+        let pagination = PaginationQuery::new().first(100);
+
+        let response = suite
+            .execute("/channels/followers", |api| {
+                api.get_channel_followers(
+                    Some(UserId::new("follower123")),
+                    BroadcasterId::new("123456789"),
+                    Some(pagination),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert!(response.data.is_some());
+        let followers = response.data.unwrap();
+        assert_eq!(followers.len(), 1);
+        assert_eq!(followers[0].user_id.as_str(), "follower123");
+        assert_eq!(response.total, 1);
+    }
+
+    #[tokio::test]
+    async fn channels_api_error_response() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_channels_failure().await;
+
+        let broadcaster_ids = vec![BroadcasterId::new("123456789")];
+
+        let response = suite
+            .execute("/channels", |api| api.get_channel_info(&broadcaster_ids))
+            .send()
+            .await;
+
+        match response {
+            Ok(response) => {
+                panic!("Expected Error, got: {response:?}")
+            }
+            Err(e) => {
+                assert!(e.is_api());
+            }
         }
-
-        TwitchAPIRequest::new(
-            EndpointType::GetFollowedChannels,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
-    fn get_channel_followers(
-        &self,
-        user_id: Option<UserId>,
-        broadcaster_id: BroadcasterId,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<ChannelFollowersResponse> {
-        let mut url = self.build_url();
-        url.path([CHANNELS, "followers"])
-            .query_opt(USER_ID, user_id)
-            .query(BROADCASTER_ID, broadcaster_id);
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
-        }
-
-        TwitchAPIRequest::new(
-            EndpointType::GetChannelFollowers,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
     }
 }

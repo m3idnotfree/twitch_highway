@@ -788,6 +788,200 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_channels_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "teststreamer",
+                    "broadcaster_name": "TestStreamer",
+                    "broadcaster_language": "en",
+                    "game_id": "509658",
+                    "game_name": "Just Chatting",
+                    "title": "Testing My Stream",
+                    "delay": 0,
+                    "tags": ["English", "Gaming"],
+                    "content_classification_labels": [],
+                    "is_branded_content": false
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_request_body = json!({
+            "title": "Updated Stream Title",
+            "game_id": "509658",
+            "broadcaster_language": "en",
+            "tags": ["Gaming", "English", "Fun"],
+            "is_branded_content": true
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/channels"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(expected_request_body))
+            .respond_with(ResponseTemplate::new(204)) // No content
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "editor123",
+                    "user_name": "ChannelEditor",
+                    "created_at": "2023-12-01T15:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels/editors"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "followedstreamer",
+                    "broadcaster_name": "FollowedStreamer",
+                    "followed_at": "2023-12-01T15:30:00Z"
+                }
+            ],
+            "total": 1,
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels/followed"))
+            .and(query_param("user_id", "user123"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "follower123",
+                    "user_login": "testfollower",
+                    "user_name": "TestFollower",
+                    "followed_at": "2023-12-01T15:30:00Z"
+                }
+            ],
+            "total": 1,
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels/followers"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("user_id", "follower123"))
+            .and(query_param("first", "100"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_channels_failure(&self) {
+        let error_response = json!({
+            "error": "Unauthorized",
+            "status": 401,
+            "message": "Invalid OAuth token"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels"))
+            .respond_with(ResponseTemplate::new(401).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_channels_extra(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "streamer1",
+                    "broadcaster_name": "Streamer1",
+                    "broadcaster_language": "en",
+                    "game_id": "509658",
+                    "game_name": "Just Chatting",
+                    "title": "Stream 1",
+                    "delay": 0,
+                    "tags": ["English"],
+                    "content_classification_labels": [],
+                    "is_branded_content": false
+                },
+                {
+                    "broadcaster_id": "987654321",
+                    "broadcaster_login": "streamer2",
+                    "broadcaster_name": "Streamer2",
+                    "broadcaster_language": "es",
+                    "game_id": "32982",
+                    "game_name": "Grand Theft Auto V",
+                    "title": "Stream 2",
+                    "delay": 30,
+                    "tags": ["Spanish"],
+                    "content_classification_labels": ["ViolentGraphic"],
+                    "is_branded_content": true
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("broadcaster_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
