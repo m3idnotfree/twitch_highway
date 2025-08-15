@@ -982,6 +982,135 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_charity_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "campaign123",
+                    "broadcaster_id": "123456789",
+                    "broadcaster_login": "charitablestreamer",
+                    "broadcaster_name": "CharitableStreamer",
+                    "charity_name": "Doctors Without Borders",
+                    "charity_description": "International medical humanitarian organization providing aid in conflict zones and disaster areas.",
+                    "charity_logo": "https://static-cdn.jtvnw.net/jtv_user_pictures/msf-logo.png",
+                    "charity_website": "https://www.doctorswithoutborders.org/",
+                    "current_amount": {
+                        "value": 125000,
+                        "decimal_places": 2,
+                        "currency": "USD"
+                    },
+                    "target_amount": {
+                        "value": 200000,
+                        "decimal_places": 2,
+                        "currency": "USD"
+                    }
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/charity/campaigns"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "donation001",
+                    "campaign_id": "campaign123",
+                    "user_id": "donor001",
+                    "user_login": "generous_donor",
+                    "user_name": "GenerousDonor",
+                    "amount": {
+                        "value": 5000,
+                        "decimal_places": 2,
+                        "currency": "USD"
+                    }
+                },
+                {
+                    "id": "donation002",
+                    "campaign_id": "campaign123",
+                    "user_id": "donor002",
+                    "user_login": "kind_supporter",
+                    "user_name": "KindSupporter",
+                    "amount": {
+                        "value": 2500,
+                        "decimal_places": 2,
+                        "currency": "USD"
+                    }
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/charity/donations"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_charity_extra(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "donation001",
+                    "campaign_id": "campaign123",
+                    "user_id": "donor001",
+                    "user_login": "solo_donor",
+                    "user_name": "SoloDonor",
+                    "amount": {
+                        "value": 10000,
+                        "decimal_places": 2,
+                        "currency": "USD"
+                    }
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/charity/donations"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_charity_failure(&self) {
+        let error_response = json!({
+            "error": "Not Found",
+            "status": 404,
+            "message": "No active charity campaign found for this broadcaster"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/charity/campaigns"))
+            .respond_with(ResponseTemplate::new(404).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
