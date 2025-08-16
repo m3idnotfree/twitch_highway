@@ -42,7 +42,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn get_hype_train_events_endpoint() {
+    pub(crate) async fn get_hype_train_events() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_hype_train_success().await;

@@ -58,7 +58,7 @@ twitch_api_trait! {
 }
 
 #[cfg(test)]
-mod analytics_api_tests {
+mod tests {
     use chrono::{DateTime, FixedOffset};
     use std::str::FromStr;
 
@@ -72,7 +72,7 @@ mod analytics_api_tests {
     };
 
     #[tokio::test]
-    async fn get_extension_analytics_endpoint() {
+    pub(crate) async fn get_extension_analytics() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_analytics_success().await;
@@ -98,7 +98,7 @@ mod analytics_api_tests {
     }
 
     #[tokio::test]
-    async fn get_game_analytics_endpoint() {
+    pub(crate) async fn get_game_analytics() {
         let started_at = DateTime::<FixedOffset>::from_str("2023-12-01T00:00:00Z").unwrap();
         let ended_at = DateTime::<FixedOffset>::from_str("2023-12-01T23:59:59Z").unwrap();
 

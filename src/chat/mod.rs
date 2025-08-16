@@ -243,13 +243,13 @@ twitch_api_trait! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        chat::ChatAPI,
+        chat::{request::AnnouncementColor, ChatAPI},
         test_utils::TwitchApiTest,
         types::{BroadcasterId, ModeratorId, PaginationQuery, UserId},
     };
 
     #[tokio::test]
-    async fn get_chatters_endpoint() {
+    pub(crate) async fn get_chatters() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_chat_success().await;
@@ -282,7 +282,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn channel_emotes_endpoint() {
+    pub(crate) async fn channel_emotes() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_chat_success().await;
@@ -306,7 +306,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn send_chat_message_endpoint() {
+    pub(crate) async fn chat_write() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_chat_success().await;
@@ -328,7 +328,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_chat_settings_endpoint() {
+    pub(crate) async fn get_chat_settings() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_chat_success().await;
@@ -354,7 +354,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn user_chat_color_endpoint() {
+    pub(crate) async fn user_chat_color() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_chat_success().await;
@@ -372,6 +372,253 @@ mod tests {
         assert_eq!(user_color.user_id.as_str(), "123456789");
         assert_eq!(user_color.user_name, "TestUser");
         assert_eq!(user_color.color, "#FF0000");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn global_emotes() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/emotes/global", |api| api.global_emotes())
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert!(response.template.contains("{{id}}"));
+
+        let emote = &response.data[0];
+        assert_eq!(emote.id.as_str(), "global_emote_1");
+        assert_eq!(emote.name, "Kappa");
+        assert!(emote.images.is_some());
+    }
+
+    #[tokio::test]
+    pub(crate) async fn emote_sets() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let emote_set_ids = ["0", "1"];
+
+        let response = suite
+            .execute("/chat/emotes/set", |api| api.emote_sets(&emote_set_ids))
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 2);
+        assert!(response.template.contains("{{id}}"));
+
+        let first_emote = &response.data[0];
+        assert_eq!(first_emote.id.as_str(), "set_emote_1");
+        assert_eq!(first_emote.name, "SetEmote1");
+        assert_eq!(first_emote.emote_set_id, Some("0".to_string()));
+
+        let second_emote = &response.data[1];
+        assert_eq!(second_emote.id.as_str(), "set_emote_2");
+        assert_eq!(second_emote.emote_set_id, Some("1".to_string()));
+    }
+
+    #[tokio::test]
+    pub(crate) async fn channel_badge() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/badges", |api| {
+                api.channel_badge(BroadcasterId::new("123456789"))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let badge = &response.data[0];
+        assert_eq!(badge.set_id, "subscriber");
+        assert_eq!(badge.versions.len(), 1);
+
+        let version = &badge.versions[0];
+        assert_eq!(version.id.as_str(), "1");
+        assert_eq!(version.title, "Subscriber");
+        assert_eq!(version.description, "Subscriber");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn global_badge() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/badges/global", |api| api.global_badge())
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let badge = &response.data[0];
+        assert_eq!(badge.set_id, "moderator");
+        assert_eq!(badge.versions.len(), 1);
+
+        let version = &badge.versions[0];
+        assert_eq!(version.id.as_str(), "1");
+        assert_eq!(version.title, "Moderator");
+        assert_eq!(version.description, "Moderator");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn get_shared_chat_session() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/shared_chat/session", |api| {
+                api.get_shared_chat_session(BroadcasterId::new("123456789"))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let session = &response.data[0];
+        assert_eq!(session.session_id, "session_123");
+        assert_eq!(session.host_broadcaster_id, "123456789");
+        assert_eq!(session.participants.len(), 2);
+        assert_eq!(session.participants[0].broadcaster_id.as_str(), "123456789");
+        assert_eq!(session.participants[1].broadcaster_id.as_str(), "987654321");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn user_emotes() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/emotes/user", |api| {
+                api.user_emotes(
+                    UserId::new("123456789"),
+                    Some("cursor123"),
+                    Some(BroadcasterId::new("987654321")),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+        assert!(response.template.contains("{{id}}"));
+
+        let emote = &response.data[0];
+        assert_eq!(emote.id.as_str(), "user_emote_1");
+        assert_eq!(emote.name, "UserEmote");
+        assert!(emote.images.is_some());
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_chat_settings() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let update_request = crate::chat::request::UpdateChatSettingsRequest::new()
+            .emote_mode(true)
+            .follower_mode(true)
+            .follower_mode_duration(600)
+            .slow_mode(true)
+            .slow_mode_wait_time(30)
+            .subscriber_mode(false)
+            .unique_chat_mode(true);
+
+        let response = suite
+            .execute("/chat/settings", |api| {
+                api.update_chat_settings(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    Some(update_request),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let settings = &response.data[0];
+        assert_eq!(settings.broadcaster_id.as_str(), "123456789");
+        assert!(settings.follower_mode);
+        assert_eq!(settings.follower_mode_duration, Some(600));
+    }
+
+    #[tokio::test]
+    pub(crate) async fn send_a_shoutout() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/shoutouts", |api| {
+                api.send_a_shoutout(
+                    BroadcasterId::new("123456789"),
+                    BroadcasterId::new("987654321"),
+                    ModeratorId::new("555666777"),
+                )
+            })
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_user_chat_color() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/color", |api| {
+                api.update_user_chat_color(
+                    UserId::new("123456789"),
+                    crate::chat::request::ChatColor::Blue,
+                )
+            })
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn send_chat_announcement() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_chat_success().await;
+
+        let response = suite
+            .execute("/chat/announcements", |api| {
+                api.send_chat_announcement(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "Important announcement: Stream starting soon!",
+                    Some(AnnouncementColor::Blue),
+                )
+            })
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), 204);
     }
 
     #[tokio::test]

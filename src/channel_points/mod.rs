@@ -135,7 +135,6 @@ twitch_api_trait! {
 
 #[cfg(test)]
 mod tests {
-
     use crate::{
         channel_points::{
             request::{
@@ -150,7 +149,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn create_custom_rewards_endpoint() {
+    pub(crate) async fn create_custom_rewards() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;
@@ -180,7 +179,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_custom_rewards_endpoint() {
+    pub(crate) async fn get_custom_rewards() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;
@@ -207,7 +206,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_custom_reward_redemption_endpoint() {
+    pub(crate) async fn get_custom_reward_redemption() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;
@@ -235,7 +234,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn update_redemption_status_endpoint() {
+    pub(crate) async fn update_redemption_status() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;
@@ -262,7 +261,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn delete_custom_rewards_endpoint() {
+    pub(crate) async fn delete_custom_rewards() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;
@@ -282,7 +281,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn update_custom_reward_endpoint() {
+    pub(crate) async fn update_custom_reward() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channel_points_success().await;

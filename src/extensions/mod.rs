@@ -1,7 +1,6 @@
 use asknothingx2_util::api::Method;
 use request::{
-    ExtensionChatMessageIntoRequestBody, RequiredConfiguration, SetConfigurationSegment,
-    UpdateExtensoinBitsProductsRequest,
+    ExtensionChatMessageIntoRequestBody, RequiredConfiguration, UpdateExtensoinBitsProductsRequest,
 };
 use response::{
     ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose, ExtensionSecretsResponse,
@@ -35,8 +34,8 @@ twitch_api_trait! {
             &self,
             extension_id: ExtensionId,
             segment: Segment,
-            opts: Option<SetConfigurationSegment>,
-        ) -> NoContent;
+            opts: Option<BroadcasterId>,
+        ) -> ConfigurationSegmentResponse;
         /// <https://dev.twitch.tv/docs/api/reference/#set-extension-required-configuration>
         fn set_extension_required_configuration(
             &self,
@@ -120,13 +119,18 @@ twitch_api_trait! {
             endpoint_type: EndpointType::SetExtensionConfigurationSegment,
             method: Method::PUT,
             path: ["extensions", "configurations"],
-            body: {
-                let required = serde_json::json!({
-                    "extension_id": extension_id,
-                    "segment": segment,
-                });
-                RequestBody::new(required, opts).into_json()
+            query_params: {
+                query("extension_id", extension_id),
+                query("segment", segment),
+                opt("broadcaster_id", opts),
             }
+            // body: {
+            //     let required = serde_json::json!({
+            //         "extension_id": extension_id,
+            //         "segment": segment,
+            //     });
+            //     RequestBody::new(required, opts).into_json()
+            // }
         }
         set_extension_required_configuration => {
             endpoint_type: EndpointType::SetExtensionRequiredConfiguration,
@@ -241,15 +245,18 @@ twitch_api_trait! {
 }
 
 #[cfg(test)]
-mod extensions_api_tests {
+mod tests {
     use crate::{
-        extensions::{types::Segment, ExtensionsAPI},
+        extensions::{
+            types::{Segment, State},
+            ExtensionsAPI,
+        },
         test_utils::TwitchApiTest,
-        types::{BroadcasterId, ExtensionId, JWTToken, PaginationQuery},
+        types::{BroadcasterId, Cost, CostType, ExtensionId, JWTToken, PaginationQuery},
     };
 
     #[tokio::test]
-    async fn get_extension_configuration_segment_endpoint() {
+    pub(crate) async fn get_extension_configuration_segment() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_extensions_success().await;
@@ -283,7 +290,7 @@ mod extensions_api_tests {
     }
 
     #[tokio::test]
-    async fn get_extension_live_channels_endpoint() {
+    pub(crate) async fn get_extension_live_channels() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_extensions_success().await;
@@ -311,7 +318,7 @@ mod extensions_api_tests {
     }
 
     #[tokio::test]
-    async fn get_extension_secrets_endpoint() {
+    pub(crate) async fn get_extension_secrets() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_extensions_success().await;
@@ -333,7 +340,7 @@ mod extensions_api_tests {
     }
 
     #[tokio::test]
-    async fn create_extension_secret_endpoint() {
+    pub(crate) async fn create_extension_secret() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_extensions_success().await;
@@ -355,7 +362,7 @@ mod extensions_api_tests {
     }
 
     #[tokio::test]
-    async fn get_extension_bits_products_endpoint() {
+    pub(crate) async fn get_extension_bits_products() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_extensions_success().await;
@@ -376,6 +383,178 @@ mod extensions_api_tests {
         assert_eq!(product.display_name, "Power Up Pack");
         assert!(!product.in_development);
         assert!(product.is_broadcast);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn set_extension_configuration_segment() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let response = suite
+            .execute("/extensions/configurations", |api| {
+                api.set_extension_configuration_segment(
+                    ExtensionId::new("ext123"),
+                    Segment::Broadcaster,
+                    Some(BroadcasterId::new("123456789")),
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let segment = &response.data[0];
+        assert_eq!(segment.segment.as_ref(), "broadcaster");
+        assert_eq!(
+            segment.broadcaster_id.as_ref().unwrap().as_str(),
+            "123456789"
+        );
+        assert_eq!(segment.content, "test_config_content");
+        assert_eq!(segment.version, "1.0.0");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn set_extension_required_configuration() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let response = suite
+            .execute("/extensions/required_configuration", |api| {
+                api.set_extension_required_configuration(
+                    BroadcasterId::new("123456789"),
+                    ExtensionId::new("ext123"),
+                    "1.0.0",
+                    "required_config_data",
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    pub(crate) async fn send_extension_pubsub_message() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let targets = vec!["broadcast", "global"];
+
+        let response = suite
+            .execute("/extensions/pubsub", |api| {
+                api.send_extension_pubsub_message(
+                    &targets,
+                    "Hello from extension!",
+                    BroadcasterId::new("123456789"),
+                    Some(false),
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    pub(crate) async fn send_extension_chat_message() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let response = suite
+            .execute("/extensions/chat", |api| {
+                api.send_extension_chat_message(
+                    BroadcasterId::new("123456789"),
+                    "Extension chat message",
+                    ExtensionId::new("ext123"),
+                    "1.0.0",
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    pub(crate) async fn get_extensions() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let response = suite
+            .execute("/extensions", |api| {
+                api.get_extensions(ExtensionId::new("ext123"), Some("1.0.0"))
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let extension = &response.data[0];
+        assert_eq!(extension.id.as_str(), "pgn0bjv51epi7eaekt53tovjnc82qo");
+        assert_eq!(extension.name, "Official Developers Demo");
+        assert_eq!(extension.version, "0.0.9");
+        assert_eq!(extension.author_name, "Twitch Developers");
+        assert!(extension.bits_enabled);
+        assert!(extension.request_identity_link);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn get_released_extensions() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let response = suite
+            .execute("/extensions/released", |api| {
+                api.get_released_extensions(ExtensionId::new("ext456"), None)
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let extension = &response.data[0];
+        assert_eq!(extension.id.as_str(), "pgn0bjv51epi7eaekt53tovjnc82qo");
+        assert_eq!(extension.name, "Official Developer Experience Demo");
+        assert_eq!(extension.version, "0.0.9");
+        assert_eq!(extension.author_name, "Twitch Developer Experience");
+        assert_eq!(extension.state, State::Released);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_extension_bits_products() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_extensions_success().await;
+
+        let cost = Cost::new(200, CostType::Bits);
+        let response = suite
+            .execute("/bits/extensions", |api| {
+                api.update_extension_bits_products(
+                    "updated_power_up",
+                    cost,
+                    "Updated Power Up",
+                    None,
+                )
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let product = &response.data[0];
+        assert_eq!(product.sku, "updated_power_up");
+        assert_eq!(product.cost.amount, 200);
+        assert_eq!(product.display_name, "Updated Power Up");
     }
 
     #[tokio::test]

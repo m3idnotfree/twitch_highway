@@ -50,7 +50,7 @@ twitch_api_trait! {
 }
 
 #[cfg(test)]
-mod charity_api_tests {
+mod tests {
     use crate::{
         charity::CharityAPI,
         test_utils::TwitchApiTest,
@@ -58,7 +58,7 @@ mod charity_api_tests {
     };
 
     #[tokio::test]
-    async fn get_charity_campaign_endpoint() {
+    pub(crate) async fn get_charity_campaign() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_charity_success().await;
@@ -81,7 +81,7 @@ mod charity_api_tests {
     }
 
     #[tokio::test]
-    async fn get_charity_campaign_donations_endpoint() {
+    pub(crate) async fn get_charity_campaign_donations() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_charity_success().await;

@@ -46,8 +46,9 @@ twitch_api_trait! {
         }
     }
 }
+
 #[cfg(test)]
-mod entitlements_api_tests {
+mod tests {
     use crate::{
         entitlements::{
             request::{DropEntitlementRequest, FulfillmentStatus, UpdateEntitlementsRequest},
@@ -58,7 +59,7 @@ mod entitlements_api_tests {
     };
 
     #[tokio::test]
-    async fn get_drops_entitlements_endpoint() {
+    pub(crate) async fn get_drops_entitlements() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_entitlements_success().await;
@@ -144,7 +145,7 @@ mod entitlements_api_tests {
     }
 
     #[tokio::test]
-    async fn update_drops_entitlements_endpoint() {
+    pub(crate) async fn update_drops_entitlements() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_entitlements_success().await;

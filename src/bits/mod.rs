@@ -75,7 +75,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn get_bits_leaderboard_endpoint() {
+    pub(crate) async fn get_bits_leaderboard() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_bits_success().await;
@@ -90,13 +90,13 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response.data.len(), 1);
-        assert_eq!(response.data[0].user_id.as_str(), "123456789");
-        assert_eq!(response.total, 1);
+        assert_eq!(response.data.len(), 2);
+        assert_eq!(response.data[0].user_id.as_str(), "158010205");
+        assert_eq!(response.total, 2);
     }
 
     #[tokio::test]
-    async fn get_cheermotes_endpoint() {
+    pub(crate) async fn get_cheermotes() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_bits_success().await;
@@ -114,7 +114,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_extension_transactions_endpoint() {
+    pub(crate) async fn get_extension_transactions() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_bits_success().await;

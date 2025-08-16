@@ -242,13 +242,16 @@ twitch_api_trait! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        guest_star::GuestStarAPI,
+        guest_star::{
+            request::{GustStarSettingRequest, UpdateSlotSettingsRequest},
+            GuestStarAPI,
+        },
         test_utils::TwitchApiTest,
         types::{BroadcasterId, ModeratorId},
     };
 
     #[tokio::test]
-    async fn get_channel_guest_star_settings_endpoint() {
+    pub(crate) async fn get_channel_guest_star_settings() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_guest_star_success().await;
@@ -275,7 +278,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_guest_star_session_endpoint() {
+    pub(crate) async fn get_guest_star_session() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_guest_star_success().await;
@@ -316,7 +319,31 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_guest_star_invites_endpoint() {
+    pub(crate) async fn update_guest_star_slot_with_no_destination() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/slot", |api| {
+                api.update_guest_star_slot(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "slot_1",
+                    None,
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn get_guest_star_invites() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_guest_star_success().await;
@@ -349,7 +376,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn create_guest_star_session_endpoint() {
+    pub(crate) async fn create_guest_star_session() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_guest_star_success().await;
@@ -367,6 +394,218 @@ mod tests {
         let session = &response.data[0];
         assert_eq!(session.id.as_str(), "new_session_abc123");
         assert_eq!(session.guests.len(), 0);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn end_guest_star_session() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/session", |api| {
+                api.end_guest_star_session(BroadcasterId::new("123456789"), "session_abc123")
+            })
+            .json()
+            .await
+            .unwrap();
+
+        assert_eq!(response.data.len(), 1);
+
+        let session = &response.data[0];
+        assert_eq!(session.id.as_str(), "2KFRQbFtpmfyD3IevNRnCzOPRJI");
+    }
+
+    #[tokio::test]
+    pub(crate) async fn send_guest_star_invites() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/invites", |api| {
+                api.send_guest_star_invites(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "guest_user_456",
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn delete_guest_star_invites() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/invites", |api| {
+                api.delete_guest_star_invites(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "guest_user_456",
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn assign_guest_star_slot() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/slot", |api| {
+                api.assign_guest_star_slot(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "guest_user_456",
+                    "slot_1",
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_guest_star_slot() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/slot", |api| {
+                api.update_guest_star_slot(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "slot_1",
+                    Some("slot_2"),
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn delete_guest_star_slot() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/slot", |api| {
+                api.delete_guest_star_slot(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "guest_user_456",
+                    "slot_1",
+                    Some("true"),
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn delete_guest_star_slot_without_reinvite() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let response = suite
+            .execute("/guest_star/slot", |api| {
+                api.delete_guest_star_slot(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "guest_user_456",
+                    "slot_1",
+                    None,
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_guest_star_slot_settings() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let request = UpdateSlotSettingsRequest::new()
+            .is_audio_enabled(true)
+            .is_video_enabled(false)
+            .is_live(true)
+            .volume(75);
+
+        let response = suite
+            .execute("/guest_star/slot_settings", |api| {
+                api.update_guest_star_slot_settings(
+                    BroadcasterId::new("123456789"),
+                    ModeratorId::new("987654321"),
+                    "session123",
+                    "slot_1",
+                    request,
+                )
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
+        let response = response.unwrap();
+        assert_eq!(response.status().as_u16(), 204);
+    }
+
+    #[tokio::test]
+    pub(crate) async fn update_channel_guest_star_settings() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.mock_guest_star_success().await;
+
+        let request = GustStarSettingRequest::new();
+
+        let response = suite
+            .execute("/guest_star/channel_settings", |api| {
+                api.update_channel_guest_star_settings(BroadcasterId::new("123456789"), request)
+            })
+            .send()
+            .await;
+
+        assert!(response.is_ok());
     }
 
     #[tokio::test]

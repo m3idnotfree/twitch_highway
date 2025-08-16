@@ -46,7 +46,7 @@ twitch_api_trait! {
 }
 
 #[cfg(test)]
-mod games_api_tests {
+mod tests {
     use crate::{
         games::{request::GetGamesRequest, GamesAPI},
         test_utils::TwitchApiTest,
@@ -54,7 +54,7 @@ mod games_api_tests {
     };
 
     #[tokio::test]
-    async fn get_top_games_endpoint() {
+    pub(crate) async fn get_top_games() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_games_success().await;
@@ -109,7 +109,7 @@ mod games_api_tests {
     }
 
     #[tokio::test]
-    async fn get_games_by_ids_endpoint() {
+    pub(crate) async fn get_games() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_games_success().await;

@@ -64,7 +64,6 @@ twitch_api_trait! {
 
 #[cfg(test)]
 mod tests {
-
     use crate::{
         ads::AdsAPI,
         test_utils::{assert_datetime, TwitchApiTest},
@@ -72,7 +71,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn start_commercial_endpoint() {
+    pub(crate) async fn start_commercial() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_ads_success().await;
@@ -92,7 +91,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_ad_schedule_endpoint() {
+    pub(crate) async fn get_ad_schedule() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_ads_success().await;
@@ -120,7 +119,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn snooze_next_ad_endpoint() {
+    pub(crate) async fn snooze_next_ad() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_ads_success().await;

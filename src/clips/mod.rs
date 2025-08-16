@@ -64,7 +64,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn create_clip_endpoint() {
+    pub(crate) async fn create_clip() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_clips_success().await;
@@ -103,7 +103,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_clips_by_broadcaster_id_endpoint() {
+    pub(crate) async fn get_clips() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_clips_success().await;

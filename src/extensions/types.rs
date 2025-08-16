@@ -62,29 +62,29 @@ pub struct Secret {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Extension {
-    author_name: String,
-    bits_enabled: bool,
-    can_install: bool,
-    configuration_location: ConfigurationLocation,
-    description: String,
-    eula_tos_url: String,
-    has_chat_support: bool,
-    icon_url: String,
-    icon_urls: HashMap<String, String>,
-    id: Id,
-    name: String,
-    privacy_policy_url: String,
-    request_identity_link: bool,
-    screenshot_urls: Vec<String>,
-    state: State,
-    subscriptions_support_level: SubscriptionsSupportLevel,
-    summary: String,
-    support_email: String,
-    version: String,
-    viewer_summary: String,
-    views: Views,
-    allowlisted_config_urls: Vec<String>,
-    allowlisted_panel_urls: Vec<String>,
+    pub author_name: String,
+    pub bits_enabled: bool,
+    pub can_install: bool,
+    pub configuration_location: ConfigurationLocation,
+    pub description: String,
+    pub eula_tos_url: String,
+    pub has_chat_support: bool,
+    pub icon_url: String,
+    pub icon_urls: HashMap<String, String>,
+    pub id: Id,
+    pub name: String,
+    pub privacy_policy_url: String,
+    pub request_identity_link: bool,
+    pub screenshot_urls: Vec<String>,
+    pub state: State,
+    pub subscriptions_support_level: SubscriptionsSupportLevel,
+    pub summary: String,
+    pub support_email: String,
+    pub version: String,
+    pub viewer_summary: String,
+    pub views: Views,
+    pub allowlisted_config_urls: Vec<String>,
+    pub allowlisted_panel_urls: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -95,7 +95,7 @@ pub enum ConfigurationLocation {
     None,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub enum State {
     Approved,
     AssetsUploaded,

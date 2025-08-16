@@ -103,8 +103,7 @@ twitch_api_trait! {
 }
 
 #[cfg(test)]
-mod channels_api_tests {
-
+mod tests {
     use crate::{
         channels::{request::ModifyChannelRequest, ChannelsAPI},
         test_utils::TwitchApiTest,
@@ -112,7 +111,7 @@ mod channels_api_tests {
     };
 
     #[tokio::test]
-    async fn get_channel_info_endpoint() {
+    pub(crate) async fn get_channel_info() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channels_success().await;
@@ -155,7 +154,7 @@ mod channels_api_tests {
     }
 
     #[tokio::test]
-    async fn modify_channel_info_endpoint() {
+    pub(crate) async fn modify_channel_info() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channels_success().await;
@@ -181,7 +180,7 @@ mod channels_api_tests {
     }
 
     #[tokio::test]
-    async fn get_channel_editors_endpoint() {
+    pub(crate) async fn get_channel_editors() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channels_success().await;
@@ -200,7 +199,7 @@ mod channels_api_tests {
     }
 
     #[tokio::test]
-    async fn get_followed_channels_endpoint() {
+    pub(crate) async fn get_followed_channels() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channels_success().await;
@@ -228,7 +227,7 @@ mod channels_api_tests {
     }
 
     #[tokio::test]
-    async fn get_channel_followers_endpoint() {
+    pub(crate) async fn get_channel_followers() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_channels_success().await;

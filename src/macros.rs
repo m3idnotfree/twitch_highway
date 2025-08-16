@@ -375,6 +375,15 @@ macro_rules! twitch_api_trait {
                 }
             )+
         }
+
+        #[cfg(test)]
+        mod __test_enforcement {
+            const _ENFORCE_ALL_TESTS_EXIST: () = {
+                $(
+                    let _: fn() = super::tests::$impl_method_name;
+                )*
+            };
+        }
     };
 
     // Query parameter handlers

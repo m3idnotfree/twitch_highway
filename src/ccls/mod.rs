@@ -40,7 +40,7 @@ mod tests {
     };
 
     #[tokio::test]
-    async fn get_content_classification_labels_with_locale() {
+    pub(crate) async fn get_content_classification_labels() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_ccls_success().await;
@@ -53,9 +53,12 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(response.data.len(), 2);
-        assert_eq!(response.data[0].id.as_str(), "DrugsIntoxication");
-        assert_eq!(response.data[1].id.as_str(), "SexualThemes");
+        assert_eq!(response.data.len(), 7);
+        assert_eq!(
+            response.data[0].id.as_str(),
+            "DebatedSocialIssuesAndPolitics"
+        );
+        assert_eq!(response.data[1].id.as_str(), "DrugsIntoxication");
     }
 
     #[tokio::test]

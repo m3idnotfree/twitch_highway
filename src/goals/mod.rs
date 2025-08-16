@@ -36,7 +36,7 @@ mod tests {
     use crate::{goals::GoalsAPI, test_utils::TwitchApiTest, types::BroadcasterId};
 
     #[tokio::test]
-    async fn get_creator_goals_endpoint() {
+    pub(crate) async fn get_creator_goals() {
         let suite = TwitchApiTest::new().await;
 
         suite.mock_goals_success().await;

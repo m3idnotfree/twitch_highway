@@ -85,14 +85,16 @@ impl TwitchApiTest {
             .await;
 
         let expected_response = json!({
-            "data": [{
-                "next_ad_at" : "2023-08-01T23:08:18+00:00",
-                "last_ad_at" : "2023-08-01T23:08:18+00:00",
-                "duration" : "60",
-                "preroll_free_time" : "90",
-                "snooze_count" : "1",
-                "snooze_refresh_at" : "2023-08-01T23:08:18+00:00",
-            }],
+            "data": [
+                {
+                    "next_ad_at" : "2023-08-01T23:08:18+00:00",
+                    "last_ad_at" : "2023-08-01T23:08:18+00:00",
+                    "duration" : "60",
+                    "preroll_free_time" : "90",
+                    "snooze_count" : "1",
+                    "snooze_refresh_at" : "2023-08-01T23:08:18+00:00",
+                }
+            ],
         });
 
         Mock::given(method("GET"))
@@ -108,11 +110,13 @@ impl TwitchApiTest {
             .await;
 
         let expected_response = json!({
-            "data": [{
-                "snooze_count": "1",
-                "snooze_refresh_at" : "2023-08-01T23:08:18+00:00",
-                "next_ad_at" : "2023-08-01T23:08:18+00:00",
-            }]
+            "data": [
+                {
+                    "snooze_count": "1",
+                    "snooze_refresh_at" : "2023-08-01T23:08:18+00:00",
+                    "next_ad_at" : "2023-08-01T23:08:18+00:00",
+                }
+            ]
         });
 
         Mock::given(method("POST"))
@@ -156,7 +160,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -248,18 +252,25 @@ impl TwitchApiTest {
         let expected_response = json!({
             "data": [
                 {
-                    "user_id": "123456789",
-                    "user_login": "testuser",
-                    "user_name": "TestUser",
+                    "user_id": "158010205",
+                    "user_login": "tundracowboy",
+                    "user_name": "TundraCowboy",
                     "rank": 1,
                     "score": 12543
+                },
+                {
+                    "user_id": "7168163",
+                    "user_login": "topramens",
+                    "user_name": "Topramens",
+                    "rank": 2,
+                    "score": 6900
                 }
             ],
             "date_range": {
                 "started_at": "2023-12-01T00:00:00Z",
                 "ended_at": "2023-12-07T23:59:59Z"
             },
-            "total": 1
+            "total": 2
         });
 
         Mock::given(method("GET"))
@@ -369,7 +380,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -428,14 +439,39 @@ impl TwitchApiTest {
         let expected_response = json!({
             "data": [
                 {
+                    "id": "DebatedSocialIssuesAndPolitics",
+                    "description": "Discussions or debates about politics or sensitive social issues such as elections, civic integrity, military conflict, and civil rights in a polarizing manner.",
+                    "name": "Politics and Sensitive Social Issues"
+                },
+                {
                     "id": "DrugsIntoxication",
-                    "description": "Excessive tobacco glorification, any marijuana consumption/use, legal drug and alcohol induced intoxication, discussions of illegal drugs.",
+                    "description": "Excessive tobacco glorification or promotion, any marijuana consumption/use, legal drug and alcohol induced intoxication, discussions of illegal drugs.",
                     "name": "Drugs, Intoxication, or Excessive Tobacco Use"
+                },
+                {
+                    "id": "Gambling",
+                    "description": "Participating in online or in-person gambling, poker or fantasy sports, that involve the exchange of real money.",
+                    "name": "Gambling"
+                },
+                {
+                    "id": "MatureGame",
+                    "description": "Games that are rated Mature or less suitable for a younger audience.",
+                    "name": "Mature-rated game"
+                },
+                {
+                    "id": "ProfanityVulgarity",
+                    "description": "Prolonged, and repeated use of obscenities, profanities, and vulgarities, especially as a regular part of speech.",
+                    "name": "Significant Profanity or Vulgarity"
                 },
                 {
                     "id": "SexualThemes",
                     "description": "Content that focuses on sexualized physical attributes and activities, sexual topics, or experiences.",
                     "name": "Sexual Themes"
+                },
+                {
+                    "id": "ViolentGraphic",
+                    "description": "Simulations and/or depictions of realistic violence, gore, extreme injury, or death.",
+                    "name": "Violent and Graphic Depictions"
                 }
             ]
         });
@@ -875,7 +911,7 @@ impl TwitchApiTest {
             ],
             "total": 1,
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -904,7 +940,7 @@ impl TwitchApiTest {
             ],
             "total": 1,
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -1049,7 +1085,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -1127,7 +1163,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             },
             "total": 150
         });
@@ -1254,6 +1290,292 @@ impl TwitchApiTest {
             .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
             .mount(&self.server)
             .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "global_emote_1",
+                    "name": "Kappa",
+                    "images": {
+                        "url_1x": "https://static-cdn.jtvnw.net/emoticons/v2/global_emote_1/static/light/1.0",
+                        "url_2x": "https://static-cdn.jtvnw.net/emoticons/v2/global_emote_1/static/light/2.0",
+                        "url_4x": "https://static-cdn.jtvnw.net/emoticons/v2/global_emote_1/static/light/3.0"
+                    },
+                    "format": ["static"],
+                    "scale": ["1.0", "2.0", "3.0"],
+                    "theme_mode": ["light", "dark"]
+                }
+            ],
+            "template": "https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/emotes/global"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "set_emote_1",
+                    "name": "SetEmote1",
+                    "images": {
+                        "url_1x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_1/static/light/1.0",
+                        "url_2x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_1/static/light/2.0",
+                        "url_4x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_1/static/light/3.0"
+                    },
+                    "emote_set_id": "0",
+                    "format": ["static"],
+                    "scale": ["1.0", "2.0", "3.0"],
+                    "theme_mode": ["light", "dark"]
+                },
+                {
+                    "id": "set_emote_2",
+                    "name": "SetEmote2",
+                    "images": {
+                        "url_1x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_2/static/light/1.0",
+                        "url_2x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_2/static/light/2.0",
+                        "url_4x": "https://static-cdn.jtvnw.net/emoticons/v2/set_emote_2/static/light/3.0"
+                    },
+                    "emote_set_id": "1",
+                    "format": ["static"],
+                    "scale": ["1.0", "2.0", "3.0"],
+                    "theme_mode": ["light", "dark"]
+                }
+            ],
+            "template": "https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/emotes/set"))
+            .and(query_param("emote_set_id", "0"))
+            .and(query_param("emote_set_id", "1"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "set_id": "subscriber",
+                    "versions": [
+                        {
+                            "id": "1",
+                            "image_url_1x": "https://static-cdn.jtvnw.net/badges/v1/subscriber/1/1",
+                            "image_url_2x": "https://static-cdn.jtvnw.net/badges/v1/subscriber/1/2",
+                            "image_url_4x": "https://static-cdn.jtvnw.net/badges/v1/subscriber/1/3",
+                            "title": "Subscriber",
+                            "description": "Subscriber",
+                            "click_action": null,
+                            "click_url": null
+                        }
+                    ]
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/badges"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "set_id": "moderator",
+                    "versions": [
+                        {
+                            "id": "1",
+                            "image_url_1x": "https://static-cdn.jtvnw.net/badges/v1/moderator/1/1",
+                            "image_url_2x": "https://static-cdn.jtvnw.net/badges/v1/moderator/1/2",
+                            "image_url_4x": "https://static-cdn.jtvnw.net/badges/v1/moderator/1/3",
+                            "title": "Moderator",
+                            "description": "Moderator",
+                            "click_action": null,
+                            "click_url": null
+                        }
+                    ]
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/badges/global"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "session_id": "session_123",
+                    "host_broadcaster_id": "123456789",
+                    "participants": [
+                        {
+                            "broadcaster_id": "123456789"
+                        },
+                        {
+                            "broadcaster_id": "987654321"
+                        }
+                    ],
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "updated_at": "2024-01-15T11:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/shared_chat/session"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "user_emote_1",
+                    "name": "UserEmote",
+                    "images": {
+                        "url_1x": "https://static-cdn.jtvnw.net/emoticons/v2/user_emote_1/static/light/1.0",
+                        "url_2x": "https://static-cdn.jtvnw.net/emoticons/v2/user_emote_1/static/light/2.0",
+                        "url_4x": "https://static-cdn.jtvnw.net/emoticons/v2/user_emote_1/static/light/3.0"
+                    },
+                    "format": ["static"],
+                    "scale": ["1.0", "2.0", "3.0"],
+                    "theme_mode": ["light", "dark"]
+                }
+            ],
+            "template": "https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/emotes/user"))
+            .and(query_param("user_id", "123456789"))
+            .and(query_param("after", "cursor123"))
+            .and(query_param("broadcaster_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "emote_mode": true,
+                    "follower_mode": true,
+                    "follower_mode_duration": 600,
+                    "moderator_id": "987654321",
+                    "non_moderator_chat_delay": false,
+                    "non_moderator_chat_delay_duration": 2,
+                    "slow_mode": true,
+                    "show_mode_wait_time": 30,
+                    "subscriber_mode": false,
+                    "unique_chat_mode": true
+                }
+            ]
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/chat/settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "emote_mode":true,
+                "follower_mode":true,
+                "follower_mode_duration":600,
+                "slow_mode":true,
+                "slow_mode_wait_time":30,
+                "subscriber_mode":false,
+                "unique_chat_mode":true
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/chat/announcements"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "message": "Important announcement: Stream starting soon!",
+                "color": "blue"
+            })))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/chat/shoutouts"))
+            .and(query_param("from_broadcaster_id", "123456789"))
+            .and(query_param("to_broadcaster_id", "987654321"))
+            .and(query_param("moderator_id", "555666777"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/chat/color"))
+            .and(query_param("user_id", "123456789"))
+            .and(query_param("color", "blue"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
     }
 
     pub async fn mock_chat_failure(&self) {
@@ -1337,7 +1659,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -1523,7 +1845,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -1709,7 +2031,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -1813,6 +2135,268 @@ impl TwitchApiTest {
             .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
             .mount(&self.server)
             .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "segment": "broadcaster",
+                    "broadcaster_id": "123456789",
+                    "content": "test_config_content",
+                    "version": "1.0.0"
+                }
+            ]
+        });
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/extensions/configurations"))
+            .and(query_param("extension_id", "ext123"))
+            .and(query_param("segment", "broadcaster"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/extensions/required_configuration"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header("content-type", "application/json"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(body_json(json!({
+                "extension_id": "ext123",
+                "extension_version": "1.0.0",
+                "required_configuration": "required_config_data"
+            })))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/extensions/pubsub"))
+            .and(header("content-type", "application/json"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(body_json(json!({
+                "target": ["broadcast", "global"],
+                "message": "Hello from extension!",
+                "broadcaster_id": "123456789",
+                "is_global_broadcast": false
+            })))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/extensions/chat"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header("content-type", "application/json"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(body_json(json!({
+                "text": "Extension chat message",
+                "extension_id": "ext123",
+                "extension_version": "1.0.0"
+            })))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [{
+                "author_name": "Twitch Developers",
+                "bits_enabled": true,
+                "can_install": false,
+                "configuration_location": "hosted",
+                "description": "An extension for testing all the features that we add to extensions",
+                "eula_tos_url": "",
+                "has_chat_support": true,
+                "icon_url": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/logob6c995d8-8b45-48cc-a748-b256e92ac1cd",
+                "icon_urls": {
+                    "100x100": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/logob6c995d8-8b45-48cc-a748-b256e92ac1cd",
+                    "24x24": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/taskbar905b19da-e7e5-4d8f-beb7-f543a861ac1e",
+                    "300x200": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/discoveryd9545b2c-5474-46d7-a523-1c3835d862ce"
+                },
+                "id": "pgn0bjv51epi7eaekt53tovjnc82qo",
+                "name": "Official Developers Demo",
+                "privacy_policy_url": "",
+                "request_identity_link": true,
+                "screenshot_urls": [
+                    "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/screenshotbdec475d-3d2f-4378-b334-941dfddc897a"
+                ],
+                "state": "Released",
+                "subscriptions_support_level": "optional",
+                "summary": "Test ALL the extensions features!",
+                "support_email": "dx-extensions-test-dev@justin.tv",
+                "version": "0.0.9",
+                "viewer_summary": "Test ALL the extensions features!",
+                "views": {
+                    "mobile": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html"
+                    },
+                    "panel": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "height": 300,
+                    "can_link_external_content": false
+                    },
+                    "video_overlay": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "can_link_external_content": false
+                    },
+                    "component": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "aspect_width": 0,
+                    "aspect_height": 0,
+                    "aspect_ratio_x": 48000,
+                    "aspect_ratio_y": 36000,
+                    "autoscale": true,
+                    "scale_pixels": 1024,
+                    "target_height": 5333,
+                    "size": 0,
+                    "zoom": false,
+                    "zoom_pixels": 0,
+                    "can_link_external_content": false
+                    }
+                },
+                "allowlisted_config_urls": [],
+                "allowlisted_panel_urls": []
+            }]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions"))
+            .and(query_param("extension_id", "ext123"))
+            .and(query_param("extension_version", "1.0.0"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [{
+                "author_name": "Twitch Developer Experience",
+                "bits_enabled": true,
+                "can_install": false,
+                "configuration_location": "hosted",
+                "description": "An extension for testing all the features that we add to extensions",
+                "eula_tos_url": "",
+                "has_chat_support": true,
+                "icon_url": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/logob6c995d8-8b45-48cc-a748-b256e92ac1cd",
+                "icon_urls": {
+                    "100x100": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/logob6c995d8-8b45-48cc-a748-b256e92ac1cd",
+                    "24x24": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/taskbar905b19da-e7e5-4d8f-beb7-f543a861ac1e",
+                    "300x200": "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/discoveryd9545b2c-5474-46d7-a523-1c3835d862ce"
+                },
+                "id": "pgn0bjv51epi7eaekt53tovjnc82qo",
+                "name": "Official Developer Experience Demo",
+                "privacy_policy_url": "",
+                "request_identity_link": true,
+                "screenshot_urls": [
+                    "https://extensions-discovery-images.twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.8/screenshotbdec475d-3d2f-4378-b334-941dfddc897a"
+                ],
+                "state": "Released",
+                "subscriptions_support_level": "optional",
+                "summary": "Test ALL the extensions features!",
+                "support_email": "dx-extensions-test-dev@justin.tv",
+                "version": "0.0.9",
+                "viewer_summary": "Test ALL the extensions features!",
+                "views": {
+                    "mobile": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html"
+                    },
+                    "panel": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "height": 300,
+                    "can_link_external_content": false
+                    },
+                    "video_overlay": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "can_link_external_content": false
+                    },
+                    "component": {
+                    "viewer_url": "https://pgn0bjv51epi7eaekt53tovjnc82qo.ext-twitch.tv/pgn0bjv51epi7eaekt53tovjnc82qo/0.0.9/f9a0d8aae0f9dd0b2d6ef3416b96bc79/index.html",
+                    "aspect_width": 0,
+                    "aspect_height": 0,
+                    "aspect_ratio_x": 48000,
+                    "aspect_ratio_y": 36000,
+                    "autoscale": true,
+                    "scale_pixels": 1024,
+                    "target_height": 5333,
+                    "size": 0,
+                    "zoom": false,
+                    "zoom_pixels": 0,
+                    "can_link_external_content": false
+                    }
+                },
+                "allowlisted_config_urls": [],
+                "allowlisted_panel_urls": []
+            }]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions/released"))
+            .and(query_param("extension_id", "ext456"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "sku": "updated_power_up",
+                    "cost": {
+                        "amount": 200,
+                        "type": "bits"
+                    },
+                    "display_name": "Updated Power Up",
+                    "in_development": false,
+                    "expiration": "2024-12-31T23:59:59Z",
+                    "is_broadcast": true
+                }
+            ]
+        });
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/bits/extensions"))
+            .and(header("content-type", "application/json"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(body_json(json!({
+                "sku": "updated_power_up",
+                "cost": {
+                    "amount": 200,
+                    "type": "bits"
+                },
+                "display_name": "Updated Power Up"
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
     }
 
     pub async fn mock_extensions_failure(&self) {
@@ -1851,7 +2435,7 @@ impl TwitchApiTest {
                 }
             ],
             "pagination": {
-                "cursor": "eyJiI..."
+                "cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"
             }
         });
 
@@ -2244,6 +2828,167 @@ impl TwitchApiTest {
             .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
             .mount(&self.server)
             .await;
+
+        let expected_response = json!({
+             "data": [{
+                "id": "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+                "guests": [
+                    {
+                        "id": "0",
+                        "user_id": "9321049",
+                        "user_display_name": "Cool_User",
+                        "user_login": "cool_user",
+                        "is_live": true,
+                        "volume": 100,
+                        "assigned_at": "2023-01-02T04:16:53.325Z",
+                        "audio_settings": {
+                            "is_available": true,
+                            "is_host_enabled": true,
+                            "is_guest_enabled": true,
+                        },
+                        "video_settings": {
+                            "is_available": true,
+                            "is_host_enabled": true,
+                            "is_guest_enabled": true,
+                        }
+                    },
+                ]
+            }]
+        });
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/guest_star/session"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("session_id", "session_abc123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/guest_star/invites"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("guest_id", "guest_user_456"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/guest_star/invites"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("guest_id", "guest_user_456"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/guest_star/slot"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("guest_id", "guest_user_456"))
+            .and(query_param("slot_id", "slot_1"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/guest_star/slot"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("source_slot_id", "slot_1"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/guest_star/slot"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("guest_id", "guest_user_456"))
+            .and(query_param("slot_id", "slot_1"))
+            .and(query_param("should_reinvite_guest", "true"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/guest_star/slot"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("guest_id", "guest_user_456"))
+            .and(query_param("slot_id", "slot_1"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/guest_star/slot_settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(query_param("slot_id", "slot_1"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/guest_star/channel_settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
     }
 
     pub async fn mock_guest_star_failure(&self) {
@@ -2304,6 +3049,65 @@ impl TwitchApiTest {
                 "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
             ))
             .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_moderation_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "msg_id": "test_msg_1",
+                    "is_permitted": true
+                },
+                {
+                    "msg_id": "test_msg_2",
+                    "is_permitted": false
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/enforcements/status"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "banned_user_123",
+                    "user_login": "troublemaker",
+                    "user_name": "TroubleMaker",
+                    "expires_at": "2024-01-20T15:30:00Z",
+                    "created_at": "2024-01-15T15:30:00Z",
+                    "reason": "Harassment",
+                    "moderator_id": "mod456",
+                    "moderator_login": "headmod",
+                    "moderator_name": "HeadMod"
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/banned"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
             .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
             .mount(&self.server)
             .await;
