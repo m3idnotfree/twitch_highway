@@ -10,7 +10,7 @@ define_request!(
             sender_id: &'a str,
             message: &'a str
         };
-        to_json
+        into_json
     }
 );
 
@@ -38,7 +38,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             unique_chat_mode: bool,
         };
-        to_json
+        into_json
     }
 );
 
@@ -90,7 +90,7 @@ define_request!(
             message: &'a str,
             color: Option<AnnouncementColor>
         };
-        to_json
+        into_json
     }
 );
 
@@ -113,5 +113,54 @@ impl AnnouncementColor {
             Self::Purple => "purple",
             Self::Primary => "primary",
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::chat::request::{AnnouncementColor, ChatColor};
+
+    #[test]
+    fn chat_color_enum() {
+        let colors = vec![
+            (ChatColor::Blue, "blue"),
+            (ChatColor::BlueViolet, "blue_violet"),
+            (ChatColor::CadetBlue, "cadet_blue"),
+            (ChatColor::Chocolate, "chocolate"),
+            (ChatColor::Coral, "coral"),
+            (ChatColor::DodgerBlue, "dodger_blue"),
+            (ChatColor::Firebrick, "firebrick"),
+            (ChatColor::GoldenRod, "golden_rod"),
+            (ChatColor::Green, "green"),
+            (ChatColor::HotPink, "hot_pink"),
+            (ChatColor::OrangeRed, "orange_red"),
+            (ChatColor::Red, "red"),
+            (ChatColor::SeaGreen, "sea_green"),
+            (ChatColor::SpringGreen, "spring_green"),
+            (ChatColor::YellowGreen, "yellow_green"),
+        ];
+
+        for (color, expected_str) in colors {
+            assert_eq!(color.as_str(), expected_str);
+        }
+    }
+
+    #[test]
+    fn announcement_color_enum() {
+        let colors = vec![
+            (AnnouncementColor::Blue, "blue"),
+            (AnnouncementColor::Green, "green"),
+            (AnnouncementColor::Orange, "orange"),
+            (AnnouncementColor::Purple, "purple"),
+            (AnnouncementColor::Primary, "primary"),
+        ];
+
+        for (color, expected_str) in colors {
+            assert_eq!(color.as_str(), expected_str);
+        }
+
+        let color = AnnouncementColor::Purple;
+        let serialized = serde_json::to_string(&color).unwrap();
+        assert_eq!(serialized, "\"purple\"");
     }
 }

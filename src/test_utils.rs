@@ -1111,6 +1111,164 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_chat_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "123456789",
+                    "user_login": "activeuser1",
+                    "user_name": "ActiveUser1"
+                },
+                {
+                    "user_id": "987654321",
+                    "user_login": "activeuser2",
+                    "user_name": "ActiveUser2"
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            },
+            "total": 150
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/chatters"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("first", "100"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "emotesv2_123",
+                    "name": "testEmote1",
+                    "images": {
+                        "url_1x": "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_123/static/light/1.0",
+                        "url_2x": "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_123/static/light/2.0",
+                        "url_4x": "https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_123/static/light/3.0"
+                    },
+                    "tier": "1000",
+                    "emote_type": "subscriptions",
+                    "emote_set_id": "123",
+                    "format": ["static"],
+                    "scale": ["1.0", "2.0", "3.0"],
+                    "theme_mode": ["light", "dark"]
+                }
+            ],
+            "template": "https://static-cdn.jtvnw.net/emoticons/v2/{{id}}/{{format}}/{{theme_mode}}/{{scale}}"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/emotes"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "message_id": "msg123456789",
+                    "is_sent": true,
+                    "drop_reason": null
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/chat/messages"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "emote_mode": false,
+                    "follower_mode": true,
+                    "follower_mode_duration": 300,
+                    "moderator_id": "987654321",
+                    "non_moderator_chat_delay": false,
+                    "non_moderator_chat_delay_duration": 2,
+                    "slow_mode": false,
+                    "show_mode_wait_time": 30,
+                    "subscriber_mode": false,
+                    "unique_chat_mode": true
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "123456789",
+                    "user_name": "TestUser",
+                    "user_login": "testuser",
+                    "color": "#FF0000"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/color"))
+            .and(query_param("user_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_chat_failure(&self) {
+        let error_response = json!({
+            "error": "Forbidden",
+            "status": 403,
+            "message": "User does not have permission to access chat"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/chat/chatters"))
+            .respond_with(ResponseTemplate::new(403).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]

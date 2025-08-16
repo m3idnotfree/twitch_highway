@@ -152,3 +152,72 @@ pub struct Version {
     pub click_action: Option<String>,
     pub click_url: Option<String>,
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::chat::types::{EmoteType, Format, Scale, ThemeMode};
+
+    #[test]
+    fn emote_type_serialization() {
+        let emote_types = vec![
+            EmoteType::None,
+            EmoteType::Bitstier,
+            EmoteType::Follower,
+            EmoteType::Subscriptions,
+            EmoteType::ChannelPoints,
+            EmoteType::Rewards,
+            EmoteType::Hypetrain,
+            EmoteType::Prime,
+            EmoteType::Tupbo,
+            EmoteType::Smilies,
+            EmoteType::Globals,
+            EmoteType::Owl2019,
+            EmoteType::Twofactor,
+            EmoteType::Limitedtime,
+        ];
+
+        for emote_type in emote_types {
+            let serialized = serde_json::to_string(&emote_type).unwrap();
+            let deserialized: EmoteType = serde_json::from_str(&serialized).unwrap();
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+
+    #[test]
+    fn scale_enum() {
+        let scales = vec![
+            (Scale::Small, "\"1.0\""),
+            (Scale::Medium, "\"2.0\""),
+            (Scale::Large, "\"3.0\""),
+        ];
+
+        for (scale, expected_json) in scales {
+            let serialized = serde_json::to_string(&scale).unwrap();
+            assert_eq!(serialized, expected_json);
+
+            let deserialized: Scale = serde_json::from_str(&serialized).unwrap();
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+
+    #[test]
+    fn format_and_theme_mode() {
+        let formats = vec![Format::Animated, Format::Static];
+        for format in formats {
+            let serialized = serde_json::to_string(&format).unwrap();
+            let deserialized: Format = serde_json::from_str(&serialized).unwrap();
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+
+        let theme_modes = vec![ThemeMode::Dark, ThemeMode::Light];
+        for theme_mode in theme_modes {
+            let serialized = serde_json::to_string(&theme_mode).unwrap();
+            let deserialized: ThemeMode = serde_json::from_str(&serialized).unwrap();
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+}
