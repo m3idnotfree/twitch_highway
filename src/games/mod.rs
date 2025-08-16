@@ -220,7 +220,7 @@ mod games_api_tests {
     async fn games_api_error_response() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_games_success().await;
+        suite.mock_games_failure().await;
 
         let request = GetGamesRequest::new();
 

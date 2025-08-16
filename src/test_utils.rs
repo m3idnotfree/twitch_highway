@@ -2028,6 +2028,77 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_goals_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "goal123",
+                    "broadcaster_id": "123456789",
+                    "broadcaster_name": "TestStreamer",
+                    "broadcaster_login": "teststreamer",
+                    "type": "follower",
+                    "description": "Reach 1000 followers by end of month",
+                    "current_amount": 875,
+                    "target_amount": 1000,
+                    "created_at": "2024-01-01T00:00:00Z"
+                },
+                {
+                    "id": "goal456",
+                    "broadcaster_id": "123456789",
+                    "broadcaster_name": "TestStreamer",
+                    "broadcaster_login": "teststreamer",
+                    "type": "subscription",
+                    "description": "Get 500 new subscribers",
+                    "current_amount": 320,
+                    "target_amount": 500,
+                    "created_at": "2024-01-15T10:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/goals"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": []
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/goals"))
+            .and(query_param("broadcaster_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_goals_failure(&self) {
+        let error_response = json!({
+            "error": "Forbidden",
+            "status": 403,
+            "message": "User does not have permission to access goals"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/goals"))
+            .respond_with(ResponseTemplate::new(403).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
