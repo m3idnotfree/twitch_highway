@@ -13,7 +13,7 @@ pub struct GustStarSetting {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum GroupLayout {
     TILED_LAYOUT,
     SCREENSHARE_LAYOUT,
@@ -77,19 +77,65 @@ pub struct GuestSetting {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GuestStarInvite {
-    user_id: UserId,
-    invited_at: String,
-    status: GuestStarStatus,
-    is_audio_enabled: bool,
-    is_video_enabled: bool,
-    is_audio_available: bool,
-    is_video_available: bool,
+    pub user_id: UserId,
+    pub invited_at: String,
+    pub status: GuestStarStatus,
+    pub is_audio_enabled: bool,
+    pub is_video_enabled: bool,
+    pub is_audio_available: bool,
+    pub is_video_available: bool,
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum GuestStarStatus {
     INVITED,
     ACCEPTED,
     READY,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::guest_star::types::{GroupLayout, GuestStarStatus};
+
+    #[test]
+    fn group_layout_enum() {
+        let layouts = vec![
+            (GroupLayout::TILED_LAYOUT, "TILED_LAYOUT"),
+            (GroupLayout::SCREENSHARE_LAYOUT, "SCREENSHARE_LAYOUT"),
+            (GroupLayout::HORIZONTAL_LAYOUT, "HORIZONTAL_LAYOUT"),
+            (GroupLayout::VERTICAL_LAYOUT, "VERTICAL_LAYOUT"),
+        ];
+
+        for (layout, expected_str) in layouts {
+            assert_eq!(layout.as_str(), expected_str);
+            assert_eq!(layout.as_ref(), expected_str);
+
+            let layout_string: String = layout.into();
+            assert_eq!(layout_string, expected_str);
+
+            let serialized = serde_json::to_string(&layout).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: GroupLayout = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_str(), expected_str);
+        }
+    }
+
+    #[test]
+    fn guest_star_status_enum() {
+        let statuses = vec![
+            GuestStarStatus::INVITED,
+            GuestStarStatus::ACCEPTED,
+            GuestStarStatus::READY,
+        ];
+
+        for status in statuses {
+            let serialized = serde_json::to_string(&status).unwrap();
+            let deserialized: GuestStarStatus = serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
 }

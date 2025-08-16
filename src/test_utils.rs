@@ -2099,6 +2099,166 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_guest_star_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "is_moderator_send_live_enabled": true,
+                    "slot_count": 6,
+                    "is_browser_source_audio_enabled": false,
+                    "group_layout": "HORIZONTAL_LAYOUT",
+                    "browser_source_token": "secure_token_abc123"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/guest_star/channel_settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "live_session_789",
+                    "guests": [
+                        {
+                            "slot_id": "1",
+                            "user_id": "guest_user_123",
+                            "user_display_name": "ActiveGuest",
+                            "user_login": "activeguest",
+                            "is_live": true,
+                            "volume": 85,
+                            "assigned_at": "2024-01-15T14:30:00Z",
+                            "audio_settings": {
+                                "is_available": true,
+                                "is_host_enabled": true,
+                                "is_guest_enabled": true
+                            },
+                            "video_settings": {
+                                "is_available": true,
+                                "is_host_enabled": true,
+                                "is_guest_enabled": false
+                            }
+                        },
+                        {
+                            "slot_id": "2",
+                            "user_id": "guest_user_456",
+                            "user_display_name": "SecondGuest",
+                            "user_login": "secondguest",
+                            "is_live": false,
+                            "volume": 60,
+                            "assigned_at": "2024-01-15T14:45:00Z",
+                            "audio_settings": {
+                                "is_available": true,
+                                "is_host_enabled": false,
+                                "is_guest_enabled": true
+                            },
+                            "video_settings": {
+                                "is_available": false,
+                                "is_host_enabled": false,
+                                "is_guest_enabled": false
+                            }
+                        }
+                    ]
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/guest_star/session"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "user_id": "pending_user_1",
+                    "invited_at": "2024-01-15T16:00:00Z",
+                    "status": "INVITED",
+                    "is_audio_enabled": true,
+                    "is_video_enabled": true,
+                    "is_audio_available": true,
+                    "is_video_available": true
+                },
+                {
+                    "user_id": "ready_user_2",
+                    "invited_at": "2024-01-15T15:30:00Z",
+                    "status": "READY",
+                    "is_audio_enabled": true,
+                    "is_video_enabled": false,
+                    "is_audio_available": true,
+                    "is_video_available": false
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/guest_star/invites"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("session_id", "session123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "new_session_abc123",
+                    "guests": []
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/guest_star/session"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_guest_star_failure(&self) {
+        let error_response = json!({
+            "error": "Forbidden",
+            "status": 403,
+            "message": "User does not have permission to access Guest Star"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/guest_star/channel_settings"))
+            .respond_with(ResponseTemplate::new(403).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]

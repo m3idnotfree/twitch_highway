@@ -17,7 +17,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             regenerate_browser_sources: bool ; bool,
         };
-        apply_to_url
+        into_query
     }
 );
 
@@ -30,6 +30,6 @@ define_request!(
             is_live: bool ; bool,
             volume: u64 ; u64
         };
-        apply_to_url
+        into_query
     }
 );
