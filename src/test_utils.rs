@@ -1269,6 +1269,236 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_clips_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "edit_url": "https://clips.twitch.tv/edit/FantasticClip123",
+                    "id": "FantasticClip123"
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/clips"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("has_delay", "false"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "edit_url": "https://clips.twitch.tv/edit/InstantClip456",
+                    "id": "InstantClip456"
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/clips"))
+            .and(query_param("broadcaster_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "BroadcasterClip123",
+                    "url": "https://clips.twitch.tv/BroadcasterClip123",
+                    "embed_url": "https://clips.twitch.tv/embed?clip=BroadcasterClip123",
+                    "broadcaster_id": "123456789",
+                    "broadcaster_name": "MainStreamer",
+                    "creator_id": "555666777",
+                    "creator_name": "BigFan",
+                    "video_id": "v444444444",
+                    "game_id": "509658",
+                    "language": "en",
+                    "title": "Best Moment Ever",
+                    "view_count": 10000,
+                    "created_at": "2024-01-18T16:00:00Z",
+                    "thumbnail_url": "https://clips-media-assets2.twitch.tv/best_moment.jpg",
+                    "duration": 60.0,
+                    "vod_offset": 5400,
+                    "is_featured": true
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/clips"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "GameClip789",
+                    "url": "https://clips.twitch.tv/GameClip789",
+                    "embed_url": "https://clips.twitch.tv/embed?clip=GameClip789",
+                    "broadcaster_id": "987654321",
+                    "broadcaster_name": "GameMaster",
+                    "creator_id": "222333444",
+                    "creator_name": "GameFan",
+                    "video_id": "v555555555",
+                    "game_id": "21779",
+                    "language": "en",
+                    "title": "Incredible Play",
+                    "view_count": 7500,
+                    "created_at": "2024-01-19T18:30:00Z",
+                    "thumbnail_url": "https://clips-media-assets2.twitch.tv/incredible_play.jpg",
+                    "duration": 35.5,
+                    "vod_offset": 2700,
+                    "is_featured": false
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/clips"))
+            .and(query_param("game_id", "21779"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "SpecificClip1",
+                    "url": "https://clips.twitch.tv/SpecificClip1",
+                    "embed_url": "https://clips.twitch.tv/embed?clip=SpecificClip1",
+                    "broadcaster_id": "111222333",
+                    "broadcaster_name": "SpecificStreamer",
+                    "creator_id": "444555666",
+                    "creator_name": "SpecificCreator",
+                    "video_id": "v666666666",
+                    "game_id": "509658",
+                    "language": "en",
+                    "title": "First Specific Clip",
+                    "view_count": 500,
+                    "created_at": "2024-01-20T10:00:00Z",
+                    "thumbnail_url": "https://clips-media-assets2.twitch.tv/specific1.jpg",
+                    "duration": 15.5,
+                    "vod_offset": 1200,
+                    "is_featured": false
+                },
+                {
+                    "id": "SpecificClip2",
+                    "url": "https://clips.twitch.tv/SpecificClip2",
+                    "embed_url": "https://clips.twitch.tv/embed?clip=SpecificClip2",
+                    "broadcaster_id": "111222333",
+                    "broadcaster_name": "SpecificStreamer",
+                    "creator_id": "777888999",
+                    "creator_name": "AnotherCreator",
+                    "video_id": "v777777777",
+                    "game_id": "21779",
+                    "language": "en",
+                    "title": "Second Specific Clip",
+                    "view_count": 750,
+                    "created_at": "2024-01-20T11:00:00Z",
+                    "thumbnail_url": "https://clips-media-assets2.twitch.tv/specific2.jpg",
+                    "duration": 25.0,
+                    "vod_offset": null,
+                    "is_featured": true
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/clips"))
+            .and(query_param("id", "SpecificClip1"))
+            .and(query_param("id", "SpecificClip2"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "RecentClip123",
+                    "url": "https://clips.twitch.tv/RecentClip123",
+                    "embed_url": "https://clips.twitch.tv/embed?clip=RecentClip123",
+                    "broadcaster_id": "123456789",
+                    "broadcaster_name": "RecentStreamer",
+                    "creator_id": "999000111",
+                    "creator_name": "RecentCreator",
+                    "video_id": "v888888888",
+                    "game_id": "516575",
+                    "language": "en",
+                    "title": "Recent Amazing Play",
+                    "view_count": 3000,
+                    "created_at": "2024-01-15T12:00:00Z",
+                    "thumbnail_url": "https://clips-media-assets2.twitch.tv/recent_clip.jpg",
+                    "duration": 40.0,
+                    "vod_offset": 3000,
+                    "is_featured": true
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/clips"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("started_at", "2024-01-01T00:00:00Z"))
+            .and(query_param("ended_at", "2024-01-31T23:59:59Z"))
+            .and(query_param("is_featured", "true"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_clips_failure(&self) {
+        let error_response = json!({
+            "error": "Unauthorized",
+            "status": 401,
+            "message": "User does not have permission to create clips"
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/clips"))
+            .respond_with(ResponseTemplate::new(401).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]

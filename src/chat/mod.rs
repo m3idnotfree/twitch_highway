@@ -378,7 +378,7 @@ mod tests {
     async fn chat_api_error_response() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_chat_success().await;
+        suite.mock_chat_failure().await;
 
         let response = suite
             .execute("/chat/chatters", |api| {
