@@ -3111,6 +3111,499 @@ impl TwitchApiTest {
             .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
             .mount(&self.server)
             .await;
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/automod/message"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let automod_settings_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "overall_level": 2,
+                    "disability": 1,
+                    "aggression": 2,
+                    "sexuality_sex_or_gender": 1,
+                    "misogyny": 1,
+                    "bullying": 2,
+                    "swearing": 3,
+                    "race_ethnicity_or_religion": 1,
+                    "sex_based_terms": 2
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/automod/settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(automod_settings_response))
+            .mount(&self.server)
+            .await;
+
+        let updated_automod_settings_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "overall_level": 3,
+                    "disability": 1,
+                    "aggression": 3,
+                    "sexuality_sex_or_gender": 1,
+                    "misogyny": 1,
+                    "bullying": 2,
+                    "swearing": 4,
+                    "race_ethnicity_or_religion": 1,
+                    "sex_based_terms": 2
+                }
+            ]
+        });
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/moderation/automod/settings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(updated_automod_settings_response),
+            )
+            .mount(&self.server)
+            .await;
+
+        let ban_users_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "user_id": "troublemaker123",
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "end_time": "2024-01-16T10:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/moderation/bans"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(ban_users_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/moderation/bans"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("user_id", "unbanned_user_123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let unban_requests_response = json!({
+            "data": [
+                {
+                    "id": "unban_req_123",
+                    "broadcaster_name": "StreamerChannel",
+                    "broadcaster_login": "streamerchannel",
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "moderator_login": "headmod",
+                    "moderator_name": "HeadMod",
+                    "user_id": "requesting_user",
+                    "user_login": "requestinguser",
+                    "user_name": "RequestingUser",
+                    "text": "I promise to behave better",
+                    "status": "pending",
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "resolved_at": null,
+                    "resolution_text": null
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/unban_requests"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("status", "pending"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(unban_requests_response))
+            .mount(&self.server)
+            .await;
+
+        let resolved_unban_response = json!({
+            "data": [
+                {
+                    "id": "unban_req_123",
+                    "broadcaster_name": "StreamerChannel",
+                    "broadcaster_login": "streamerchannel",
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "moderator_login": "headmod",
+                    "moderator_name": "HeadMod",
+                    "user_id": "requesting_user",
+                    "user_login": "requestinguser",
+                    "user_name": "RequestingUser",
+                    "text": "I promise to behave better",
+                    "status": "approved",
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "resolved_at": "2024-01-15T11:30:00Z",
+                    "resolution_text": "Request approved"
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/moderation/unban_requests"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("unban_request_id", "unban_req_123"))
+            .and(query_param("status", "approved"))
+            .and(query_param("resolution_text", "Request approved"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(resolved_unban_response))
+            .mount(&self.server)
+            .await;
+
+        let blocked_terms_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "id": "blocked_term_123",
+                    "text": "badword",
+                    "created_at": "2024-01-15T10:30:00Z",
+                    "updated_at": "2024-01-15T10:30:00Z",
+                    "expires_at": null
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/blocked_terms"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(blocked_terms_response))
+            .mount(&self.server)
+            .await;
+
+        let new_blocked_term_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "moderator_id": "987654321",
+                    "id": "new_blocked_term_456",
+                    "text": "newbadword",
+                    "created_at": "2024-01-15T11:30:00Z",
+                    "updated_at": "2024-01-15T11:30:00Z",
+                    "expires_at": null
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/moderation/blocked_terms"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(new_blocked_term_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/moderation/blocked_terms"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("id", "blocked_term_123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/moderation/chat"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(query_param("message_id", "msg_to_delete_123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/moderation/chat"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let moderated_channels_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "987654321",
+                    "broadcaster_login": "streamerchannel",
+                    "broadcaster_name": "StreamerChannel"
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/channels"))
+            .and(query_param("user_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(moderated_channels_response))
+            .mount(&self.server)
+            .await;
+
+        let moderators_response = json!({
+            "data": [
+                {
+                    "user_id": "mod_user_123",
+                    "user_login": "headmoderator",
+                    "user_name": "HeadModerator"
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/moderators"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(moderators_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/moderation/moderators"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("user_id", "new_mod_123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/moderation/moderators"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("user_id", "old_mod_123"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let vips_response = json!({
+            "data": [
+                {
+                    "user_id": "vip_user_123",
+                    "user_login": "vipuser",
+                    "user_name": "VIPUser"
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/channels/vips"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(vips_response))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("POST"))
+            .and(path("/helix/channels/vips"))
+            .and(query_param("user_id", "new_vip_123"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        Mock::given(method("DELETE"))
+            .and(path("/helix/channels/vips"))
+            .and(query_param("user_id", "old_vip_123"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+
+        let updated_shield_mode_response = json!({
+            "data": [
+                {
+                    "is_active": true,
+                    "moderator_id": "987654321",
+                    "moderator_name": "HeadModerator",
+                    "moderator_login": "headmoderator",
+                    "last_activated_at": "2024-01-15T10:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("PUT"))
+            .and(path("/helix/moderation/shield_mode"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(updated_shield_mode_response))
+            .mount(&self.server)
+            .await;
+
+        let shield_mode_status_response = json!({
+            "data": [
+                {
+                    "is_active": false,
+                    "moderator_id": "987654321",
+                    "moderator_name": "HeadModerator",
+                    "moderator_login": "headmoderator",
+                    "last_activated_at": "2024-01-14T10:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/shield_mode"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(shield_mode_status_response))
+            .mount(&self.server)
+            .await;
+
+        let warn_chat_users_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "user_id": "warned_user_1",
+                    "moderator_id": "987654321",
+                    "reason": "Inappropriate language"
+                },
+                {
+                    "broadcaster_id": "123456789",
+                    "user_id": "warned_user_2",
+                    "moderator_id": "987654321",
+                    "reason": "Spam"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/moderation/warnings"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("moderator_id", "987654321"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(warn_chat_users_response))
+            .mount(&self.server)
+            .await;
     }
 }
 

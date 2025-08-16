@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 use crate::types::UserId;
 
@@ -8,12 +8,12 @@ define_request!(
         req: {
             data: &'a [CheckAutoMod]
         };
-        to_json
+        into_json
     }
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Serialize, Deserialize)]
      CheckAutoMod {
         req: {
             msg_id: String,
@@ -30,11 +30,11 @@ define_request!(
             msg_id: &'a str,
             action: AutoModAction
         };
-        to_json
+        into_json
     }
 );
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum AutoModAction {
     ALLOW,
     DENY,
@@ -63,7 +63,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             swearing: u64,
         };
-        to_json
+        into_json
     }
 );
 
@@ -73,12 +73,12 @@ define_request!(
         req: {
             data: BanUserRequest<'a>
         };
-        to_json
+        into_json
     }
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Serialize, Deserialize)]
     BanUserRequest<'a> {
         req: {
             user_id: UserId
@@ -96,7 +96,7 @@ define_request!(
         req: {
             text: &'a str
         };
-        to_json
+        into_json
     }
 );
 
@@ -106,7 +106,7 @@ define_request!(
         req: {
             is_active: bool
         };
-        to_json
+        into_json
     }
 );
 
@@ -116,7 +116,7 @@ define_request!(
         req: {
             data: &'a[WarnChatUser<'a>]
         };
-        to_json
+        into_json
     }
 );
 
@@ -129,3 +129,25 @@ define_request!(
         }
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use crate::moderation::request::AutoModAction;
+
+    #[test]
+    fn automod_action_enum() {
+        let actions = vec![
+            (AutoModAction::ALLOW, "ALLOW"),
+            (AutoModAction::DENY, "DENY"),
+        ];
+
+        for (action, expected_str) in actions {
+            let serialized = serde_json::to_string(&action).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: AutoModAction = serde_json::from_str(&serialized).unwrap();
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+}

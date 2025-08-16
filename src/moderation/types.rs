@@ -95,13 +95,13 @@ pub struct UnbanRequest {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BlockedTerm {
-    broadcaster_id: BroadcasterId,
-    moderator_id: ModeratorId,
-    id: Id,
-    text: String,
-    created_at: String,
-    updated_at: String,
-    expires_at: Option<String>,
+    pub broadcaster_id: BroadcasterId,
+    pub moderator_id: ModeratorId,
+    pub id: Id,
+    pub text: String,
+    pub created_at: String,
+    pub updated_at: String,
+    pub expires_at: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -128,9 +128,36 @@ pub struct ShieldModeStatus {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct WarnChatUserff {
+pub struct WarnChatUser {
     pub broadcaster_id: BroadcasterId,
     pub user_id: UserId,
     pub moderator_id: ModeratorId,
     pub reason: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::moderation::types::UnbanRequestStatus;
+
+    #[test]
+    fn unban_request_status_enum() {
+        let statuses = vec![
+            (UnbanRequestStatus::Pending, "pending"),
+            (UnbanRequestStatus::Approved, "approved"),
+            (UnbanRequestStatus::Denied, "denied"),
+            (UnbanRequestStatus::Acknowledged, "acknowledged"),
+            (UnbanRequestStatus::Canceled, "canceled"),
+        ];
+
+        for (status, expected_str) in statuses {
+            assert_eq!(status.as_str(), expected_str);
+            assert_eq!(status.as_ref(), expected_str);
+
+            let serialized = serde_json::to_string(&status).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: UnbanRequestStatus = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_str(), expected_str);
+        }
+    }
 }
