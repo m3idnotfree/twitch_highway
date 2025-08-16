@@ -2259,6 +2259,55 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_hype_train_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "hypetrain789",
+                    "event_type": "hypetrain.progression",
+                    "event_timestamp": "2024-01-15T14:30:00Z",
+                    "version": "1.0",
+                    "event_data": {
+                        "broadcaster_id": "123456789",
+                        "cooldown_end_time": "2024-01-15T16:30:00Z",
+                        "expires_at": "2024-01-15T15:30:00Z",
+                        "goal": 8000,
+                        "id": "eventdata789",
+                        "last_contribution": {
+                            "total": 200,
+                            "type": "subscription",
+                            "user": "generous_viewer"
+                        },
+                        "level": 4,
+                        "started_at": "2024-01-15T14:00:00Z",
+                        "top_contributions": [
+                            {
+                                "total": 1000,
+                                "type": "bits",
+                                "user": "top_supporter"
+                            }
+                        ],
+                        "total": 6500
+                    }
+                }
+            ],
+            "pagination": {}
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/hypetrain/events"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
