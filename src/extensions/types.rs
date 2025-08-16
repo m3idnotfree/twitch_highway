@@ -5,13 +5,14 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Cost, Id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Segment {
     Broadcaster,
     Developer,
     Global,
 }
+
 impl AsRef<str> for Segment {
     fn as_ref(&self) -> &str {
         match self {
@@ -85,6 +86,7 @@ pub struct Extension {
     allowlisted_config_urls: Vec<String>,
     allowlisted_panel_urls: Vec<String>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ConfigurationLocation {
@@ -92,6 +94,7 @@ pub enum ConfigurationLocation {
     Custom,
     None,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub enum State {
     Approved,
@@ -104,12 +107,14 @@ pub enum State {
     Rejected,
     Released,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SubscriptionsSupportLevel {
     None,
     Optional,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Views {
     pub mobile: Mobile,
@@ -117,21 +122,25 @@ pub struct Views {
     pub video_overlay: VideoOverlay,
     pub component: Component,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Mobile {
     pub viewer_url: String,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Panel {
     pub viewer_url: String,
     pub height: u64,
     pub can_link_external_content: bool,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VideoOverlay {
     pub viewer_url: String,
     pub can_link_external_content: bool,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Component {
     pub viewer_url: String,
@@ -147,18 +156,105 @@ pub struct Component {
     pub zoom_pixels: u64,
     pub can_link_external_content: bool,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct BitsProductExtension {
     pub sku: String,
     pub cost: Cost,
     pub display_name: String,
     pub in_development: bool,
-    pub expiration: String,
+    pub expiration: DateTime<FixedOffset>,
     pub is_broadcast: bool,
 }
 
 impl BitsProductExtension {
-    pub fn to_json(&self) -> Option<String> {
+    pub fn into_json(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::extensions::types::{
+        ConfigurationLocation, Segment, State, SubscriptionsSupportLevel,
+    };
+
+    #[test]
+    fn segment_enum() {
+        let segments = vec![
+            (Segment::Broadcaster, "broadcaster"),
+            (Segment::Developer, "developer"),
+            (Segment::Global, "global"),
+        ];
+
+        for (segment, expected_str) in segments {
+            assert_eq!(segment.as_ref(), expected_str);
+
+            let segment_string: String = segment.into();
+            assert_eq!(segment_string, expected_str);
+
+            let serialized = serde_json::to_string(&segment).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: Segment = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_ref(), expected_str);
+        }
+    }
+
+    #[test]
+    fn configuration_location_enum() {
+        let locations = vec![
+            ConfigurationLocation::Hosted,
+            ConfigurationLocation::Custom,
+            ConfigurationLocation::None,
+        ];
+
+        for location in locations {
+            let serialized = serde_json::to_string(&location).unwrap();
+            let deserialized: ConfigurationLocation = serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+
+    #[test]
+    fn state_enum() {
+        let states = vec![
+            State::Approved,
+            State::AssetsUploaded,
+            State::Deleted,
+            State::Deprecated,
+            State::InReview,
+            State::InTest,
+            State::PendingAction,
+            State::Rejected,
+            State::Released,
+        ];
+
+        for state in states {
+            let serialized = serde_json::to_string(&state).unwrap();
+            let deserialized: State = serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+
+    #[test]
+    fn subscriptions_support_level_enum() {
+        let levels = vec![
+            SubscriptionsSupportLevel::None,
+            SubscriptionsSupportLevel::Optional,
+        ];
+
+        for level in levels {
+            let serialized = serde_json::to_string(&level).unwrap();
+            let deserialized: SubscriptionsSupportLevel =
+                serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
     }
 }

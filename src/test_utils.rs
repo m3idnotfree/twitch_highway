@@ -1668,6 +1668,166 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_extensions_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "segment": "broadcaster",
+                    "broadcaster_id": "123456789",
+                    "content": "test_config_content",
+                    "version": "1.0.0"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions/configurations"))
+            .and(query_param("broadcaster_id", "123456789"))
+            .and(query_param("extension_id", "ext123"))
+            .and(query_param("segment", "broadcaster"))
+            .and(header("authorization", "Bearer test_jwt_token"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "broadcaster_id": "123456789",
+                    "broadcaster_name": "LiveStreamer1",
+                    "game_name": "Just Chatting",
+                    "game_id": "509658",
+                    "title": "Extension Testing Stream"
+                },
+                {
+                    "broadcaster_id": "987654321",
+                    "broadcaster_name": "LiveStreamer2",
+                    "game_name": "VALORANT",
+                    "game_id": "516575",
+                    "title": "Extension in Game"
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions/live"))
+            .and(query_param("extension_id", "ext456"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "format_version": 1,
+                    "secrets": [
+                        {
+                            "content": "active_secret_12345",
+                            "active_at": "2024-01-15T10:00:00Z",
+                            "expires_at": "2024-02-15T10:00:00Z"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions/jwt/secrets"))
+            .and(query_param("extension_id", "ext789"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "format_version": 1,
+                    "secrets": [
+                        {
+                            "content": "old_secret_content",
+                            "active_at": "2024-01-15T10:00:00Z",
+                            "expires_at": "2024-01-20T10:00:00Z"
+                        },
+                        {
+                            "content": "new_secret_content",
+                            "active_at": "2024-01-20T10:00:00Z",
+                            "expires_at": "2024-02-20T10:00:00Z"
+                        }
+                    ]
+                }
+            ]
+        });
+
+        Mock::given(method("POST"))
+            .and(path("/helix/extensions/jwt/secrets"))
+            .and(query_param("extension_id", "ext999"))
+            .and(query_param("delay", "300"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "sku": "power_up_001",
+                    "cost": {
+                        "amount": 150,
+                        "type": "bits"
+                    },
+                    "display_name": "Power Up Pack",
+                    "in_development": false,
+                    "expiration": "2024-12-31T23:59:59Z",
+                    "is_broadcast": true
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/bits/extensions"))
+            .and(query_param("should_include_all", "true"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_extensions_failure(&self) {
+        let error_response = json!({
+            "error": "Unauthorized",
+            "status": 401,
+            "message": "Invalid JWT token for extension"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/extensions/configurations"))
+            .respond_with(ResponseTemplate::new(401).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]

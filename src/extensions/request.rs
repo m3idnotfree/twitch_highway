@@ -13,7 +13,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             version: &'a str
         };
-        to_json
+        into_json
     }
 );
 
@@ -25,7 +25,7 @@ define_request!(
             extension_version: &'a str,
             required_configuration: &'a str
         };
-        to_json
+        into_json
     }
 );
 
@@ -37,7 +37,7 @@ define_request!(
             extension_id: ExtensionId,
             extension_version: &'a str
         };
-        to_json
+        into_json
     }
 );
 
