@@ -1499,6 +1499,175 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_entitlements_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "entitlement123",
+                    "benefit_id": "benefit456",
+                    "timestamp": "2024-01-15T10:30:00Z",
+                    "user_id": "user789",
+                    "game_id": "game012",
+                    "fulfillment_status": "CLAIMED",
+                    "last_updated": "2024-01-15T11:00:00Z"
+                },
+                {
+                    "id": "entitlement456",
+                    "benefit_id": "benefit789",
+                    "timestamp": "2024-01-14T15:20:00Z",
+                    "user_id": "user123",
+                    "game_id": "game345",
+                    "fulfillment_status": "FULFILLED",
+                    "last_updated": "2024-01-14T16:45:00Z"
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/entitlements/drops"))
+            .and(query_param("user_id", "user789"))
+            .and(query_param("game_id", "game012"))
+            .and(query_param("fulfillment_status", "CLAIMED"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "specific_ent_1",
+                    "benefit_id": "specific_benefit_1",
+                    "timestamp": "2024-01-15T08:00:00Z",
+                    "user_id": "specific_user",
+                    "game_id": "specific_game",
+                    "fulfillment_status": "CLAIMED",
+                    "last_updated": "2024-01-15T08:30:00Z"
+                },
+                {
+                    "id": "specific_ent_2",
+                    "benefit_id": "specific_benefit_2",
+                    "timestamp": "2024-01-15T09:00:00Z",
+                    "user_id": "specific_user",
+                    "game_id": "specific_game",
+                    "fulfillment_status": "FULFILLED",
+                    "last_updated": "2024-01-15T09:45:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/entitlements/drops"))
+            .and(query_param("id", "specific_ent_1"))
+            .and(query_param("id", "specific_ent_2"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "all_ent_1",
+                    "benefit_id": "all_benefit_1",
+                    "timestamp": "2024-01-10T12:00:00Z",
+                    "user_id": "all_user_1",
+                    "game_id": "all_game_1",
+                    "fulfillment_status": "CLAIMED",
+                    "last_updated": "2024-01-10T12:30:00Z"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/entitlements/drops"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "status": "SUCCESS",
+                    "ids": ["update_ent_1", "update_ent_2"]
+                },
+                {
+                    "status": "NOT_FOUND",
+                    "ids": ["update_ent_3"]
+                }
+            ]
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/entitlements/drops"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "entitlement_ids": [
+                    "update_ent_1",
+                    "update_ent_2",
+                    "update_ent_3"
+                ],
+                "fulfillment_status": "FULFILLED"
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_entitlements_extra(&self) {
+        let expected_response = json!({
+            "data": []
+        });
+
+        Mock::given(method("PATCH"))
+            .and(path("/helix/entitlements/drops"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .and(header("content-type", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_entitlements_failure(&self) {
+        let error_response = json!({
+            "error": "Forbidden",
+            "status": 403,
+            "message": "User does not have permission to access entitlements"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/entitlements/drops"))
+            .respond_with(ResponseTemplate::new(403).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]

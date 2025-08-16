@@ -30,3 +30,27 @@ pub enum DropEntitlementStatus {
     UNAUTHORIZED,
     UPDATE_FAILED,
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::entitlements::types::DropEntitlementStatus;
+
+    #[test]
+    fn drop_entitlement_status_enum() {
+        let statuses = vec![
+            DropEntitlementStatus::INVALID_ID,
+            DropEntitlementStatus::NOT_FOUND,
+            DropEntitlementStatus::SUCCESS,
+            DropEntitlementStatus::UNAUTHORIZED,
+            DropEntitlementStatus::UPDATE_FAILED,
+        ];
+
+        for status in statuses {
+            let serialized = serde_json::to_string(&status).unwrap();
+            let deserialized: DropEntitlementStatus = serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
+}

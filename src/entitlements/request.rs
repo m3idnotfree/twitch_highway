@@ -11,11 +11,11 @@ define_request!(
             game_id: GameId => GAME_ID,
             fulfillment_status: FulfillmentStatus,
         };
-        apply_to_url
+        into_query
     }
 );
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum FulfillmentStatus {
     CLAIMED,
     FULFILLED,
@@ -52,6 +52,33 @@ define_request!(
             entitlement_ids: Vec<String>,
             fulfillment_status: FulfillmentStatus
         };
-        to_json
+        into_json
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use crate::entitlements::request::FulfillmentStatus;
+
+    #[test]
+    fn fulfillment_status_enum() {
+        let statuses = vec![
+            (FulfillmentStatus::CLAIMED, "CLAIMED"),
+            (FulfillmentStatus::FULFILLED, "FULFILLED"),
+        ];
+
+        for (status, expected_str) in statuses {
+            assert_eq!(status.as_str(), expected_str);
+            assert_eq!(status.as_ref(), expected_str);
+
+            let status_string: String = status.into();
+            assert_eq!(status_string, expected_str);
+
+            let serialized = serde_json::to_string(&status).unwrap();
+            assert_eq!(serialized, format!("\"{}\"", expected_str));
+
+            let deserialized: FulfillmentStatus = serde_json::from_str(&serialized).unwrap();
+            assert_eq!(deserialized.as_str(), expected_str);
+        }
+    }
+}
