@@ -10,6 +10,6 @@ define_request!(
             names: Vec<String> => "name" ; vec,
             igdb_ids: Vec<String> => "igdb_id" ; vec,
         };
-        apply_to_url
+        into_query
     }
 );

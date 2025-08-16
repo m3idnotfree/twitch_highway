@@ -1828,6 +1828,206 @@ impl TwitchApiTest {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn mock_games_success(&self) {
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "21779",
+                    "name": "League of Legends",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/21779-{width}x{height}.jpg",
+                    "igdb_id": "115"
+                },
+                {
+                    "id": "509658",
+                    "name": "Just Chatting",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/509658-{width}x{height}.jpg"
+                },
+                {
+                    "id": "516575",
+                    "name": "VALORANT",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/516575-{width}x{height}.jpg",
+                    "igdb_id": "25646"
+                }
+            ],
+            "pagination": {
+                "cursor": "eyJiI..."
+            }
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games/top"))
+            .and(query_param("first", "20"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "32982",
+                    "name": "Grand Theft Auto V",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/32982-{width}x{height}.jpg",
+                    "igdb_id": "3276"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games/top"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "511224",
+                    "name": "Apex Legends",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/511224-{width}x{height}.jpg",
+                    "igdb_id": "25657"
+                },
+                {
+                    "id": "138585",
+                    "name": "Hearthstone",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/138585-{width}x{height}.jpg",
+                    "igdb_id": "1465"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games"))
+            .and(query_param("id", "511224"))
+            .and(query_param("id", "138585"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "33214",
+                    "name": "Fortnite",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/33214-{width}x{height}.jpg",
+                    "igdb_id": "1905"
+                },
+                {
+                    "id": "27471",
+                    "name": "Minecraft",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/27471-{width}x{height}.jpg",
+                    "igdb_id": "19"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games"))
+            .and(query_param("name", "Fortnite"))
+            .and(query_param("name", "Minecraft"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "743",
+                    "name": "Chess",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/743-{width}x{height}.jpg"
+                },
+                {
+                    "id": "512710",
+                    "name": "Call of Duty: Warzone",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/512710-{width}x{height}.jpg"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games"))
+            .and(query_param("igdb_id", "743"))
+            .and(query_param("igdb_id", "512710"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+
+        let expected_response = json!({
+            "data": [
+                {
+                    "id": "21779",
+                    "name": "League of Legends",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/21779-{width}x{height}.jpg",
+                    "igdb_id": "115"
+                },
+                {
+                    "id": "516575",
+                    "name": "VALORANT",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/516575-{width}x{height}.jpg",
+                    "igdb_id": "25646"
+                },
+                {
+                    "id": "33214",
+                    "name": "Fortnite",
+                    "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/33214-{width}x{height}.jpg",
+                    "igdb_id": "1905"
+                }
+            ]
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games"))
+            .and(query_param("id", "21779"))
+            .and(query_param("name", "VALORANT"))
+            .and(query_param("igdb_id", "1905"))
+            .and(header(
+                "authorization",
+                "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
+            ))
+            .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(expected_response))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn mock_games_failure(&self) {
+        let error_response = json!({
+            "error": "Bad Request",
+            "status": 400,
+            "message": "No valid game identifiers provided"
+        });
+
+        Mock::given(method("GET"))
+            .and(path("/helix/games"))
+            .respond_with(ResponseTemplate::new(400).set_body_json(error_response))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[track_caller]
