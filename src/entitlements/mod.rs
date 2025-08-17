@@ -12,23 +12,14 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "entitlements")))]
-    trait EntitlementsAPI {
+endpoints! {
+    EntitlementsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements>
         fn get_drops_entitlements(
             &self,
             opts: Option<DropEntitlementRequest>,
             pagination: Option<PaginationQuery>,
-        ) -> DropsEntitlementsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements>
-        fn update_drops_entitlements(
-            &self,
-            opts: Option<UpdateEntitlementsRequest>,
-        ) -> UpdateDropEntitlementsResponse;
-    }
-    impl {
-        get_drops_entitlements => {
+        ) -> DropsEntitlementsResponse {
             endpoint_type: EndpointType::GetDropsEntitlements,
             method: Method::GET,
             path: ["entitlements", "drops"],
@@ -37,7 +28,11 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        update_drops_entitlements => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements>
+        fn update_drops_entitlements(
+            &self,
+            opts: Option<UpdateEntitlementsRequest>,
+        ) -> UpdateDropEntitlementsResponse {
             endpoint_type: EndpointType::UpdateDropsEntitlements,
             method: Method::PATCH,
             path: ["entitlements", "drops"],

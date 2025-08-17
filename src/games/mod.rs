@@ -11,22 +11,13 @@ use crate::{
 pub mod request;
 pub mod response;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "games")))]
-    trait GamesAPI {
+endpoints! {
+    GamesAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
         fn get_top_games(
             &self,
             pagination: Option<PaginationQuery>,
-        ) -> GamesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-games>
-        fn get_games(
-            &self,
-            request: GetGamesRequest,
-        ) -> GamesResponse;
-    }
-    impl {
-        get_top_games => {
+        ) -> GamesResponse {
             endpoint_type: EndpointType::GetTopGames,
             method: Method::GET,
             path: [GAMES, "top"],
@@ -34,7 +25,11 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        get_games => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-games>
+        fn get_games(
+            &self,
+            request: GetGamesRequest,
+        ) -> GamesResponse {
             endpoint_type: EndpointType::GetGames,
             method: Method::GET,
             path: [GAMES],

@@ -15,26 +15,15 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "analytics")))]
-    trait AnalyticsAPI {
+endpoints! {
+    AnalyticsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
         fn get_extension_analytics(
             &self,
             extension_id: Option<ExtensionId>,
             opts: Option<AnalyticsRequest>,
             pagination: Option<PaginationQuery>,
-        ) -> ExtensionAnalyticsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
-        fn get_game_analytics(
-            &self,
-            game_id: Option<GameId>,
-            opts: Option<AnalyticsRequest>,
-            pagination: Option<PaginationQuery>,
-        ) -> GameAnalyticsResponse;
-    }
-    impl {
-        get_extension_analytics => {
+        ) -> ExtensionAnalyticsResponse {
             endpoint_type: EndpointType::GetExtensionAnalytics,
             method: Method::GET,
             path: [ANALYTICS, EXTENSIONS],
@@ -44,7 +33,13 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        get_game_analytics => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
+        fn get_game_analytics(
+            &self,
+            game_id: Option<GameId>,
+            opts: Option<AnalyticsRequest>,
+            pagination: Option<PaginationQuery>,
+        ) -> GameAnalyticsResponse {
             endpoint_type: EndpointType::GetGameAnalytics,
             method: Method::GET,
             path: [ANALYTICS, GAMES],

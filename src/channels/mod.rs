@@ -18,42 +18,13 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "channels")))]
-    trait ChannelsAPI {
+endpoints! {
+    ChannelsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
         fn get_channel_info(
             &self,
             broadcaster_ids: &[BroadcasterId],
-        ) -> ChannelInfoResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
-        fn modify_channel_info(
-            &self,
-            broadcaster_id: BroadcasterId,
-            opts: Option<ModifyChannelRequest>,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
-        fn get_channel_editors(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> ChannelEditorsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
-        fn get_followed_channels(
-            &self,
-            user_id: UserId,
-            broadcaster_id: Option<BroadcasterId>,
-            pagination: Option<PaginationQuery>,
-        ) -> FollowerdChannelsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
-        fn get_channel_followers(
-            &self,
-            user_id: Option<UserId>,
-            broadcaster_id: BroadcasterId,
-            pagination: Option<PaginationQuery>,
-        ) -> ChannelFollowersResponse;
-    }
-    impl {
-        get_channel_info => {
+        ) -> ChannelInfoResponse {
             endpoint_type: EndpointType::GetChanelInformation,
             method: Method::GET,
             path: [CHANNELS],
@@ -61,7 +32,12 @@ twitch_api_trait! {
                 extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)))
             }
         }
-        modify_channel_info => {
+        /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
+        fn modify_channel_info(
+            &self,
+            broadcaster_id: BroadcasterId,
+            opts: Option<ModifyChannelRequest>,
+        ) -> NoContent {
             endpoint_type: EndpointType::ModifyChannelInformation,
             method: Method::PATCH,
             path: [CHANNELS],
@@ -71,7 +47,11 @@ twitch_api_trait! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
-        get_channel_editors => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
+        fn get_channel_editors(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> ChannelEditorsResponse {
             endpoint_type: EndpointType::GetChannelEditors,
             method: Method::GET,
             path: [CHANNELS, "editors"],
@@ -79,7 +59,13 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        get_followed_channels => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
+        fn get_followed_channels(
+            &self,
+            user_id: UserId,
+            broadcaster_id: Option<BroadcasterId>,
+            pagination: Option<PaginationQuery>,
+        ) -> FollowerdChannelsResponse {
             endpoint_type: EndpointType::GetFollowedChannels,
             method: Method::GET,
             path: [CHANNELS, "followed"],
@@ -89,7 +75,13 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        get_channel_followers => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
+        fn get_channel_followers(
+            &self,
+            user_id: Option<UserId>,
+            broadcaster_id: BroadcasterId,
+            pagination: Option<PaginationQuery>,
+        ) -> ChannelFollowersResponse {
             endpoint_type: EndpointType::GetChannelFollowers,
             method: Method::GET,
             path: [CHANNELS, "followers"],

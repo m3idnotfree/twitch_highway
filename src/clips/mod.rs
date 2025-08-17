@@ -12,25 +12,14 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "clips")))]
-    trait ClipsAPI {
+endpoints! {
+    ClipsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#create-clip>
         fn create_clip(
             &self,
             broadcaster_id: BroadcasterId,
             has_delay: Option<bool>,
-        ) -> CreateClipsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
-        fn get_clips(
-            &self,
-            clips_selector: ClipsSelector,
-            opts: Option<GetClipsRequest>,
-            pagination: Option<PaginationQuery>,
-        ) -> ClipsInfoResponse;
-    }
-    impl {
-        create_clip => {
+        ) -> CreateClipsResponse {
             endpoint_type: EndpointType::CreateClip,
             method: Method::POST,
             path: ["clips"],
@@ -39,7 +28,13 @@ twitch_api_trait! {
                 opt("has_delay", has_delay.map(|x| x.to_string()))
             }
         }
-        get_clips => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
+        fn get_clips(
+            &self,
+            clips_selector: ClipsSelector,
+            opts: Option<GetClipsRequest>,
+            pagination: Option<PaginationQuery>,
+        ) -> ClipsInfoResponse {
             endpoint_type: EndpointType::GetClips,
             method: Method::GET,
             path: ["clips"],

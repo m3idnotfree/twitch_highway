@@ -21,96 +21,15 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "chat")))]
-    trait ChatAPI {
+endpoints! {
+    ChatAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
         fn get_chatters(
             &self,
             broadcaster_id: BroadcasterId,
             moderator_id: ModeratorId,
             pagination: Option<PaginationQuery>,
-        ) -> ChattersResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
-        fn channel_emotes(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> EmotesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
-        fn global_emotes(&self) -> EmotesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
-        fn emote_sets(
-            &self,
-            emote_set_ids: &[&str],
-        ) -> EmotesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
-        fn channel_badge(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> BadgesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
-        fn global_badge(&self) -> BadgesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
-        fn get_chat_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: Option<ModeratorId>,
-        ) -> ChatSettingResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
-        fn get_shared_chat_session(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> SharedChatSessionResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
-        fn user_emotes(
-            &self,
-            user_id: UserId,
-            after: Option<&str>,
-            broadcaster_id: Option<BroadcasterId>,
-        ) -> EmotesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
-        fn update_chat_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            opts: Option<UpdateChatSettingsRequest>,
-        ) -> ChatSettingResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
-        fn send_chat_announcement(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            message: &str,
-            color: Option<AnnouncementColor>,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
-        fn send_a_shoutout(
-            &self,
-            from_broadcaster_id: BroadcasterId,
-            to_broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
-        fn chat_write(
-            &self,
-            broadcaster_id: BroadcasterId,
-            sender_id: &str,
-            message: &str,
-        ) -> SendChatMessageResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
-        fn user_chat_color(
-            &self,
-            user_id: &[UserId],
-        ) -> UsersColorResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
-        fn update_user_chat_color(
-            &self,
-            user_id: UserId,
-            color: ChatColor,
-        ) -> NoContent;
-    }
-    impl {
-        get_chatters => {
+        ) -> ChattersResponse {
             endpoint_type: EndpointType::GetChatters,
             method: Method::GET,
             path: [CHAT, "chatters"],
@@ -120,7 +39,11 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        channel_emotes => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
+        fn channel_emotes(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> EmotesResponse {
             endpoint_type: EndpointType::GetChannelEmotes,
             method: Method::GET,
             path: [CHAT, EMOTES],
@@ -128,12 +51,17 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        global_emotes => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
+        fn global_emotes(&self) -> EmotesResponse {
             endpoint_type: EndpointType::GetGlobalEmotes,
             method: Method::GET,
             path: [CHAT, EMOTES, "global"]
         }
-        emote_sets => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
+        fn emote_sets(
+            &self,
+            emote_set_ids: &[&str],
+        ) -> EmotesResponse {
             endpoint_type: EndpointType::GetEmoteSets,
             method: Method::GET,
             path: [CHAT, EMOTES, "set"],
@@ -141,7 +69,11 @@ twitch_api_trait! {
                 extend(emote_set_ids.iter().map(|x| ("emote_set_id", *x)))
             }
         }
-        channel_badge => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
+        fn channel_badge(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> BadgesResponse {
             endpoint_type: EndpointType::GetChannelChatBadges,
             method: Method::GET,
             path: [CHAT, "badges"],
@@ -149,12 +81,18 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        global_badge => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
+        fn global_badge(&self) -> BadgesResponse {
             endpoint_type: EndpointType::GetGlobalChatBadges,
             method: Method::GET,
             path: [CHAT, "badges", "global"]
         }
-        get_chat_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
+        fn get_chat_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: Option<ModeratorId>,
+        ) -> ChatSettingResponse {
             endpoint_type: EndpointType::GetChatSettings,
             method: Method::GET,
             path: [CHAT, SETTINGS],
@@ -163,7 +101,11 @@ twitch_api_trait! {
                 opt(MODERATOR_ID, moderator_id)
             }
         }
-        get_shared_chat_session => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
+        fn get_shared_chat_session(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> SharedChatSessionResponse {
             endpoint_type: EndpointType::GetShardChatSession,
             method: Method::GET,
             path: ["shared_chat", "session"],
@@ -171,7 +113,13 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        user_emotes => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
+        fn user_emotes(
+            &self,
+            user_id: UserId,
+            after: Option<&str>,
+            broadcaster_id: Option<BroadcasterId>,
+        ) -> EmotesResponse {
             endpoint_type: EndpointType::GetUserEmotes,
             method: Method::GET,
             path: [CHAT, EMOTES, "user"],
@@ -181,7 +129,13 @@ twitch_api_trait! {
                 opt(BROADCASTER_ID, broadcaster_id)
             }
         }
-        update_chat_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
+        fn update_chat_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            opts: Option<UpdateChatSettingsRequest>,
+        ) -> ChatSettingResponse {
             endpoint_type: EndpointType::UpdateChatSettings,
             method: Method::PATCH,
             path: [CHAT, SETTINGS],
@@ -192,7 +146,14 @@ twitch_api_trait! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
-        send_chat_announcement => {
+        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
+        fn send_chat_announcement(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            message: &str,
+            color: Option<AnnouncementColor>,
+        ) -> NoContent {
             endpoint_type: EndpointType::SendChatAnnouncement,
             method: Method::POST,
             path: [CHAT, "announcements"],
@@ -203,7 +164,13 @@ twitch_api_trait! {
             headers: [json],
             body: ChatAnnouncementBody::new(message, color).into_json()
         }
-        send_a_shoutout => {
+        /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
+        fn send_a_shoutout(
+            &self,
+            from_broadcaster_id: BroadcasterId,
+            to_broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+        ) -> NoContent {
             endpoint_type: EndpointType::SendAShoutout,
             method: Method::POST,
             path: [CHAT, "shoutouts"],
@@ -213,14 +180,24 @@ twitch_api_trait! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
-        chat_write => {
+        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
+        fn chat_write(
+            &self,
+            broadcaster_id: BroadcasterId,
+            sender_id: &str,
+            message: &str,
+        ) -> SendChatMessageResponse {
             endpoint_type: EndpointType::SendChatMessage,
             method: Method::POST,
             path: [CHAT, "messages"],
             headers: [json],
             body: SendChatMessageRequest::new(broadcaster_id, sender_id, message).into_json()
         }
-        user_chat_color => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
+        fn user_chat_color(
+            &self,
+            user_id: &[UserId],
+        ) -> UsersColorResponse {
             endpoint_type: EndpointType::GetUserChatColor,
             method: Method::GET,
             path: [CHAT, "color"],
@@ -228,7 +205,12 @@ twitch_api_trait! {
                 extend(user_id.iter().map(|x| (USER_ID, x)))
             }
         }
-        update_user_chat_color => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
+        fn update_user_chat_color(
+            &self,
+            user_id: UserId,
+            color: ChatColor,
+        ) -> NoContent {
             endpoint_type: EndpointType::UpdateUserChatColor,
             method: Method::PUT,
             path: [CHAT, "color"],

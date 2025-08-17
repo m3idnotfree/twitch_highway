@@ -11,17 +11,13 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "ccls")))]
-    trait CclsAPI {
+endpoints! {
+    CclsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels>
         fn get_content_classification_labels(
             &self,
             locale: Option<CclsLocale>,
-        ) -> CclsResponse;
-    }
-    impl {
-        get_content_classification_labels => {
+        ) -> CclsResponse {
             endpoint_type: EndpointType::GetContentClassificationLabels,
             method: Method::GET,
             path: ["content_classification_labels"],

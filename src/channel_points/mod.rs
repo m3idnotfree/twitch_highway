@@ -18,9 +18,8 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "channel-points")))]
-    trait ChannelPointsAPI {
+endpoints! {
+    ChannelPointsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
         fn create_custom_rewards(
             &self,
@@ -28,46 +27,7 @@ twitch_api_trait! {
             title: &str,
             cost: u64,
             opts: Option<CustomRewardsBody>,
-        ) -> CustomRewardsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
-        fn delete_custom_rewards(
-            &self,
-            broadcaster_id: BroadcasterId,
-            custom_reward_id: CustomRewardId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
-        fn get_custom_rewards(
-            &self,
-            broadcaster_id: BroadcasterId,
-            custom_reward_ids: Option<&[CustomRewardId]>,
-            only_manageable_rewards: Option<bool>,
-        ) -> CustomRewardsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
-        fn get_custom_reward_redemption(
-            &self,
-            broadcaster_id: BroadcasterId,
-            reward_id: RewardId,
-            opts: Option<CustomRewardRedemptionQuery>,
-            pagination: Option<PaginationQuery>,
-        ) -> CustomRewardsRedemptionResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
-        fn update_custom_reward(
-            &self,
-            broadcaster_id: BroadcasterId,
-            custom_reward_id: CustomRewardId,
-            opts: Option<UpdateCustomRewardRequest>,
-        ) -> CustomRewardsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
-        fn update_redemption_status(
-            &self,
-            redemption_ids: &[RedemptionId],
-            broadcaster_id: BroadcasterId,
-            reward_id: RewardId,
-            status: RedemptionStatusQuery,
-        ) -> CustomRewardsRedemptionResponse;
-    }
-    impl {
-        create_custom_rewards => {
+        ) -> CustomRewardsResponse {
             endpoint_type: EndpointType::CreateCustomRewards,
             method: Method::POST,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
@@ -77,7 +37,12 @@ twitch_api_trait! {
             headers: [json],
             body: RequestBody::new(CustomRewardsRequiredBody::new(title, cost), opts).into_json()
         }
-        delete_custom_rewards => {
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
+        fn delete_custom_rewards(
+            &self,
+            broadcaster_id: BroadcasterId,
+            custom_reward_id: CustomRewardId,
+        ) -> NoContent {
             endpoint_type: EndpointType::DeleteCustomReward,
             method: Method::DELETE,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
@@ -86,7 +51,13 @@ twitch_api_trait! {
                 query(ID, custom_reward_id)
             }
         }
-        get_custom_rewards => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
+        fn get_custom_rewards(
+            &self,
+            broadcaster_id: BroadcasterId,
+            custom_reward_ids: Option<&[CustomRewardId]>,
+            only_manageable_rewards: Option<bool>,
+        ) -> CustomRewardsResponse {
             endpoint_type: EndpointType::GetCustomReward,
             method: Method::GET,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
@@ -96,7 +67,14 @@ twitch_api_trait! {
                 opt("only_manageable_rewards", only_manageable_rewards.map(|x| x.to_string()))
             }
         }
-        get_custom_reward_redemption => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
+        fn get_custom_reward_redemption(
+            &self,
+            broadcaster_id: BroadcasterId,
+            reward_id: RewardId,
+            opts: Option<CustomRewardRedemptionQuery>,
+            pagination: Option<PaginationQuery>,
+        ) -> CustomRewardsRedemptionResponse {
             endpoint_type: EndpointType::GetCustomRewardRedemption,
             method: Method::GET,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"],
@@ -107,7 +85,13 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        update_custom_reward => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
+        fn update_custom_reward(
+            &self,
+            broadcaster_id: BroadcasterId,
+            custom_reward_id: CustomRewardId,
+            opts: Option<UpdateCustomRewardRequest>,
+        ) -> CustomRewardsResponse {
             endpoint_type: EndpointType::UpdateCustomReward,
             method: Method::PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
@@ -118,7 +102,14 @@ twitch_api_trait! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
-        update_redemption_status => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
+        fn update_redemption_status(
+            &self,
+            redemption_ids: &[RedemptionId],
+            broadcaster_id: BroadcasterId,
+            reward_id: RewardId,
+            status: RedemptionStatusQuery,
+        ) -> CustomRewardsRedemptionResponse {
             endpoint_type: EndpointType::UpdateRedemptionStatus,
             method: Method::PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"],

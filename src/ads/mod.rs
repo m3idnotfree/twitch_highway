@@ -15,35 +15,25 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "ads")))]
-    trait AdsAPI {
+endpoints! {
+    AdsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
         fn start_commercial(
             &self,
             broadcaster_id: BroadcasterId,
             length: u64,
-        ) -> StartCommercialResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
-        fn get_ad_schedule(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> AdScheduleResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
-        fn snooze_next_ad(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> SnoozeNextAdResponse;
-    }
-    impl {
-        start_commercial => {
+        ) -> StartCommercialResponse {
             endpoint_type: EndpointType::StartCommercial,
             method: Method::POST,
             path: [CHANNELS, "commercial"],
             headers: [json],
             body: StartCommercialBody::new(broadcaster_id, length).into_json()
         }
-        get_ad_schedule => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
+        fn get_ad_schedule(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> AdScheduleResponse {
             endpoint_type: EndpointType::GetAdSchedule,
             method: Method::GET,
             path: [CHANNELS, "ads"],
@@ -51,7 +41,11 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        snooze_next_ad => {
+        /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
+        fn snooze_next_ad(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> SnoozeNextAdResponse {
             endpoint_type: EndpointType::SnoozeNextAd,
             method: Method::POST,
             path: [CHANNELS, "ads", "schedule", "snooze"],
@@ -61,6 +55,52 @@ twitch_api_trait! {
         }
     }
 }
+
+// twitch_api_trait! {
+//     trait AdsAPI {
+//         /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
+//         fn start_commercial(
+//             &self,
+//             broadcaster_id: BroadcasterId,
+//             length: u64,
+//         ) -> StartCommercialResponse;
+//         /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
+//         fn get_ad_schedule(
+//             &self,
+//             broadcaster_id: BroadcasterId,
+//         ) -> AdScheduleResponse;
+//         /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
+//         fn snooze_next_ad(
+//             &self,
+//             broadcaster_id: BroadcasterId,
+//         ) -> SnoozeNextAdResponse;
+//     }
+//     impl {
+//         start_commercial => {
+//             endpoint_type: EndpointType::StartCommercial,
+//             method: Method::POST,
+//             path: [CHANNELS, "commercial"],
+//             headers: [json],
+//             body: StartCommercialBody::new(broadcaster_id, length).into_json()
+//         }
+//         get_ad_schedule => {
+//             endpoint_type: EndpointType::GetAdSchedule,
+//             method: Method::GET,
+//             path: [CHANNELS, "ads"],
+//             query_params: {
+//                 query(BROADCASTER_ID, broadcaster_id)
+//             }
+//         }
+//         snooze_next_ad => {
+//             endpoint_type: EndpointType::SnoozeNextAd,
+//             method: Method::POST,
+//             path: [CHANNELS, "ads", "schedule", "snooze"],
+//             query_params: {
+//                 query(BROADCASTER_ID, broadcaster_id)
+//             }
+//         }
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

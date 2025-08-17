@@ -10,18 +10,14 @@ use crate::{
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "hype-train")))]
-    trait HypeTrainAPI {
+endpoints! {
+    HypeTrainAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-hype-train-events>
         fn get_hype_train_events(
             &self,
             broadcaster_id: BroadcasterId,
             pagination: Option<PaginationQuery>,
-        ) -> HypeTrainResponse;
-    }
-    impl {
-        get_hype_train_events => {
+        ) -> HypeTrainResponse {
             endpoint_type: EndpointType::GetHypeTrainEvents,
             method: Method::GET,
             path: ["hypetrain", "events"],

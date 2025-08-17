@@ -17,101 +17,14 @@ pub mod types;
 
 const GUEST_STAR: &str = "guest_star";
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "guest-star")))]
-    trait GuestStarAPI {
+endpoints! {
+    GuestStarAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-guest-star-settings>
         fn get_channel_guest_star_settings(
             &self,
             broadcaster_id: BroadcasterId,
             moderator_id: ModeratorId,
-        ) -> GuestStarSettingsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings>
-        fn update_channel_guest_star_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            request: GustStarSettingRequest,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-session>
-        fn get_guest_star_session(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-        ) -> GustStarSessionResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#create-guest-star-session>
-        fn create_guest_star_session(
-            &self,
-            broadcaster_id: BroadcasterId,
-        ) -> GustStarSessionResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#end-guest-star-session>
-        fn end_guest_star_session(
-            &self,
-            broadcaster_id: BroadcasterId,
-            session_id: &str,
-        ) -> GustStarSessionResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites>
-        fn get_guest_star_invites(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-        ) -> GustStarInvitesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite>
-        fn send_guest_star_invites(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            guest_id: &str,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite>
-        fn delete_guest_star_invites(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            guest_id: &str,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot>
-        fn assign_guest_star_slot(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            guest_id: &str,
-            slot_id: &str,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot>
-        fn update_guest_star_slot(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            source_slot_id: &str,
-            destination_slot_id: Option<&str>,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot>
-        fn delete_guest_star_slot(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            guest_id: &str,
-            slot_id: &str,
-            should_reinvite_guest: Option<&str>,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot-settings>
-        fn update_guest_star_slot_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            session_id: &str,
-            slot_id: &str,
-            opts: UpdateSlotSettingsRequest,
-        ) -> NoContent;
-    }
-    impl {
-        get_channel_guest_star_settings => {
+        ) -> GuestStarSettingsResponse {
             endpoint_type: EndpointType::GetChannelGuestStarSettings,
             method: Method::GET,
             path: [GUEST_STAR, "channel_settings"],
@@ -120,7 +33,12 @@ twitch_api_trait! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
-        update_channel_guest_star_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings>
+        fn update_channel_guest_star_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            request: GustStarSettingRequest,
+        ) -> NoContent {
             endpoint_type: EndpointType::UpdateChannelGuestStarSettings,
             method: Method::PUT,
             path: [GUEST_STAR, "channel_settings"],
@@ -129,7 +47,12 @@ twitch_api_trait! {
                 into_query(request)
             }
         }
-        get_guest_star_session => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-session>
+        fn get_guest_star_session(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+        ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::GetGuestStarSession,
             method: Method::GET,
             path: [GUEST_STAR, "session"],
@@ -138,7 +61,11 @@ twitch_api_trait! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
-        create_guest_star_session => {
+        /// <https://dev.twitch.tv/docs/api/reference/#create-guest-star-session>
+        fn create_guest_star_session(
+            &self,
+            broadcaster_id: BroadcasterId,
+        ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::CreateGuestStarSession,
             method: Method::POST,
             path: [GUEST_STAR, "session"],
@@ -146,7 +73,12 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        end_guest_star_session => {
+        /// <https://dev.twitch.tv/docs/api/reference/#end-guest-star-session>
+        fn end_guest_star_session(
+            &self,
+            broadcaster_id: BroadcasterId,
+            session_id: &str,
+        ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::EndGuestStarSession,
             method: Method::DELETE,
             path: [GUEST_STAR, "session"],
@@ -155,7 +87,13 @@ twitch_api_trait! {
                 query("session_id", session_id)
             }
         }
-        get_guest_star_invites => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites>
+        fn get_guest_star_invites(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+        ) -> GustStarInvitesResponse {
             endpoint_type: EndpointType::GetGuestStarInvites,
             method: Method::GET,
             path: [GUEST_STAR, "invites"],
@@ -165,7 +103,14 @@ twitch_api_trait! {
                 query("session_id", session_id)
             }
         }
-        send_guest_star_invites => {
+        /// <https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite>
+        fn send_guest_star_invites(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            guest_id: &str,
+        ) -> NoContent {
             endpoint_type: EndpointType::SendGuestStarInvite,
             method: Method::POST,
             path: [GUEST_STAR, "invites"],
@@ -176,7 +121,14 @@ twitch_api_trait! {
                 query("guest_id", guest_id)
             }
         }
-        delete_guest_star_invites => {
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite>
+        fn delete_guest_star_invites(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            guest_id: &str,
+        ) -> NoContent {
             endpoint_type: EndpointType::DeleteGuestStarInvite,
             method: Method::DELETE,
             path: [GUEST_STAR, "invites"],
@@ -187,7 +139,15 @@ twitch_api_trait! {
                 query("guest_id", guest_id)
             }
         }
-        assign_guest_star_slot => {
+        /// <https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot>
+        fn assign_guest_star_slot(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            guest_id: &str,
+            slot_id: &str,
+        ) -> NoContent {
             endpoint_type: EndpointType::AssignGuestStarSlot,
             method: Method::POST,
             path: [GUEST_STAR, "slot"],
@@ -199,7 +159,15 @@ twitch_api_trait! {
                 query("slot_id", slot_id)
             }
         }
-        update_guest_star_slot => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot>
+        fn update_guest_star_slot(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            source_slot_id: &str,
+            destination_slot_id: Option<&str>,
+        ) -> NoContent {
             endpoint_type: EndpointType::UpdateGuestStarSlot,
             method: Method::PATCH,
             path: [GUEST_STAR, "slot"],
@@ -211,7 +179,16 @@ twitch_api_trait! {
                 opt("destination_slot_id", destination_slot_id)
             }
         }
-        delete_guest_star_slot => {
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot>
+        fn delete_guest_star_slot(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            guest_id: &str,
+            slot_id: &str,
+            should_reinvite_guest: Option<&str>,
+        ) -> NoContent {
             endpoint_type: EndpointType::DeleteGuestStarSlot,
             method: Method::DELETE,
             path: [GUEST_STAR, "slot"],
@@ -224,7 +201,15 @@ twitch_api_trait! {
                 opt("should_reinvite_guest", should_reinvite_guest)
             }
         }
-        update_guest_star_slot_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot-settings>
+        fn update_guest_star_slot_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            session_id: &str,
+            slot_id: &str,
+            opts: UpdateSlotSettingsRequest,
+        ) -> NoContent {
             endpoint_type: EndpointType::UpdateGuestStarSlotSettings,
             method: Method::PATCH,
             path: [GUEST_STAR, "slot_settings"],

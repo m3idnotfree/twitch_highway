@@ -26,169 +26,14 @@ pub mod types;
 
 const MODERATION: &str = "moderation";
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "moderation")))]
-    trait ModerationAPI {
+endpoints! {
+    ModerationAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
         fn check_automod_status(
             &self,
             broadcaster_id: BroadcasterId,
             data: &[CheckAutoMod],
-        ) -> CheckAutoModStatusResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
-        fn manage_held_automod_messages(
-            &self,
-            user_id: UserId,
-            msg_id: &str,
-            action: AutoModAction,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
-        fn get_auto_mod_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-        ) -> AutoModSettingsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
-        fn update_auto_mod_settings(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            opts: Option<UpdateAutoModSettingsRequest>,
-        ) -> AutoModSettingsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
-        fn get_banned_users(
-            &self,
-            broadcaster_id: BroadcasterId,
-            user_id: Option<&[UserId]>,
-            pagination: Option<PaginationQuery>,
-        ) -> GetBannedUsersResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#ban-user>
-        fn ban_users(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            data: BanUserRequest,
-        ) -> BanUsersResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#unban-user>
-        fn unban_user(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            user_id: UserId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
-        fn get_unban_requests(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            status: UnbanRequestStatus,
-            user_id: Option<UserId>,
-            pagination: Option<PaginationQuery>,
-        ) -> UnbanRequestResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
-        fn resolve_unban_requests(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            unban_request_id: &str,
-            status: UnbanRequestStatus,
-            resolution_text: Option<&str>,
-        ) -> UnbanRequestResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
-        fn get_blocked_terms(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            pagination: Option<PaginationQuery>,
-        ) -> BlockedTermsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
-        fn add_blocked_term(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            text: &str,
-        ) -> BlockedTermsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
-        fn remove_blocked_term(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            id: Id,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
-        fn delete_chat_messages(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            message_id: Option<&str>,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
-        fn get_moderated_channels(
-            &self,
-            user_id: UserId,
-            pagination: Option<PaginationQuery>,
-        ) -> ModeratedChannelResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
-        fn get_moderators(
-            &self,
-            broadcaster_id: BroadcasterId,
-            user_id: Option<UserId>,
-            pagination: Option<PaginationQuery>,
-        ) -> ModeratorsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
-        fn add_channel_moderator(
-            &self,
-            broadcaster_id: BroadcasterId,
-            user_id: UserId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
-        fn remove_channel_moderator(
-            &self,
-            broadcaster_id: BroadcasterId,
-            user_id: UserId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
-        fn get_vips(
-            &self,
-            user_ids: Option<&[UserId]>,
-            broadcaster_id: BroadcasterId,
-            pagination: Option<PaginationQuery>,
-        ) -> ModeratorsResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
-        fn add_channel_vip(
-            &self,
-            user_id: UserId,
-            broadcaster_id: BroadcasterId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
-        fn remove_channel_vip(
-            &self,
-            user_id: UserId,
-            broadcaster_id: BroadcasterId,
-        ) -> NoContent;
-        /// <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
-        fn update_shield_mode_status(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            is_active: bool,
-        ) -> ShieldModeStatusResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
-        fn get_shield_mode_status(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-        ) -> ShieldModeStatusResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
-        fn warm_chat_user(
-            &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            data: &[WarnChatUser],
-        ) -> WarnChatUsersResponse;
-    }
-    impl {
-        check_automod_status => {
+        ) -> CheckAutoModStatusResponse {
             endpoint_type: EndpointType::CheckAutoModStatus,
             method: Method::GET,
             path: [MODERATION, "enforcements", "status"],
@@ -198,14 +43,25 @@ twitch_api_trait! {
             headers: [json],
             body: CheckAutoModStatusRequest::new(data).into_json()
         }
-        manage_held_automod_messages => {
+        /// <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
+        fn manage_held_automod_messages(
+            &self,
+            user_id: UserId,
+            msg_id: &str,
+            action: AutoModAction,
+        ) -> NoContent {
             endpoint_type: EndpointType::ManageHeldAutoModMessages,
             method: Method::GET,
             path: [MODERATION, "automod", "message"],
             headers: [json],
             body:ManageHeldAutoModMeussageRequest::new(user_id, msg_id, action).into_json()
         }
-        get_auto_mod_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
+        fn get_auto_mod_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+        ) -> AutoModSettingsResponse {
             endpoint_type: EndpointType::GetAutoModSettings,
             method: Method::GET,
             path: [MODERATION, "automod", SETTINGS],
@@ -214,7 +70,13 @@ twitch_api_trait! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
-        update_auto_mod_settings => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
+        fn update_auto_mod_settings(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            opts: Option<UpdateAutoModSettingsRequest>,
+        ) -> AutoModSettingsResponse {
             endpoint_type: EndpointType::UpdateAutoModSettings,
             method: Method::PUT,
             path: [MODERATION, "automod", SETTINGS],
@@ -225,7 +87,13 @@ twitch_api_trait! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
-        get_banned_users => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
+        fn get_banned_users(
+            &self,
+            broadcaster_id: BroadcasterId,
+            user_id: Option<&[UserId]>,
+            pagination: Option<PaginationQuery>,
+        ) -> GetBannedUsersResponse {
             endpoint_type: EndpointType::GetBannedUsers,
             method: Method::GET,
             path: [MODERATION, "banned"],
@@ -236,7 +104,13 @@ twitch_api_trait! {
             },
             headers: [json]
         }
-        ban_users => {
+        /// <https://dev.twitch.tv/docs/api/reference/#ban-user>
+        fn ban_users(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            data: BanUserRequest,
+        ) -> BanUsersResponse {
             endpoint_type: EndpointType::BanUsers,
             method: Method::POST,
             path: [MODERATION, "bans"],
@@ -247,7 +121,13 @@ twitch_api_trait! {
             headers: [json],
             body: BanUsersRequest::new(data).into_json()
         }
-        unban_user => {
+        /// <https://dev.twitch.tv/docs/api/reference/#unban-user>
+        fn unban_user(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            user_id: UserId,
+        ) -> NoContent {
             endpoint_type: EndpointType::BanUsers,
             method: Method::DELETE,
             path: [MODERATION, "bans"],
@@ -257,7 +137,15 @@ twitch_api_trait! {
                 query(USER_ID, user_id)
             }
         }
-        get_unban_requests => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
+        fn get_unban_requests(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            status: UnbanRequestStatus,
+            user_id: Option<UserId>,
+            pagination: Option<PaginationQuery>,
+        ) -> UnbanRequestResponse {
             endpoint_type: EndpointType::GetUnbanRequests,
             method: Method::GET,
             path: [MODERATION, "unban_requests"],
@@ -269,7 +157,15 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        resolve_unban_requests => {
+        /// <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
+        fn resolve_unban_requests(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            unban_request_id: &str,
+            status: UnbanRequestStatus,
+            resolution_text: Option<&str>,
+        ) -> UnbanRequestResponse {
             endpoint_type: EndpointType::ResolveUnbanRequests,
             method: Method::PATCH,
             path: [MODERATION, "unban_requests"],
@@ -281,7 +177,13 @@ twitch_api_trait! {
                 opt("resolution_text", resolution_text)
             }
         }
-        get_blocked_terms => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
+        fn get_blocked_terms(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            pagination: Option<PaginationQuery>,
+        ) -> BlockedTermsResponse {
             endpoint_type: EndpointType::GetBlockedTerms,
             method: Method::GET,
             path: [MODERATION, "blocked_terms"],
@@ -291,7 +193,13 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        add_blocked_term => {
+        /// <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
+        fn add_blocked_term(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            text: &str,
+        ) -> BlockedTermsResponse {
             endpoint_type: EndpointType::AddBlockedTerm,
             method: Method::POST,
             path: [MODERATION, "blocked_terms"],
@@ -302,7 +210,13 @@ twitch_api_trait! {
             headers: [json],
             body: AddBlockedTermRequest::new(text).into_json()
         }
-        remove_blocked_term => {
+        /// <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
+        fn remove_blocked_term(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            id: Id,
+        ) -> NoContent {
             endpoint_type: EndpointType::RemoveBlockedTerm,
             method: Method::DELETE,
             path: [MODERATION, "blocked_terms"],
@@ -312,7 +226,13 @@ twitch_api_trait! {
                 query(ID, id)
             }
         }
-        delete_chat_messages => {
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
+        fn delete_chat_messages(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            message_id: Option<&str>,
+        ) -> NoContent {
             endpoint_type: EndpointType::DeleteChatMessages,
             method: Method::DELETE,
             path: [MODERATION, CHAT],
@@ -322,7 +242,12 @@ twitch_api_trait! {
                 opt("message_id", message_id)
             }
         }
-        get_moderated_channels => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
+        fn get_moderated_channels(
+            &self,
+            user_id: UserId,
+            pagination: Option<PaginationQuery>,
+        ) -> ModeratedChannelResponse {
             endpoint_type: EndpointType::GetModeratedChannels,
             method: Method::GET,
             path: [MODERATION, CHANNELS],
@@ -331,7 +256,13 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        get_moderators => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
+        fn get_moderators(
+            &self,
+            broadcaster_id: BroadcasterId,
+            user_id: Option<UserId>,
+            pagination: Option<PaginationQuery>,
+        ) -> ModeratorsResponse {
             endpoint_type: EndpointType::GetModerators,
             method: Method::GET,
             path: [MODERATION, "moderators"],
@@ -341,7 +272,12 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        add_channel_moderator => {
+        /// <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
+        fn add_channel_moderator(
+            &self,
+            broadcaster_id: BroadcasterId,
+            user_id: UserId,
+        ) -> NoContent {
             endpoint_type: EndpointType::AddChannelModerator,
             method: Method::POST,
             path: [MODERATION, "moderators"],
@@ -350,7 +286,12 @@ twitch_api_trait! {
                 query(USER_ID, user_id)
             }
         }
-        remove_channel_moderator => {
+        /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
+        fn remove_channel_moderator(
+            &self,
+            broadcaster_id: BroadcasterId,
+            user_id: UserId,
+        ) -> NoContent {
             endpoint_type: EndpointType::RemoveChannelModerator,
             method: Method::DELETE,
             path: [MODERATION, "moderators"],
@@ -359,7 +300,13 @@ twitch_api_trait! {
                 query(USER_ID, user_id)
             }
         }
-        get_vips => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
+        fn get_vips(
+            &self,
+            user_ids: Option<&[UserId]>,
+            broadcaster_id: BroadcasterId,
+            pagination: Option<PaginationQuery>,
+        ) -> ModeratorsResponse {
             endpoint_type: EndpointType::GetVIPs,
             method: Method::GET,
             path: [CHANNELS, "vips"],
@@ -369,7 +316,12 @@ twitch_api_trait! {
                 pagination(pagination)
             }
         }
-        add_channel_vip => {
+        /// <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
+        fn add_channel_vip(
+            &self,
+            user_id: UserId,
+            broadcaster_id: BroadcasterId,
+        ) -> NoContent {
             endpoint_type: EndpointType::AddChannelVIP,
             method: Method::POST,
             path: [CHANNELS, "vips"],
@@ -378,7 +330,12 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        remove_channel_vip => {
+        /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
+        fn remove_channel_vip(
+            &self,
+            user_id: UserId,
+            broadcaster_id: BroadcasterId,
+        ) -> NoContent {
             endpoint_type: EndpointType::RemoveChannelVIP,
             method: Method::DELETE,
             path: [CHANNELS, "vips"],
@@ -387,7 +344,13 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        update_shield_mode_status => {
+        /// <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
+        fn update_shield_mode_status(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            is_active: bool,
+        ) -> ShieldModeStatusResponse {
             endpoint_type: EndpointType::UpdateShieldModeStatus,
             method: Method::PUT,
             path: [MODERATION, "shield_mode"],
@@ -398,7 +361,12 @@ twitch_api_trait! {
             headers: [json],
             body: UpdateShieldModeStatusRequest::new(is_active).into_json()
         }
-        get_shield_mode_status => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
+        fn get_shield_mode_status(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+        ) -> ShieldModeStatusResponse {
             endpoint_type: EndpointType::GetShieldModeStatus,
             method: Method::GET,
             path: [MODERATION, "shield_mode"],
@@ -407,7 +375,13 @@ twitch_api_trait! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
-        warm_chat_user => {
+        /// <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
+        fn warm_chat_user(
+            &self,
+            broadcaster_id: BroadcasterId,
+            moderator_id: ModeratorId,
+            data: &[WarnChatUser],
+        ) -> WarnChatUsersResponse {
             endpoint_type: EndpointType::WarnChatUser,
             method: Method::GET,
             path: [MODERATION, "warnings"],

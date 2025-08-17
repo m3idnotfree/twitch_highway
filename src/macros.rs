@@ -280,13 +280,10 @@ macro_rules! automatic_impl {
 
 /// ### Structure:
 /// ```rust,ignore
-/// twitch_api_trait! {
-///     trait TraitName {
+/// endpoints! {
+///     Name {
 ///         /// Method documentation
-///         fn method_name(&self, param) -> ReturnType;
-///     }
-///     impl {
-///         method_name => {
+///         fn method_name(&self, param) -> ReturnType {
 ///             endpoint_type: EndpointType,
 ///             method: HttpMethod,
 ///             path: ["segment1", "segment2"],
@@ -313,28 +310,23 @@ macro_rules! automatic_impl {
 ///
 /// Returns `TwitchAPIRequest<ReturnType>`
 ///
-macro_rules! twitch_api_trait {
+macro_rules! endpoints {
     (
       $(#[$trait_attr:meta])*
-        trait $trait_name:ident {
+        $trait_name:ident {
             $(
                 $(#[$method_attr:meta])*
                 fn $method_name:ident(
                     &self
                     $(, $param_name:ident: $param_type:ty)* $(,)?
-                ) -> $return_type:ty;
-            )+
-        }
-        impl {
-            $(
-                $impl_method_name:ident => {
-                    endpoint_type: $endpoint_type:expr,
-                    method: $http_method:expr,
-                    path: [$($path_segment:expr),* $(,)?]
-                    $(, query_params: {$($query_config:tt)*})?
-                    $(, headers: [$($header_config:tt)*])?
-                    $(, body: $body_expr:expr)?
-                    $(,)?
+                ) -> $return_type:ty {
+                        endpoint_type: $endpoint_type:expr,
+                        method: $http_method:expr,
+                        path: [$($path_segment:expr),* $(,)?]
+                        $(, query_params: {$($query_config:tt)*})?
+                        $(, headers: [$($header_config:tt)*])?
+                        $(, body: $body_expr:expr)?
+                        $(,)?
                 }
             )+
         }
@@ -352,7 +344,7 @@ macro_rules! twitch_api_trait {
 
         impl $trait_name for TwitchAPI {
             $(
-                fn $impl_method_name(
+                fn $method_name(
                     &self
                     $(, $param_name: $param_type)*
                 ) -> TwitchAPIRequest<$return_type> {
@@ -360,10 +352,10 @@ macro_rules! twitch_api_trait {
 
                     url.path_segments_mut().unwrap().extend([$($path_segment),*]);
 
-                    $( twitch_api_trait!(@query url.query_pairs_mut(), $($query_config)*); )?
+                    $( endpoints!(@query url.query_pairs_mut(), $($query_config)*); )?
 
-                    let headers = twitch_api_trait!(@headers self, $($($header_config)*)?);
-                    let body = twitch_api_trait!(@body_handler $($body_expr)?);
+                    let headers = endpoints!(@headers self, $($($header_config)*)?);
+                    let body = endpoints!(@body_handler $($body_expr)?);
 
                     TwitchAPIRequest::new(
                         $endpoint_type,
@@ -380,7 +372,7 @@ macro_rules! twitch_api_trait {
         mod __test_enforcement {
             const _ENFORCE_ALL_TESTS_EXIST: () = {
                 $(
-                    let _: fn() = super::tests::$impl_method_name;
+                    let _: fn() = super::tests::$method_name;
                 )*
             };
         }
@@ -392,7 +384,7 @@ macro_rules! twitch_api_trait {
     (@query $url:expr, query($key:expr, $value:expr) $(, $($rest:tt)*)?) => {
         $url.append_pair($key, $value.as_ref());
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 
@@ -402,7 +394,7 @@ macro_rules! twitch_api_trait {
             $url.append_pair($key, val.as_ref());
         }
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 
@@ -410,7 +402,7 @@ macro_rules! twitch_api_trait {
     (@query $url:expr, extend($iter:expr) $(, $($rest:tt)*)?) => {
         $url.extend_pairs($iter);
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
 
     };
@@ -421,7 +413,7 @@ macro_rules! twitch_api_trait {
             $url.extend_pairs(opts);
         }
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 
@@ -431,7 +423,7 @@ macro_rules! twitch_api_trait {
             pagination.into_query(&mut $url);
         }
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 
@@ -439,7 +431,7 @@ macro_rules! twitch_api_trait {
     (@query $url:expr, into_query($custom_applier:expr) $(, $($rest:tt)*)?) => {
         $custom_applier.into_query(&mut $url);
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 
@@ -449,7 +441,7 @@ macro_rules! twitch_api_trait {
             opts.into_query(&mut $url);
         }
         $(
-            twitch_api_trait!(@query $url, $($rest)*);
+            endpoints!(@query $url, $($rest)*);
         )?
     };
 

@@ -15,29 +15,13 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "bits")))]
-    trait BitsAPI {
+endpoints! {
+    BitsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
         fn get_bits_leaderboard(
             &self,
             opts: Option<BitsLeaderboardRequest>,
-        ) -> BitsLeaderboardResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
-        fn get_cheermotes(
-            &self,
-            broadcaster_id: Option<BroadcasterId>,
-        ) -> CheermotesResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
-        fn get_extension_transactions(
-            &self,
-            extension_id: ExtensionId,
-            id: Option<Id>,
-            pagination: Option<PaginationQuery>,
-        ) -> ExtensionTransactionsResponse;
-    }
-    impl {
-        get_bits_leaderboard => {
+        ) -> BitsLeaderboardResponse {
             endpoint_type: EndpointType::GetBitsLeaderboard,
             method: Method::GET,
             path: [BITS, "leaderboard"],
@@ -45,7 +29,11 @@ twitch_api_trait! {
                 opt_into_query(opts)
             }
         }
-        get_cheermotes => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
+        fn get_cheermotes(
+            &self,
+            broadcaster_id: Option<BroadcasterId>,
+        ) -> CheermotesResponse {
             endpoint_type: EndpointType::GetCheermotes,
             method: Method::GET,
             path: [BITS, "cheermotes"],
@@ -53,7 +41,13 @@ twitch_api_trait! {
                 opt(BROADCASTER_ID, broadcaster_id)
             }
         }
-        get_extension_transactions => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
+        fn get_extension_transactions(
+            &self,
+            extension_id: ExtensionId,
+            id: Option<Id>,
+            pagination: Option<PaginationQuery>,
+        ) -> ExtensionTransactionsResponse {
             endpoint_type: EndpointType::GetExtensionTransactions,
             method: Method::GET,
             path: [EXTENSIONS, "transactions"],

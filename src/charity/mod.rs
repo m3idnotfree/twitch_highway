@@ -13,23 +13,13 @@ use crate::{
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "charity")))]
-    trait CharityAPI {
+endpoints! {
+    CharityAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign>
         fn get_charity_campaign(
             &self,
             broadcaster_id: BroadcasterId,
-        ) -> CharityCampaignResponse;
-        /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations>
-        fn get_charity_campaign_donations(
-            &self,
-            broadcaster_id: BroadcasterId,
-            pagination: Option<PaginationQuery>,
-        ) -> CharityCampaignDonationResponse;
-    }
-    impl {
-        get_charity_campaign => {
+        ) -> CharityCampaignResponse {
             endpoint_type: EndpointType::GetCharityCampaign,
             method: Method::GET,
             path: [CHARITY, "campaigns"],
@@ -37,7 +27,12 @@ twitch_api_trait! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
-        get_charity_campaign_donations => {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-charity-campaign-donations>
+        fn get_charity_campaign_donations(
+            &self,
+            broadcaster_id: BroadcasterId,
+            pagination: Option<PaginationQuery>,
+        ) -> CharityCampaignDonationResponse {
             endpoint_type: EndpointType::GetCharityCampaignDonations,
             method: Method::GET,
             path: [CHARITY, "donations"],

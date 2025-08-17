@@ -10,17 +10,13 @@ use crate::{
 pub mod response;
 pub mod types;
 
-twitch_api_trait! {
-    #[cfg_attr(docsrs, doc(cfg(feature = "goals")))]
-    trait GoalsAPI {
+endpoints! {
+    GoalsAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-creator-goals>
         fn get_creator_goals(
             &self,
             broadcaster_id: BroadcasterId,
-        ) -> GoalsResponse;
-    }
-    impl {
-        get_creator_goals => {
+        ) -> GoalsResponse {
             endpoint_type: EndpointType::GetCreatorGoals,
             method: Method::GET,
             path: ["goals"],
