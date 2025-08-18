@@ -130,6 +130,51 @@ impl TwitchApiTest {
     }
 }
 
+#[cfg(feature = "analytics")]
+impl TwitchApiTest {
+    pub async fn get_extension_analytics(&self) {
+        self.api_mock("GET", "/analytics/extensions")
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "extension_id": "efgh",
+                        "URL": "https://twitch-piper-reports.s3-us-west-2.amazonaws.com/dynamic/LoL%20ADC...",
+                        "type": "overview_v2",
+                        "date_range": {
+                            "started_at": "2018-03-01T00:00:00Z",
+                            "ended_at": "2018-06-01T00:00:00Z"
+                        }
+                    },
+                ],
+                "pagination": {"cursor": "eyJiIjpudWxsLCJhIjp7Ik9mZnNldCI6NX19"}
+            })))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn get_game_analytics(&self) {
+        self.api_mock("GET", "/analytics/games")
+            .and(query_param("game_id", "493057"))
+            .and(query_param("started_at", "2018-01-01T00:00:00Z"))
+            .and(query_param("ended_at", "2018-03-01T00:00:00Z"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                    "game_id" : "493057",
+                    "URL" : "https://twitch-piper-reports.s3-us-west-2.amazonaws.com/games/66170/overview/15183...",
+                    "type" : "overview_v2",
+                    "date_range" : {
+                        "started_at" : "2018-01-01T00:00:00Z",
+                        "ended_at" : "2018-03-01T00:00:00Z"
+                    }
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
+}
+
 pub mod params {
     #![allow(non_snake_case)]
     #[cfg(feature = "ads")]
@@ -161,6 +206,53 @@ pub mod params {
         pub fn snooze_next_ad() -> BroadcasterIdParam {
             BroadcasterIdParam {
                 broadcaster_id: BroadcasterId::new("141981764"),
+            }
+        }
+    }
+
+    #[cfg(feature = "analytics")]
+    pub mod AnalyticsAPI {
+        use std::str::FromStr;
+
+        use chrono::{DateTime, FixedOffset};
+
+        use crate::{
+            analytics::request::AnalyticsRequest,
+            types::{ExtensionId, GameId, PaginationQuery},
+        };
+
+        pub struct GetExtensionAnalyticsParams<'a> {
+            pub extension_id: Option<ExtensionId>,
+            pub opts: Option<AnalyticsRequest>,
+            pub pagination: Option<PaginationQuery<'a>>,
+        }
+
+        pub fn get_extension_analytics<'a>() -> GetExtensionAnalyticsParams<'a> {
+            GetExtensionAnalyticsParams {
+                extension_id: None,
+                opts: None,
+                pagination: None,
+            }
+        }
+
+        pub struct GetGameAnalyticsParams<'a> {
+            pub game_id: Option<GameId>,
+            pub opts: Option<AnalyticsRequest>,
+            pub pagination: Option<PaginationQuery<'a>>,
+        }
+
+        pub fn get_game_analytics<'a>() -> GetGameAnalyticsParams<'a> {
+            let started_at = DateTime::<FixedOffset>::from_str("2018-01-01T00:00:00Z").unwrap();
+            let ended_at = DateTime::<FixedOffset>::from_str("2018-03-01T00:00:00Z").unwrap();
+
+            let analytics_request = AnalyticsRequest::new()
+                .started_at(started_at)
+                .ended_at(ended_at);
+
+            GetGameAnalyticsParams {
+                game_id: Some(GameId::new("493057")),
+                opts: Some(analytics_request),
+                pagination: None,
             }
         }
     }
