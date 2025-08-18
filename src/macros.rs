@@ -369,12 +369,33 @@ macro_rules! endpoints {
         }
 
         #[cfg(test)]
-        mod __test_enforcement {
-            const _ENFORCE_ALL_TESTS_EXIST: () = {
-                $(
-                    let _: fn() = super::tests::$method_name;
-                )*
-            };
+        mod __base_tests {
+            #![allow(unused_imports)]
+            use crate::test_utils::{params, TwitchApiTest};
+            use crate::types::{self, constants::*};
+
+            use super::$trait_name;
+
+            $(
+                #[tokio::test]
+                pub(crate) async fn $method_name() {
+                    let suite = TwitchApiTest::new().await;
+
+                    suite.$method_name().await;
+
+                    let path = format!("/{}", [$($path_segment),*].join("/"));
+
+                    let response = suite
+                        .execute(&path, |api| {
+                            let params = params::$trait_name::$method_name();
+                            api.$method_name($(params.$param_name),*)
+                        })
+                        .json()
+                        .await;
+
+                    assert!(response.is_ok());
+                }
+            )+
         }
     };
 
