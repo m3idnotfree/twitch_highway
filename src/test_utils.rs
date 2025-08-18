@@ -96,7 +96,7 @@ impl TwitchApiTest {
 
     pub async fn get_ad_schedule(&self) {
         self.api_mock("GET", "/channels/ads")
-            .and(query_param("broadcaster_id", "123"))
+            .and(query_param("broadcaster_id", "141981764"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
                 "data": [
                     {
@@ -115,7 +115,7 @@ impl TwitchApiTest {
 
     pub async fn snooze_next_ad(&self) {
         self.api_mock("POST", "/channels/ads/schedule/snooze")
-            .and(query_param("broadcaster_id", "123"))
+            .and(query_param("broadcaster_id", "141981764"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
                 "data": [
                     {
