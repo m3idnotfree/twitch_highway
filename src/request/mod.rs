@@ -1,7 +1,7 @@
 mod endpoint_type;
 mod no_content;
 
-use std::{fmt, marker::PhantomData};
+use std::{any, fmt, marker::PhantomData};
 
 use asknothingx2_util::api::{
     preset, HeaderMap, HeaderMut, IntoRequestBuilder, Method, StatusCode,
@@ -114,7 +114,21 @@ where
     }
 
     pub async fn json(self) -> Result<ResBody, crate::Error> {
-        self.send().await?.json().await.map_err(error::decode_error)
+        let response = self.send().await?;
+
+        if response.status() == StatusCode::NO_CONTENT {
+            match serde_json::from_str("{}") {
+                Ok(result) => return Ok(result),
+                Err(_) => {
+                    return Err(error::api_error(
+                    format!("Received 204 No Content but type {} cannot be deserialized from empty response", 
+                           any::type_name::<ResBody>())
+                ));
+                }
+            }
+        }
+
+        response.json().await.map_err(error::decode_error)
     }
 }
 

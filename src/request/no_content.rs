@@ -1,3 +1,5 @@
+use std::fmt;
+
 use serde::{de::Error, Deserialize, Serialize};
 
 /// Serialize empty object
@@ -77,6 +79,12 @@ impl<'de> Deserialize<'de> for NoContent {
             }
         }
         deserializer.deserialize_any(EmptyVisitor)
+    }
+}
+
+impl fmt::Display for NoContent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "")
     }
 }
 
