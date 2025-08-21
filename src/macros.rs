@@ -1,4 +1,18 @@
-macro_rules! field_type {
+/// Resolves field names to their corresponding query parameter keys.
+///
+/// # Patterns:
+/// - `field_key!(field_name, CONSTANT)` → `crate::types::constants::CONSTANT`
+/// - `field_key!(field_name, "literal")` → `"literal"`  
+/// - `field_key!(field_name)` → `"field_name"` (stringified)
+/// - `field_key!(other_type)` → `other_type` (pass-through)
+///
+/// # Example:
+/// ```rust,ignore
+/// field_key!(user_id, USER_ID)     // → crate::types::constants::USER_ID
+/// field_key!(custom, "custom_key") // → "custom_key"
+/// field_key!(name)                 // → "name"
+/// ```
+macro_rules! field_key {
     ($field:ident, $const:ident) => {
         crate::types::constants::$const
     };
@@ -16,9 +30,30 @@ macro_rules! field_type {
     };
 }
 
+/// Converts Rust values to URL query parameters with type-specific formatting.
+///
+/// # Patterns:
+/// - `@req` - Required parameter (always added)
+/// - `@opt` - Optional parameter (added only if Some)
+/// - `@convert` - Type-specific conversion logic
+///
+/// # Supported Conversions:
+/// - `u64` - Efficient integer formatting using itoa
+/// - `bool` - String conversion via to_string()
+/// - `date` - RFC3339 timestamp formatting
+/// - `vec` - Multiple parameters with same key
+/// - `{expr}` - Custom conversion expression
+/// - `func_name` - Custom conversion function
+///
+/// # Example:
+/// ```rust,ignore
+/// into_query!(@req url, "user_id", user_id);           // Simple string
+/// into_query!(@opt url, "count", Some(50), u64);       // Optional number
+/// into_query!(@req url, "created", timestamp, date);   // Date formatting
+/// ```
 macro_rules! into_query {
     (@req $url:expr, $key:expr, $value:expr, $conv:tt) => {
-        apply_url!(@convert $url, $key, $value, $conv);
+        into_query!(@convert $url, $key, $value, $conv);
     };
 
     (@req $url:expr, $key:expr, $value:expr) => {
@@ -69,6 +104,57 @@ macro_rules! into_query {
     };
 }
 
+/// Generates request structs with builder pattern methods for API parameters.
+///
+/// # Structure:
+/// ```rust,ignore
+/// define_request! {
+///     #[derive(Debug, Serialize)]
+///     RequestName {
+///         req: {
+///             required_field: Type => "api_key" ; conversion,
+///         },
+///         opts: {
+///             optional_field: Type => CONSTANT ; conversion,
+///         };
+///         flags  // e.g., into_query, into_json
+///     }
+/// }
+/// ```
+///
+/// # Field Options:
+/// - `| into` - Enable `impl Into<T>` conversion for parameters (accepts &str for String, etc.)
+/// - `=> key` - Custom query parameter name (literal or constant)
+/// - `as method_name` - Custom builder method name
+/// - `= default` - Default value for the field
+/// - `; conversion` - Type conversion for URL encoding
+///
+/// # Special Behavior:
+/// - Fields with `| into` flag automatically get `impl Into<T>` parameters
+/// - Required fields with `| into` accept conversion types in `new()` constructor
+/// - Optional fields with `| into` accept conversion types in builder methods
+/// - Other types use exact type matching
+/// - Generates `new()` constructor and fluent builder methods
+///
+/// # Example:
+/// ```rust,ignore
+/// define_request! {
+///     #[derive(Debug)]
+///     UserRequest {
+///         req: {
+///             user_id: UserId => USER_ID,
+///         },
+///         opts: {
+///             name: String | into,
+///             count: u64 ; u64,
+///         };
+///         into_query
+///     }
+/// }
+///
+/// // Usage:
+/// let req = UserRequest::new(user_id).name("alice").count(10);
+/// ```
 macro_rules! define_request {
     (
         $(#[$struct_meta:meta])*
@@ -77,6 +163,7 @@ macro_rules! define_request {
                 $(
                     $(#[$req_meta:meta])*
                     $req_field:ident: $req_type:ty
+                    $(| $req_into_value:tt)?
                     $(=> $req_key:tt)?
                     $(as $req_method_name:ident)?
                     $(= $req_default:expr)?
@@ -87,6 +174,7 @@ macro_rules! define_request {
                 $(
                     $(#[$opt_meta:meta])*
                     $opt_field:ident: $opt_type:ty
+                    $(| $opt_into_value:tt)?
                     $(=> $opt_key:tt)?
                     $(as $opt_method_name:ident)?
                     $(= $opt_default:expr)?
@@ -110,18 +198,23 @@ macro_rules! define_request {
 
         impl$(<$life>)? $name$(<$life>)? {
             #[allow(clippy::new_without_default)]
-            pub fn new($($( $req_field: $req_type),* )?) -> Self {
+            pub fn new(
+                $($(
+                    $req_field: define_request!(@param_type $req_type $(| $req_into_value)?)
+                ),*)?
+            ) -> Self {
                 Self {
-                    $($( $req_field, )*)?
-                    $($( $opt_field: None, )*)?
+                    $($(
+                        $req_field: define_request!(@param_value $req_field $(| $req_into_value)?),
+                    )*)?
+                    $($(
+                        $opt_field: None,
+                    )*)?
                 }
             }
 
             $($(
-                pub fn $opt_field(mut self, value: $opt_type) -> Self {
-                    self.$opt_field = Some(value);
-                    self
-                }
+                define_request!(@opt_method $opt_field: $opt_type $(| $opt_into_value)?);
             )*)?
         }
 
@@ -136,8 +229,76 @@ macro_rules! define_request {
             $($( $flags ),*)?
         );
     };
+
+    (@param_type $type:ty | into) => {
+        impl Into<$type>
+    };
+
+    (@param_type $type:ty) => {
+        $type
+    };
+
+    (@param_value $field:ident | into) => {
+        $field.into()
+    };
+
+    (@param_value $field:ident) => {
+        $field
+    };
+
+
+    (@opt_method $opt_field:ident: $opt_type:ty | into) => {
+        pub fn $opt_field(mut self, value: impl Into<$opt_type>) -> Self {
+            self.$opt_field = Some(value.into());
+            self
+        }
+    };
+
+    (@opt_method $opt_field:ident: $opt_type:ty) => {
+        pub fn $opt_field(mut self, value: $opt_type) -> Self {
+            self.$opt_field = Some(value);
+            self
+        }
+    };
 }
 
+/// Generates selection structs where all fields are optional with static factory methods.
+///
+/// # Structure:
+/// ```rust,ignore
+/// define_select! {
+///     #[derive(Debug)]
+///     SelectName {
+///         field1: Type => "key" ; conversion,
+///         field2: Type = default_value,
+///         field3: Type as custom_method,
+///     };
+///     flags
+/// }
+/// ```
+///
+/// # Features:
+/// - All fields are `Option<T>`
+/// - Implements `Default` trait
+/// - Generates static factory methods for each field
+/// - Custom method names via `as method_name`
+/// - Default values via `= expression`
+///
+/// # Example:
+/// ```rust,ignore
+/// define_select! {
+///     UserSelect {
+///         name: String,
+///         age: u32 = 18,
+///         active: bool as is_active,
+///     };
+///     into_query
+/// }
+///
+/// // Usage:
+/// let select = UserSelect::name("alice".to_string());
+/// let select = UserSelect::is_active(true);
+/// ```
 macro_rules! define_select {
     (
         $(#[$struct_meta:meta])*
@@ -145,6 +306,7 @@ macro_rules! define_select {
             $(
                 $(#[$field_meta:meta])*
                 $field:ident: $field_type:ty
+                $(| $into:tt $(: $item_ty:ty)? )?
                 $(=> $key:tt)?
                 $(as $method_name:ident)?
                 $(= $default:expr)?
@@ -177,7 +339,7 @@ macro_rules! define_select {
                 Self::default()
             }
             $(
-                define_select!(@method $field, $field_type, $($method_name)?);
+                define_select!(@method $field, $field_type, $($method_name)? $(| $into $(: $item_ty)?)?);
             )*
         }
 
@@ -192,10 +354,28 @@ macro_rules! define_select {
     (@default_value $default:expr) => { Some($default) };
     (@default_value) => { None };
 
+    (@method $field:ident, $field_type:ty, $method_name:ident | into) => {
+        pub fn $method_name(value: impl Into<$field_type>) -> Self {
+            Self {
+                $field: Some(value.into()),
+                ..Default::default()
+            }
+        }
+    };
+
     (@method $field:ident, $field_type:ty, $method_name:ident) => {
         pub fn $method_name(value: $field_type) -> Self {
             Self {
                 $field: Some(value),
+                ..Default::default()
+            }
+        }
+    };
+
+    (@method $field:ident, $field_type:ty, | into) => {
+        pub fn $field(value: impl Into<$field_type>) -> Self {
+            Self {
+                $field: Some(value.into()),
                 ..Default::default()
             }
         }
@@ -211,9 +391,19 @@ macro_rules! define_select {
     };
 }
 
-/// ### Supported Flags:
+/// Automatically implements traits based on specified flags.
+///
+/// # Supported Flags:
 /// - `into_query` - Implements `into_query()` method for URL parameter generation
 /// - `into_json` - Implements `into_json()` method for JSON serialization
+///
+/// # Usage:
+/// This macro is typically called from `define_request!` or `define_select!`
+/// and should not be used directly.
+///
+/// # Generated Methods:
+/// - `into_query(url_serializer)` - Converts struct to URL query parameters
+/// - `into_json() -> Option<String>` - Converts struct to JSON string
 macro_rules! automatic_impl {
     (
         $name:ident$(<$life:lifetime>)? ;
@@ -237,10 +427,10 @@ macro_rules! automatic_impl {
         impl$(<$life>)? $name$(<$life>)? {
             pub fn into_query(self, url: &mut url::form_urlencoded::Serializer<'_, url::UrlQuery<'_>>) {
                 $(
-                    into_query!(@req url, field_type!($req_field $(, $req_key)?), self.$req_field $(, $req_conv)?);
+                    into_query!(@req url, field_key!($req_field $(, $req_key)?), self.$req_field $(, $req_conv)?);
                 )*
                 $(
-                    into_query!(@opt url, field_type!($opt_field $(, $opt_key)?), self.$opt_field $(, $opt_conv)?);
+                    into_query!(@opt url, field_key!($opt_field $(, $opt_key)?), self.$opt_field $(, $opt_conv)?);
                 )*
             }
         }
@@ -278,22 +468,35 @@ macro_rules! automatic_impl {
     ) => {}
 }
 
+/// Generates API endpoint traits with implementations.
+///
 /// ### Structure:
 /// ```rust,ignore
 /// endpoints! {
-///     Name {
-///         /// Method documentation
-///         fn method_name(&self, param) -> ReturnType {
-///             endpoint_type: EndpointType,
-///             method: HttpMethod,
+///     TraitName {
+///         /// Documentation for the endpoint
+///         fn method_name(&self, param: Type) -> ResponseType {
+///             endpoint_type: EndpointType::MethodName,
+///             method: Method::GET,
 ///             path: ["segment1", "segment2"],
-///             ?( query_params: { /* query configuration */}, )
-///             ?( headers: [hedaers_config], )
-///             ?( body: body_expression )
+///             query_params: {
+///                 query("key", value),
+///                 opt("optional_key", optional_value),
+///                 pagination(pagination_obj),
+///                 into_query(custom_params),
+///             },
+///             headers: [json] | [jwt, token] | [],
+///             body: body_expression,
 ///         }
 ///     }
 /// }
 /// ```
+///
+/// # Generated Components:
+/// 1. **Public trait** - Defines the API interface
+/// 2. **Implementation** - Implements trait for TwitchAPI
+/// 3. **Parameter structs** - For test data (`__params` module)
+///
 /// ### Query Parameter Patterns:
 /// - `query("key", value)` - Add single parameter
 /// - `opt("key", optional_value)` - Add if Some
@@ -306,19 +509,18 @@ macro_rules! automatic_impl {
 /// ### Header Patterns:
 /// - `json` - Content-Type: application/json
 /// - `jwt, token` - JWT authorization with token
-/// - (empty) - Default headers only
+/// - `[]` or omitted - Default headers only
 ///
 /// Returns `TwitchAPIRequest<ReturnType>`
-///
 macro_rules! endpoints {
     (
       $(#[$trait_attr:meta])*
         $trait_name:ident {
             $(
                 $(#[$method_attr:meta])*
-                fn $method_name:ident(
+                fn $method_name:ident$(<$life:lifetime>)?(
                     &self
-                    $(, $param_name:ident: $param_type:ty)* $(,)?
+                    $(, $param_name:ident: $param_type:ty )* $(,)?
                 ) -> $return_type:ty {
                         endpoint_type: $endpoint_type:expr,
                         method: $http_method:expr,
@@ -331,11 +533,12 @@ macro_rules! endpoints {
             )+
         }
     ) => {
+        #[allow(non_camel_case_types)]
         $(#[$trait_attr])*
         pub trait $trait_name {
             $(
                 $(#[$method_attr])*
-                fn $method_name(
+                fn $method_name$(<$life>)?(
                     &self,
                     $($param_name: $param_type),*
                 ) -> TwitchAPIRequest<$return_type>;
@@ -344,7 +547,7 @@ macro_rules! endpoints {
 
         impl $trait_name for TwitchAPI {
             $(
-                fn $method_name(
+                fn $method_name$(<$life>)?(
                     &self
                     $(, $param_name: $param_type)*
                 ) -> TwitchAPIRequest<$return_type> {
@@ -369,33 +572,12 @@ macro_rules! endpoints {
         }
 
         #[cfg(test)]
-        mod __base_tests {
-            #![allow(unused_imports)]
-            use crate::test_utils::{params, TwitchApiTest};
-            use crate::types::{self, constants::*};
-
-            use super::$trait_name;
-
-            $(
-                #[tokio::test]
-                pub(crate) async fn $method_name() {
-                    let suite = TwitchApiTest::new().await;
-
-                    suite.$method_name().await;
-
-                    let path = format!("/{}", [$($path_segment),*].join("/"));
-
-                    let response = suite
-                        .execute(&path, |api| {
-                            let params = params::$trait_name::$method_name();
-                            api.$method_name($(params.$param_name),*)
-                        })
-                        .json()
-                        .await;
-
-                    assert!(response.is_ok());
-                }
-            )+
+        mod __test_enforcement {
+            const _ENFORCE_ALL_TESTS_EXIST: () = {
+                $(
+                    let _: fn() = super::tests::$method_name;
+                )*
+            };
         }
     };
 
@@ -497,4 +679,60 @@ macro_rules! endpoints {
     (@body_handler) => {
         None
     };
+}
+
+/// Generates standardized integration tests for API endpoints.
+///
+/// # Patterns:
+/// - `base_test!(endpoint, [params])` → Test with JSON response validation
+/// - `base_test!(send endpoint, [params])` → Test with HTTP response validation only
+///
+/// # Requirements:
+/// - `TwitchApiTest` must implement `async fn endpoint(&self)` for mock setup
+/// - API trait must have corresponding `fn endpoint(&self, params) -> TwitchAPIRequest<T>`
+///
+/// # Example:
+/// ```rust,ignore
+/// base_test!(get_users, [UserId::new("123456789")]);                    // JSON response
+/// base_test!(send create_reward, [broadcaster_id, reward_request]);     // No content (204)
+/// base_test!(get_global_emotes, []);                                    // No parameters
+/// ```
+#[cfg(test)]
+macro_rules! base_test {
+    ($endpoint:ident, $([$($param:expr),* $(,)?])?) => {
+        #[tokio::test]
+        pub(crate) async fn $endpoint() {
+            let suite = crate::test_utils::TwitchApiTest::new().await;
+
+            suite.$endpoint().await;
+
+            let _ = suite
+                .execute(|api| {
+                    api.$endpoint($($($param),*)?)
+                })
+                .json()
+                .await
+                .unwrap();
+
+        }
+    };
+
+    (send $endpoint:ident, $([$($param:expr),* $(,)?])?) => {
+        #[tokio::test]
+        pub(crate) async fn $endpoint() {
+            let suite = crate::test_utils::TwitchApiTest::new().await;
+
+            suite.$endpoint().await;
+
+            let _ = suite
+                .execute(|api| {
+                    api.$endpoint($($($param),*)?)
+                })
+                .send()
+                .await
+                .unwrap();
+
+        }
+    };
+
 }
