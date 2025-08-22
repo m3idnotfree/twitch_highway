@@ -4,9 +4,9 @@ use crate::types::BroadcasterId;
 
 define_request!(
     #[derive(Serialize)]
-    StartCommercialBody {
+    StartCommercialBody<'a> {
         req: {
-             broadcaster_id: BroadcasterId,
+             broadcaster_id: &'a BroadcasterId,
              length: u64 ; u64
         };
         into_json
@@ -21,7 +21,8 @@ mod tests {
 
     #[test]
     fn start_commercial_body_serialization() {
-        let body = StartCommercialBody::new(BroadcasterId::new("123456"), 30);
+        let broadcaster_id = BroadcasterId::new("123456");
+        let body = StartCommercialBody::new(&broadcaster_id, 30);
         let json = body.into_json().unwrap();
         let expected = json!({
             "broadcaster_id": "123456",

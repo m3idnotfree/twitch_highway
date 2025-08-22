@@ -22,8 +22,8 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-guest-star-settings>
         fn get_channel_guest_star_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
         ) -> GuestStarSettingsResponse {
             endpoint_type: EndpointType::GetChannelGuestStarSettings,
             method: Method::GET,
@@ -33,10 +33,11 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-channel-guest-star-settings>
         fn update_channel_guest_star_settings(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             request: GustStarSettingRequest,
         ) -> NoContent {
             endpoint_type: EndpointType::UpdateChannelGuestStarSettings,
@@ -47,11 +48,12 @@ endpoints! {
                 into_query(request)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-session>
         fn get_guest_star_session(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
         ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::GetGuestStarSession,
             method: Method::GET,
@@ -61,10 +63,11 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#create-guest-star-session>
         fn create_guest_star_session(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::CreateGuestStarSession,
             method: Method::POST,
@@ -73,10 +76,11 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#end-guest-star-session>
         fn end_guest_star_session(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             session_id: &str,
         ) -> GustStarSessionResponse {
             endpoint_type: EndpointType::EndGuestStarSession,
@@ -87,11 +91,12 @@ endpoints! {
                 query("session_id", session_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-guest-star-invites>
         fn get_guest_star_invites(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
         ) -> GustStarInvitesResponse {
             endpoint_type: EndpointType::GetGuestStarInvites,
@@ -103,11 +108,12 @@ endpoints! {
                 query("session_id", session_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-guest-star-invite>
-        fn send_guest_star_invites(
+        fn send_guest_star_invite(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             guest_id: &str,
         ) -> NoContent {
@@ -121,11 +127,12 @@ endpoints! {
                 query("guest_id", guest_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-invite>
-        fn delete_guest_star_invites(
+        fn delete_guest_star_invite(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             guest_id: &str,
         ) -> NoContent {
@@ -139,11 +146,12 @@ endpoints! {
                 query("guest_id", guest_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#assign-guest-star-slot>
         fn assign_guest_star_slot(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             guest_id: &str,
             slot_id: &str,
@@ -159,11 +167,12 @@ endpoints! {
                 query("slot_id", slot_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot>
         fn update_guest_star_slot(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             source_slot_id: &str,
             destination_slot_id: Option<&str>,
@@ -179,11 +188,12 @@ endpoints! {
                 opt("destination_slot_id", destination_slot_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#delete-guest-star-slot>
         fn delete_guest_star_slot(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             guest_id: &str,
             slot_id: &str,
@@ -201,11 +211,12 @@ endpoints! {
                 opt("should_reinvite_guest", should_reinvite_guest)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-guest-star-slot-settings>
         fn update_guest_star_slot_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             session_id: &str,
             slot_id: &str,
             opts: UpdateSlotSettingsRequest,
@@ -229,393 +240,137 @@ mod tests {
     use crate::{
         guest_star::{
             request::{GustStarSettingRequest, UpdateSlotSettingsRequest},
+            types::GroupLayout,
             GuestStarAPI,
         },
-        test_utils::TwitchApiTest,
         types::{BroadcasterId, ModeratorId},
     };
 
-    #[tokio::test]
-    pub(crate) async fn get_channel_guest_star_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/channel_settings", |api| {
-                api.get_channel_guest_star_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let settings = &response.data[0];
-        assert!(settings.is_moderator_send_live_enabled);
-        assert_eq!(settings.slot_count, 6);
-        assert!(!settings.is_browser_source_audio_enabled);
-        assert_eq!(settings.group_layout.as_str(), "HORIZONTAL_LAYOUT");
-        assert_eq!(settings.browser_source_token, "secure_token_abc123");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_guest_star_session() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/session", |api| {
-                api.get_guest_star_session(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let session = &response.data[0];
-        assert_eq!(session.id.as_str(), "live_session_789");
-        assert_eq!(session.guests.len(), 2);
-
-        let first_guest = &session.guests[0];
-        assert_eq!(first_guest.slot_id, Some("1".to_string()));
-        assert_eq!(first_guest.user_id.as_str(), "guest_user_123");
-        assert_eq!(first_guest.user_display_name, "ActiveGuest");
-        assert!(first_guest.is_live);
-        assert_eq!(first_guest.volume, 85);
-        assert!(first_guest.audio_settings.is_guest_enabled);
-        assert!(!first_guest.video_settings.is_guest_enabled);
-
-        let second_guest = &session.guests[1];
-        assert_eq!(second_guest.slot_id, Some("2".to_string()));
-        assert_eq!(second_guest.user_id.as_str(), "guest_user_456");
-        assert_eq!(second_guest.user_display_name, "SecondGuest");
-        assert!(!second_guest.is_live);
-        assert_eq!(second_guest.volume, 60);
-        assert!(!second_guest.video_settings.is_available);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_guest_star_slot_with_no_destination() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/slot", |api| {
-                api.update_guest_star_slot(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "slot_1",
-                    None,
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_guest_star_invites() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/invites", |api| {
-                api.get_guest_star_invites(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-
-        let first_invite = &response.data[0];
-        assert_eq!(first_invite.user_id.as_str(), "pending_user_1");
-        assert_eq!(first_invite.invited_at, "2024-01-15T16:00:00Z");
-        assert!(first_invite.is_audio_enabled);
-        assert!(first_invite.is_video_enabled);
-
-        let second_invite = &response.data[1];
-        assert_eq!(second_invite.user_id.as_str(), "ready_user_2");
-        assert_eq!(second_invite.invited_at, "2024-01-15T15:30:00Z");
-        assert!(second_invite.is_audio_enabled);
-        assert!(!second_invite.is_video_enabled);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn create_guest_star_session() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/session", |api| {
-                api.create_guest_star_session(BroadcasterId::new("123456789"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let session = &response.data[0];
-        assert_eq!(session.id.as_str(), "new_session_abc123");
-        assert_eq!(session.guests.len(), 0);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn end_guest_star_session() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/session", |api| {
-                api.end_guest_star_session(BroadcasterId::new("123456789"), "session_abc123")
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let session = &response.data[0];
-        assert_eq!(session.id.as_str(), "2KFRQbFtpmfyD3IevNRnCzOPRJI");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn send_guest_star_invites() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/invites", |api| {
-                api.send_guest_star_invites(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "guest_user_456",
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn delete_guest_star_invites() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/invites", |api| {
-                api.delete_guest_star_invites(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "guest_user_456",
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn assign_guest_star_slot() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/slot", |api| {
-                api.assign_guest_star_slot(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "guest_user_456",
-                    "slot_1",
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_guest_star_slot() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/slot", |api| {
-                api.update_guest_star_slot(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "slot_1",
-                    Some("slot_2"),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn delete_guest_star_slot() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/slot", |api| {
-                api.delete_guest_star_slot(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "guest_user_456",
-                    "slot_1",
-                    Some("true"),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn delete_guest_star_slot_without_reinvite() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let response = suite
-            .execute("/guest_star/slot", |api| {
-                api.delete_guest_star_slot(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "guest_user_456",
-                    "slot_1",
-                    None,
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_guest_star_slot_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let request = UpdateSlotSettingsRequest::new()
-            .is_audio_enabled(true)
-            .is_video_enabled(false)
-            .is_live(true)
-            .volume(75);
-
-        let response = suite
-            .execute("/guest_star/slot_settings", |api| {
-                api.update_guest_star_slot_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "session123",
-                    "slot_1",
-                    request,
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_channel_guest_star_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_success().await;
-
-        let request = GustStarSettingRequest::new();
-
-        let response = suite
-            .execute("/guest_star/channel_settings", |api| {
-                api.update_channel_guest_star_settings(BroadcasterId::new("123456789"), request)
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    async fn guest_star_api_error_response() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_guest_star_failure().await;
-
-        let response = suite
-            .execute("/guest_star/channel_settings", |api| {
-                api.get_channel_guest_star_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                )
-            })
-            .send()
-            .await;
-
-        match response {
-            Ok(response) => {
-                panic!("Expected Error, got: {response:?}")
-            }
-            Err(e) => {
-                assert!(e.is_api());
-            }
-        }
-    }
+    api_test!(
+        get_channel_guest_star_settings,
+        [&BroadcasterId::new("932104"), &ModeratorId::new("9321049")]
+    );
+    api_test!(
+        update_channel_guest_star_settings,
+        [
+            &BroadcasterId::new("9321049"),
+            GustStarSettingRequest::new().group_layout(GroupLayout::TILED_LAYOUT)
+        ]
+    );
+    api_test!(
+        get_guest_star_session,
+        [&BroadcasterId::new("9321049"), &ModeratorId::new("9321049")]
+    );
+    api_test!(create_guest_star_session, [&BroadcasterId::new("9321049")]);
+    api_test!(
+        end_guest_star_session,
+        [
+            &BroadcasterId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI"
+        ]
+    );
+    api_test!(
+        get_guest_star_invites,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI"
+        ]
+    );
+    api_test!(
+        send_guest_star_invite,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "144601104"
+        ]
+    );
+    api_test!(
+        delete_guest_star_invite,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "144601104"
+        ]
+    );
+    api_test!(
+        assign_guest_star_slot,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "144601104",
+            "1"
+        ]
+    );
+    api_test!(
+        update_guest_star_slot,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "1",
+            Some("2")
+        ]
+    );
+    api_test!(
+        delete_guest_star_slot,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "144601104",
+            "1",
+            None
+        ]
+    );
+    api_test!(
+        update_guest_star_slot_settings,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "1",
+            UpdateSlotSettingsRequest::new().is_audio_enabled(false)
+        ]
+    );
+
+    api_test!(extra
+        update_channel_guest_star_settings,
+        update_channel_guest_star_settings2,
+        [
+            &BroadcasterId::new("9321049"),
+            GustStarSettingRequest::new().is_moderator_send_live_enabled(false)
+        ]
+    );
+    api_test!(extra
+        update_channel_guest_star_settings,
+        update_channel_guest_star_settings3,
+        [
+            &BroadcasterId::new("9321049"),
+            GustStarSettingRequest::new().slot_count(6)
+        ]
+    );
+    api_test!(extra
+        update_channel_guest_star_settings,
+        update_channel_guest_star_settings4,
+        [
+            &BroadcasterId::new("9321049"),
+            GustStarSettingRequest::new().regenerate_browser_sources(true)
+        ]
+    );
+
+    api_test!(extra
+        update_guest_star_slot_settings,
+        update_guest_star_slot_settings2,
+        [
+            &BroadcasterId::new("9321049"),
+            &ModeratorId::new("9321049"),
+            "2KFRQbFtpmfyD3IevNRnCzOPRJI",
+            "1",
+            UpdateSlotSettingsRequest::new().is_live(true)
+        ]
+    );
 }

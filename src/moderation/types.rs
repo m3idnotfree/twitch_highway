@@ -46,7 +46,7 @@ pub struct BanUser {
     pub end_time: Option<DateTime<FixedOffset>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UnbanRequestStatus {
     Pending,

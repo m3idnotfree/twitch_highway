@@ -96,7 +96,7 @@ pub struct UserColor {
     pub color: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum EmoteType {
     None,
@@ -113,7 +113,7 @@ pub enum EmoteType {
     Owl2019,
     Twofactor,
     Limitedtime,
-    #[cfg(feature = "test")]
+    #[cfg(feature = "mock-api")]
     Subscription,
 }
 

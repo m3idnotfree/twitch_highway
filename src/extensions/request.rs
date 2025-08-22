@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 use crate::types::{BroadcasterId, ExtensionId};
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
-    SetConfigurationSegment<'a> {
+    #[derive(Serialize)]
+    RequestConfigurationSegment<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &'a BroadcasterId,
             #[serde(skip_serializing_if = "Option::is_none")]
             content: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -18,10 +18,10 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Serialize)]
     RequiredConfiguration<'a> {
         req: {
-            extension_id: ExtensionId,
+            extension_id: &'a ExtensionId,
             extension_version: &'a str,
             required_configuration: &'a str
         };
@@ -30,11 +30,11 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Serialize)]
     ExtensionChatMessageIntoRequestBody<'a> {
         req: {
             text: &'a str,
-            extension_id: ExtensionId,
+            extension_id: &'a ExtensionId,
             extension_version: &'a str
         };
         into_json

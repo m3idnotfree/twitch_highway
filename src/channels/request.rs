@@ -11,13 +11,13 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             title: &'a str,
             #[serde(skip_serializing_if = "Option::is_none")]
-            game_id: GameId,
+            game_id: &'a GameId,
             #[serde(skip_serializing_if = "Option::is_none")]
             delay: u64,
             #[serde(skip_serializing_if = "Option::is_none")]
             tags: &'a [&'a str],
             #[serde(skip_serializing_if = "Option::is_none")]
-            content_classification_labels: &'a [&'a ContentClassificationLabel],
+            content_classification_labels: &'a [ContentClassificationLabel],
             #[serde(skip_serializing_if = "Option::is_none")]
             is_branded_content: bool
         };
@@ -35,7 +35,7 @@ define_request!(
     }
 );
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ContentClassificationLabelsID {
     DebatedSocialIssuesAndPolitics,
     DrugsIntoxication,
@@ -112,17 +112,19 @@ mod tests {
     fn modify_channel_request_all_fields() {
         let tags = vec!["Gaming", "English", "Competitive"];
         let classification_labels = [
-            &ContentClassificationLabel::new(
+            ContentClassificationLabel::new(
                 ContentClassificationLabelsID::ProfanityVulgarity,
                 true,
             ),
-            &ContentClassificationLabel::new(ContentClassificationLabelsID::ViolentGraphic, false),
+            ContentClassificationLabel::new(ContentClassificationLabelsID::ViolentGraphic, false),
         ];
+
+        let game_id = GameId::new("509658");
 
         let request = ModifyChannelRequest::new()
             .broadcaster_language("en")
             .title("My Awesome Stream")
-            .game_id(GameId::new("509658"))
+            .game_id(&game_id)
             .delay(30)
             .tags(&tags)
             .content_classification_labels(&classification_labels)

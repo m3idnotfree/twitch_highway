@@ -6,14 +6,14 @@ use crate::types::{Id, UserId};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GustStarSetting {
     pub is_moderator_send_live_enabled: bool,
-    pub slot_count: u64,
-    pub is_browser_source_audio_enabled: bool,
-    pub group_layout: GroupLayout,
-    pub browser_source_token: String,
+    pub slot_count: Option<u64>,
+    pub is_browser_source_audio_enabled: Option<bool>,
+    pub group_layout: Option<GroupLayout>,
+    pub browser_source_token: Option<String>,
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GroupLayout {
     TILED_LAYOUT,
     SCREENSHARE_LAYOUT,
@@ -87,7 +87,7 @@ pub struct GuestStarInvite {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum GuestStarStatus {
     INVITED,
     ACCEPTED,

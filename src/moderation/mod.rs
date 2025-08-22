@@ -1,8 +1,8 @@
 use asknothingx2_util::api::Method;
 use request::{
-    AddBlockedTermRequest, AutoModAction, BanUserRequest, BanUsersRequest, CheckAutoMod,
-    CheckAutoModStatusRequest, ManageHeldAutoModMeussageRequest, UpdateAutoModSettingsRequest,
-    UpdateShieldModeStatusRequest, WarnChatUser, WarnChatUserRequest,
+    AddBlockedTermRequest, AutoModAction, BanUserRequest, CheckAutoMod, CheckAutoModStatusRequest,
+    ManageHeldAutoModMeussageRequest, UpdateAutoModSettingsRequest, UpdateShieldModeStatusRequest,
+    WarnChatUser, WarnChatUserRequest,
 };
 use response::{
     AutoModSettingsResponse, BanUsersResponse, BlockedTermsResponse, CheckAutoModStatusResponse,
@@ -12,6 +12,7 @@ use response::{
 use types::UnbanRequestStatus;
 
 use crate::{
+    moderation::request::BanUserRequestWrapper,
     request::{EndpointType, NoContent, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, CHAT, ID, MODERATOR_ID, SETTINGS, USER_ID},
@@ -31,11 +32,11 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
         fn check_automod_status(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             data: &[CheckAutoMod],
         ) -> CheckAutoModStatusResponse {
             endpoint_type: EndpointType::CheckAutoModStatus,
-            method: Method::GET,
+            method: Method::POST,
             path: [MODERATION, "enforcements", "status"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -43,24 +44,26 @@ endpoints! {
             headers: [json],
             body: CheckAutoModStatusRequest::new(data).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
         fn manage_held_automod_messages(
             &self,
-            user_id: UserId,
+            user_id: &UserId,
             msg_id: &str,
             action: AutoModAction,
         ) -> NoContent {
             endpoint_type: EndpointType::ManageHeldAutoModMessages,
-            method: Method::GET,
+            method: Method::POST,
             path: [MODERATION, "automod", "message"],
             headers: [json],
             body:ManageHeldAutoModMeussageRequest::new(user_id, msg_id, action).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
-        fn get_auto_mod_settings(
+        fn get_automod_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
         ) -> AutoModSettingsResponse {
             endpoint_type: EndpointType::GetAutoModSettings,
             method: Method::GET,
@@ -70,11 +73,12 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
-        fn update_auto_mod_settings(
+        fn update_automod_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             opts: Option<UpdateAutoModSettingsRequest>,
         ) -> AutoModSettingsResponse {
             endpoint_type: EndpointType::UpdateAutoModSettings,
@@ -87,10 +91,11 @@ endpoints! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
         fn get_banned_users(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             user_id: Option<&[UserId]>,
             pagination: Option<PaginationQuery>,
         ) -> GetBannedUsersResponse {
@@ -101,14 +106,14 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id),
                 opt_extend(user_id.map(|ids| ids.iter().map(|id| (USER_ID, id)))),
                 pagination(pagination)
-            },
-            headers: [json]
+            }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#ban-user>
-        fn ban_users(
+        fn ban_user(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             data: BanUserRequest,
         ) -> BanUsersResponse {
             endpoint_type: EndpointType::BanUsers,
@@ -119,14 +124,15 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             },
             headers: [json],
-            body: BanUsersRequest::new(data).into_json()
+            body: BanUserRequestWrapper::new(data).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#unban-user>
         fn unban_user(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            user_id: UserId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
+            user_id: &UserId,
         ) -> NoContent {
             endpoint_type: EndpointType::BanUsers,
             method: Method::DELETE,
@@ -137,13 +143,14 @@ endpoints! {
                 query(USER_ID, user_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
         fn get_unban_requests(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             status: UnbanRequestStatus,
-            user_id: Option<UserId>,
+            user_id: Option<&UserId>,
             pagination: Option<PaginationQuery>,
         ) -> UnbanRequestResponse {
             endpoint_type: EndpointType::GetUnbanRequests,
@@ -157,11 +164,12 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
-        fn resolve_unban_requests(
+        fn resolve_unban_request(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             unban_request_id: &str,
             status: UnbanRequestStatus,
             resolution_text: Option<&str>,
@@ -177,11 +185,12 @@ endpoints! {
                 opt("resolution_text", resolution_text)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
         fn get_blocked_terms(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             pagination: Option<PaginationQuery>,
         ) -> BlockedTermsResponse {
             endpoint_type: EndpointType::GetBlockedTerms,
@@ -193,11 +202,12 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
         fn add_blocked_term(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             text: &str,
         ) -> BlockedTermsResponse {
             endpoint_type: EndpointType::AddBlockedTerm,
@@ -210,12 +220,13 @@ endpoints! {
             headers: [json],
             body: AddBlockedTermRequest::new(text).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
         fn remove_blocked_term(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            id: Id,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
+            id: &Id,
         ) -> NoContent {
             endpoint_type: EndpointType::RemoveBlockedTerm,
             method: Method::DELETE,
@@ -226,11 +237,12 @@ endpoints! {
                 query(ID, id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
         fn delete_chat_messages(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             message_id: Option<&str>,
         ) -> NoContent {
             endpoint_type: EndpointType::DeleteChatMessages,
@@ -242,10 +254,11 @@ endpoints! {
                 opt("message_id", message_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
         fn get_moderated_channels(
             &self,
-            user_id: UserId,
+            user_id: &UserId,
             pagination: Option<PaginationQuery>,
         ) -> ModeratedChannelResponse {
             endpoint_type: EndpointType::GetModeratedChannels,
@@ -256,11 +269,12 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
         fn get_moderators(
             &self,
-            broadcaster_id: BroadcasterId,
-            user_id: Option<UserId>,
+            broadcaster_id: &BroadcasterId,
+            user_id: Option<&UserId>,
             pagination: Option<PaginationQuery>,
         ) -> ModeratorsResponse {
             endpoint_type: EndpointType::GetModerators,
@@ -272,11 +286,12 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
         fn add_channel_moderator(
             &self,
-            broadcaster_id: BroadcasterId,
-            user_id: UserId,
+            broadcaster_id: &BroadcasterId,
+            user_id: &UserId,
         ) -> NoContent {
             endpoint_type: EndpointType::AddChannelModerator,
             method: Method::POST,
@@ -286,11 +301,12 @@ endpoints! {
                 query(USER_ID, user_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
         fn remove_channel_moderator(
             &self,
-            broadcaster_id: BroadcasterId,
-            user_id: UserId,
+            broadcaster_id: &BroadcasterId,
+            user_id: &UserId,
         ) -> NoContent {
             endpoint_type: EndpointType::RemoveChannelModerator,
             method: Method::DELETE,
@@ -300,11 +316,12 @@ endpoints! {
                 query(USER_ID, user_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
         fn get_vips(
             &self,
+            broadcaster_id: &BroadcasterId,
             user_ids: Option<&[UserId]>,
-            broadcaster_id: BroadcasterId,
             pagination: Option<PaginationQuery>,
         ) -> ModeratorsResponse {
             endpoint_type: EndpointType::GetVIPs,
@@ -316,11 +333,12 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
         fn add_channel_vip(
             &self,
-            user_id: UserId,
-            broadcaster_id: BroadcasterId,
+            user_id: &UserId,
+            broadcaster_id: &BroadcasterId,
         ) -> NoContent {
             endpoint_type: EndpointType::AddChannelVIP,
             method: Method::POST,
@@ -330,11 +348,12 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
         fn remove_channel_vip(
             &self,
-            user_id: UserId,
-            broadcaster_id: BroadcasterId,
+            user_id: &UserId,
+            broadcaster_id: &BroadcasterId,
         ) -> NoContent {
             endpoint_type: EndpointType::RemoveChannelVIP,
             method: Method::DELETE,
@@ -344,11 +363,12 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
         fn update_shield_mode_status(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             is_active: bool,
         ) -> ShieldModeStatusResponse {
             endpoint_type: EndpointType::UpdateShieldModeStatus,
@@ -361,11 +381,12 @@ endpoints! {
             headers: [json],
             body: UpdateShieldModeStatusRequest::new(is_active).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
         fn get_shield_mode_status(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
         ) -> ShieldModeStatusResponse {
             endpoint_type: EndpointType::GetShieldModeStatus,
             method: Method::GET,
@@ -375,20 +396,22 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
-        fn warm_chat_user(
+        fn warn_chat_user(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
-            data: &[WarnChatUser],
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
+            data: WarnChatUser,
         ) -> WarnChatUsersResponse {
             endpoint_type: EndpointType::WarnChatUser,
-            method: Method::GET,
+            method: Method::POST,
             path: [MODERATION, "warnings"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
             },
+            headers: [json],
             body: WarnChatUserRequest::new(data).into_json()
         }
     }
@@ -398,7 +421,10 @@ endpoints! {
 mod tests {
     use crate::{
         moderation::{
-            request::{AutoModAction, BanUserRequest, CheckAutoMod, UpdateAutoModSettingsRequest},
+            request::{
+                AutoModAction, BanUserRequest, CheckAutoMod, UpdateAutoModSettingsRequest,
+                WarnChatUser,
+            },
             types::UnbanRequestStatus,
             ModerationAPI,
         },
@@ -406,594 +432,286 @@ mod tests {
         types::{BroadcasterId, Id, ModeratorId, PaginationQuery, UserId},
     };
 
+    api_test!(
+        check_automod_status,
+        [
+            &BroadcasterId::new("12345"),
+            &[
+                CheckAutoMod::new("123", "Hello World!"),
+                CheckAutoMod::new("393", "Boooooo!"),
+            ]
+        ]
+    );
+
+    api_test!(
+        manage_held_automod_messages,
+        [&UserId::new("9327994"), "836013710", AutoModAction::ALLOW,]
+    );
+
+    api_test!(
+        get_automod_settings,
+        [&BroadcasterId::new("1234"), &ModeratorId::new("5678"),]
+    );
+
+    api_test!(
+        update_automod_settings,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            Some(UpdateAutoModSettingsRequest::new().overall_level(3)),
+        ]
+    );
+
+    api_test!(
+        get_banned_users,
+        [&BroadcasterId::new("198704263"), None, None]
+    );
+
+    api_test!(
+        ban_user,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            BanUserRequest::new(&UserId::new("9876")).reason("no reason"),
+        ]
+    );
+
+    api_test!(
+        unban_user,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            &UserId::new("5432"),
+        ]
+    );
+
+    api_test!(
+        get_unban_requests,
+        [
+            &BroadcasterId::new("274637212"),
+            &ModeratorId::new("274637212"),
+            UnbanRequestStatus::Pending,
+            None,
+            None,
+        ]
+    );
+
+    api_test!(
+        resolve_unban_request,
+        [
+            &BroadcasterId::new("274637212"),
+            &ModeratorId::new("987654321"),
+            "92af127c-7326-4483-a52b-b0daa0be61c01",
+            UnbanRequestStatus::Approved,
+            None
+        ]
+    );
+
+    api_test!(
+        get_blocked_terms,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            Some(PaginationQuery::new().first(10)),
+        ]
+    );
+
+    api_test!(
+        add_blocked_term,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            "A phrase I’m not fond of",
+        ]
+    );
+
+    api_test!(
+        remove_blocked_term,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            &Id::new("c9fc79b8-0f63-4ef7-9d38-efd811e74ac2"),
+        ]
+    );
+
+    api_test!(
+        delete_chat_messages,
+        [
+            &BroadcasterId::new("11111"),
+            &ModeratorId::new("44444"),
+            Some("abc-123-def"),
+        ]
+    );
+
+    api_test!(get_moderated_channels, [&UserId::new("931931"), None]);
+
+    api_test!(
+        get_moderators,
+        [&BroadcasterId::new("198704263"), None, None]
+    );
+
+    api_test!(
+        add_channel_moderator,
+        [&BroadcasterId::new("11111"), &UserId::new("44444"),]
+    );
+
+    api_test!(
+        remove_channel_moderator,
+        [&BroadcasterId::new("11111"), &UserId::new("44444"),]
+    );
+
+    api_test!(get_vips, [&BroadcasterId::new("123"), None, None]);
+
+    api_test!(
+        add_channel_vip,
+        [&UserId::new("456"), &BroadcasterId::new("123")]
+    );
+
+    api_test!(
+        remove_channel_vip,
+        [&UserId::new("456"), &BroadcasterId::new("123")]
+    );
+
+    api_test!(
+        update_shield_mode_status,
+        [
+            &BroadcasterId::new("12345"),
+            &ModeratorId::new("98765"),
+            false,
+        ]
+    );
+
+    api_test!(
+        get_shield_mode_status,
+        [&BroadcasterId::new("12345"), &ModeratorId::new("98765"),]
+    );
+
+    api_test!(
+        warn_chat_user,
+        [
+            &BroadcasterId::new("404040"),
+            &ModeratorId::new("404041"),
+            WarnChatUser::new(&UserId::new("9876"), "stop doing that!"),
+        ]
+    );
+
     #[tokio::test]
-    pub(crate) async fn check_automod_status() {
+    async fn ban_user2() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_moderation_success().await;
+        suite.ban_user2().await;
 
-        let check_data = vec![
-            CheckAutoMod::new("test_msg_1".to_string(), "Hello everyone!".to_string()),
-            CheckAutoMod::new("test_msg_2".to_string(), "Bad word here".to_string()),
-        ];
-
-        let response = suite
-            .execute("/moderation/enforcements/status", |api| {
-                api.check_automod_status(BroadcasterId::new("123456789"), &check_data)
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-
-        let first_result = &response.data[0];
-        assert_eq!(first_result.msg_id, "test_msg_1");
-        assert!(first_result.is_permitted);
-
-        let second_result = &response.data[1];
-        assert_eq!(second_result.msg_id, "test_msg_2");
-        assert!(!second_result.is_permitted);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_banned_users() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let pagination = PaginationQuery::new().first(20);
-
-        let response = suite
-            .execute("/moderation/banned", |api| {
-                api.get_banned_users(BroadcasterId::new("123456789"), None, Some(pagination))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let banned_user = &response.data[0];
-        assert_eq!(banned_user.user_id.as_str(), "banned_user_123");
-        assert_eq!(banned_user.user_login, "troublemaker");
-        assert_eq!(banned_user.reason, "Harassment");
-        assert_eq!(banned_user.moderator_id.as_str(), "mod456");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn manage_held_automod_messages() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/automod/message", |api| {
-                api.manage_held_automod_messages(
-                    UserId::new("123456789"),
-                    "msg_123",
-                    AutoModAction::ALLOW,
+        let _ = suite
+            .execute(|api| {
+                api.ban_user(
+                    &BroadcasterId::new("1234"),
+                    &ModeratorId::new("5678"),
+                    BanUserRequest::new(&UserId::new("9876"))
+                        .duration(300)
+                        .reason("no reason"),
                 )
             })
-            .send()
+            .json()
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
+    async fn ban_user_error() {
+        let suite = TwitchApiTest::new().await;
+
+        suite.ban_user_error().await;
+
+        let respnose = suite
+            .execute(|api| {
+                api.ban_user(
+                    &BroadcasterId::new("1234"),
+                    &ModeratorId::new("5678"),
+                    BanUserRequest::new(&UserId::new("9876"))
+                        .duration(300)
+                        .reason("no reason"),
+                )
+            })
+            .json()
             .await;
 
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
+        assert!(respnose.is_err());
     }
 
     #[tokio::test]
-    pub(crate) async fn get_auto_mod_settings() {
+    async fn unban_user_error() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_moderation_success().await;
+        suite.unban_user_error().await;
 
-        let response = suite
-            .execute("/moderation/automod/settings", |api| {
-                api.get_auto_mod_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let settings = &response.data[0];
-        assert_eq!(settings.broadcaster_id.as_str(), "123456789");
-        assert_eq!(settings.moderator_id, "987654321");
-        assert_eq!(settings.overall_level, Some(2));
-        assert_eq!(settings.aggression, 2);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_auto_mod_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let update_request = UpdateAutoModSettingsRequest::new()
-            .overall_level(3)
-            .aggression(3)
-            .bullying(2)
-            .swearing(4);
-
-        let response = suite
-            .execute("/moderation/automod/settings", |api| {
-                api.update_auto_mod_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    Some(update_request),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let settings = &response.data[0];
-        assert_eq!(settings.overall_level, Some(3));
-        assert_eq!(settings.aggression, 3);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn ban_users() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let ban_request = BanUserRequest::new(UserId::new("troublemaker123"))
-            .duration(86400)
-            .reason("Harassment");
-
-        let response = suite
-            .execute("/moderation/bans", |api| {
-                api.ban_users(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    ban_request,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let ban_result = &response.data[0];
-        assert_eq!(ban_result.broadcaster_id.as_str(), "123456789");
-        assert_eq!(ban_result.moderator_id.as_str(), "987654321");
-        assert_eq!(ban_result.user_id.as_str(), "troublemaker123");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn unban_user() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/bans", |api| {
+        let respnose = suite
+            .execute(|api| {
                 api.unban_user(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    UserId::new("unbanned_user_123"),
+                    &BroadcasterId::new("1234"),
+                    &ModeratorId::new("5678"),
+                    &UserId::from("5432"),
                 )
             })
-            .send()
+            .json()
             .await;
 
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
+        assert!(respnose.is_err());
     }
 
     #[tokio::test]
-    pub(crate) async fn get_unban_requests() {
+    async fn add_blocked_term2() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_moderation_success().await;
+        suite.add_blocked_term2().await;
 
-        let response = suite
-            .execute("/moderation/unban_requests", |api| {
-                api.get_unban_requests(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    UnbanRequestStatus::Pending,
-                    None,
-                    None,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let unban_request = &response.data[0];
-        assert_eq!(unban_request.id.as_str(), "unban_req_123");
-        assert_eq!(unban_request.user_id.as_str(), "requesting_user");
-        assert_eq!(unban_request.text, "I promise to behave better");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn resolve_unban_requests() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/unban_requests", |api| {
-                api.resolve_unban_requests(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "unban_req_123",
-                    UnbanRequestStatus::Approved,
-                    Some("Request approved"),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let resolved_request = &response.data[0];
-        assert_eq!(resolved_request.id.as_str(), "unban_req_123");
-        assert_eq!(
-            resolved_request.resolution_text,
-            Some("Request approved".to_string())
-        );
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_blocked_terms() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/blocked_terms", |api| {
-                api.get_blocked_terms(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    None,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let blocked_term = &response.data[0];
-        assert_eq!(blocked_term.text, "badword");
-        assert_eq!(blocked_term.broadcaster_id.as_str(), "123456789");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn add_blocked_term() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/blocked_terms", |api| {
+        suite
+            .execute(|api| {
                 api.add_blocked_term(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "newbadword",
+                    &BroadcasterId::new("1234"),
+                    &ModeratorId::new("5678"),
+                    "crac*",
                 )
             })
             .json()
             .await
             .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let new_blocked_term = &response.data[0];
-        assert_eq!(new_blocked_term.text, "newbadword");
     }
 
     #[tokio::test]
-    pub(crate) async fn remove_blocked_term() {
+    async fn delete_chat_messages2() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_moderation_success().await;
+        suite.delete_chat_messages2().await;
 
-        let response = suite
-            .execute("/moderation/blocked_terms", |api| {
-                api.remove_blocked_term(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    Id::new("blocked_term_123"),
+        suite
+            .execute(|api| {
+                api.delete_chat_messages(
+                    &BroadcasterId::new("11111"),
+                    &ModeratorId::new("44444"),
+                    Some("abc-123-def"),
                 )
             })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
+            .json()
+            .await
+            .unwrap();
     }
 
     #[tokio::test]
-    pub(crate) async fn delete_chat_messages() {
+    async fn get_vips2() {
         let suite = TwitchApiTest::new().await;
 
-        suite.mock_moderation_success().await;
+        suite.get_vips2().await;
 
-        let response = suite
-            .execute("/moderation/chat", |api| {
-                api.delete_chat_messages(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    Some("msg_to_delete_123"),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn delete_all_chat_messages() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/chat", |api| {
-                api.delete_chat_messages(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
+        suite
+            .execute(|api| {
+                api.get_vips(
+                    &BroadcasterId::from("123"),
+                    Some(&[UserId::from("456"), UserId::from("678")]),
                     None,
                 )
             })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_moderated_channels() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/channels", |api| {
-                api.get_moderated_channels(UserId::new("123456789"), None)
-            })
             .json()
             .await
             .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let moderated_channel = &response.data[0];
-        assert_eq!(moderated_channel.broadcaster_id.as_str(), "987654321");
-        assert_eq!(moderated_channel.broadcaster_login, "streamerchannel");
-        assert_eq!(moderated_channel.broadcaster_name, "StreamerChannel");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_moderators() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/moderators", |api| {
-                api.get_moderators(BroadcasterId::new("123456789"), None, None)
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let moderator = &response.data[0];
-        assert_eq!(moderator.user_id.as_str(), "mod_user_123");
-        assert_eq!(moderator.user_login, "headmoderator");
-        assert_eq!(moderator.user_name, "HeadModerator");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn add_channel_moderator() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/moderators", |api| {
-                api.add_channel_moderator(
-                    BroadcasterId::new("123456789"),
-                    UserId::new("new_mod_123"),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn remove_channel_moderator() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/moderators", |api| {
-                api.remove_channel_moderator(
-                    BroadcasterId::new("123456789"),
-                    UserId::new("old_mod_123"),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_vips() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/channels/vips", |api| {
-                api.get_vips(None, BroadcasterId::new("123456789"), None)
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let vip = &response.data[0];
-        assert_eq!(vip.user_id.as_str(), "vip_user_123");
-        assert_eq!(vip.user_login, "vipuser");
-        assert_eq!(vip.user_name, "VIPUser");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn add_channel_vip() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/channels/vips", |api| {
-                api.add_channel_vip(UserId::new("new_vip_123"), BroadcasterId::new("123456789"))
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn remove_channel_vip() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/channels/vips", |api| {
-                api.remove_channel_vip(UserId::new("old_vip_123"), BroadcasterId::new("123456789"))
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-        let response = response.unwrap();
-        assert_eq!(response.status().as_u16(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_shield_mode_status() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/shield_mode", |api| {
-                api.update_shield_mode_status(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    true,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let shield_status = &response.data[0];
-        assert!(shield_status.is_active);
-        assert_eq!(shield_status.moderator_id.as_str(), "987654321");
-        assert_eq!(shield_status.moderator_name, "HeadModerator");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_shield_mode_status() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let response = suite
-            .execute("/moderation/shield_mode", |api| {
-                api.get_shield_mode_status(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let shield_status = &response.data[0];
-        assert!(!shield_status.is_active);
-        assert_eq!(shield_status.moderator_id.as_str(), "987654321");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn warm_chat_user() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_moderation_success().await;
-
-        let warn_data = vec![
-            super::request::WarnChatUser::new(
-                UserId::new("warned_user_1"),
-                "Inappropriate language",
-            ),
-            super::request::WarnChatUser::new(UserId::new("warned_user_2"), "Spam"),
-        ];
-
-        let response = suite
-            .execute("/moderation/warnings", |api| {
-                api.warm_chat_user(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    &warn_data,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-
-        let first_warning = &response.data[0];
-        assert_eq!(first_warning.broadcaster_id.as_str(), "123456789");
-        assert_eq!(first_warning.user_id.as_str(), "warned_user_1");
-        assert_eq!(first_warning.reason, "Inappropriate language");
-
-        let second_warning = &response.data[1];
-        assert_eq!(second_warning.user_id.as_str(), "warned_user_2");
-        assert_eq!(second_warning.reason, "Spam");
     }
 }

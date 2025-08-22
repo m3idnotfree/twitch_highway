@@ -163,7 +163,7 @@ macro_rules! define_request {
                 $(
                     $(#[$req_meta:meta])*
                     $req_field:ident: $req_type:ty
-                    $(| $req_into_value:tt)?
+                    $(| $req_flags:tt)?
                     $(=> $req_key:tt)?
                     $(as $req_method_name:ident)?
                     $(= $req_default:expr)?
@@ -174,7 +174,7 @@ macro_rules! define_request {
                 $(
                     $(#[$opt_meta:meta])*
                     $opt_field:ident: $opt_type:ty
-                    $(| $opt_into_value:tt)?
+                    $(| $opt_flags:tt)?
                     $(=> $opt_key:tt)?
                     $(as $opt_method_name:ident)?
                     $(= $opt_default:expr)?
@@ -200,12 +200,12 @@ macro_rules! define_request {
             #[allow(clippy::new_without_default)]
             pub fn new(
                 $($(
-                    $req_field: define_request!(@param_type $req_type $(| $req_into_value)?)
+                    $req_field: define_request!(@param_type $req_type $(| $req_flags)?)
                 ),*)?
             ) -> Self {
                 Self {
                     $($(
-                        $req_field: define_request!(@param_value $req_field $(| $req_into_value)?),
+                        $req_field: define_request!(@param_value $req_field $(| $req_flags)?),
                     )*)?
                     $($(
                         $opt_field: None,
@@ -214,7 +214,7 @@ macro_rules! define_request {
             }
 
             $($(
-                define_request!(@opt_method $opt_field: $opt_type $(| $opt_into_value)?);
+                define_request!(@opt_method $opt_field: $opt_type $(| $opt_flags)?);
             )*)?
         }
 
@@ -684,8 +684,9 @@ macro_rules! endpoints {
 /// Generates standardized integration tests for API endpoints.
 ///
 /// # Patterns:
-/// - `base_test!(endpoint, [params])` → Test with JSON response validation
-/// - `base_test!(send endpoint, [params])` → Test with HTTP response validation only
+/// - `api_test!(endpoint, [params])` → Test with JSON response validation
+/// - `api_test!(send endpoint, [params])` → Test with HTTP response validation only
+/// - `api_test!(extra endpoint, test_name [params])` → Extra Test with custom mock setup
 ///
 /// # Requirements:
 /// - `TwitchApiTest` must implement `async fn endpoint(&self)` for mock setup
@@ -693,12 +694,13 @@ macro_rules! endpoints {
 ///
 /// # Example:
 /// ```rust,ignore
-/// base_test!(get_users, [UserId::new("123456789")]);                    // JSON response
-/// base_test!(send create_reward, [broadcaster_id, reward_request]);     // No content (204)
-/// base_test!(get_global_emotes, []);                                    // No parameters
+/// api_test!(get_users, [UserId::new("123456789")]);                    // JSON response
+/// api_test!(send create_reward, [broadcaster_id, reward_request]);     // No content (204)
+/// api_test!(get_global_emotes, []);                                    // No parameters
+/// api_test!(extra get_analytics, extra_get_analytics, []);             // Custom test name
 /// ```
 #[cfg(test)]
-macro_rules! base_test {
+macro_rules! api_test {
     ($endpoint:ident, $([$($param:expr),* $(,)?])?) => {
         #[tokio::test]
         pub(crate) async fn $endpoint() {
@@ -735,4 +737,21 @@ macro_rules! base_test {
         }
     };
 
+    (extra $endpoint:ident, $test_endpoint:ident, $([$($param:expr),* $(,)?])?) => {
+        #[tokio::test]
+        async fn $test_endpoint() {
+            let suite = crate::test_utils::TwitchApiTest::new().await;
+
+            suite.$test_endpoint().await;
+
+            let _ = suite
+                .execute(|api| {
+                    api.$endpoint($($($param),*)?)
+                })
+                .json()
+                .await
+                .unwrap();
+
+        }
+    };
 }

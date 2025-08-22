@@ -29,10 +29,11 @@ endpoints! {
                 opt_into_query(opts)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
         fn get_cheermotes(
             &self,
-            broadcaster_id: Option<BroadcasterId>,
+            broadcaster_id: Option<&BroadcasterId>,
         ) -> CheermotesResponse {
             endpoint_type: EndpointType::GetCheermotes,
             method: Method::GET,
@@ -41,11 +42,12 @@ endpoints! {
                 opt(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
         fn get_extension_transactions(
             &self,
-            extension_id: ExtensionId,
-            id: Option<Id>,
+            extension_id: &ExtensionId,
+            id: Option<&Id>,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionTransactionsResponse {
             endpoint_type: EndpointType::GetExtensionTransactions,
@@ -64,107 +66,26 @@ endpoints! {
 mod tests {
     use crate::{
         bits::{request::BitsLeaderboardRequest, BitsAPI},
-        test_utils::TwitchApiTest,
-        types::{BroadcasterId, ExtensionId, Id, PaginationQuery},
+        types::{BroadcasterId, ExtensionId},
     };
 
-    #[tokio::test]
-    pub(crate) async fn get_bits_leaderboard() {
-        let suite = TwitchApiTest::new().await;
+    api_test!(
+        get_bits_leaderboard,
+        [Some(
+            BitsLeaderboardRequest::new()
+                .count(2)
+                .period("week")
+                .started_at(&"2018-02-05T08:00:00Z".parse().unwrap())
+        )]
+    );
+    api_test!(get_cheermotes, [Some(&BroadcasterId::new("41245072"))]);
+    api_test!(
+        get_extension_transactions,
+        [&ExtensionId::new("1234"), None, None]
+    );
 
-        suite.mock_bits_success().await;
-
-        let leaderboard_request = BitsLeaderboardRequest::new().count(10).period("week");
-
-        let response = suite
-            .execute("/bits/leaderboard", |api| {
-                api.get_bits_leaderboard(Some(leaderboard_request))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-        assert_eq!(response.data[0].user_id.as_str(), "158010205");
-        assert_eq!(response.total, 2);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_cheermotes() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_bits_success().await;
-
-        let response = suite
-            .execute("/bits/cheermotes", |api| {
-                api.get_cheermotes(Some(BroadcasterId::new("broadcaster123")))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-        assert_eq!(response.data[0].prefix, "Cheer");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_extension_transactions() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_bits_success().await;
-
-        let pagination = PaginationQuery::new().first(20);
-
-        let response = suite
-            .execute("/extensions/transactions", |api| {
-                api.get_extension_transactions(
-                    ExtensionId::new("ext123456"),
-                    Some(Id::new("trans123456")),
-                    Some(pagination),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-        assert_eq!(response.data[0].id.as_str(), "trans123456");
-        assert!(response.pagination.is_some());
-    }
-
-    #[tokio::test]
-    async fn get_bits_leaderboard_no_options() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_bits_extra().await;
-
-        let response = suite
-            .execute("/bits/leaderboard", |api| api.get_bits_leaderboard(None))
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 0);
-        assert_eq!(response.total, 0);
-    }
-
-    #[tokio::test]
-    async fn bits_api_error_response() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_bits_failure().await;
-        let response = suite
-            .execute("/bits/leaderboard", |api| api.get_bits_leaderboard(None))
-            .json()
-            .await;
-
-        match response {
-            Ok(response) => {
-                panic!("Expected Error, got: {response:?}")
-            }
-            Err(e) => {
-                assert!(e.is_api());
-            }
-        }
-    }
+    api_test!(extra
+        get_cheermotes, 
+        get_cheermotes2, 
+        [Some(&BroadcasterId::new("41245072"))]);
 }

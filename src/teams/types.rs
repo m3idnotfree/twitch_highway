@@ -18,6 +18,7 @@ pub struct BroadcasterTeam {
     pub team_display_name: String,
     pub id: Id,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Team {
     pub users: Vec<TeamUser>,

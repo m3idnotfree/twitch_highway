@@ -7,7 +7,7 @@ use response::{
 use types::UserActiveExtensions;
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, NoContent, TwitchAPIRequest},
     types::{
         constants::{BLOCKS, BROADCASTER_ID, EXTENSIONS, ID, LOGIN, USERS, USER_ID},
         BroadcasterId, Id, PaginationQuery, UserId,
@@ -19,180 +19,177 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "users")))]
-pub trait UserAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-users>
-    fn users_info(
-        &self,
-        ids: Option<&[Id]>,
-        logins: Option<&[&str]>,
-    ) -> TwitchAPIRequest<UsersInfoResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#update-user>
-    fn update_user(&self, description: Option<&str>) -> TwitchAPIRequest<UpdateUsersResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
-    fn block_list(
-        &self,
-        broadcaster_id: BroadcasterId,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<BlockUserListResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#block-user>
-    fn block_user(
-        &self,
-        target_user_id: UserId,
-        source_context: Option<BlockSourceContext>,
-        reason: Option<BlockReason>,
-    ) -> TwitchAPIRequest<EmptyBody>;
-    /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
-    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
-    fn user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
-    fn user_active_extensions(
-        &self,
-        user_id: Option<UserId>,
-    ) -> TwitchAPIRequest<UserActiveExtensionsResponse>;
-    // <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
-    fn update_user_extensions(
-        &self,
-        data: UserActiveExtensions,
-    ) -> TwitchAPIRequest<UserActiveExtensionsResponse>;
-}
-
-impl UserAPI for TwitchAPI {
-    fn users_info(
-        &self,
-        ids: Option<&[Id]>,
-        logins: Option<&[&str]>,
-    ) -> TwitchAPIRequest<UsersInfoResponse> {
-        let mut url = self.build_url();
-        url.path([USERS])
-            .query_opt_extend(ids.map(|ids| ids.iter().map(|id| (ID, id))))
-            .query_opt_extend(logins.map(|logins| logins.iter().map(|login| (LOGIN, login))));
-
-        TwitchAPIRequest::new(
-            EndpointType::GetUsers,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
-
-    fn update_user(&self, description: Option<&str>) -> TwitchAPIRequest<UpdateUsersResponse> {
-        let mut url = self.build_url();
-        url.path([USERS]).query_opt("description", description);
-
-        TwitchAPIRequest::new(
-            EndpointType::UpdateUser,
-            url.build(),
-            Method::PUT,
-            self.build_headers().build(),
-            None,
-        )
-    }
-
-    fn block_list(
-        &self,
-        broadcaster_id: BroadcasterId,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<BlockUserListResponse> {
-        let mut url = self.build_url();
-        url.path([USERS, BLOCKS])
-            .query(BROADCASTER_ID, broadcaster_id);
-
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
+endpoints! {
+    UserAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-users>
+        fn get_users(
+            &self,
+            ids: Option<&[Id]>,
+            logins: Option<&[&str]>,
+        ) -> UsersInfoResponse {
+            endpoint_type: EndpointType::GetUsers,
+            method: Method::GET,
+            path: [USERS],
+            query_params: {
+                opt_extend(ids.map(|ids| ids.iter().map(|id| (ID, id)))),
+                opt_extend(logins.map(|lg| lg.iter().map(|l| (LOGIN, l) )))
+            }
         }
 
-        TwitchAPIRequest::new(
-            EndpointType::GetUserBlockList,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+        /// <https://dev.twitch.tv/docs/api/reference/#update-user>
+        fn update_user(&self, description: Option<&str>) -> UpdateUsersResponse {
+            endpoint_type: EndpointType::UpdateUser,
+            method: Method::PUT,
+            path: [USERS],
+            query_params: {
+                opt("description", description)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
+        fn get_user_block_list(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            pagination: Option<PaginationQuery>,
+        ) -> BlockUserListResponse {
+            endpoint_type: EndpointType::GetUserBlockList,
+            method: Method::GET,
+            path: [USERS, BLOCKS],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id),
+                pagination(pagination)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#block-user>
+        fn block_user(
+            &self,
+            target_user_id: &UserId,
+            source_context: Option<BlockSourceContext>,
+            reason: Option<BlockReason>,
+        ) -> NoContent {
+            endpoint_type: EndpointType::BlockUser,
+            method: Method::PUT,
+            path: [USERS, BLOCKS],
+            query_params: {
+                query("target_user_id", target_user_id),
+                opt("source_context", source_context),
+                opt("reason", reason)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
+        fn unblock_user(&self, target_user_id: &UserId) -> NoContent {
+            endpoint_type: EndpointType::UnblockUser,
+            method: Method::DELETE,
+            path: [USERS, BLOCKS],
+            query_params: {
+                query("target_user_id", target_user_id)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
+        fn get_user_extensions(&self) -> UserExtensionsResponse {
+            endpoint_type: EndpointType::GetUserExtensions,
+            method: Method::GET,
+            path: [USERS, EXTENSIONS, "list"]
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
+        fn get_user_active_extensions(
+            &self,
+            user_id: Option<&UserId>,
+        ) -> UserActiveExtensionsResponse {
+            endpoint_type: EndpointType::GetUserActiveExtensions,
+            method: Method::GET,
+            path: [USERS, EXTENSIONS],
+            query_params: {
+                opt(USER_ID, user_id)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
+        fn update_user_extensions(
+            &self,
+            data: UserActiveExtensions,
+        ) -> UserActiveExtensionsResponse {
+            endpoint_type: EndpointType::UpdateUserExtensions,
+            method: Method::PUT,
+            path: [USERS, EXTENSIONS],
+            headers: [json],
+            body: data.into_json()
+        }
     }
+}
 
-    fn block_user(
-        &self,
-        target_user_id: UserId,
-        source_context: Option<BlockSourceContext>,
-        reason: Option<BlockReason>,
-    ) -> TwitchAPIRequest<EmptyBody> {
-        let mut url = self.build_url();
-        url.path([USERS, BLOCKS])
-            .query("target_user_id", target_user_id)
-            .query_opt("source_context", source_context)
-            .query_opt("reason", reason);
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
 
-        TwitchAPIRequest::new(
-            EndpointType::BlockUser,
-            url.build(),
-            Method::PUT,
-            self.build_headers().build(),
-            None,
-        )
-    }
+    use crate::{
+        types::{BroadcasterId, Id, UserId},
+        users::{
+            types::{Component, Overlay, Panel, UserActiveExtensions},
+            UserAPI,
+        },
+    };
+    api_test!(get_users, [Some(&[Id::new("141981764")]), None]);
+    api_test!(update_user, [Some("BaldAngel")]);
+    api_test!(
+        get_user_block_list,
+        [&BroadcasterId::new("141981764"), None]
+    );
+    api_test!(block_user, [&UserId::new("198704263"), None, None]);
+    api_test!(unblock_user, [&UserId::new("198704263")]);
+    api_test!(get_user_extensions, []);
+    api_test!(get_user_active_extensions, [None]);
+    api_test!(
+        update_user_extensions,
+        [{
+            let mut panels = HashMap::new();
+            panels.insert(
+                "1".to_string(),
+                Panel::new(true)
+                    .id(Id::new("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"))
+                    .version("1.1.8".to_string()),
+            );
 
-    fn unblock_user(&self, target_user_id: &str) -> TwitchAPIRequest<EmptyBody> {
-        let mut url = self.build_url();
-        url.path([USERS, BLOCKS])
-            .query("target_user_id", target_user_id);
+            panels.insert(
+                "2".to_string(),
+                Panel::new(true)
+                    .id(Id::new("wi08ebtatdc7oj83wtl9uxwz807l8b"))
+                    .version("1.1.8"),
+            );
 
-        TwitchAPIRequest::new(
-            EndpointType::UnblockUser,
-            url.build(),
-            Method::DELETE,
-            self.build_headers().build(),
-            None,
-        )
-    }
+            panels.insert(
+                "2".to_string(),
+                Panel::new(true)
+                    .id(Id::new("naty2zwfp7vecaivuve8ef1hohh6bo"))
+                    .version("1.1.8"),
+            );
 
-    fn user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse> {
-        let mut url = self.build_url();
-        url.path([USERS, EXTENSIONS, "list"]);
+            let mut overlays = HashMap::new();
+            overlays.insert(
+                "1".to_string(),
+                Overlay::new(true)
+                    .id(Id::new("zfh2irvx2jb4s60f02jq0ajm8vwgka"))
+                    .version("1.0.19"),
+            );
 
-        TwitchAPIRequest::new(
-            EndpointType::GetUserExtensions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
+            let mut components = HashMap::new();
+            components.insert(
+                "1".to_string(),
+                Component::new(true)
+                    .id(Id::new("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"))
+                    .version("0.0.1")
+                    .name("Dev Experience Test")
+                    .x(0)
+                    .y(0),
+            );
 
-    fn user_active_extensions(
-        &self,
-        user_id: Option<UserId>,
-    ) -> TwitchAPIRequest<UserActiveExtensionsResponse> {
-        let mut url = self.build_url();
-        url.path([USERS, EXTENSIONS]).query_opt(USER_ID, user_id);
+            components.insert("2".to_string(), Component::new(false));
 
-        TwitchAPIRequest::new(
-            EndpointType::GetUserActiveExtensions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
-
-    fn update_user_extensions(
-        &self,
-        data: UserActiveExtensions,
-    ) -> TwitchAPIRequest<UserActiveExtensionsResponse> {
-        let mut url = self.build_url();
-        url.path([USERS, EXTENSIONS]);
-
-        let mut headers = self.build_headers();
-        headers.json();
-
-        TwitchAPIRequest::new(
-            EndpointType::UpdateUserExtensions,
-            url.build(),
-            Method::PUT,
-            headers.build(),
-            data.to_json(),
-        )
-    }
+            UserActiveExtensions::new(panels, overlays, components)
+        }]
+    );
 }

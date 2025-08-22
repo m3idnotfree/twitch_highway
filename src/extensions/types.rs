@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 use crate::types::{BroadcasterId, Cost, Id};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Segment {
     Broadcaster,
@@ -34,7 +35,7 @@ pub struct ConfigurationSegment {
     pub segment: Segment,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broadcaster_id: Option<BroadcasterId>,
-    pub content: String,
+    pub content: Value,
     pub version: String,
 }
 
@@ -87,7 +88,7 @@ pub struct Extension {
     pub allowlisted_panel_urls: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ConfigurationLocation {
     Hosted,
@@ -95,7 +96,7 @@ pub enum ConfigurationLocation {
     None,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum State {
     Approved,
     AssetsUploaded,
@@ -108,7 +109,7 @@ pub enum State {
     Released,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SubscriptionsSupportLevel {
     None,

@@ -29,7 +29,8 @@ pub struct Choices {
     pub channel_points_votes: u64,
     pub bits_votes: u64,
 }
-#[derive(Debug, Serialize, Deserialize)]
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PollStatus {
     ACTIVE,
     COMPLETED,
@@ -37,4 +38,29 @@ pub enum PollStatus {
     ARCHIVED,
     MODERATED,
     INVALID,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::polls::types::PollStatus;
+
+    #[test]
+    fn poll_status_enum() {
+        let statuses = vec![
+            PollStatus::ACTIVE,
+            PollStatus::COMPLETED,
+            PollStatus::TERMINATED,
+            PollStatus::ARCHIVED,
+            PollStatus::MODERATED,
+            PollStatus::INVALID,
+        ];
+
+        for status in statuses {
+            let serialized = serde_json::to_string(&status).unwrap();
+            let deserialized: PollStatus = serde_json::from_str(&serialized).unwrap();
+
+            let re_serialized = serde_json::to_string(&deserialized).unwrap();
+            assert_eq!(serialized, re_serialized);
+        }
+    }
 }

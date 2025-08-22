@@ -20,7 +20,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
         fn start_commercial(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             length: u64,
         ) -> StartCommercialResponse {
             endpoint_type: EndpointType::StartCommercial,
@@ -33,7 +33,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
         fn get_ad_schedule(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> AdScheduleResponse {
             endpoint_type: EndpointType::GetAdSchedule,
             method: Method::GET,
@@ -46,7 +46,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
         fn snooze_next_ad(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> SnoozeNextAdResponse {
             endpoint_type: EndpointType::SnoozeNextAd,
             method: Method::POST,
@@ -56,4 +56,15 @@ endpoints! {
             }
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::types::BroadcasterId;
+
+    use super::AdsAPI;
+
+    api_test!(start_commercial, [&BroadcasterId::new("141981764"), 60]);
+    api_test!(get_ad_schedule, [&BroadcasterId::new("123")]);
+    api_test!(snooze_next_ad, [&BroadcasterId::new("123")]);
 }

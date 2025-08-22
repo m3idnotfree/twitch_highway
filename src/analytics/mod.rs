@@ -20,7 +20,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
         fn get_extension_analytics(
             &self,
-            extension_id: Option<ExtensionId>,
+            extension_id: Option<&ExtensionId>,
             opts: Option<AnalyticsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionAnalyticsResponse {
@@ -37,7 +37,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
         fn get_game_analytics(
             &self,
-            game_id: Option<GameId>,
+            game_id: Option<&GameId>,
             opts: Option<AnalyticsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> GameAnalyticsResponse {
@@ -51,4 +51,36 @@ endpoints! {
             }
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        analytics::{request::AnalyticsRequest, AnalyticsAPI},
+        types::{GameId, PaginationQuery},
+    };
+
+    api_test!(get_extension_analytics, [None, None, None]);
+    api_test!(
+        get_game_analytics,
+        [
+            Some(&GameId::new("493057")),
+            Some(
+                AnalyticsRequest::new()
+                    .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
+                    .ended_at(&"2018-03-01T00:00:00Z".parse().unwrap())
+            ),
+            None
+        ]
+    );
+
+    api_test!(extra
+        get_game_analytics,
+        get_game_analytics2,
+        [
+            None,
+            None,
+            Some(PaginationQuery::new().first(5))
+        ]
+    );
 }

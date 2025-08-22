@@ -6,9 +6,15 @@ define_request!(
     #[derive(Serialize)]
     SendChatMessageRequest<'a> {
         req: {
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &'a BroadcasterId,
             sender_id: &'a str,
             message: &'a str
+        },
+        opts: {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            for_source_only: bool,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            reply_parent_message_id: &'a str | into
         };
         into_json
     }

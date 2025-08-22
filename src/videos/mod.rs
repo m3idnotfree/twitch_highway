@@ -15,57 +15,50 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "videos")))]
-pub trait VideosAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
-    fn get_videos(
-        &self,
-        video_selector: VideoSelector,
-        opts: Option<VideosRequest>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<VideosResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#delete-videos>
-    fn delete_videos(&self, id: &[Id]) -> TwitchAPIRequest<DeleteVideosResponse>;
+endpoints! {
+    VideosAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
+        fn get_videos(
+            &self,
+            video_selector: VideoSelector,
+            opts: Option<VideosRequest>,
+            pagination: Option<PaginationQuery>,
+        ) -> VideosResponse {
+            endpoint_type: EndpointType::GetVideos,
+            method: Method::GET,
+            path: [VIDEOS],
+            query_params: {
+                into_query(video_selector),
+                opt_into_query(opts),
+                pagination(pagination),
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-videos>
+        fn delete_videos(
+            &self,
+            ids: &[Id],
+        ) -> DeleteVideosResponse {
+            endpoint_type: EndpointType::DeleteVideos,
+            method: Method::DELETE,
+            path: [VIDEOS],
+            query_params: {
+                extend(ids.iter().map(|id| (ID, id)))
+            }
+        }
+    }
 }
 
-impl VideosAPI for TwitchAPI {
-    fn get_videos(
-        &self,
-        video_selector: VideoSelector,
-        opts: Option<VideosRequest>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<VideosResponse> {
-        let mut url = self.build_url();
-        url.path([VIDEOS]);
-        video_selector.apply_to_url(&mut url);
+#[cfg(test)]
+mod tests {
+    use crate::{
+        types::Id,
+        videos::{request::VideoSelector, VideosAPI},
+    };
 
-        if let Some(opts) = opts {
-            opts.apply_to_url(&mut url);
-        }
-
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
-        }
-
-        TwitchAPIRequest::new(
-            EndpointType::GetVideos,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
-    fn delete_videos(&self, ids: &[Id]) -> TwitchAPIRequest<DeleteVideosResponse> {
-        let mut url = self.build_url();
-        url.path([VIDEOS])
-            .query_extend(ids.iter().map(|id| (ID, id)));
-
-        TwitchAPIRequest::new(
-            EndpointType::DeleteVideos,
-            url.build(),
-            Method::DELETE,
-            self.build_headers().build(),
-            None,
-        )
-    }
+    api_test!(
+        get_videos,
+        [VideoSelector::by_ids(&[Id::new("335921245")]), None, None]
+    );
+    api_test!(delete_videos, [&[Id::new("1234"), Id::new("9876")],]);
 }

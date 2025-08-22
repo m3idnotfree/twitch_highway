@@ -15,45 +15,40 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "teams")))]
-pub trait TeamsAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-teams>
-    fn get_channel_teams(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelTeamsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams(&self, team_selector: TeamSelector) -> TwitchAPIRequest<TeamsResponse>;
+endpoints! {
+    TeamsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-teams>
+        fn get_channel_teams(
+            &self,
+            broadcaster_id: &BroadcasterId,
+        ) -> ChannelTeamsResponse {
+            endpoint_type: EndpointType::GetChannelTeams,
+            method: Method::GET,
+            path: [TEAMS, "channel"],
+            query_params: {
+                    query(BROADCASTER_ID, broadcaster_id)
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
+        fn get_teams(&self, team_selector: TeamSelector) -> TeamsResponse {
+            endpoint_type: EndpointType::GetTeams,
+            method: Method::GET,
+            path: [TEAMS],
+            query_params: {
+                    into_query(team_selector)
+            }
+        }
+    }
 }
 
-impl TeamsAPI for TwitchAPI {
-    fn get_channel_teams(
-        &self,
-        broadcaster_id: BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelTeamsResponse> {
-        let mut url = self.build_url();
-        url.path([TEAMS, "channel"])
-            .query(BROADCASTER_ID, broadcaster_id);
+#[cfg(test)]
+mod tests {
+    use crate::{
+        teams::{request::TeamSelector, TeamsAPI},
+        types::{BroadcasterId, Id},
+    };
 
-        TwitchAPIRequest::new(
-            EndpointType::GetChannelTeams,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
-    fn get_teams(&self, team_selector: TeamSelector) -> TwitchAPIRequest<TeamsResponse> {
-        let mut url = self.build_url();
-        url.path([TEAMS]);
-        team_selector.apply_to_url(&mut url);
-
-        TwitchAPIRequest::new(
-            EndpointType::GetChannelTeams,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
+    api_test!(get_channel_teams, [&BroadcasterId::new("96909659")]);
+    api_test!(get_teams, [TeamSelector::by_id(&Id::new("6358"))]);
 }

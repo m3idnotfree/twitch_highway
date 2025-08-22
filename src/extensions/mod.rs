@@ -6,9 +6,11 @@ use response::{
     ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose, ExtensionSecretsResponse,
     ExtensionsBitsProductsResponse, ExtensionsResponse,
 };
+use serde_json::json;
 use types::Segment;
 
 use crate::{
+    extensions::request::RequestConfigurationSegment,
     request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
     types::{BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery},
     TwitchAPI,
@@ -24,9 +26,9 @@ endpoints! {
         fn get_extension_configuration_segment(
             &self,
             jwt_token: JWTToken,
-            broadcaster_id: Option<BroadcasterId>,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             segment: &[Segment],
+            broadcaster_id: Option<&BroadcasterId>,
         ) -> ConfigurationSegmentResponse {
             endpoint_type: EndpointType::GetExtensionConfigurationSegment,
             method: Method::GET,
@@ -38,27 +40,34 @@ endpoints! {
             },
             headers: [jwt, jwt_token]
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#set-extension-configuration-segment>
         fn set_extension_configuration_segment(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             segment: Segment,
-            opts: Option<BroadcasterId>,
-        ) -> ConfigurationSegmentResponse {
+            opts: Option<RequestConfigurationSegment>,
+        // ) -> ConfigurationSegmentResponse {
+        ) -> NoContent {
             endpoint_type: EndpointType::SetExtensionConfigurationSegment,
             method: Method::PUT,
             path: ["extensions", "configurations"],
-            query_params: {
-                query("extension_id", extension_id),
-                query("segment", segment),
-                opt("broadcaster_id", opts),
+            headers: [json],
+            body:  {
+            let req = json!({
+                "extension_id": extension_id,
+                "segment": segment,
+            });
+
+            RequestBody::new(req, opts).into_json()
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#set-extension-required-configuration>
         fn set_extension_required_configuration(
             &self,
-            broadcaster_id: BroadcasterId,
-            extension_id: ExtensionId,
+            broadcaster_id: &BroadcasterId,
+            extension_id: &ExtensionId,
             extension_version: &str,
             required_configuration: &str,
         ) -> NoContent {
@@ -71,12 +80,13 @@ endpoints! {
             headers: [json],
             body: RequiredConfiguration::new(extension_id, extension_version, required_configuration).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-extension-pubsub-message>
         fn send_extension_pubsub_message(
             &self,
             target: &[&str],
             message: &str,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             is_global_broadcast: Option<bool>,
         ) -> NoContent {
             endpoint_type: EndpointType::SendExtensionPubSubMessage,
@@ -101,10 +111,11 @@ endpoints! {
                 RequestBody::new(required, None::<NoContent>).into_json()
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-live-channels>
         fn get_extension_live_channels(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionLiveChannelsRespnose {
             endpoint_type: EndpointType::GetExtensionLiveChannels,
@@ -115,10 +126,11 @@ endpoints! {
                 opt_into_query(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-secrets>
         fn get_extension_secrets(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
         ) -> ExtensionSecretsResponse {
             endpoint_type: EndpointType::GetExtensionSecrets,
             method: Method::GET,
@@ -127,10 +139,11 @@ endpoints! {
                 query("extension_id", extension_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#create-extension-secret>
         fn create_extension_secret(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             delay: Option<u64>,
         ) -> ExtensionSecretsResponse {
             endpoint_type: EndpointType::CreateExtensionSecret,
@@ -141,12 +154,13 @@ endpoints! {
                 opt("delay", delay.as_ref().map(|d| d.to_string()))
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-extension-chat-message>
         fn send_extension_chat_message(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
             text: &str,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             extension_version: &str,
         ) -> NoContent {
             endpoint_type: EndpointType::SendExtensionChatMessage,
@@ -158,10 +172,11 @@ endpoints! {
             headers: [json],
             body: ExtensionChatMessageIntoRequestBody::new(text, extension_id, extension_version).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-extensions>
         fn get_extensions(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             extension_version: Option<&str>,
         ) -> ExtensionsResponse {
             endpoint_type: EndpointType::GetExtensions,
@@ -172,10 +187,11 @@ endpoints! {
                 opt("extension_version", extension_version)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-released-extensions>
         fn get_released_extensions(
             &self,
-            extension_id: ExtensionId,
+            extension_id: &ExtensionId,
             extension_version: Option<&str>,
         ) -> ExtensionsResponse {
             endpoint_type: EndpointType::GetReleasedExtensions,
@@ -186,6 +202,7 @@ endpoints! {
                 opt("extension_version", extension_version)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-extension-bits-products>
         fn get_extension_bits_products(
             &self,
@@ -198,8 +215,9 @@ endpoints! {
                 opt("should_include_all", should_inclue_all.as_ref().map(|b| b.to_string()))
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-extension-bits-product>
-        fn update_extension_bits_products(
+        fn update_extension_bits_product(
             &self,
             sku: &str,
             cost: Cost,
@@ -226,343 +244,114 @@ endpoints! {
 mod tests {
     use crate::{
         extensions::{
-            types::{Segment, State},
+            request::{RequestConfigurationSegment, UpdateExtensoinBitsProductsRequest},
+            types::Segment,
             ExtensionsAPI,
         },
-        test_utils::TwitchApiTest,
-        types::{BroadcasterId, Cost, CostType, ExtensionId, JWTToken, PaginationQuery},
+        types::{BroadcasterId, Cost, CostType, ExtensionId, JWTToken},
     };
 
-    #[tokio::test]
-    pub(crate) async fn get_extension_configuration_segment() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let jwt_token = JWTToken::new("test_jwt_token");
-        let segments = vec![Segment::Broadcaster];
-
-        let response = suite
-            .execute("/extensions/configurations", |api| {
-                api.get_extension_configuration_segment(
-                    jwt_token,
-                    Some(BroadcasterId::new("123456789")),
-                    ExtensionId::new("ext123"),
-                    &segments,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let segment = &response.data[0];
-        assert_eq!(segment.segment.as_ref(), "broadcaster");
-        assert_eq!(
-            segment.broadcaster_id.as_ref().unwrap().as_str(),
-            "123456789"
-        );
-        assert_eq!(segment.content, "test_config_content");
-        assert_eq!(segment.version, "1.0.0");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_extension_live_channels() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let pagination = PaginationQuery::new().first(20);
-
-        let response = suite
-            .execute("/extensions/live", |api| {
-                api.get_extension_live_channels(ExtensionId::new("ext456"), Some(pagination))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-        assert!(response.pagination.is_some());
-
-        let first_channel = &response.data[0];
-        assert_eq!(first_channel.broadcaster_name, "LiveStreamer1");
-        assert_eq!(first_channel.game_name, "Just Chatting");
-
-        let second_channel = &response.data[1];
-        assert_eq!(second_channel.broadcaster_name, "LiveStreamer2");
-        assert_eq!(second_channel.game_name, "VALORANT");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_extension_secrets() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/jwt/secrets", |api| {
-                api.get_extension_secrets(ExtensionId::new("ext789"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let secret_data = &response.data[0];
-        assert_eq!(secret_data.format_version, 1);
-        assert_eq!(secret_data.secrets.len(), 1);
-        assert_eq!(secret_data.secrets[0].content, "active_secret_12345");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn create_extension_secret() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/jwt/secrets", |api| {
-                api.create_extension_secret(ExtensionId::new("ext999"), Some(300))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let secret_data = &response.data[0];
-        assert_eq!(secret_data.secrets.len(), 2);
-        assert_eq!(secret_data.secrets[0].content, "old_secret_content");
-        assert_eq!(secret_data.secrets[1].content, "new_secret_content");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_extension_bits_products() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/bits/extensions", |api| {
-                api.get_extension_bits_products(Some(true))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let product = &response.data[0];
-        assert_eq!(product.sku, "power_up_001");
-        assert_eq!(product.cost.amount, 150);
-        assert_eq!(product.display_name, "Power Up Pack");
-        assert!(!product.in_development);
-        assert!(product.is_broadcast);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn set_extension_configuration_segment() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/configurations", |api| {
-                api.set_extension_configuration_segment(
-                    ExtensionId::new("ext123"),
-                    Segment::Broadcaster,
-                    Some(BroadcasterId::new("123456789")),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let segment = &response.data[0];
-        assert_eq!(segment.segment.as_ref(), "broadcaster");
-        assert_eq!(
-            segment.broadcaster_id.as_ref().unwrap().as_str(),
-            "123456789"
-        );
-        assert_eq!(segment.content, "test_config_content");
-        assert_eq!(segment.version, "1.0.0");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn set_extension_required_configuration() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/required_configuration", |api| {
-                api.set_extension_required_configuration(
-                    BroadcasterId::new("123456789"),
-                    ExtensionId::new("ext123"),
-                    "1.0.0",
-                    "required_config_data",
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn send_extension_pubsub_message() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let targets = vec!["broadcast", "global"];
-
-        let response = suite
-            .execute("/extensions/pubsub", |api| {
-                api.send_extension_pubsub_message(
-                    &targets,
-                    "Hello from extension!",
-                    BroadcasterId::new("123456789"),
-                    Some(false),
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn send_extension_chat_message() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/chat", |api| {
-                api.send_extension_chat_message(
-                    BroadcasterId::new("123456789"),
-                    "Extension chat message",
-                    ExtensionId::new("ext123"),
-                    "1.0.0",
-                )
-            })
-            .send()
-            .await;
-
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_extensions() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions", |api| {
-                api.get_extensions(ExtensionId::new("ext123"), Some("1.0.0"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let extension = &response.data[0];
-        assert_eq!(extension.id.as_str(), "pgn0bjv51epi7eaekt53tovjnc82qo");
-        assert_eq!(extension.name, "Official Developers Demo");
-        assert_eq!(extension.version, "0.0.9");
-        assert_eq!(extension.author_name, "Twitch Developers");
-        assert!(extension.bits_enabled);
-        assert!(extension.request_identity_link);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_released_extensions() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let response = suite
-            .execute("/extensions/released", |api| {
-                api.get_released_extensions(ExtensionId::new("ext456"), None)
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let extension = &response.data[0];
-        assert_eq!(extension.id.as_str(), "pgn0bjv51epi7eaekt53tovjnc82qo");
-        assert_eq!(extension.name, "Official Developer Experience Demo");
-        assert_eq!(extension.version, "0.0.9");
-        assert_eq!(extension.author_name, "Twitch Developer Experience");
-        assert_eq!(extension.state, State::Released);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_extension_bits_products() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_success().await;
-
-        let cost = Cost::new(200, CostType::Bits);
-        let response = suite
-            .execute("/bits/extensions", |api| {
-                api.update_extension_bits_products(
-                    "updated_power_up",
-                    cost,
-                    "Updated Power Up",
-                    None,
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let product = &response.data[0];
-        assert_eq!(product.sku, "updated_power_up");
-        assert_eq!(product.cost.amount, 200);
-        assert_eq!(product.display_name, "Updated Power Up");
-    }
-
-    #[tokio::test]
-    async fn extensions_api_error_response() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_extensions_failure().await;
-
-        let jwt_token = JWTToken::new("invalid_token");
-        let segments = vec![Segment::Global];
-
-        let response = suite
-            .execute("/extensions/configurations", |api| {
-                api.get_extension_configuration_segment(
-                    jwt_token,
-                    None,
-                    ExtensionId::new("ext123"),
-                    &segments,
-                )
-            })
-            .send()
-            .await;
-
-        match response {
-            Ok(response) => {
-                panic!("Expected Error, got: {response:?}")
-            }
-            Err(e) => {
-                assert!(e.is_api());
-            }
-        }
-    }
+    api_test!(
+        get_extension_configuration_segment,
+        [
+            JWTToken::new("test_jwt_token"),
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &[Segment::Global],
+            None,
+        ]
+    );
+    api_test!(
+        set_extension_configuration_segment,
+        [
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            Segment::Global,
+            Some(
+                RequestConfigurationSegment::new()
+                    .version("0.0.1")
+                    .content("hello config!")
+            )
+        ]
+    );
+    api_test!(
+        set_extension_required_configuration,
+        [
+            &BroadcasterId::new("274637212"),
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            "0.0.1",
+            "RCS",
+        ]
+    );
+    api_test!(
+        send_extension_pubsub_message,
+        [
+            &["broadcast"],
+            "hello world!",
+            &BroadcasterId::new("141981764"),
+            None
+        ]
+    );
+    api_test!(
+        get_extension_live_channels,
+        [&ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"), None]
+    );
+    api_test!(
+        get_extension_secrets,
+        [&ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2")]
+    );
+    api_test!(
+        create_extension_secret,
+        [
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            Some(600)
+        ]
+    );
+    api_test!(
+        send_extension_chat_message,
+        [
+            &BroadcasterId::new("237757755"),
+            "Hello",
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            "0.0.9",
+        ]
+    );
+    api_test!(
+        get_extensions,
+        [
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            Some("0.0.9")
+        ]
+    );
+    api_test!(
+        get_released_extensions,
+        [
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            Some("0.0.9")
+        ]
+    );
+    api_test!(get_extension_bits_products, [Some(true)]);
+    api_test!(
+        update_extension_bits_product,
+        [
+            "1010",
+            Cost::new(990, CostType::Bits),
+            "Rusty Crate 2",
+            Some(
+                UpdateExtensoinBitsProductsRequest::new()
+                    .in_development(true)
+                    .is_broadcast(true)
+                    .expiration("2021-05-18T09:10:13.397Z")
+            ),
+        ]
+    );
+
+    api_test!(extra
+        get_extension_configuration_segment,
+        get_extension_configuration_segment2,
+        [
+            JWTToken::new("test_jwt_token"),
+            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &[Segment::Global],
+            None,
+        ]
+    );
 }

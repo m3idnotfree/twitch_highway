@@ -15,6 +15,7 @@ pub struct DropEntitlement {
     pub fulfillment_status: FulfillmentStatus,
     pub last_updated: DateTime<FixedOffset>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDropEntitlement {
     pub status: DropEntitlementStatus,
@@ -22,7 +23,7 @@ pub struct UpdateDropEntitlement {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum DropEntitlementStatus {
     INVALID_ID,
     NOT_FOUND,

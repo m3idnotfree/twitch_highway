@@ -17,6 +17,7 @@ pub struct CheckAutoModStatusResponse {
 pub struct AutoModSettingsResponse {
     pub data: Vec<AutoModSetting>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetBannedUsersResponse {
     pub data: Vec<BannedUser>,

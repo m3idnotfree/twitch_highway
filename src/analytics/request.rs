@@ -3,18 +3,18 @@ use serde::Serialize;
 
 define_request!(
     #[derive(Serialize)]
-    AnalyticsRequest {
+    AnalyticsRequest<'a> {
         opts: {
             #[serde(rename = "type")]
             kind: AnalyticsType => TYPE,
-            started_at: DateTime<FixedOffset> => STARTED_AT ; date,
-            ended_at: DateTime<FixedOffset> ; date
+            started_at: &'a DateTime<FixedOffset> => STARTED_AT ; date,
+            ended_at: &'a DateTime<FixedOffset> ; date
         };
         into_query
     }
 );
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize)]
 pub enum AnalyticsType {
     #[serde(rename(serialize = "overview_v2"))]
     OverviewV2,
@@ -69,8 +69,8 @@ mod tests {
 
         let request = AnalyticsRequest::new()
             .kind(AnalyticsType::OverviewV2)
-            .started_at(started_at)
-            .ended_at(ended_at);
+            .started_at(&started_at)
+            .ended_at(&ended_at);
 
         let mut url = url::Url::parse("https://api.twitch.tv/helix").unwrap();
         let mut query_pairs = url.query_pairs_mut();

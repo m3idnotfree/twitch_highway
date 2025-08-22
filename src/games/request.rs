@@ -1,14 +1,14 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::types::Id;
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
-    GetGamesRequest {
+    #[derive(Serialize)]
+    GetGamesRequest<'a> {
         opts: {
-            ids: Vec<Id> => ID ; vec,
-            names: Vec<String> => "name" ; vec,
-            igdb_ids: Vec<String> => "igdb_id" ; vec,
+            ids: &'a [Id] => ID ; vec,
+            names: &'a [&'a str] => "name" ; vec,
+            igdb_ids: &'a [&'a str] => "igdb_id" ; vec,
         };
         into_query
     }

@@ -2,9 +2,9 @@ use crate::types::Id;
 
 define_select!(
     #[derive(Debug)]
-    TeamSelector {
-        name: String as by_name,
-        id: Id => ID as by_id,
+    TeamSelector<'a> {
+        name: &'a str  as by_name,
+        id: &'a Id => ID as by_id,
     };
-    apply_to_url
+    into_query
 );

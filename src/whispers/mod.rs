@@ -1,45 +1,42 @@
 use asknothingx2_util::api::Method;
-use request::SendWhisperBody;
+use request::*;
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
-    types::constants::WHISPERS,
+    request::{EndpointType, NoContent, TwitchAPIRequest},
+    types::{constants::*, UserId},
     TwitchAPI,
 };
 
 pub mod request;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "whispers")))]
-pub trait WhisperAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
-    fn send_whisper(
-        &self,
-        from_user_id: &str,
-        to_user_id: &str,
-        message: &str,
-    ) -> TwitchAPIRequest<EmptyBody>;
+endpoints! {
+    WhisperAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
+        fn send_whisper(
+            &self,
+            from_user_id: &UserId,
+            to_user_id: &UserId,
+            message: &str,
+        ) -> NoContent {
+            endpoint_type: EndpointType::SendWhisper,
+            method: Method::POST,
+            path: [WHISPERS],
+            query_params: {
+                query("from_user_id", from_user_id),
+                query("to_user_id", to_user_id)
+            },
+            headers: [json],
+            body: SendWhisperBody::new(message).into_json()
+        }
+    }
 }
 
-impl WhisperAPI for TwitchAPI {
-    fn send_whisper(
-        &self,
-        from_user_id: &str,
-        to_user_id: &str,
-        message: &str,
-    ) -> TwitchAPIRequest<EmptyBody> {
-        let mut url = self.build_url();
-        url.path([WHISPERS])
-            .query_extend([("from_user_id", from_user_id), ("to_user_id", to_user_id)]);
+#[cfg(test)]
+mod tests {
+    use crate::{types::UserId, whispers::WhisperAPI};
 
-        let mut headers = self.build_headers();
-        headers.json();
-
-        TwitchAPIRequest::new(
-            EndpointType::SendWhisper,
-            url.build(),
-            Method::POST,
-            headers.build(),
-            SendWhisperBody::new(message).to_json(),
-        )
-    }
+    api_test!(
+        send_whisper,
+        [&UserId::new("123"), &UserId::new("456"), "hello"]
+    );
 }

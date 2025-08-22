@@ -20,6 +20,7 @@ pub struct StreamsResponse {
     )]
     pub pagination: Option<Pagination>,
 }
+
 #[derive(Debug, Deserialize)]
 pub struct CreateStreamMarkerResponse {
     pub data: Vec<Marker>,

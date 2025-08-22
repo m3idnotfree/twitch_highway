@@ -2,7 +2,7 @@ use asknothingx2_util::api::Method;
 use response::StartRaidResponse;
 
 use crate::{
-    request::{EmptyBody, EndpointType, TwitchAPIRequest},
+    request::{EndpointType, NoContent, TwitchAPIRequest},
     types::{constants::BROADCASTER_ID, BroadcasterId},
     TwitchAPI,
 };
@@ -10,48 +10,50 @@ use crate::{
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "raid")))]
-pub trait RaidAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
-    fn start_raid(
-        &self,
-        from_broadcaster_id: &str,
-        to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<StartRaidResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody>;
+endpoints! {
+    RaidAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
+        fn start_raid(
+            &self,
+            from_broadcaster_id: &BroadcasterId,
+            to_broadcaster_id: &BroadcasterId,
+        ) -> StartRaidResponse {
+            endpoint_type: EndpointType::Startraid,
+            method: Method::POST,
+            path: ["raids"],
+            query_params: {
+                extend([
+                    ("from_broadcaster_id", from_broadcaster_id),
+                    ("to_broadcaster_id", to_broadcaster_id)
+                ])
+            }
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
+        fn cancel_raid(
+            &self,
+            broadcaster_id: &BroadcasterId,
+        ) -> NoContent {
+            endpoint_type: EndpointType::Cancelraid,
+            method: Method::DELETE,
+            path: ["raids"],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id)
+            }
+        }
+    }
 }
 
-impl RaidAPI for TwitchAPI {
-    fn start_raid(
-        &self,
-        from_broadcaster_id: &str,
-        to_broadcaster_id: &str,
-    ) -> TwitchAPIRequest<StartRaidResponse> {
-        let mut url = self.build_url();
-        url.path(["raids"]).query_extend([
-            ("from_broadcaster_id", from_broadcaster_id),
-            ("to_broadcaster_id", to_broadcaster_id),
-        ]);
+#[cfg(test)]
+mod tests {
+    use crate::{raid::RaidAPI, types::BroadcasterId};
 
-        TwitchAPIRequest::new(
-            EndpointType::Startraid,
-            url.build(),
-            Method::POST,
-            self.build_headers().build(),
-            None,
-        )
-    }
-    fn cancel_raid(&self, broadcaster_id: BroadcasterId) -> TwitchAPIRequest<EmptyBody> {
-        let mut url = self.build_url();
-        url.path(["raids"]).query(BROADCASTER_ID, broadcaster_id);
-
-        TwitchAPIRequest::new(
-            EndpointType::Cancelraid,
-            url.build(),
-            Method::DELETE,
-            self.build_headers().build(),
-            None,
-        )
-    }
+    api_test!(
+        start_raid,
+        [
+            &BroadcasterId::new("12345678"),
+            &BroadcasterId::new("12345678")
+        ]
+    );
+    api_test!(cancel_raid, [&BroadcasterId::new("12345678")]);
 }

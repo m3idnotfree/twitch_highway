@@ -47,7 +47,7 @@ pub struct Tier {
     pub show_in_bits_card: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum TierLevel {
     #[serde(rename = "1")]
     One,
@@ -67,7 +67,7 @@ pub enum TierLevel {
     OneHundredThousand,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Type {
     GlobalFirstParty,
@@ -82,12 +82,14 @@ pub struct Images {
     pub dark: Dark,
     pub light: Light,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Dark {
     pub animated: Imagess,
     #[serde(rename = "static")]
     pub static_image: Imagess,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Light {
     pub animated: Imagess,
@@ -123,7 +125,7 @@ pub struct TransactionProductData {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize)]
 pub enum ProductType {
     BITS_IN_EXTENSION,
 }

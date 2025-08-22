@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Video {
     pub id: Id,
     pub stream_id: Option<String>,
@@ -27,13 +27,13 @@ pub struct Video {
     pub muted_segments: Vec<MutedSegment>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MutedSegment {
     pub duration: u64,
     pub offset: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Period {
     All,
@@ -65,7 +65,7 @@ impl AsRef<str> for Period {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Sort {
     Time,
@@ -95,7 +95,7 @@ impl fmt::Display for Sort {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Type {
     All,

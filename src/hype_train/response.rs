@@ -1,7 +1,7 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{hype_train::types::HypeTrainStatus, types::Pagination};
 
 use super::types::HypeTrain;
 
@@ -14,6 +14,11 @@ pub struct HypeTrainResponse {
         deserialize_with = "deserialize_empty_object_as_none"
     )]
     pub pagination: Option<Pagination>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct HypeTrainStatusResponse {
+    pub data: Vec<HypeTrainStatus>,
 }
 
 #[cfg(test)]

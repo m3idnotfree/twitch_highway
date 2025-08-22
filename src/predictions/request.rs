@@ -8,25 +8,25 @@ define_request!(
     #[derive(Serialize)]
     CreatePredictionRequest<'a> {
         req: {
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &'a BroadcasterId,
             title: &'a str,
             outcomes: &'a[Title],
             prediction_window:u64,
         };
-        to_json
+        into_json
     }
 );
 
 define_request!(
     #[derive(Serialize)]
-    EndPredictionRequest {
+    EndPredictionRequest<'a> {
         req: {
-            broadcaster_id: BroadcasterId,
-            id: Id,
+            broadcaster_id: &'a BroadcasterId,
+            id: &'a Id,
             status: PredictionStatus,
         },
         opts: {
-            winning_outcome_id:String
+            winning_outcome_id: &'a str
         };
     }
 );

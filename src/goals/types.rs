@@ -25,7 +25,7 @@ pub enum GoalType {
     SubscriptionCount,
     NewSubscription,
     NewSubscriptionCount,
-    #[cfg(feature = "test")]
+    // #[cfg(feature = "test")]
     Subscriber,
 }
 
@@ -41,7 +41,7 @@ mod tests {
             (GoalType::SubscriptionCount, "subscription_count"),
             (GoalType::NewSubscription, "new_subscription"),
             (GoalType::NewSubscriptionCount, "new_subscription_count"),
-            #[cfg(feature = "test")]
+            // #[cfg(feature = "test")]
             (GoalType::Subscriber, "subscriber"),
         ];
 

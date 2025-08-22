@@ -26,7 +26,7 @@ pub struct User {
     pub created_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UserType {
     Admin,
@@ -36,7 +36,7 @@ pub enum UserType {
     Normal,
 }
 
-#[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BroadcasterType {
     Affiliate,
@@ -62,7 +62,7 @@ pub struct UserExtension {
     pub kind: Vec<ExtensionType>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ExtensionType {
     Component,
@@ -79,7 +79,7 @@ define_request!(
             overlay: HashMap<String, Overlay>,
             component: HashMap<String, Component>,
         };
-        to_json
+        into_json
     }
 );
 
@@ -93,9 +93,9 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            version: String,
+            version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
-            name: String,
+            name: String | into,
         }
     }
 );
@@ -110,9 +110,9 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            version: String,
+            version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
-            name: String,
+            name: String | into,
         }
     }
 );
@@ -127,9 +127,9 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             id: Id,
             #[serde(skip_serializing_if = "Option::is_none")]
-            version: String,
+            version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
-            name: String,
+            name: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
             x: u64,
             #[serde(skip_serializing_if = "Option::is_none")]

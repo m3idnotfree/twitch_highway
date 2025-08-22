@@ -18,12 +18,12 @@ define_request!(
 
 define_request!(
     #[derive(Serialize)]
-    EndPollRequest {
+    EndPollRequest<'a> {
         req: {
-            broadcaster_id: BroadcasterId,
-            id: Id,
+            broadcaster_id: &'a BroadcasterId,
+            id: &'a Id,
             status: PollStatus
         };
-        to_json
+        into_json
     }
 );

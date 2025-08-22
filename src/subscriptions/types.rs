@@ -27,7 +27,7 @@ pub struct Subscription {
     pub user_login: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum Tier {
     #[serde(rename(deserialize = "1000"))]
     Tier1,

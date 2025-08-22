@@ -66,7 +66,7 @@ pub struct Reward {
     pub cost: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum RedemptionStatus {
     CANCELED,
     FULFILLED,

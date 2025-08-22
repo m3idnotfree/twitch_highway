@@ -3,19 +3,19 @@ use serde::{Deserialize, Serialize};
 use crate::types::{GameId, Id, UserId};
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
-    DropEntitlementRequest {
+    #[derive(Serialize)]
+    DropEntitlementRequest<'a> {
         opts: {
-            id: Vec<Id> => ID ; vec,
-            user_id: UserId => USER_ID,
-            game_id: GameId => GAME_ID,
+            id: &'a [Id] => ID ; vec,
+            user_id: &'a UserId => USER_ID,
+            game_id: &'a GameId => GAME_ID,
             fulfillment_status: FulfillmentStatus,
         };
         into_query
     }
 );
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum FulfillmentStatus {
     CLAIMED,
     FULFILLED,
@@ -46,10 +46,10 @@ impl AsRef<str> for FulfillmentStatus {
 }
 
 define_request!(
-    #[derive(Default, Serialize, Deserialize)]
-    UpdateEntitlementsRequest{
+    #[derive(Default, Serialize)]
+    UpdateEntitlementsRequest<'a>{
         opts: {
-            entitlement_ids: Vec<String>,
+            entitlement_ids: &'a [&'a str],
             fulfillment_status: FulfillmentStatus
         };
         into_json

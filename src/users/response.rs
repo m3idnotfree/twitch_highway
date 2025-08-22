@@ -26,9 +26,3 @@ pub struct UserExtensionsResponse {
 pub struct UserActiveExtensionsResponse {
     pub data: UserActiveExtensions,
 }
-
-impl UserActiveExtensionsResponse {
-    fn to_json(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}

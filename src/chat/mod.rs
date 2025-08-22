@@ -26,8 +26,8 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
         fn get_chatters(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             pagination: Option<PaginationQuery>,
         ) -> ChattersResponse {
             endpoint_type: EndpointType::GetChatters,
@@ -39,10 +39,11 @@ endpoints! {
                 pagination(pagination)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
-        fn channel_emotes(
+        fn get_channel_emotes(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> EmotesResponse {
             endpoint_type: EndpointType::GetChannelEmotes,
             method: Method::GET,
@@ -51,14 +52,16 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
-        fn global_emotes(&self) -> EmotesResponse {
+        fn get_global_emotes(&self) -> EmotesResponse {
             endpoint_type: EndpointType::GetGlobalEmotes,
             method: Method::GET,
             path: [CHAT, EMOTES, "global"]
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
-        fn emote_sets(
+        fn get_emote_sets(
             &self,
             emote_set_ids: &[&str],
         ) -> EmotesResponse {
@@ -69,10 +72,11 @@ endpoints! {
                 extend(emote_set_ids.iter().map(|x| ("emote_set_id", *x)))
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
-        fn channel_badge(
+        fn get_channel_chat_badges(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> BadgesResponse {
             endpoint_type: EndpointType::GetChannelChatBadges,
             method: Method::GET,
@@ -81,17 +85,19 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
-        fn global_badge(&self) -> BadgesResponse {
+        fn get_global_chat_badges(&self) -> BadgesResponse {
             endpoint_type: EndpointType::GetGlobalChatBadges,
             method: Method::GET,
             path: [CHAT, "badges", "global"]
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
         fn get_chat_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: Option<ModeratorId>,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: Option<&ModeratorId>,
         ) -> ChatSettingResponse {
             endpoint_type: EndpointType::GetChatSettings,
             method: Method::GET,
@@ -101,10 +107,11 @@ endpoints! {
                 opt(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
         fn get_shared_chat_session(
             &self,
-            broadcaster_id: BroadcasterId,
+            broadcaster_id: &BroadcasterId,
         ) -> SharedChatSessionResponse {
             endpoint_type: EndpointType::GetShardChatSession,
             method: Method::GET,
@@ -113,10 +120,11 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
-        fn user_emotes(
+        fn get_user_emotes(
             &self,
-            user_id: UserId,
+            user_id: &UserId,
             after: Option<&str>,
             broadcaster_id: Option<BroadcasterId>,
         ) -> EmotesResponse {
@@ -129,11 +137,12 @@ endpoints! {
                 opt(BROADCASTER_ID, broadcaster_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
         fn update_chat_settings(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             opts: Option<UpdateChatSettingsRequest>,
         ) -> ChatSettingResponse {
             endpoint_type: EndpointType::UpdateChatSettings,
@@ -146,11 +155,12 @@ endpoints! {
             headers: [json],
             body: opts.and_then(|o| o.into_json())
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
         fn send_chat_announcement(
             &self,
-            broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
             message: &str,
             color: Option<AnnouncementColor>,
         ) -> NoContent {
@@ -164,12 +174,13 @@ endpoints! {
             headers: [json],
             body: ChatAnnouncementBody::new(message, color).into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
         fn send_a_shoutout(
             &self,
-            from_broadcaster_id: BroadcasterId,
-            to_broadcaster_id: BroadcasterId,
-            moderator_id: ModeratorId,
+            from_broadcaster_id: &BroadcasterId,
+            to_broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
         ) -> NoContent {
             endpoint_type: EndpointType::SendAShoutout,
             method: Method::POST,
@@ -180,21 +191,21 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             }
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
-        fn chat_write(
+        fn send_chat_message(
             &self,
-            broadcaster_id: BroadcasterId,
-            sender_id: &str,
-            message: &str,
+            req: SendChatMessageRequest,
         ) -> SendChatMessageResponse {
             endpoint_type: EndpointType::SendChatMessage,
             method: Method::POST,
             path: [CHAT, "messages"],
             headers: [json],
-            body: SendChatMessageRequest::new(broadcaster_id, sender_id, message).into_json()
+            body: req.into_json()
         }
+
         /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
-        fn user_chat_color(
+        fn get_user_chat_color(
             &self,
             user_id: &[UserId],
         ) -> UsersColorResponse {
@@ -208,7 +219,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
         fn update_user_chat_color(
             &self,
-            user_id: UserId,
+            user_id: &UserId,
             color: ChatColor,
         ) -> NoContent {
             endpoint_type: EndpointType::UpdateUserChatColor,
@@ -225,408 +236,88 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        chat::{request::AnnouncementColor, ChatAPI},
-        test_utils::TwitchApiTest,
-        types::{BroadcasterId, ModeratorId, PaginationQuery, UserId},
+        chat::{
+            request::{
+                AnnouncementColor, ChatColor, SendChatMessageRequest, UpdateChatSettingsRequest,
+            },
+            ChatAPI,
+        },
+        types::{BroadcasterId, ModeratorId, UserId},
     };
 
-    #[tokio::test]
-    pub(crate) async fn get_chatters() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let pagination = PaginationQuery::new().first(100);
-
-        let response = suite
-            .execute("/chat/chatters", |api| {
-                api.get_chatters(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    Some(pagination),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-        assert_eq!(response.total, 150);
-        assert!(response.pagination.is_some());
-
-        let first_chatter = &response.data[0];
-        assert_eq!(first_chatter.user_id.as_str(), "123456789");
-        assert_eq!(first_chatter.user_login, "activeuser1");
-
-        let second_chatter = &response.data[1];
-        assert_eq!(second_chatter.user_id.as_str(), "987654321");
-        assert_eq!(second_chatter.user_login, "activeuser2");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn channel_emotes() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/emotes", |api| {
-                api.channel_emotes(BroadcasterId::new("123456789"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-        assert!(response.template.contains("{{id}}"));
-
-        let emote = &response.data[0];
-        assert_eq!(emote.id.as_str(), "emotesv2_123");
-        assert_eq!(emote.name, "testEmote1");
-        assert!(emote.images.is_some());
-        assert_eq!(emote.tier, Some("1000".to_string()));
-    }
-
-    #[tokio::test]
-    pub(crate) async fn chat_write() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/messages", |api| {
-                api.chat_write(BroadcasterId::new("123456789"), "987654321", "Hello, chat!")
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let message = &response.data[0];
-        assert_eq!(message.message_id, "msg123456789");
-        assert!(message.is_sent);
-        assert!(message.drop_reason.is_none());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_chat_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/settings", |api| {
-                api.get_chat_settings(
-                    BroadcasterId::new("123456789"),
-                    Some(ModeratorId::new("987654321")),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let settings = &response.data[0];
-        assert_eq!(settings.broadcaster_id.as_str(), "123456789");
-        assert!(settings.follower_mode);
-        assert_eq!(settings.follower_mode_duration, Some(300));
-        assert!(!settings.slow_mode);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn user_chat_color() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let user_ids = [UserId::new("123456789")];
-        let response = suite
-            .execute("/chat/color", |api| api.user_chat_color(&user_ids))
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let user_color = &response.data[0];
-        assert_eq!(user_color.user_id.as_str(), "123456789");
-        assert_eq!(user_color.user_name, "TestUser");
-        assert_eq!(user_color.color, "#FF0000");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn global_emotes() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/emotes/global", |api| api.global_emotes())
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-        assert!(response.template.contains("{{id}}"));
-
-        let emote = &response.data[0];
-        assert_eq!(emote.id.as_str(), "global_emote_1");
-        assert_eq!(emote.name, "Kappa");
-        assert!(emote.images.is_some());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn emote_sets() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let emote_set_ids = ["0", "1"];
-
-        let response = suite
-            .execute("/chat/emotes/set", |api| api.emote_sets(&emote_set_ids))
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-        assert!(response.template.contains("{{id}}"));
-
-        let first_emote = &response.data[0];
-        assert_eq!(first_emote.id.as_str(), "set_emote_1");
-        assert_eq!(first_emote.name, "SetEmote1");
-        assert_eq!(first_emote.emote_set_id, Some("0".to_string()));
-
-        let second_emote = &response.data[1];
-        assert_eq!(second_emote.id.as_str(), "set_emote_2");
-        assert_eq!(second_emote.emote_set_id, Some("1".to_string()));
-    }
-
-    #[tokio::test]
-    pub(crate) async fn channel_badge() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/badges", |api| {
-                api.channel_badge(BroadcasterId::new("123456789"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let badge = &response.data[0];
-        assert_eq!(badge.set_id, "subscriber");
-        assert_eq!(badge.versions.len(), 1);
-
-        let version = &badge.versions[0];
-        assert_eq!(version.id.as_str(), "1");
-        assert_eq!(version.title, "Subscriber");
-        assert_eq!(version.description, "Subscriber");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn global_badge() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/badges/global", |api| api.global_badge())
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let badge = &response.data[0];
-        assert_eq!(badge.set_id, "moderator");
-        assert_eq!(badge.versions.len(), 1);
-
-        let version = &badge.versions[0];
-        assert_eq!(version.id.as_str(), "1");
-        assert_eq!(version.title, "Moderator");
-        assert_eq!(version.description, "Moderator");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn get_shared_chat_session() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/shared_chat/session", |api| {
-                api.get_shared_chat_session(BroadcasterId::new("123456789"))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let session = &response.data[0];
-        assert_eq!(session.session_id, "session_123");
-        assert_eq!(session.host_broadcaster_id, "123456789");
-        assert_eq!(session.participants.len(), 2);
-        assert_eq!(session.participants[0].broadcaster_id.as_str(), "123456789");
-        assert_eq!(session.participants[1].broadcaster_id.as_str(), "987654321");
-    }
-
-    #[tokio::test]
-    pub(crate) async fn user_emotes() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/emotes/user", |api| {
-                api.user_emotes(
-                    UserId::new("123456789"),
-                    Some("cursor123"),
-                    Some(BroadcasterId::new("987654321")),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-        assert!(response.template.contains("{{id}}"));
-
-        let emote = &response.data[0];
-        assert_eq!(emote.id.as_str(), "user_emote_1");
-        assert_eq!(emote.name, "UserEmote");
-        assert!(emote.images.is_some());
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_chat_settings() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let update_request = crate::chat::request::UpdateChatSettingsRequest::new()
-            .emote_mode(true)
-            .follower_mode(true)
-            .follower_mode_duration(600)
-            .slow_mode(true)
-            .slow_mode_wait_time(30)
-            .subscriber_mode(false)
-            .unique_chat_mode(true);
-
-        let response = suite
-            .execute("/chat/settings", |api| {
-                api.update_chat_settings(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    Some(update_request),
-                )
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 1);
-
-        let settings = &response.data[0];
-        assert_eq!(settings.broadcaster_id.as_str(), "123456789");
-        assert!(settings.follower_mode);
-        assert_eq!(settings.follower_mode_duration, Some(600));
-    }
-
-    #[tokio::test]
-    pub(crate) async fn send_a_shoutout() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/shoutouts", |api| {
-                api.send_a_shoutout(
-                    BroadcasterId::new("123456789"),
-                    BroadcasterId::new("987654321"),
-                    ModeratorId::new("555666777"),
-                )
-            })
-            .send()
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn update_user_chat_color() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/color", |api| {
-                api.update_user_chat_color(
-                    UserId::new("123456789"),
-                    crate::chat::request::ChatColor::Blue,
-                )
-            })
-            .send()
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), 204);
-    }
-
-    #[tokio::test]
-    pub(crate) async fn send_chat_announcement() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_success().await;
-
-        let response = suite
-            .execute("/chat/announcements", |api| {
-                api.send_chat_announcement(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    "Important announcement: Stream starting soon!",
-                    Some(AnnouncementColor::Blue),
-                )
-            })
-            .send()
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), 204);
-    }
-
-    #[tokio::test]
-    async fn chat_api_error_response() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_chat_failure().await;
-
-        let response = suite
-            .execute("/chat/chatters", |api| {
-                api.get_chatters(
-                    BroadcasterId::new("123456789"),
-                    ModeratorId::new("987654321"),
-                    None,
-                )
-            })
-            .send()
-            .await;
-
-        match response {
-            Ok(response) => {
-                panic!("Expected Error, got: {response:?}")
-            }
-            Err(e) => {
-                assert!(e.is_api());
-            }
-        }
-    }
+    api_test!(
+        get_chatters,
+        [
+            &BroadcasterId::new("123456"),
+            &ModeratorId::new("654321"),
+            None
+        ]
+    );
+
+    api_test!(get_channel_emotes, [&BroadcasterId::new("141981764")]);
+
+    api_test!(get_global_emotes, []);
+    api_test!(get_emote_sets, [&["301590448"]]);
+    api_test!(get_channel_chat_badges, [&BroadcasterId::new("135093069")]);
+    api_test!(get_global_chat_badges, []);
+    api_test!(get_chat_settings, [&BroadcasterId::new("1234"), None]);
+    api_test!(get_shared_chat_session, [&BroadcasterId::new("198704263")]);
+    api_test!(get_user_emotes, [&UserId::new("123456"), None, None]);
+    api_test!(
+        update_chat_settings,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            Some(UpdateChatSettingsRequest::new().follower_mode(false)),
+        ]
+    );
+    api_test!(
+        send_chat_announcement,
+        [
+            &BroadcasterId::new("11111"),
+            &ModeratorId::new("44444"),
+            "Hello chat!",
+            Some(AnnouncementColor::Purple),
+        ]
+    );
+    api_test!(
+        send_a_shoutout,
+        [
+            &BroadcasterId::new("12345"),
+            &BroadcasterId::new("626262"),
+            &ModeratorId::new("98765"),
+        ]
+    );
+    api_test!(
+        send_chat_message,
+        [SendChatMessageRequest::new(
+            &BroadcasterId::new("12826"),
+            "141981764",
+            "Hello, world! twitchdevHype",
+        )
+        .for_source_only(true)]
+    );
+    api_test!(
+        get_user_chat_color,
+        [&[UserId::new("11111"), UserId::new("44444")]]
+    );
+    api_test!(
+        update_user_chat_color,
+        [&UserId::new("123"), ChatColor::Blue,]
+    );
+    api_test!(extra
+        update_chat_settings,
+        update_chat_settings2,
+        [
+            &BroadcasterId::new("1234"),
+            &ModeratorId::new("5678"),
+            Some(UpdateChatSettingsRequest::new().slow_mode(true).slow_mode_wait_time(10)),
+        ]
+    );
+
+    // api_test!(extra
+    //     update_user_chat_color,
+    //     update_user_chat_color2,
+    //     [&UserId::new("123"), ChatColor::Blue,]
+    // );
 }

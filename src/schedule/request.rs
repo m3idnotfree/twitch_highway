@@ -3,19 +3,19 @@ use serde::{Deserialize, Serialize};
 use crate::types::Id;
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Serialize)]
     ChannelStreamScheduleRequest<'a> {
         opts: {
             start_time: &'a str,
             utc_offset: &'a str,
-            ids: Vec<Id> => ID ; vec,
+            ids: &'a [Id] => ID ; vec,
         };
-        apply_to_url
+        into_query
     }
 );
 
 define_request!(
-    #[derive( Serialize, Deserialize)]
+    #[derive(Serialize, Deserialize)]
     UpdateScheduleRequest<'a> {
         opts: {
             vacation_start_time: &'a str,
@@ -23,7 +23,7 @@ define_request!(
             timezone: &'a str,
             is_vacation_enabled: bool ; bool,
         };
-        apply_to_url
+        into_query
     }
 );
 
@@ -38,7 +38,7 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             is_recurring: bool
         };
-        to_json
+        into_json
     }
 );
 
@@ -59,6 +59,6 @@ define_request!(
             #[serde(skip_serializing_if = "Option::is_none")]
             is_canceled: bool,
         };
-        to_json
+        into_json
     }
 );

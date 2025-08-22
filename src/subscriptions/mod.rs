@@ -13,62 +13,55 @@ use crate::{
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
-pub trait SubscriptionsAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions>
-    fn get_broadcaster_subscriptions(
-        &self,
-        broadcaster_id: BroadcasterId,
-        user_id: Option<&[UserId]>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<BroadcasterSubscriptionResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#check-user-subscription>
-    fn check_user_subscpition(
-        &self,
-        broadcaster_id: BroadcasterId,
-        user_id: UserId,
-    ) -> TwitchAPIRequest<UserSubscriptionResponse>;
-}
-
-impl SubscriptionsAPI for TwitchAPI {
-    fn get_broadcaster_subscriptions(
-        &self,
-        broadcaster_id: BroadcasterId,
-        user_id: Option<&[UserId]>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<BroadcasterSubscriptionResponse> {
-        let mut url = self.build_url();
-        url.path([SUBSCRIPTIONS])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(user_id.map(|ids| ids.iter().map(|id| (USER_ID, id))));
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
+endpoints! {
+    SubscriptionsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions>
+        fn get_broadcaster_subscriptions(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            user_id: Option<&[UserId]>,
+            pagination: Option<PaginationQuery>,
+        ) -> BroadcasterSubscriptionResponse {
+            endpoint_type: EndpointType::GetBroadcasterSubscriptions,
+            method: Method::GET,
+            path: [SUBSCRIPTIONS],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id),
+                extend(user_id.unwrap_or(&[]).iter().map(|id| (USER_ID, id))),
+                pagination(pagination)
+            }
         }
 
-        TwitchAPIRequest::new(
-            EndpointType::GetBroadcasterSubscriptions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+        /// <https://dev.twitch.tv/docs/api/reference/#check-user-subscription>
+        fn check_user_subscription(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            user_id: &UserId,
+        ) -> UserSubscriptionResponse {
+            endpoint_type: EndpointType::CheckUserSubscriptions,
+            method: Method::GET,
+            path: [SUBSCRIPTIONS, "user"],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id),
+                query(USER_ID, user_id)
+            }
+        }
     }
-    fn check_user_subscpition(
-        &self,
-        broadcaster_id: BroadcasterId,
-        user_id: UserId,
-    ) -> TwitchAPIRequest<UserSubscriptionResponse> {
-        let mut url = self.build_url();
-        url.path([SUBSCRIPTIONS, "user"])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query(USER_ID, user_id);
+}
 
-        TwitchAPIRequest::new(
-            EndpointType::CheckUserSubscriptions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
-    }
+#[cfg(test)]
+mod tests {
+    use crate::{
+        subscriptions::SubscriptionsAPI,
+        types::{BroadcasterId, UserId},
+    };
+
+    api_test!(
+        get_broadcaster_subscriptions,
+        [&BroadcasterId::new("141981764"), None, None]
+    );
+    api_test!(
+        check_user_subscription,
+        [&BroadcasterId::new("149747285"), &UserId::new("141981764")]
+    );
 }

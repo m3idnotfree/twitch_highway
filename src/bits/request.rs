@@ -9,8 +9,8 @@ define_request!(
         opts: {
             count: u64 ; u64,
             period: &'a str,
-            started_at: DateTime<FixedOffset> => STARTED_AT ; date,
-            user_id: UserId => USER_ID,
+            started_at: &'a DateTime<FixedOffset> => STARTED_AT ; date,
+            user_id: &'a UserId => USER_ID,
         };
         into_query
     }
@@ -26,12 +26,13 @@ mod tests {
     #[test]
     fn bits_leaderboard_request_serialization() {
         let started_at = DateTime::<FixedOffset>::from_str("2023-12-01T00:00:00Z").unwrap();
+        let user_id = UserId::new("123456789");
 
         let request = BitsLeaderboardRequest::new()
             .count(10)
             .period("week")
-            .started_at(started_at)
-            .user_id(UserId::new("123456789"));
+            .started_at(&started_at)
+            .user_id(&user_id);
 
         let mut url = url::Url::parse("https://api.twitch.tv/helix").unwrap();
         let mut query_pairs = url.query_pairs_mut();

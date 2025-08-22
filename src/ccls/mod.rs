@@ -1,5 +1,5 @@
 use asknothingx2_util::api::Method;
-use request::CclsLocale;
+use request::CclLocale;
 use response::CclsResponse;
 
 use crate::{
@@ -16,7 +16,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#get-content-classification-labels>
         fn get_content_classification_labels(
             &self,
-            locale: Option<CclsLocale>,
+            locale: Option<CclLocale>,
         ) -> CclsResponse {
             endpoint_type: EndpointType::GetContentClassificationLabels,
             method: Method::GET,
@@ -30,72 +30,7 @@ endpoints! {
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        ccls::{request::CclsLocale, CclsAPI},
-        test_utils::TwitchApiTest,
-    };
+    use crate::ccls::CclsAPI;
 
-    #[tokio::test]
-    pub(crate) async fn get_content_classification_labels() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_ccls_success().await;
-
-        let response = suite
-            .execute("/content_classification_labels", |api| {
-                api.get_content_classification_labels(Some(CclsLocale::enUS))
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 7);
-        assert_eq!(
-            response.data[0].id.as_str(),
-            "DebatedSocialIssuesAndPolitics"
-        );
-        assert_eq!(response.data[1].id.as_str(), "DrugsIntoxication");
-    }
-
-    #[tokio::test]
-    async fn get_content_classification_labels_without_locale() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_ccls_success_without_locale().await;
-
-        let response = suite
-            .execute("/content_classification_labels", |api| {
-                api.get_content_classification_labels(None)
-            })
-            .json()
-            .await
-            .unwrap();
-
-        assert_eq!(response.data.len(), 2);
-        assert_eq!(response.data[0].id.as_str(), "ViolentGraphic");
-        assert_eq!(response.data[1].id.as_str(), "Gambling");
-    }
-
-    #[tokio::test]
-    async fn ccls_api_error_response() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.mock_ccls_failure().await;
-
-        let response = suite
-            .execute("/content_classification_labels", |api| {
-                api.get_content_classification_labels(Some(CclsLocale::enUS))
-            })
-            .json()
-            .await;
-
-        match response {
-            Ok(response) => {
-                panic!("Expected Error, got: {response:?}")
-            }
-            Err(e) => {
-                assert!(e.is_api());
-            }
-        }
-    }
+    api_test!(get_content_classification_labels, [None]);
 }

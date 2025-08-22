@@ -96,6 +96,7 @@ pub enum EndpointType {
     UpdateGuestStarSlotSettings,
     // Hype Train
     GetHypeTrainEvents,
+    GetHypeTrainStatus,
 
     // Moderation
     CheckAutoModStatus,
@@ -296,6 +297,7 @@ impl EndpointType {
             Self::UpdateGuestStarSlotSettings => Some(vec![Scope::ChannelManageGuestStar]),
             // Hype Train
             Self::GetHypeTrainEvents => Some(vec![Scope::ChannelReadHypeTrain]),
+            Self::GetHypeTrainStatus => Some(vec![Scope::ChannelReadHypeTrain]),
 
             // Moderation
             Self::CheckAutoModStatus => Some(vec![Scope::ModerationRead]),
@@ -481,6 +483,7 @@ impl EndpointType {
             Self::UpdateGuestStarSlotSettings => TokenType::User,
             // Hype Train
             Self::GetHypeTrainEvents => TokenType::User,
+            Self::GetHypeTrainStatus => TokenType::User,
 
             // Moderation
             Self::CheckAutoModStatus => TokenType::User,

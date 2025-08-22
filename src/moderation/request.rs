@@ -16,8 +16,8 @@ define_request!(
     #[derive(Serialize, Deserialize)]
      CheckAutoMod {
         req: {
-            msg_id: String,
-            msg_text: String,
+            msg_id: String | into,
+            msg_text: String | into,
         }
     }
 );
@@ -26,7 +26,7 @@ define_request!(
     #[derive(Serialize)]
      ManageHeldAutoModMeussageRequest<'a> {
         req: {
-            user_id: UserId,
+            user_id: &'a UserId,
             msg_id: &'a str,
             action: AutoModAction
         };
@@ -34,7 +34,7 @@ define_request!(
     }
 );
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AutoModAction {
     ALLOW,
     DENY,
@@ -69,24 +69,26 @@ define_request!(
 
 define_request!(
     #[derive(Serialize)]
-    BanUsersRequest<'a>{
+    BanUserRequest<'a> {
         req: {
-            data: BanUserRequest<'a>
-        };
-        into_json
+            user_id: &'a UserId
+        },
+        opts: {
+            #[serde(skip_serializing_if = "Option::is_none")]
+            duration: u64,
+            #[serde(skip_serializing_if = "Option::is_none")]
+            reason: &'a str
+       }
     }
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
-    BanUserRequest<'a> {
+    #[derive(Serialize)]
+    BanUserRequestWrapper<'a>{
         req: {
-            user_id: UserId
-        },
-        opts: {
-            duration: u64,
-            reason: &'a str
-       }
+            data: BanUserRequest<'a>
+        };
+        into_json
     }
 );
 
@@ -114,7 +116,7 @@ define_request!(
     #[derive(Serialize)]
     WarnChatUserRequest<'a> {
         req: {
-            data: &'a[WarnChatUser<'a>]
+            data: WarnChatUser<'a>
         };
         into_json
     }
@@ -124,7 +126,7 @@ define_request!(
     #[derive(Serialize)]
     WarnChatUser<'a> {
         req: {
-            user_id: UserId,
+            user_id: &'a UserId,
             reason: &'a str
         }
     }

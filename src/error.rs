@@ -56,19 +56,19 @@ impl Error {
         }
     }
 
-    pub(crate) fn with_message_and_source(
-        kind: Kind,
-        message: impl Into<String>,
-        source: impl Into<BoxError>,
-    ) -> Self {
-        Self {
-            inner: Box::new(Inner {
-                kind,
-                message: Some(message.into()),
-                source: Some(source.into()),
-            }),
-        }
-    }
+    // pub(crate) fn with_message_and_source(
+    //     kind: Kind,
+    //     message: impl Into<String>,
+    //     source: impl Into<BoxError>,
+    // ) -> Self {
+    //     Self {
+    //         inner: Box::new(Inner {
+    //             kind,
+    //             message: Some(message.into()),
+    //             source: Some(source.into()),
+    //         }),
+    //     }
+    // }
 
     pub fn message(&self) -> Option<&str> {
         self.inner.message.as_deref()

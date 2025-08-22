@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "lowercase")]
 pub enum BlockSourceContext {
     Chat,
@@ -31,7 +31,7 @@ impl From<BlockSourceContext> for String {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "lowercase")]
 pub enum BlockReason {
     Harassment,

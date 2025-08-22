@@ -4,7 +4,7 @@ use response::PredictionsResponse;
 use types::PredictionStatus;
 
 use crate::{
-    request::{EmptyBody, EndpointType, RequestBody, TwitchAPIRequest},
+    request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
@@ -16,112 +16,108 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-#[cfg_attr(docsrs, doc(cfg(feature = "predictions")))]
-pub trait PredictionsAPI {
-    /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
-    fn get_predictions(
-        &self,
-        broadcaster_id: BroadcasterId,
-        id: Option<&[Id]>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<PredictionsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
-    fn create_prediction(
-        &self,
-        broadcaster_id: BroadcasterId,
-        title: &str,
-        outcomes: &[Title],
-        prediction_window: u64,
-    ) -> TwitchAPIRequest<PredictionsResponse>;
-    /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
-    fn end_prediction(
-        &self,
-        broadcaster_id: BroadcasterId,
-        id: Id,
-        status: PredictionStatus,
-        winning_outcome_id: Option<&str>, //request: EndPredictionRequest,
-    ) -> TwitchAPIRequest<PredictionsResponse>;
-}
-
-impl PredictionsAPI for TwitchAPI {
-    fn get_predictions(
-        &self,
-        broadcaster_id: BroadcasterId,
-        ids: Option<&[Id]>,
-        pagination: Option<PaginationQuery>,
-    ) -> TwitchAPIRequest<PredictionsResponse> {
-        let mut url = self.build_url();
-        url.path(["predictions"])
-            .query(BROADCASTER_ID, broadcaster_id)
-            .query_opt_extend(ids.map(|id| id.into_iter().map(|id| (ID, id))));
-        if let Some(pagination) = pagination {
-            pagination.apply_to_url(&mut url);
+endpoints! {
+    PredictionsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
+        fn get_predictions(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            id: Option<&[Id]>,
+            pagination: Option<PaginationQuery>,
+        ) -> PredictionsResponse {
+            endpoint_type: EndpointType::GetPredictions,
+            method: Method::GET,
+            path: ["predictions"],
+            query_params: {
+                query(BROADCASTER_ID, broadcaster_id),
+                extend(id.unwrap_or(&[]).iter().map(|id| (ID, id))),
+                pagination(pagination)
+            }
         }
 
-        TwitchAPIRequest::new(
-            EndpointType::GetPredictions,
-            url.build(),
-            Method::GET,
-            self.build_headers().build(),
-            None,
-        )
+        /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
+        fn create_prediction(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            title: &str,
+            outcomes: &[Title],
+            prediction_window: u64,
+        ) -> PredictionsResponse {
+            endpoint_type: EndpointType::CreatePrediction,
+            method: Method::POST,
+            path: ["predictions"],
+            headers: [json],
+            body: CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window).into_json()
+        }
+
+        /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
+        fn end_prediction(
+            &self,
+            broadcaster_id: &BroadcasterId,
+            id: &Id,
+            status: PredictionStatus,
+            winning_outcome_id: Option<&str>,
+        ) -> PredictionsResponse {
+            endpoint_type: EndpointType::EndPrediction,
+            method: Method::PATCH,
+            path: ["predictions"],
+            headers: [json],
+            body: {
+                let required = if winning_outcome_id.is_some() {
+                    serde_json::json!({
+                        "broadcaster_id": broadcaster_id,
+                        "id": id,
+                        "status":status,
+                        "winning_outcome_id": winning_outcome_id.unwrap()
+                    })
+                } else {
+                    serde_json::json!({
+                        "broadcaster_id": broadcaster_id,
+                        "id": id,
+                        "status":status
+                    })
+                };
+
+                RequestBody::new(required, None::<NoContent>).into_json()
+            }
+        }
     }
-    fn create_prediction(
-        &self,
-        broadcaster_id: BroadcasterId,
-        title: &str,
-        outcomes: &[Title],
-        prediction_window: u64,
-    ) -> TwitchAPIRequest<PredictionsResponse> {
-        let mut url = self.build_url();
-        url.path(["predictions"]);
+}
 
-        let mut headers = self.build_headers();
-        headers.json();
-        TwitchAPIRequest::new(
-            EndpointType::CreatePrediction,
-            url.build(),
-            Method::POST,
-            headers.build(),
-            CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window)
-                .to_json(),
-        )
-    }
-    fn end_prediction(
-        &self,
-        broadcaster_id: BroadcasterId,
-        id: Id,
-        status: PredictionStatus,
-        winning_outcome_id: Option<&str>,
-    ) -> TwitchAPIRequest<PredictionsResponse> {
-        let mut url = self.build_url();
-        url.path(["predictions"]);
+#[cfg(test)]
+mod tests {
+    use crate::{
+        predictions::{types::PredictionStatus, PredictionsAPI},
+        types::{BroadcasterId, Id, Title},
+    };
 
-        let required = if winning_outcome_id.is_some() {
-            serde_json::json!({
-                "broadcaster_id": broadcaster_id,
-                "id": id,
-                "status":status,
-                "winning_outcome_id": winning_outcome_id.unwrap()
-            })
-        } else {
-            serde_json::json!({
-                "broadcaster_id": broadcaster_id,
-                "id": id,
-                "status":status
-            })
-        };
-
-        let request_body = RequestBody::new(required, None::<EmptyBody>);
-
-        let mut headers = self.build_headers();
-        headers.json();
-        TwitchAPIRequest::new(
-            EndpointType::EndPrediction,
-            url.build(),
-            Method::PATCH,
-            headers.build(),
-            request_body.to_json(),
-        )
-    }
+    api_test!(
+        get_predictions,
+        [
+            &BroadcasterId::new("55696719"),
+            Some(&[Id::from("d6676d5c-c86e-44d2-bfc4-100fb48f0656")]),
+            None
+        ]
+    );
+    api_test!(
+        create_prediction,
+        [
+            &BroadcasterId::new("141981764"),
+            "Any leeks in the stream?",
+            &[
+                Title::new("Yes, give it time."),
+                Title::new("Yes, give it time.")
+            ],
+            120
+        ]
+    );
+    api_test!(
+        end_prediction,
+        [
+            &BroadcasterId::new("141981764"),
+            &Id::new("bc637af0-7766-4525-9308-4112f4cbf178"),
+            PredictionStatus::RESOLVED,
+            Some("73085848-a94d-4040-9d21-2cb7a89374b7")
+        ]
+    );
 }
