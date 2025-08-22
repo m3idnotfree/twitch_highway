@@ -7,7 +7,8 @@ description = "Twitch API"
 documentation = "https://docs.rs/twitch_highway"
 repository = "https://github.com/m3idnotfree/twitch_highway.git"
 license = "MIT"
-keywords = ["twitch"]
+keywords = ["twitch", "api", "streaming", "helix", "oauth"]
+categories = ["api-bindings", "web-programming"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -25,7 +26,6 @@ charity = []
 chat = []
 clips = []
 entitlements = []
-# eventsub = []
 extensions = []
 games = []
 goals = []
@@ -55,7 +55,6 @@ full = [
   "chat",
   "clips",
   "entitlements",
-  # "eventsub",
   "extensions",
   "games",
   "goals",
@@ -91,4 +90,3 @@ url = "2.5.4"
 dotenv = "0.15.0"
 tokio = { version = "1.43.0", features = ["full"] }
 wiremock = "0.6.4"
-

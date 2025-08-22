@@ -1,35 +1,14 @@
-//! # I'm on the highway to hell
-//!
-//! By default, no API endpoints are enabled.
-//!
+//! # Twitch highway Library
 //! <https://dev.twitch.tv/docs/api/reference/>
 //!
-//! # Usage
-//! ```toml
-//! [dependencies]
-//! twitch_highway = { version = "0.1", features = ["users"] }
-//! asknothingx2-util = { version = "0.0.28", features = ["oauth"] }
-//! ```
-//! ```rust,ignore
-//! use asknothingx2_util::oauth::{AccessToken, ClientId};
-//! use twitch_highway::{
-//!     types::UserId,
-//!     users::{request::BlockReason, UserAPI},
-//!     TwitchAPI,
-//! };
+//! **Important!** By default, no API endpoints are enabled.
+//! You must specify the features you need in Cargo.toml
 //!
-//! #[tokio::main]
-//! async fn main() {
-//!     let api = TwitchAPI::new(
-//!         AccessToken::new("access_token".to_string()),
-//!         ClientId::new("client_id".to_string()),
-//!     );
+//! Using traits as a resuable foundation, **TwitchAPI** organizes and implements endpoints separately.
 //!
-//!     let user_block = api.block_user(UserId::new("user_id"), None, Some(BlockReason::Harassment));
-//!     let response = user_block.request().await.unwrap();
-//!     let response = response.parse_response().unwrap();
-//! }
-//! ```
+//! # Recommended Usage
+//!
+//! This library is designed to work seamlessly with [`twitch_oauth_token`] for OAuth token management and authentication.
 //!
 //! # Features
 //! - [`ads`][crate::ads::AdsAPI]
@@ -59,9 +38,8 @@
 //! - [`users`][crate::users::UserAPI]
 //! - [`videos`][crate::videos::VideosAPI]
 //! - [`whispers`][crate::whispers::WhisperAPI]
-//!
-//! - Conduits: coming soom
-//! - EventSub: coming soom
+//! - Conduits: soon
+//! - EventSub: soon
 //! - Tags: deprecated
 //!
 //! ## Error Handling
@@ -76,11 +54,11 @@
 //!     Ok(response) => { /* success */ }
 //!     Err(e) => {
 //!         if e.is_request() {
-//!             eprintln!("Network error: {}", e);
+//!             println!("Request error: {}", e);
 //!         } else if e.is_api() {
-//!             eprintln!("Twitch API error: {}", e);
+//!             println!("API error: {}", e);
 //!         } else if e.is_decode() {
-//!             eprintln!("JSON decode error: {}", e);
+//!             println!("JSON decode error: {}", e);
 //!         }
 //!     }
 //! }
@@ -213,9 +191,6 @@ pub mod chat;
 pub mod clips;
 #[cfg(feature = "entitlements")]
 pub mod entitlements;
-//#[cfg(feature = "eventsub")]
-//#[cfg_attr(docsrs, doc(cfg(feature = "eventsub")))]
-//pub mod eventsub;
 #[cfg(feature = "extensions")]
 pub mod extensions;
 #[cfg(feature = "games")]
