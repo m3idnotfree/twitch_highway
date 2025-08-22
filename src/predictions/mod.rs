@@ -94,7 +94,7 @@ mod tests {
     api_test!(
         get_predictions,
         [
-            &BroadcasterId::new("55696719"),
+            &BroadcasterId::from("55696719"),
             Some(&[Id::from("d6676d5c-c86e-44d2-bfc4-100fb48f0656")]),
             None
         ]
@@ -102,7 +102,7 @@ mod tests {
     api_test!(
         create_prediction,
         [
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             "Any leeks in the stream?",
             &[
                 Title::new("Yes, give it time."),
@@ -114,8 +114,8 @@ mod tests {
     api_test!(
         end_prediction,
         [
-            &BroadcasterId::new("141981764"),
-            &Id::new("bc637af0-7766-4525-9308-4112f4cbf178"),
+            &BroadcasterId::from("141981764"),
+            &Id::from("bc637af0-7766-4525-9308-4112f4cbf178"),
             PredictionStatus::RESOLVED,
             Some("73085848-a94d-4040-9d21-2cb7a89374b7")
         ]

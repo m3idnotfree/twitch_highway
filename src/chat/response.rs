@@ -176,7 +176,7 @@ mod tests {
         assert!(!settings.emote_mode);
         assert!(settings.follower_mode);
         assert_eq!(settings.follower_mode_duration, Some(600));
-        assert_eq!(settings.moderator_id, Some(ModeratorId::new("987654321")));
+        assert_eq!(settings.moderator_id, Some(ModeratorId::from("987654321")));
         assert!(settings.unique_chat_mode);
     }
 

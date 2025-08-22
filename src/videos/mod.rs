@@ -58,7 +58,7 @@ mod tests {
 
     api_test!(
         get_videos,
-        [VideoSelector::by_ids(&[Id::new("335921245")]), None, None]
+        [VideoSelector::by_ids(&[Id::from("335921245")]), None, None]
     );
-    api_test!(delete_videos, [&[Id::new("1234"), Id::new("9876")],]);
+    api_test!(delete_videos, [&[Id::from("1234"), Id::from("9876")],]);
 }

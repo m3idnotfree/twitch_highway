@@ -133,14 +133,14 @@ mod tests {
             UserAPI,
         },
     };
-    api_test!(get_users, [Some(&[Id::new("141981764")]), None]);
+    api_test!(get_users, [Some(&[Id::from("141981764")]), None]);
     api_test!(update_user, [Some("BaldAngel")]);
     api_test!(
         get_user_block_list,
-        [&BroadcasterId::new("141981764"), None]
+        [&BroadcasterId::from("141981764"), None]
     );
-    api_test!(block_user, [&UserId::new("198704263"), None, None]);
-    api_test!(unblock_user, [&UserId::new("198704263")]);
+    api_test!(block_user, [&UserId::from("198704263"), None, None]);
+    api_test!(unblock_user, [&UserId::from("198704263")]);
     api_test!(get_user_extensions, []);
     api_test!(get_user_active_extensions, [None]);
     api_test!(
@@ -150,21 +150,21 @@ mod tests {
             panels.insert(
                 "1".to_string(),
                 Panel::new(true)
-                    .id(Id::new("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"))
+                    .id(Id::from("rh6jq1q334hqc2rr1qlzqbvwlfl3x0"))
                     .version("1.1.8".to_string()),
             );
 
             panels.insert(
                 "2".to_string(),
                 Panel::new(true)
-                    .id(Id::new("wi08ebtatdc7oj83wtl9uxwz807l8b"))
+                    .id(Id::from("wi08ebtatdc7oj83wtl9uxwz807l8b"))
                     .version("1.1.8"),
             );
 
             panels.insert(
                 "2".to_string(),
                 Panel::new(true)
-                    .id(Id::new("naty2zwfp7vecaivuve8ef1hohh6bo"))
+                    .id(Id::from("naty2zwfp7vecaivuve8ef1hohh6bo"))
                     .version("1.1.8"),
             );
 
@@ -172,7 +172,7 @@ mod tests {
             overlays.insert(
                 "1".to_string(),
                 Overlay::new(true)
-                    .id(Id::new("zfh2irvx2jb4s60f02jq0ajm8vwgka"))
+                    .id(Id::from("zfh2irvx2jb4s60f02jq0ajm8vwgka"))
                     .version("1.0.19"),
             );
 
@@ -180,7 +180,7 @@ mod tests {
             components.insert(
                 "1".to_string(),
                 Component::new(true)
-                    .id(Id::new("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"))
+                    .id(Id::from("lqnf3zxk0rv0g7gq92mtmnirjz2cjj"))
                     .version("0.0.1")
                     .name("Dev Experience Test")
                     .x(0)

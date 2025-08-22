@@ -55,7 +55,7 @@ mod tests {
         types::{BroadcasterId, Id, PaginationQuery},
     };
 
-    api_test!(create_clip, [&BroadcasterId::new("44322889"), None]);
+    api_test!(create_clip, [&BroadcasterId::from("44322889"), None]);
     api_test!(
         get_clips,
         [
@@ -68,7 +68,7 @@ mod tests {
         get_clips,
         get_clips2,
         [
-            ClipsSelector::by_broadcaster_id(&BroadcasterId::new("1234")),
+            ClipsSelector::by_broadcaster_id(&BroadcasterId::from("1234")),
             None,
             Some(PaginationQuery::new().first(5))
         ]

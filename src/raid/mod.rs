@@ -51,9 +51,9 @@ mod tests {
     api_test!(
         start_raid,
         [
-            &BroadcasterId::new("12345678"),
-            &BroadcasterId::new("12345678")
+            &BroadcasterId::from("12345678"),
+            &BroadcasterId::from("12345678")
         ]
     );
-    api_test!(cancel_raid, [&BroadcasterId::new("12345678")]);
+    api_test!(cancel_raid, [&BroadcasterId::from("12345678")]);
 }

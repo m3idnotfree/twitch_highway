@@ -78,14 +78,14 @@ mod tests {
                 .started_at(&"2018-02-05T08:00:00Z".parse().unwrap())
         )]
     );
-    api_test!(get_cheermotes, [Some(&BroadcasterId::new("41245072"))]);
+    api_test!(get_cheermotes, [Some(&BroadcasterId::from("41245072"))]);
     api_test!(
         get_extension_transactions,
-        [&ExtensionId::new("1234"), None, None]
+        [&ExtensionId::from("1234"), None, None]
     );
 
     api_test!(extra
         get_cheermotes, 
         get_cheermotes2, 
-        [Some(&BroadcasterId::new("41245072"))]);
+        [Some(&BroadcasterId::from("41245072"))]);
 }

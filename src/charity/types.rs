@@ -82,9 +82,9 @@ mod tests {
 
         for (user_id, user_login, user_name) in users {
             let donation = CharityCampaignDonation {
-                id: Id::new("donation123"),
+                id: Id::from("donation123"),
                 campaign_id: "campaign123".to_string(),
-                user_id: UserId::new(user_id),
+                user_id: UserId::from(user_id),
                 user_login: user_login.to_string(),
                 user_name: user_name.to_string(),
                 amount: Amount {

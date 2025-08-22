@@ -31,5 +31,5 @@ endpoints! {
 mod tests {
     use crate::{goals::GoalsAPI, types::BroadcasterId};
 
-    api_test!(get_creator_goals, [&BroadcasterId::new("141981764")]);
+    api_test!(get_creator_goals, [&BroadcasterId::from("141981764")]);
 }

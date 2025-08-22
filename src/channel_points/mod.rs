@@ -144,7 +144,7 @@ mod tests {
     api_test!(
         create_custom_rewards,
         [
-            &BroadcasterId::new("274637212"),
+            &BroadcasterId::from("274637212"),
             "game analysis 1v1",
             50000,
             None
@@ -153,19 +153,19 @@ mod tests {
     api_test!(
         delete_custom_reward,
         [
-            &BroadcasterId::new("274637212"),
-            &CustomRewardId::new("b045196d-9ce7-4a27-a9b9-279ed341ab28"),
+            &BroadcasterId::from("274637212"),
+            &CustomRewardId::from("b045196d-9ce7-4a27-a9b9-279ed341ab28"),
         ]
     );
     api_test!(
         get_custom_reward,
-        [&BroadcasterId::new("274637212"), None, None]
+        [&BroadcasterId::from("274637212"), None, None]
     );
     api_test!(
         get_custom_reward_redemption,
         [
-            &BroadcasterId::new("274637212"),
-            &RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &BroadcasterId::from("274637212"),
+            &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             Some(CustomRewardRedemptionQuery::new().status(RedemptionStatus::CANCELED)),
             None
         ]
@@ -173,17 +173,17 @@ mod tests {
     api_test!(
         update_custom_reward,
         [
-            &BroadcasterId::new("274637212"),
-            &CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &BroadcasterId::from("274637212"),
+            &CustomRewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             Some(UpdateCustomRewardRequest::new().is_enabled(false)),
         ]
     );
     api_test!(
         update_redemption_status,
         [
-            &[RedemptionId::new("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
-            &BroadcasterId::new("274637212"),
-            &RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &[RedemptionId::from("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
+            &BroadcasterId::from("274637212"),
+            &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             RedemptionStatusQuery::new(RedemptionStatus::CANCELED),
         ]
     );
@@ -191,19 +191,19 @@ mod tests {
     api_test!(extra
         get_custom_reward,
         get_custom_reward2,
-        [&BroadcasterId::new("274637212"), None, Some(true)]
+        [&BroadcasterId::from("274637212"), None, Some(true)]
     );
     api_test!(extra
         get_custom_reward,
         get_custom_reward3,
-        [&BroadcasterId::new("274637212"), Some(&[CustomRewardId::new("2af127c-7326-4483-a52b-b0da0be61c01")]), None]
+        [&BroadcasterId::from("274637212"), Some(&[CustomRewardId::from("2af127c-7326-4483-a52b-b0da0be61c01")]), None]
     );
     api_test!(extra
         get_custom_reward_redemption,
         get_custom_reward_redemption2,
         [
-            &BroadcasterId::new("274637212"),
-            &RewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &BroadcasterId::from("274637212"),
+            &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             None,
             None
         ]
@@ -212,8 +212,8 @@ mod tests {
         update_custom_reward,
         update_custom_reward2,
         [
-            &BroadcasterId::new("274637212"),
-            &CustomRewardId::new("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &BroadcasterId::from("274637212"),
+            &CustomRewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             Some(UpdateCustomRewardRequest::new().title("game analysis 2v2")),
         ]
     );

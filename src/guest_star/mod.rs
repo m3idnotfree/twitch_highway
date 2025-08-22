@@ -248,40 +248,40 @@ mod tests {
 
     api_test!(
         get_channel_guest_star_settings,
-        [&BroadcasterId::new("932104"), &ModeratorId::new("9321049")]
+        [&BroadcasterId::from("932104"), &ModeratorId::from("9321049")]
     );
     api_test!(
         update_channel_guest_star_settings,
         [
-            &BroadcasterId::new("9321049"),
+            &BroadcasterId::from("9321049"),
             GustStarSettingRequest::new().group_layout(GroupLayout::TILED_LAYOUT)
         ]
     );
     api_test!(
         get_guest_star_session,
-        [&BroadcasterId::new("9321049"), &ModeratorId::new("9321049")]
+        [&BroadcasterId::from("9321049"), &ModeratorId::from("9321049")]
     );
-    api_test!(create_guest_star_session, [&BroadcasterId::new("9321049")]);
+    api_test!(create_guest_star_session, [&BroadcasterId::from("9321049")]);
     api_test!(
         end_guest_star_session,
         [
-            &BroadcasterId::new("9321049"),
+            &BroadcasterId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI"
         ]
     );
     api_test!(
         get_guest_star_invites,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI"
         ]
     );
     api_test!(
         send_guest_star_invite,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "144601104"
         ]
@@ -289,8 +289,8 @@ mod tests {
     api_test!(
         delete_guest_star_invite,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "144601104"
         ]
@@ -298,8 +298,8 @@ mod tests {
     api_test!(
         assign_guest_star_slot,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "144601104",
             "1"
@@ -308,8 +308,8 @@ mod tests {
     api_test!(
         update_guest_star_slot,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "1",
             Some("2")
@@ -318,8 +318,8 @@ mod tests {
     api_test!(
         delete_guest_star_slot,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "144601104",
             "1",
@@ -329,8 +329,8 @@ mod tests {
     api_test!(
         update_guest_star_slot_settings,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "1",
             UpdateSlotSettingsRequest::new().is_audio_enabled(false)
@@ -341,7 +341,7 @@ mod tests {
         update_channel_guest_star_settings,
         update_channel_guest_star_settings2,
         [
-            &BroadcasterId::new("9321049"),
+            &BroadcasterId::from("9321049"),
             GustStarSettingRequest::new().is_moderator_send_live_enabled(false)
         ]
     );
@@ -349,7 +349,7 @@ mod tests {
         update_channel_guest_star_settings,
         update_channel_guest_star_settings3,
         [
-            &BroadcasterId::new("9321049"),
+            &BroadcasterId::from("9321049"),
             GustStarSettingRequest::new().slot_count(6)
         ]
     );
@@ -357,7 +357,7 @@ mod tests {
         update_channel_guest_star_settings,
         update_channel_guest_star_settings4,
         [
-            &BroadcasterId::new("9321049"),
+            &BroadcasterId::from("9321049"),
             GustStarSettingRequest::new().regenerate_browser_sources(true)
         ]
     );
@@ -366,8 +366,8 @@ mod tests {
         update_guest_star_slot_settings,
         update_guest_star_slot_settings2,
         [
-            &BroadcasterId::new("9321049"),
-            &ModeratorId::new("9321049"),
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049"),
             "2KFRQbFtpmfyD3IevNRnCzOPRJI",
             "1",
             UpdateSlotSettingsRequest::new().is_live(true)

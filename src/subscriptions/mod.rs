@@ -58,10 +58,10 @@ mod tests {
 
     api_test!(
         get_broadcaster_subscriptions,
-        [&BroadcasterId::new("141981764"), None, None]
+        [&BroadcasterId::from("141981764"), None, None]
     );
     api_test!(
         check_user_subscription,
-        [&BroadcasterId::new("149747285"), &UserId::new("141981764")]
+        [&BroadcasterId::from("149747285"), &UserId::from("141981764")]
     );
 }

@@ -119,7 +119,7 @@ mod tests {
             ContentClassificationLabel::new(ContentClassificationLabelsID::ViolentGraphic, false),
         ];
 
-        let game_id = GameId::new("509658");
+        let game_id = GameId::from("509658");
 
         let request = ModifyChannelRequest::new()
             .broadcaster_language("en")

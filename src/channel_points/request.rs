@@ -206,7 +206,7 @@ mod tests {
         let query = CustomRewardRedemptionQuery::new()
             .sort("newest")
             .status(RedemptionStatus::UNFULFILLED)
-            .id(RedemptionId::new("redemption123"));
+            .id(RedemptionId::from("redemption123"));
 
         let mut url = url::Url::parse("https://api.twitch.tv/helix").unwrap();
         let mut query_pairs = url.query_pairs_mut();

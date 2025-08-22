@@ -110,39 +110,39 @@ mod tests {
         types::{BroadcasterId, GameId, UserId},
     };
 
-    api_test!(get_channel_info, [&[BroadcasterId::new("141981764")]]);
+    api_test!(get_channel_info, [&[BroadcasterId::from("141981764")]]);
 
     api_test!(
         modify_channel_info,
         [
-            &BroadcasterId::new("41245072"),
+            &BroadcasterId::from("41245072"),
             Some(
                 ModifyChannelRequest::new()
                     .title("there are helicopters in the game? REASON TO PLAY FORTNITE found")
-                    .game_id(&GameId::new("33214"))
+                    .game_id(&GameId::from("33214"))
                     .broadcaster_language("en")
                     .tags(&["LevelingUp"])
             )
         ]
     );
 
-    api_test!(get_channel_editors, [&BroadcasterId::new("141981764")]);
+    api_test!(get_channel_editors, [&BroadcasterId::from("141981764")]);
 
-    api_test!(get_followed_channels, [&UserId::new("123456"), None, None]);
+    api_test!(get_followed_channels, [&UserId::from("123456"), None, None]);
 
     api_test!(
         get_channel_followers,
-        [&BroadcasterId::new("123456"), None, None,]
+        [&BroadcasterId::from("123456"), None, None,]
     );
 
     api_test!(extra
         modify_channel_info,
         modify_channel_info2,
         [
-            &BroadcasterId::new("41245072"),
+            &BroadcasterId::from("41245072"),
             Some(
                 ModifyChannelRequest::new()
-                    .game_id(&GameId::new("SomeGameID"))
+                    .game_id(&GameId::from("SomeGameID"))
                         .content_classification_labels(&[
                             ContentClassificationLabel::new(ContentClassificationLabelsID::Gambling, true),
                             ContentClassificationLabel::new(ContentClassificationLabelsID::DrugsIntoxication, false)
@@ -155,15 +155,15 @@ mod tests {
     api_test!(extra
         get_followed_channels,
         get_followed_channels2,
-        [&UserId::new("123456"), Some(&BroadcasterId::new("654321")), None]
+        [&UserId::from("123456"), Some(&BroadcasterId::from("654321")), None]
     );
 
     api_test!(extra
         get_channel_followers,
         get_channel_followers2,
         [
-            &BroadcasterId::new("123456"),
-            Some(&UserId::new("654321")),
+            &BroadcasterId::from("123456"),
+            Some(&UserId::from("654321")),
             None,
         ]
     );

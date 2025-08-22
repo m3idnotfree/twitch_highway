@@ -64,7 +64,7 @@ mod tests {
     api_test!(
         get_game_analytics,
         [
-            Some(&GameId::new("493057")),
+            Some(&GameId::from("493057")),
             Some(
                 AnalyticsRequest::new()
                     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())

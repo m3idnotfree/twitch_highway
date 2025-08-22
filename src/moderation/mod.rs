@@ -435,7 +435,7 @@ mod tests {
     api_test!(
         check_automod_status,
         [
-            &BroadcasterId::new("12345"),
+            &BroadcasterId::from("12345"),
             &[
                 CheckAutoMod::new("123", "Hello World!"),
                 CheckAutoMod::new("393", "Boooooo!"),
@@ -445,51 +445,51 @@ mod tests {
 
     api_test!(
         manage_held_automod_messages,
-        [&UserId::new("9327994"), "836013710", AutoModAction::ALLOW,]
+        [&UserId::from("9327994"), "836013710", AutoModAction::ALLOW,]
     );
 
     api_test!(
         get_automod_settings,
-        [&BroadcasterId::new("1234"), &ModeratorId::new("5678"),]
+        [&BroadcasterId::from("1234"), &ModeratorId::from("5678"),]
     );
 
     api_test!(
         update_automod_settings,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
             Some(UpdateAutoModSettingsRequest::new().overall_level(3)),
         ]
     );
 
     api_test!(
         get_banned_users,
-        [&BroadcasterId::new("198704263"), None, None]
+        [&BroadcasterId::from("198704263"), None, None]
     );
 
     api_test!(
         ban_user,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
-            BanUserRequest::new(&UserId::new("9876")).reason("no reason"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
+            BanUserRequest::new(&UserId::from("9876")).reason("no reason"),
         ]
     );
 
     api_test!(
         unban_user,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
-            &UserId::new("5432"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
+            &UserId::from("5432"),
         ]
     );
 
     api_test!(
         get_unban_requests,
         [
-            &BroadcasterId::new("274637212"),
-            &ModeratorId::new("274637212"),
+            &BroadcasterId::from("274637212"),
+            &ModeratorId::from("274637212"),
             UnbanRequestStatus::Pending,
             None,
             None,
@@ -499,8 +499,8 @@ mod tests {
     api_test!(
         resolve_unban_request,
         [
-            &BroadcasterId::new("274637212"),
-            &ModeratorId::new("987654321"),
+            &BroadcasterId::from("274637212"),
+            &ModeratorId::from("987654321"),
             "92af127c-7326-4483-a52b-b0daa0be61c01",
             UnbanRequestStatus::Approved,
             None
@@ -510,8 +510,8 @@ mod tests {
     api_test!(
         get_blocked_terms,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
             Some(PaginationQuery::new().first(10)),
         ]
     );
@@ -519,8 +519,8 @@ mod tests {
     api_test!(
         add_blocked_term,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
             "A phrase I’m not fond of",
         ]
     );
@@ -528,70 +528,70 @@ mod tests {
     api_test!(
         remove_blocked_term,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
-            &Id::new("c9fc79b8-0f63-4ef7-9d38-efd811e74ac2"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
+            &Id::from("c9fc79b8-0f63-4ef7-9d38-efd811e74ac2"),
         ]
     );
 
     api_test!(
         delete_chat_messages,
         [
-            &BroadcasterId::new("11111"),
-            &ModeratorId::new("44444"),
+            &BroadcasterId::from("11111"),
+            &ModeratorId::from("44444"),
             Some("abc-123-def"),
         ]
     );
 
-    api_test!(get_moderated_channels, [&UserId::new("931931"), None]);
+    api_test!(get_moderated_channels, [&UserId::from("931931"), None]);
 
     api_test!(
         get_moderators,
-        [&BroadcasterId::new("198704263"), None, None]
+        [&BroadcasterId::from("198704263"), None, None]
     );
 
     api_test!(
         add_channel_moderator,
-        [&BroadcasterId::new("11111"), &UserId::new("44444"),]
+        [&BroadcasterId::from("11111"), &UserId::from("44444"),]
     );
 
     api_test!(
         remove_channel_moderator,
-        [&BroadcasterId::new("11111"), &UserId::new("44444"),]
+        [&BroadcasterId::from("11111"), &UserId::from("44444"),]
     );
 
-    api_test!(get_vips, [&BroadcasterId::new("123"), None, None]);
+    api_test!(get_vips, [&BroadcasterId::from("123"), None, None]);
 
     api_test!(
         add_channel_vip,
-        [&UserId::new("456"), &BroadcasterId::new("123")]
+        [&UserId::from("456"), &BroadcasterId::from("123")]
     );
 
     api_test!(
         remove_channel_vip,
-        [&UserId::new("456"), &BroadcasterId::new("123")]
+        [&UserId::from("456"), &BroadcasterId::from("123")]
     );
 
     api_test!(
         update_shield_mode_status,
         [
-            &BroadcasterId::new("12345"),
-            &ModeratorId::new("98765"),
+            &BroadcasterId::from("12345"),
+            &ModeratorId::from("98765"),
             false,
         ]
     );
 
     api_test!(
         get_shield_mode_status,
-        [&BroadcasterId::new("12345"), &ModeratorId::new("98765"),]
+        [&BroadcasterId::from("12345"), &ModeratorId::from("98765"),]
     );
 
     api_test!(
         warn_chat_user,
         [
-            &BroadcasterId::new("404040"),
-            &ModeratorId::new("404041"),
-            WarnChatUser::new(&UserId::new("9876"), "stop doing that!"),
+            &BroadcasterId::from("404040"),
+            &ModeratorId::from("404041"),
+            WarnChatUser::new(&UserId::from("9876"), "stop doing that!"),
         ]
     );
 
@@ -604,9 +604,9 @@ mod tests {
         let _ = suite
             .execute(|api| {
                 api.ban_user(
-                    &BroadcasterId::new("1234"),
-                    &ModeratorId::new("5678"),
-                    BanUserRequest::new(&UserId::new("9876"))
+                    &BroadcasterId::from("1234"),
+                    &ModeratorId::from("5678"),
+                    BanUserRequest::new(&UserId::from("9876"))
                         .duration(300)
                         .reason("no reason"),
                 )
@@ -625,9 +625,9 @@ mod tests {
         let respnose = suite
             .execute(|api| {
                 api.ban_user(
-                    &BroadcasterId::new("1234"),
-                    &ModeratorId::new("5678"),
-                    BanUserRequest::new(&UserId::new("9876"))
+                    &BroadcasterId::from("1234"),
+                    &ModeratorId::from("5678"),
+                    BanUserRequest::new(&UserId::from("9876"))
                         .duration(300)
                         .reason("no reason"),
                 )
@@ -647,8 +647,8 @@ mod tests {
         let respnose = suite
             .execute(|api| {
                 api.unban_user(
-                    &BroadcasterId::new("1234"),
-                    &ModeratorId::new("5678"),
+                    &BroadcasterId::from("1234"),
+                    &ModeratorId::from("5678"),
                     &UserId::from("5432"),
                 )
             })
@@ -667,8 +667,8 @@ mod tests {
         suite
             .execute(|api| {
                 api.add_blocked_term(
-                    &BroadcasterId::new("1234"),
-                    &ModeratorId::new("5678"),
+                    &BroadcasterId::from("1234"),
+                    &ModeratorId::from("5678"),
                     "crac*",
                 )
             })
@@ -686,8 +686,8 @@ mod tests {
         suite
             .execute(|api| {
                 api.delete_chat_messages(
-                    &BroadcasterId::new("11111"),
-                    &ModeratorId::new("44444"),
+                    &BroadcasterId::from("11111"),
+                    &ModeratorId::from("44444"),
                     Some("abc-123-def"),
                 )
             })

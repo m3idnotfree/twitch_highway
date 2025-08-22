@@ -49,10 +49,10 @@ endpoints! {
 mod tests {
     use crate::{charity::CharityAPI, types::BroadcasterId};
 
-    api_test!(get_charity_campaign, [&BroadcasterId::new("123456")]);
+    api_test!(get_charity_campaign, [&BroadcasterId::from("123456")]);
 
     api_test!(
         get_charity_campaign_donations,
-        [&BroadcasterId::new("123456"), None]
+        [&BroadcasterId::from("123456"), None]
     );
 }

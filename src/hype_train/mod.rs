@@ -53,9 +53,9 @@ mod tests {
     api_test!(
         get_hype_train_events,
         [
-            &BroadcasterId::new("270954519"),
+            &BroadcasterId::from("270954519"),
             Some(PaginationQuery::new().first(1))
         ]
     );
-    api_test!(get_hype_train_status, [&BroadcasterId::new("123")]);
+    api_test!(get_hype_train_status, [&BroadcasterId::from("123")]);
 }

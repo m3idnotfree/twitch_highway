@@ -16,7 +16,7 @@ mod tests {
     #[test]
     fn ccls_type_structure() {
         let ccls = Ccl {
-            id: Id::new("TestLabel"),
+            id: Id::from("TestLabel"),
             description: "Test description for content classification".to_string(),
             name: "Test Label".to_string(),
         };

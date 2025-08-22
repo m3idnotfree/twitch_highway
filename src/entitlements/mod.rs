@@ -58,8 +58,8 @@ mod tests {
         [
             Some(
                 DropEntitlementRequest::new()
-                    .user_id(&UserId::new("25009227"))
-                    .game_id(&GameId::new("33214"))
+                    .user_id(&UserId::from("25009227"))
+                    .game_id(&GameId::from("33214"))
             ),
             None
         ]

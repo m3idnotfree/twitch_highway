@@ -248,34 +248,34 @@ mod tests {
     api_test!(
         get_chatters,
         [
-            &BroadcasterId::new("123456"),
-            &ModeratorId::new("654321"),
+            &BroadcasterId::from("123456"),
+            &ModeratorId::from("654321"),
             None
         ]
     );
 
-    api_test!(get_channel_emotes, [&BroadcasterId::new("141981764")]);
+    api_test!(get_channel_emotes, [&BroadcasterId::from("141981764")]);
 
     api_test!(get_global_emotes, []);
     api_test!(get_emote_sets, [&["301590448"]]);
-    api_test!(get_channel_chat_badges, [&BroadcasterId::new("135093069")]);
+    api_test!(get_channel_chat_badges, [&BroadcasterId::from("135093069")]);
     api_test!(get_global_chat_badges, []);
-    api_test!(get_chat_settings, [&BroadcasterId::new("1234"), None]);
-    api_test!(get_shared_chat_session, [&BroadcasterId::new("198704263")]);
-    api_test!(get_user_emotes, [&UserId::new("123456"), None, None]);
+    api_test!(get_chat_settings, [&BroadcasterId::from("1234"), None]);
+    api_test!(get_shared_chat_session, [&BroadcasterId::from("198704263")]);
+    api_test!(get_user_emotes, [&UserId::from("123456"), None, None]);
     api_test!(
         update_chat_settings,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
             Some(UpdateChatSettingsRequest::new().follower_mode(false)),
         ]
     );
     api_test!(
         send_chat_announcement,
         [
-            &BroadcasterId::new("11111"),
-            &ModeratorId::new("44444"),
+            &BroadcasterId::from("11111"),
+            &ModeratorId::from("44444"),
             "Hello chat!",
             Some(AnnouncementColor::Purple),
         ]
@@ -283,15 +283,15 @@ mod tests {
     api_test!(
         send_a_shoutout,
         [
-            &BroadcasterId::new("12345"),
-            &BroadcasterId::new("626262"),
-            &ModeratorId::new("98765"),
+            &BroadcasterId::from("12345"),
+            &BroadcasterId::from("626262"),
+            &ModeratorId::from("98765"),
         ]
     );
     api_test!(
         send_chat_message,
         [SendChatMessageRequest::new(
-            &BroadcasterId::new("12826"),
+            &BroadcasterId::from("12826"),
             "141981764",
             "Hello, world! twitchdevHype",
         )
@@ -299,18 +299,18 @@ mod tests {
     );
     api_test!(
         get_user_chat_color,
-        [&[UserId::new("11111"), UserId::new("44444")]]
+        [&[UserId::from("11111"), UserId::from("44444")]]
     );
     api_test!(
         update_user_chat_color,
-        [&UserId::new("123"), ChatColor::Blue,]
+        [&UserId::from("123"), ChatColor::Blue,]
     );
     api_test!(extra
         update_chat_settings,
         update_chat_settings2,
         [
-            &BroadcasterId::new("1234"),
-            &ModeratorId::new("5678"),
+            &BroadcasterId::from("1234"),
+            &ModeratorId::from("5678"),
             Some(UpdateChatSettingsRequest::new().slow_mode(true).slow_mode_wait_time(10)),
         ]
     );
@@ -318,6 +318,6 @@ mod tests {
     // api_test!(extra
     //     update_user_chat_color,
     //     update_user_chat_color2,
-    //     [&UserId::new("123"), ChatColor::Blue,]
+    //     [&UserId::from("123"), ChatColor::Blue,]
     // );
 }

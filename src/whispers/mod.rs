@@ -37,6 +37,6 @@ mod tests {
 
     api_test!(
         send_whisper,
-        [&UserId::new("123"), &UserId::new("456"), "hello"]
+        [&UserId::from("123"), &UserId::from("456"), "hello"]
     );
 }

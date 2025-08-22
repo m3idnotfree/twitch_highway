@@ -254,8 +254,8 @@ mod tests {
     api_test!(
         get_extension_configuration_segment,
         [
-            JWTToken::new("test_jwt_token"),
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            JWTToken::from("test_jwt_token"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             &[Segment::Global],
             None,
         ]
@@ -263,7 +263,7 @@ mod tests {
     api_test!(
         set_extension_configuration_segment,
         [
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             Segment::Global,
             Some(
                 RequestConfigurationSegment::new()
@@ -275,8 +275,8 @@ mod tests {
     api_test!(
         set_extension_required_configuration,
         [
-            &BroadcasterId::new("274637212"),
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &BroadcasterId::from("274637212"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             "0.0.1",
             "RCS",
         ]
@@ -286,45 +286,45 @@ mod tests {
         [
             &["broadcast"],
             "hello world!",
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             None
         ]
     );
     api_test!(
         get_extension_live_channels,
-        [&ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"), None]
+        [&ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"), None]
     );
     api_test!(
         get_extension_secrets,
-        [&ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2")]
+        [&ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2")]
     );
     api_test!(
         create_extension_secret,
         [
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             Some(600)
         ]
     );
     api_test!(
         send_extension_chat_message,
         [
-            &BroadcasterId::new("237757755"),
+            &BroadcasterId::from("237757755"),
             "Hello",
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             "0.0.9",
         ]
     );
     api_test!(
         get_extensions,
         [
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             Some("0.0.9")
         ]
     );
     api_test!(
         get_released_extensions,
         [
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             Some("0.0.9")
         ]
     );
@@ -348,8 +348,8 @@ mod tests {
         get_extension_configuration_segment,
         get_extension_configuration_segment2,
         [
-            JWTToken::new("test_jwt_token"),
-            &ExtensionId::new("uo6dggojyb8d6soh92zknwmi5ej1q2"),
+            JWTToken::from("test_jwt_token"),
+            &ExtensionId::from("uo6dggojyb8d6soh92zknwmi5ej1q2"),
             &[Segment::Global],
             None,
         ]

@@ -103,17 +103,17 @@ mod tests {
         types::{BroadcasterId, PaginationQuery, UserId},
     };
 
-    api_test!(get_stream_key, [&BroadcasterId::new("141981764")]);
+    api_test!(get_stream_key, [&BroadcasterId::from("141981764")]);
     api_test!(get_streams, [None, None]);
-    api_test!(get_followed_streams, [&UserId::new("141981764"), None]);
+    api_test!(get_followed_streams, [&UserId::from("141981764"), None]);
     api_test!(
         create_stream_marker,
-        [&UserId::new("123"), Some("hello, this is a marker!")]
+        [&UserId::from("123"), Some("hello, this is a marker!")]
     );
     api_test!(
         get_stream_markers,
         [
-            StreamMarkerSelector::by_user_id(&UserId::new("123")),
+            StreamMarkerSelector::by_user_id(&UserId::from("123")),
             Some(PaginationQuery::new().first(5))
         ]
     );

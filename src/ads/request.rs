@@ -21,7 +21,7 @@ mod tests {
 
     #[test]
     fn start_commercial_body_serialization() {
-        let broadcaster_id = BroadcasterId::new("123456");
+        let broadcaster_id = BroadcasterId::from("123456");
         let body = StartCommercialBody::new(&broadcaster_id, 30);
         let json = body.into_json().unwrap();
         let expected = json!({

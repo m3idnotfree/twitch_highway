@@ -138,13 +138,13 @@ mod tests {
 
     api_test!(
         get_channel_stream_schedule,
-        [&BroadcasterId::new("141981764"), None, None]
+        [&BroadcasterId::from("141981764"), None, None]
     );
-    api_test!(send get_channel_icalendar, [&BroadcasterId::new("141981764")]);
+    api_test!(send get_channel_icalendar, [&BroadcasterId::from("141981764")]);
     api_test!(
         update_channel_stream_schedule,
         [
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             Some(
                 UpdateScheduleRequest::new()
                     .is_vacation_enabled(true)
@@ -157,7 +157,7 @@ mod tests {
     api_test!(
         create_channel_stream_schedule_segment,
         [
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             "2021-07-01T18:00:00Z",
             "America/New_York",
             "60",
@@ -172,8 +172,8 @@ mod tests {
     api_test!(
         update_channel_stream_schedule_segment,
         [
-            &BroadcasterId::new("141981764"),
-            &Id::new("eyJzZWdtZW50SUQiOiJlNGFjYzcyNC0zNzFmLTQwMmMtODFjYS0yM2FkYTc5NzU5ZDQiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyNn0="),
+            &BroadcasterId::from("141981764"),
+            &Id::from("eyJzZWdtZW50SUQiOiJlNGFjYzcyNC0zNzFmLTQwMmMtODFjYS0yM2FkYTc5NzU5ZDQiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyNn0="),
             Some(
                 UpdateScheduleSegmentRequest::new()
                     .duration("120")
@@ -182,6 +182,6 @@ mod tests {
     );
     api_test!(
         delete_channel_stream_schedule_segment,
-        [&BroadcasterId::new("141981764"), &Id::new("eyJzZWdtZW50SUQiOiI4Y2EwN2E2NC0xYTZkLTRjYWItYWE5Ni0xNjIyYzNjYWUzZDkiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyMX0=")]
+        [&BroadcasterId::from("141981764"), &Id::from("eyJzZWdtZW50SUQiOiI4Y2EwN2E2NC0xYTZkLTRjYWItYWE5Ni0xNjIyYzNjYWUzZDkiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyMX0=")]
     );
 }

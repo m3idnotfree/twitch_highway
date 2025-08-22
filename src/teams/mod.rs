@@ -49,6 +49,6 @@ mod tests {
         types::{BroadcasterId, Id},
     };
 
-    api_test!(get_channel_teams, [&BroadcasterId::new("96909659")]);
-    api_test!(get_teams, [TeamSelector::by_id(&Id::new("6358"))]);
+    api_test!(get_channel_teams, [&BroadcasterId::from("96909659")]);
+    api_test!(get_teams, [TeamSelector::by_id(&Id::from("6358"))]);
 }

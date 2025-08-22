@@ -86,7 +86,7 @@ mod tests {
     api_test!(
         get_polls,
         [
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             Some(&Id::from("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a")),
             None
         ]
@@ -94,7 +94,7 @@ mod tests {
     api_test!(
         create_poll,
         [
-            &BroadcasterId::new("141981764"),
+            &BroadcasterId::from("141981764"),
             "Heads or Tails?",
             &[Title::new("Heads"), Title::new("Tails")],
             1800,
@@ -108,8 +108,8 @@ mod tests {
     api_test!(
         end_poll,
         [
-            &BroadcasterId::new("141981764"),
-            &Id::new("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a"),
+            &BroadcasterId::from("141981764"),
+            &Id::from("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a"),
             PollStatus::TERMINATED
         ]
     );

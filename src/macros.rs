@@ -449,8 +449,8 @@ macro_rules! automatic_impl {
     ) => {
 
         impl$(<$life>)? $name$(<$life>)? {
-            pub fn into_json(&self) -> Option<String> {
-                Some(serde_json::to_string(self).unwrap())
+            pub fn into_json(self) -> Option<String> {
+                Some(serde_json::to_string(&self).unwrap())
             }
         }
 
@@ -694,7 +694,7 @@ macro_rules! endpoints {
 ///
 /// # Example:
 /// ```rust,ignore
-/// api_test!(get_users, [UserId::new("123456789")]);                    // JSON response
+/// api_test!(get_users, [UserId::from("123456789")]);                    // JSON response
 /// api_test!(send create_reward, [broadcaster_id, reward_request]);     // No content (204)
 /// api_test!(get_global_emotes, []);                                    // No parameters
 /// api_test!(extra get_analytics, extra_get_analytics, []);             // Custom test name
