@@ -139,6 +139,16 @@ impl TwitchAPI {
         }
     }
 
+    pub fn set_access_token(mut self, access_token: AccessToken) -> Self {
+        self.access_token = access_token;
+        self
+    }
+
+    pub fn set_client_id(mut self, client_id: ClientId) -> Self {
+        self.client_id = client_id;
+        self
+    }
+
     pub fn set_url(mut self, url: Url) -> Self {
         self.url = url;
         self
