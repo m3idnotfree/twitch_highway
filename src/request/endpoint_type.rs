@@ -49,6 +49,7 @@ pub enum EndpointType {
     CreateClip,
     GetClips,
     // Conduits
+    GetConduits,
     CreateConduits,
     UpdateConduits,
     DeleteConduit,
@@ -230,6 +231,7 @@ impl EndpointType {
             Self::CreateClip => Some(vec![Scope::ClipsEdit]),
             Self::GetClips => None,
             // Conduits
+            Self::GetConduits => None,
             Self::CreateConduits => None,
             Self::UpdateConduits => None,
             Self::DeleteConduit => None,
@@ -433,6 +435,7 @@ impl EndpointType {
             Self::CreateClip => TokenType::User,
             Self::GetClips => TokenType::Any,
             // Conduits
+            Self::GetConduits => TokenType::App,
             Self::CreateConduits => TokenType::App,
             Self::UpdateConduits => TokenType::App,
             Self::DeleteConduit => TokenType::App,

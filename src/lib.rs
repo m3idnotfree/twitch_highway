@@ -20,8 +20,10 @@
 //! - [`Chat`][crate::chat::ChatAPI]
 //! - [`clips`][crate::clips::ClipsAPI]
 //! - [`ccls`][crate::ccls::CclsAPI]
+//! - [`conduits`][crate::conduits::ConduitsAPI]
 //! - [`entitlements`][crate::entitlements::EntitlementsAPI]
 //! - [`extensions`][crate::extensions::ExtensionsAPI]
+//! - [`eventsub`][crate::eventsub::EventSubAPI]
 //! - [`games`][crate::games::GamesAPI]
 //! - [`goals`][crate::goals::GoalsAPI]
 //! - [`guest-star`][crate::guest_star::GuestStarAPI]
@@ -38,8 +40,6 @@
 //! - [`users`][crate::users::UserAPI]
 //! - [`videos`][crate::videos::VideosAPI]
 //! - [`whispers`][crate::whispers::WhisperAPI]
-//! - Conduits: soon
-//! - EventSub: soon
 //! - Tags: deprecated
 //!
 //! ## Error Handling
@@ -155,6 +155,7 @@ impl TwitchAPI {
         feature = "channel-points",
         feature = "channels",
         feature = "chat",
+        feature = "conduits",
         feature = "extensions",
         feature = "entitlements",
         feature = "eventsub",
@@ -206,6 +207,8 @@ pub mod charity;
 pub mod chat;
 #[cfg(feature = "clips")]
 pub mod clips;
+#[cfg(feature = "conduits")]
+pub mod conduits;
 #[cfg(feature = "entitlements")]
 pub mod entitlements;
 #[cfg(feature = "eventsub")]

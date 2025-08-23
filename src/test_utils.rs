@@ -1499,6 +1499,192 @@ impl TwitchApiTest {
     }
 }
 
+#[cfg(feature = "conduits")]
+impl TwitchApiTest {
+    pub async fn get_conduits(&self) {
+        self.api_mock("GET", "/eventsub/conduits")
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "id": "26b1c993-bfcf-44d9-b876-379dacafe75a",
+                        "shard_count": 15
+                    },
+                    {
+                        "id": "bfcfc993-26b1-b876-44d9-afe75a379dac",
+                        "shard_count": 5
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn create_conduits(&self) {
+        self.api_mock("POST", "/eventsub/conduits")
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "shard_count": 5
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "id": "bfcfc993-26b1-b876-44d9-afe75a379dac",
+                        "shard_count": 5
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn update_conduits(&self) {
+        self.api_mock("PATCH", "/eventsub/conduits")
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "id":"bfcfc993-26b1-b876-44d9-afe75a379dac",
+                "shard_count":5
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "id": "bfcfc993-26b1-b876-44d9-afe75a379dac",
+                        "shard_count": 5
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn delete_conduits(&self) {
+        self.api_mock("DELETE", "/eventsub/conduits")
+            .and(query_param("id", "bfcfc993-26b1-b876-44d9-afe75a379dac"))
+            .respond_with(ResponseTemplate::new(204))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn get_conduit_shards(&self) {
+        self.api_mock("GET", "/eventsub/conduits/shards")
+            .and(query_param(
+                "conduit_id",
+                "bfcfc993-26b1-b876-44d9-afe75a379dac",
+            ))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "id": "0",
+                        "status": "enabled",
+                        "transport": {
+                            "method": "webhook",
+                            "callback": "https://this-is-a-callback.com"
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "status": "webhook_callback_verification_pending",
+                        "transport": {
+                            "method": "webhook",
+                            "callback": "https://this-is-a-callback-2.com"
+                        }
+                    },
+                    {
+                        "id": "2",
+                        "status": "enabled",
+                        "transport": {
+                            "method": "websocket",
+                            "session_id": "9fd5164a-a958-4c60-b7f4-6a7202506ca0",
+                            "connected_at": "2020-11-10T14:32:18.730260295Z"
+                        }
+                    },
+                    {
+                        "id": "3",
+                        "status": "enabled",
+                        "transport": {
+                            "method": "websocket",
+                            "session_id": "238b4b08-13f1-4b8f-8d31-56665a7a9d9f",
+                            "connected_at": "2020-11-10T14:32:18.730260295Z"
+                        }
+                    },
+                    {
+                        "id": "4",
+                        "status": "websocket_disconnected",
+                        "transport": {
+                            "method": "websocket",
+                            "session_id": "ad1c9fc3-0d99-4eb7-8a04-8608e8ff9ec9",
+                            "connected_at": "2020-11-10T14:32:18.730260295Z",
+                            "disconnected_at": "2020-11-11T14:32:18.730260295Z"
+                        }
+                    }
+                    ],
+                    "pagination": {},
+            })))
+            .mount(&self.server)
+            .await;
+    }
+
+    pub async fn update_conduit_shards(&self) {
+        self.api_mock("PATCH", "/eventsub/conduits/shards")
+            .and(header("content-type", "application/json"))
+            .and(body_json(json!({
+                "conduit_id":"bfcfc993-26b1-b876-44d9-afe75a379dac",
+                "shards": [{
+                    "id": "0",
+                    "transport": {
+                        "method": "webhook",
+                        "callback": "https://this-is-a-callback.com",
+                        "secret": "s3cre7"
+                    }
+                },
+                {
+                    "id": "1",
+                    "transport": {
+                        "method": "webhook",
+                        "callback": "https://this-is-a-callback-2.com",
+                        "secret": "s3cre7"
+                    }
+                },
+                {
+                    "id": "3",
+                    "transport":{
+                        "method": "webhook",
+                        "callback": "https://this-is-a-callback-3.com",
+                        "secret": "s3cre7"
+                    }
+                }]
+            })))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "id": "0",
+                        "status": "enabled",
+                        "transport": {
+                            "method": "webhook",
+                            "callback": "https://this-is-a-callback.com"
+                        }
+                    },
+                    {
+                        "id": "1",
+                        "status": "webhook_callback_verification_pending",
+                        "transport": {
+                            "method": "webhook",
+                            "callback": "https://this-is-a-callback-2.com"
+                        }
+                    }
+                ],
+                "errors": [
+                    {
+                        "id": "3",
+                        "message": "The shard id is outside the conduit's range",
+                        "code": "invalid_parameter"
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
+}
+
 #[cfg(feature = "ccls")]
 impl TwitchApiTest {
     pub async fn get_content_classification_labels(&self) {
