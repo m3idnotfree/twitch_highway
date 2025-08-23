@@ -2,11 +2,8 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::CclLocale;
 use response::CclsResponse;
-
-use crate::request::EndpointType;
 
 endpoints! {
     CclsAPI {
@@ -15,8 +12,8 @@ endpoints! {
             &self,
             locale: Option<CclLocale>,
         ) -> CclsResponse {
-            endpoint_type: EndpointType::GetContentClassificationLabels,
-            method: Method::GET,
+            endpoint_type: GetContentClassificationLabels,
+            method: GET,
             path: ["content_classification_labels"],
             query_params: {
                 opt("locale", locale)

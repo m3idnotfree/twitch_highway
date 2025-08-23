@@ -1,12 +1,8 @@
 pub mod request;
 
-use asknothingx2_util::api::Method;
-use request::*;
+use request::SendWhisperBody;
 
-use crate::{
-    request::{EndpointType, NoContent},
-    types::UserId,
-};
+use crate::{request::NoContent, types::UserId};
 
 const WHISPERS: &str = "whispers";
 
@@ -19,8 +15,8 @@ endpoints! {
             to_user_id: &UserId,
             message: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendWhisper,
-            method: Method::POST,
+            endpoint_type: SendWhisper,
+            method: POST,
             path: [WHISPERS],
             query_params: {
                 query("from_user_id", from_user_id),

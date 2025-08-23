@@ -2,11 +2,9 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use reqwest::Method;
-
 use crate::{
     conduits::{request::UpdateConduitShardsRequest, response::ConduitResponse},
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{ConduitId, Status},
 };
 
@@ -16,14 +14,14 @@ const EVENTSUB: &str = "eventsub";
 endpoints! {
     ConduitsAPI {
         fn get_conduits (&self) -> ConduitResponse {
-            endpoint_type: EndpointType::GetConduits,
-            method: Method::GET,
+            endpoint_type: GetConduits,
+            method: GET,
             path: [EVENTSUB, CONDUITS],
         }
 
         fn create_conduits(&self, shard_count: u64) -> ConduitResponse {
-            endpoint_type: EndpointType::CreateConduits,
-            method: Method::POST,
+            endpoint_type: CreateConduits,
+            method: POST,
             path: [EVENTSUB, CONDUITS],
             headers: [json],
             body: {
@@ -40,8 +38,8 @@ endpoints! {
             conduit_id: &ConduitId,
             shard_count: u64,
         ) -> ConduitResponse {
-            endpoint_type: EndpointType::UpdateConduits,
-            method: Method::PATCH,
+            endpoint_type: UpdateConduits,
+            method: PATCH,
             path: [EVENTSUB, CONDUITS],
             headers: [json],
             body: {
@@ -55,8 +53,8 @@ endpoints! {
         }
 
         fn delete_conduits(&self, conduit_id: &ConduitId) -> NoContent {
-            endpoint_type: EndpointType::DeleteConduit,
-            method: Method::DELETE,
+            endpoint_type: DeleteConduit,
+            method: DELETE,
             path: [EVENTSUB, CONDUITS],
             query_params: {
                 query("id", conduit_id)
@@ -68,8 +66,8 @@ endpoints! {
             status: Option<Status>,
             after: Option<&str>,
         ) -> serde_json::Value {
-            endpoint_type: EndpointType::GetConduitShards,
-            method: Method::GET,
+            endpoint_type: GetConduitShards,
+            method: GET,
             path: [EVENTSUB, CONDUITS, "shards"],
             query_params: {
                 query("conduit_id", conduit_id),
@@ -82,8 +80,8 @@ endpoints! {
             &self,
             req: UpdateConduitShardsRequest,
         ) -> serde_json::Value {
-            endpoint_type: EndpointType::UpdateConduitShards,
-            method: Method::PATCH,
+            endpoint_type: UpdateConduitShards,
+            method: PATCH,
             path: [EVENTSUB, CONDUITS, "shards"],
             headers: [json],
             body: req.into_json()

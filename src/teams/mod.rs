@@ -2,14 +2,10 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::TeamSelector;
 use response::{ChannelTeamsResponse, TeamsResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{constants::BROADCASTER_ID, BroadcasterId},
-};
+use crate::types::{constants::BROADCASTER_ID, BroadcasterId};
 
 const TEAMS: &str = "teams";
 
@@ -20,8 +16,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> ChannelTeamsResponse {
-            endpoint_type: EndpointType::GetChannelTeams,
-            method: Method::GET,
+            endpoint_type: GetChannelTeams,
+            method: GET,
             path: [TEAMS, "channel"],
             query_params: {
                     query(BROADCASTER_ID, broadcaster_id)
@@ -30,8 +26,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
         fn get_teams(&self, team_selector: TeamSelector) -> TeamsResponse {
-            endpoint_type: EndpointType::GetTeams,
-            method: Method::GET,
+            endpoint_type: GetTeams,
+            method: GET,
             path: [TEAMS],
             query_params: {
                     into_query(team_selector)

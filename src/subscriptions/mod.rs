@@ -1,15 +1,11 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{
-        constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
-        BroadcasterId, PaginationQuery, UserId,
-    },
+use crate::types::{
+    constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
+    BroadcasterId, PaginationQuery, UserId,
 };
 
 endpoints! {
@@ -21,8 +17,8 @@ endpoints! {
             user_id: Option<&[UserId]>,
             pagination: Option<PaginationQuery>,
         ) -> BroadcasterSubscriptionResponse {
-            endpoint_type: EndpointType::GetBroadcasterSubscriptions,
-            method: Method::GET,
+            endpoint_type: GetBroadcasterSubscriptions,
+            method: GET,
             path: [SUBSCRIPTIONS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -37,8 +33,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             user_id: &UserId,
         ) -> UserSubscriptionResponse {
-            endpoint_type: EndpointType::CheckUserSubscriptions,
-            method: Method::GET,
+            endpoint_type: CheckUserSubscriptions,
+            method: GET,
             path: [SUBSCRIPTIONS, "user"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

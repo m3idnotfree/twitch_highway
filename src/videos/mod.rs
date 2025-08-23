@@ -2,14 +2,10 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{VideoSelector, VideosRequest};
 use response::{DeleteVideosResponse, VideosResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{constants::ID, Id, PaginationQuery},
-};
+use crate::types::{constants::ID, Id, PaginationQuery};
 
 const VIDEOS: &str = "videos";
 
@@ -22,8 +18,8 @@ endpoints! {
             opts: Option<VideosRequest>,
             pagination: Option<PaginationQuery>,
         ) -> VideosResponse {
-            endpoint_type: EndpointType::GetVideos,
-            method: Method::GET,
+            endpoint_type: GetVideos,
+            method: GET,
             path: [VIDEOS],
             query_params: {
                 into_query(video_selector),
@@ -37,8 +33,8 @@ endpoints! {
             &self,
             ids: &[Id],
         ) -> DeleteVideosResponse {
-            endpoint_type: EndpointType::DeleteVideos,
-            method: Method::DELETE,
+            endpoint_type: DeleteVideos,
+            method: DELETE,
             path: [VIDEOS],
             query_params: {
                 extend(ids.iter().map(|id| (ID, id)))

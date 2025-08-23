@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{
     ChannelStreamScheduleRequest, CreateScheduleSegmentRequest, UpdateScheduleRequest,
     UpdateScheduleSegmentRequest,
@@ -10,7 +9,7 @@ use request::{
 use response::ScheduleResponse;
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody},
+    request::{NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID, SETTINGS},
         BroadcasterId, Id, PaginationQuery,
@@ -26,8 +25,8 @@ endpoints! {
             opts: Option<ChannelStreamScheduleRequest>,
             pagination: Option<PaginationQuery>,
         ) -> ScheduleResponse {
-            endpoint_type: EndpointType::GetChannelStreamSchedule,
-            method: Method::GET,
+            endpoint_type: GetChannelStreamSchedule,
+            method: GET,
             path: ["schedule"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -41,8 +40,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> String {
-            endpoint_type: EndpointType::GetChanneliCalendar,
-            method: Method::GET,
+            endpoint_type: GetChanneliCalendar,
+            method: GET,
             path: ["schedule", "icalendar"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -55,8 +54,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             opts: Option<UpdateScheduleRequest>,
         ) -> NoContent {
-            endpoint_type: EndpointType::UpdateChannelStreamSchedule,
-            method: Method::PATCH,
+            endpoint_type: UpdateChannelStreamSchedule,
+            method: PATCH,
             path: ["schedule", SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -72,8 +71,8 @@ endpoints! {
             duration: &str,
             opts: Option<CreateScheduleSegmentRequest>,
         ) -> ScheduleResponse {
-            endpoint_type: EndpointType::CreateChannelStreamScheduleSegment,
-            method: Method::POST,
+            endpoint_type: CreateChannelStreamScheduleSegment,
+            method: POST,
             path: ["schedule", "segment"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -95,8 +94,8 @@ endpoints! {
             id: &Id,
             opts: Option<UpdateScheduleSegmentRequest>,
         ) -> ScheduleResponse {
-            endpoint_type: EndpointType::UpdateChannelStreamScheduleSegment,
-            method: Method::PATCH,
+            endpoint_type: UpdateChannelStreamScheduleSegment,
+            method: PATCH,
             path: ["schedule", "segment"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -112,8 +111,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             id: &Id,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteChannelStreamScheduleSegment,
-            method: Method::DELETE,
+            endpoint_type: DeleteChannelStreamScheduleSegment,
+            method: DELETE,
             path: ["schedule", "segment"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

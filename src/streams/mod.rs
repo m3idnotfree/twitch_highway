@@ -2,18 +2,14 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
 use response::{
     CreateStreamMarkerResponse, GetStreamMarkersResponse, StreamKeyResponse, StreamsResponse,
 };
 
-use crate::{
-    request::EndpointType,
-    types::{
-        constants::{BROADCASTER_ID, USER_ID},
-        BroadcasterId, PaginationQuery, UserId,
-    },
+use crate::types::{
+    constants::{BROADCASTER_ID, USER_ID},
+    BroadcasterId, PaginationQuery, UserId,
 };
 
 const STREAMS: &str = "streams";
@@ -25,8 +21,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> StreamKeyResponse {
-            endpoint_type: EndpointType::GetStreamKey,
-            method: Method::GET,
+            endpoint_type: GetStreamKey,
+            method: GET,
             path: [STREAMS, "key"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -39,8 +35,8 @@ endpoints! {
             opts: Option<GetStreamsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> StreamsResponse {
-            endpoint_type: EndpointType::GetStreams,
-            method: Method::GET,
+            endpoint_type: GetStreams,
+            method: GET,
             path: [STREAMS],
             query_params: {
                 opt_into_query(opts),
@@ -54,8 +50,8 @@ endpoints! {
             user_id: &UserId,
             pagination: Option<PaginationQuery>,
         ) -> StreamsResponse {
-            endpoint_type: EndpointType::GetFollowedStreams,
-            method: Method::GET,
+            endpoint_type: GetFollowedStreams,
+            method: GET,
             path: [STREAMS, "followed"],
             query_params: {
                 query(USER_ID, user_id),
@@ -69,8 +65,8 @@ endpoints! {
             user_id: &UserId,
             description: Option<&str>,
         ) -> CreateStreamMarkerResponse {
-            endpoint_type: EndpointType::CreateStreamMarker,
-            method: Method::POST,
+            endpoint_type: CreateStreamMarker,
+            method: POST,
             path: [STREAMS, "markers"],
             headers: [json],
             body: CreateStreamMarkerRequest::new(user_id, description).into_json()
@@ -82,8 +78,8 @@ endpoints! {
             selector: StreamMarkerSelector,
             pagination: Option<PaginationQuery>,
         ) -> GetStreamMarkersResponse {
-            endpoint_type: EndpointType::GetStreamMarkers,
-            method: Method::GET,
+            endpoint_type: GetStreamMarkers,
+            method: GET,
             path: [STREAMS, "markers"],
             query_params: {
                 into_query(selector),

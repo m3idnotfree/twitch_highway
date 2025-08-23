@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{
     ExtensionChatMessageIntoRequestBody, RequiredConfiguration, UpdateExtensoinBitsProductsRequest,
 };
@@ -15,7 +14,7 @@ use types::Segment;
 
 use crate::{
     extensions::request::RequestConfigurationSegment,
-    request::{EndpointType, NoContent, RequestBody},
+    request::{NoContent, RequestBody},
     types::{
         constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
         BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery,
@@ -32,8 +31,8 @@ endpoints! {
             segment: &[Segment],
             broadcaster_id: Option<&BroadcasterId>,
         ) -> ConfigurationSegmentResponse {
-            endpoint_type: EndpointType::GetExtensionConfigurationSegment,
-            method: Method::GET,
+            endpoint_type: GetExtensionConfigurationSegment,
+            method: GET,
             path: [EXTENSIONS, "configurations"],
             query_params: {
                 opt(BROADCASTER_ID, broadcaster_id),
@@ -51,8 +50,8 @@ endpoints! {
             opts: Option<RequestConfigurationSegment>,
         // ) -> ConfigurationSegmentResponse {
         ) -> NoContent {
-            endpoint_type: EndpointType::SetExtensionConfigurationSegment,
-            method: Method::PUT,
+            endpoint_type: SetExtensionConfigurationSegment,
+            method: PUT,
             path: [EXTENSIONS, "configurations"],
             headers: [json],
             body:  {
@@ -73,8 +72,8 @@ endpoints! {
             extension_version: &str,
             required_configuration: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::SetExtensionRequiredConfiguration,
-            method: Method::PUT,
+            endpoint_type: SetExtensionRequiredConfiguration,
+            method: PUT,
             path: [EXTENSIONS, "required_configuration"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -91,8 +90,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             is_global_broadcast: Option<bool>,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendExtensionPubSubMessage,
-            method: Method::POST,
+            endpoint_type: SendExtensionPubSubMessage,
+            method: POST,
             path: [EXTENSIONS, "pubsub"],
             headers: [json],
             body: {
@@ -120,8 +119,8 @@ endpoints! {
             extension_id: &ExtensionId,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionLiveChannelsRespnose {
-            endpoint_type: EndpointType::GetExtensionLiveChannels,
-            method: Method::GET,
+            endpoint_type: GetExtensionLiveChannels,
+            method: GET,
             path: [EXTENSIONS, "live"],
             query_params: {
                 query(EXTENSION_ID, extension_id),
@@ -134,8 +133,8 @@ endpoints! {
             &self,
             extension_id: &ExtensionId,
         ) -> ExtensionSecretsResponse {
-            endpoint_type: EndpointType::GetExtensionSecrets,
-            method: Method::GET,
+            endpoint_type: GetExtensionSecrets,
+            method: GET,
             path: [EXTENSIONS, "jwt", "secrets"],
             query_params: {
                 query(EXTENSION_ID, extension_id)
@@ -148,8 +147,8 @@ endpoints! {
             extension_id: &ExtensionId,
             delay: Option<u64>,
         ) -> ExtensionSecretsResponse {
-            endpoint_type: EndpointType::CreateExtensionSecret,
-            method: Method::POST,
+            endpoint_type: CreateExtensionSecret,
+            method: POST,
             path: [EXTENSIONS, "jwt", "secrets"],
             query_params: {
                 query("extension_id", extension_id),
@@ -165,8 +164,8 @@ endpoints! {
             extension_id: &ExtensionId,
             extension_version: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendExtensionChatMessage,
-            method: Method::POST,
+            endpoint_type: SendExtensionChatMessage,
+            method: POST,
             path: [EXTENSIONS, CHAT],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -181,8 +180,8 @@ endpoints! {
             extension_id: &ExtensionId,
             extension_version: Option<&str>,
         ) -> ExtensionsResponse {
-            endpoint_type: EndpointType::GetExtensions,
-            method: Method::GET,
+            endpoint_type: GetExtensions,
+            method: GET,
             path: [EXTENSIONS],
             query_params: {
                 query(EXTENSION_ID, extension_id),
@@ -196,8 +195,8 @@ endpoints! {
             extension_id: &ExtensionId,
             extension_version: Option<&str>,
         ) -> ExtensionsResponse {
-            endpoint_type: EndpointType::GetReleasedExtensions,
-            method: Method::GET,
+            endpoint_type: GetReleasedExtensions,
+            method: GET,
             path: [EXTENSIONS, "released"],
             query_params: {
                 query(EXTENSION_ID, extension_id),
@@ -210,8 +209,8 @@ endpoints! {
             &self,
             should_inclue_all: Option<bool>,
         ) -> ExtensionsBitsProductsResponse {
-            endpoint_type: EndpointType::GetExtensionBitsProducts,
-            method: Method::GET,
+            endpoint_type: GetExtensionBitsProducts,
+            method: GET,
             path: [BITS, EXTENSIONS],
             query_params: {
                 opt("should_include_all", should_inclue_all.as_ref().map(|b| b.to_string()))
@@ -226,8 +225,8 @@ endpoints! {
             display_name: &str,
             opts: Option<UpdateExtensoinBitsProductsRequest>,
         ) -> ExtensionsBitsProductsResponse {
-            endpoint_type: EndpointType::GetReleasedExtensions,
-            method: Method::PUT,
+            endpoint_type: GetReleasedExtensions,
+            method: PUT,
             path: [BITS, EXTENSIONS],
             headers: [json],
             body: {

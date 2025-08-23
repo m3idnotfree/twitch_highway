@@ -1,11 +1,10 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::StartRaidResponse;
 
 use crate::{
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{constants::BROADCASTER_ID, BroadcasterId},
 };
 
@@ -17,8 +16,8 @@ endpoints! {
             from_broadcaster_id: &BroadcasterId,
             to_broadcaster_id: &BroadcasterId,
         ) -> StartRaidResponse {
-            endpoint_type: EndpointType::Startraid,
-            method: Method::POST,
+            endpoint_type: Startraid,
+            method: POST,
             path: ["raids"],
             query_params: {
                 extend([
@@ -33,8 +32,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> NoContent {
-            endpoint_type: EndpointType::Cancelraid,
-            method: Method::DELETE,
+            endpoint_type: Cancelraid,
+            method: DELETE,
             path: ["raids"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)

@@ -1,12 +1,10 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::HypeTrainResponse;
 
 use crate::{
     hype_train::response::HypeTrainStatusResponse,
-    request::EndpointType,
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
 };
 
@@ -18,8 +16,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             pagination: Option<PaginationQuery>,
         ) -> HypeTrainResponse {
-            endpoint_type: EndpointType::GetHypeTrainEvents,
-            method: Method::GET,
+            endpoint_type: GetHypeTrainEvents,
+            method: GET,
             path: ["hypetrain", "events"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -32,8 +30,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId
         ) -> HypeTrainStatusResponse {
-            endpoint_type: EndpointType::GetHypeTrainStatus,
-            method: Method::GET,
+            endpoint_type: GetHypeTrainStatus,
+            method: GET,
             path: ["hypetrain","status"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

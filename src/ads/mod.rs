@@ -1,13 +1,9 @@
-use asknothingx2_util::api::Method;
 use request::StartCommercialBody;
 use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{
-        constants::{BROADCASTER_ID, CHANNELS},
-        BroadcasterId,
-    },
+use crate::types::{
+    constants::{BROADCASTER_ID, CHANNELS},
+    BroadcasterId,
 };
 
 pub mod request;
@@ -22,8 +18,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             length: u64,
         ) -> StartCommercialResponse {
-            endpoint_type: EndpointType::StartCommercial,
-            method: Method::POST,
+            endpoint_type: StartCommercial,
+            method: POST,
             path: [CHANNELS, "commercial"],
             headers: [json],
             body: StartCommercialBody::new(broadcaster_id, length).into_json()
@@ -34,8 +30,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> AdScheduleResponse {
-            endpoint_type: EndpointType::GetAdSchedule,
-            method: Method::GET,
+            endpoint_type: GetAdSchedule,
+            method: GET,
             path: [CHANNELS, "ads"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -47,8 +43,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> SnoozeNextAdResponse {
-            endpoint_type: EndpointType::SnoozeNextAd,
-            method: Method::POST,
+            endpoint_type: SnoozeNextAd,
+            method: POST,
             path: [CHANNELS, "ads", "schedule", "snooze"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)

@@ -2,12 +2,10 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::BitsLeaderboardRequest;
 use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 
 use crate::{
-    request::EndpointType,
     types::{
         constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
         BroadcasterId, ExtensionId, Id, PaginationQuery,
@@ -21,8 +19,8 @@ endpoints! {
             &self,
             opts: Option<BitsLeaderboardRequest>,
         ) -> BitsLeaderboardResponse {
-            endpoint_type: EndpointType::GetBitsLeaderboard,
-            method: Method::GET,
+            endpoint_type: GetBitsLeaderboard,
+            method: GET,
             path: [BITS, "leaderboard"],
             query_params: {
                 opt_into_query(opts)
@@ -34,8 +32,8 @@ endpoints! {
             &self,
             broadcaster_id: Option<&BroadcasterId>,
         ) -> CheermotesResponse {
-            endpoint_type: EndpointType::GetCheermotes,
-            method: Method::GET,
+            endpoint_type: GetCheermotes,
+            method: GET,
             path: [BITS, "cheermotes"],
             query_params: {
                 opt(BROADCASTER_ID, broadcaster_id)
@@ -49,8 +47,8 @@ endpoints! {
             id: Option<&Id>,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionTransactionsResponse {
-            endpoint_type: EndpointType::GetExtensionTransactions,
-            method: Method::GET,
+            endpoint_type: GetExtensionTransactions,
+            method: GET,
             path: [EXTENSIONS, "transactions"],
             query_params: {
                 query(EXTENSION_ID, extension_id),

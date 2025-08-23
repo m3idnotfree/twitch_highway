@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{
     AnnouncementColor, ChatAnnouncementBody, ChatColor, SendChatMessageRequest,
     UpdateChatSettingsRequest,
@@ -13,7 +12,7 @@ use response::{
 };
 
 use crate::{
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{AFTER, BROADCASTER_ID, CHAT, MODERATOR_ID, SETTINGS, USER_ID},
         BroadcasterId, ModeratorId, PaginationQuery, UserId,
@@ -31,8 +30,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             pagination: Option<PaginationQuery>,
         ) -> ChattersResponse {
-            endpoint_type: EndpointType::GetChatters,
-            method: Method::GET,
+            endpoint_type: GetChatters,
+            method: GET,
             path: [CHAT, "chatters"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -46,8 +45,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> EmotesResponse {
-            endpoint_type: EndpointType::GetChannelEmotes,
-            method: Method::GET,
+            endpoint_type: GetChannelEmotes,
+            method: GET,
             path: [CHAT, EMOTES],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -56,8 +55,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
         fn get_global_emotes(&self) -> EmotesResponse {
-            endpoint_type: EndpointType::GetGlobalEmotes,
-            method: Method::GET,
+            endpoint_type: GetGlobalEmotes,
+            method: GET,
             path: [CHAT, EMOTES, "global"]
         }
 
@@ -66,8 +65,8 @@ endpoints! {
             &self,
             emote_set_ids: &[&str],
         ) -> EmotesResponse {
-            endpoint_type: EndpointType::GetEmoteSets,
-            method: Method::GET,
+            endpoint_type: GetEmoteSets,
+            method: GET,
             path: [CHAT, EMOTES, "set"],
             query_params: {
                 extend(emote_set_ids.iter().map(|x| ("emote_set_id", *x)))
@@ -79,8 +78,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> BadgesResponse {
-            endpoint_type: EndpointType::GetChannelChatBadges,
-            method: Method::GET,
+            endpoint_type: GetChannelChatBadges,
+            method: GET,
             path: [CHAT, "badges"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -89,8 +88,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
         fn get_global_chat_badges(&self) -> BadgesResponse {
-            endpoint_type: EndpointType::GetGlobalChatBadges,
-            method: Method::GET,
+            endpoint_type: GetGlobalChatBadges,
+            method: GET,
             path: [CHAT, "badges", "global"]
         }
 
@@ -100,8 +99,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             moderator_id: Option<&ModeratorId>,
         ) -> ChatSettingResponse {
-            endpoint_type: EndpointType::GetChatSettings,
-            method: Method::GET,
+            endpoint_type: GetChatSettings,
+            method: GET,
             path: [CHAT, SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -114,8 +113,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> SharedChatSessionResponse {
-            endpoint_type: EndpointType::GetShardChatSession,
-            method: Method::GET,
+            endpoint_type: GetShardChatSession,
+            method: GET,
             path: ["shared_chat", "session"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -129,8 +128,8 @@ endpoints! {
             after: Option<&str>,
             broadcaster_id: Option<BroadcasterId>,
         ) -> EmotesResponse {
-            endpoint_type: EndpointType::GetUserEmotes,
-            method: Method::GET,
+            endpoint_type: GetUserEmotes,
+            method: GET,
             path: [CHAT, EMOTES, "user"],
             query_params: {
                 query(USER_ID, user_id),
@@ -146,8 +145,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             opts: Option<UpdateChatSettingsRequest>,
         ) -> ChatSettingResponse {
-            endpoint_type: EndpointType::UpdateChatSettings,
-            method: Method::PATCH,
+            endpoint_type: UpdateChatSettings,
+            method: PATCH,
             path: [CHAT, SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -165,8 +164,8 @@ endpoints! {
             message: &str,
             color: Option<AnnouncementColor>,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendChatAnnouncement,
-            method: Method::POST,
+            endpoint_type: SendChatAnnouncement,
+            method: POST,
             path: [CHAT, "announcements"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -183,8 +182,8 @@ endpoints! {
             to_broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendAShoutout,
-            method: Method::POST,
+            endpoint_type: SendAShoutout,
+            method: POST,
             path: [CHAT, "shoutouts"],
             query_params: {
                 query("from_broadcaster_id", from_broadcaster_id),
@@ -198,8 +197,8 @@ endpoints! {
             &self,
             req: SendChatMessageRequest,
         ) -> SendChatMessageResponse {
-            endpoint_type: EndpointType::SendChatMessage,
-            method: Method::POST,
+            endpoint_type: SendChatMessage,
+            method: POST,
             path: [CHAT, "messages"],
             headers: [json],
             body: req.into_json()
@@ -210,8 +209,8 @@ endpoints! {
             &self,
             user_id: &[UserId],
         ) -> UsersColorResponse {
-            endpoint_type: EndpointType::GetUserChatColor,
-            method: Method::GET,
+            endpoint_type: GetUserChatColor,
+            method: GET,
             path: [CHAT, "color"],
             query_params: {
                 extend(user_id.iter().map(|x| (USER_ID, x)))
@@ -223,8 +222,8 @@ endpoints! {
             user_id: &UserId,
             color: ChatColor,
         ) -> NoContent {
-            endpoint_type: EndpointType::UpdateUserChatColor,
-            method: Method::PUT,
+            endpoint_type: UpdateUserChatColor,
+            method: PUT,
             path: [CHAT, "color"],
             query_params: {
                 query(USER_ID, user_id),

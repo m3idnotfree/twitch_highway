@@ -2,16 +2,12 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::AnalyticsRequest;
 use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{
-        constants::{EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
-        ExtensionId, GameId, PaginationQuery,
-    },
+use crate::types::{
+    constants::{EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
+    ExtensionId, GameId, PaginationQuery,
 };
 
 const ANALYTICS: &str = "analytics";
@@ -25,8 +21,8 @@ endpoints! {
             opts: Option<AnalyticsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> ExtensionAnalyticsResponse {
-            endpoint_type: EndpointType::GetExtensionAnalytics,
-            method: Method::GET,
+            endpoint_type: GetExtensionAnalytics,
+            method: GET,
             path: [ANALYTICS, EXTENSIONS],
             query_params: {
                 opt(EXTENSION_ID, extension_id),
@@ -42,8 +38,8 @@ endpoints! {
             opts: Option<AnalyticsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> GameAnalyticsResponse {
-            endpoint_type: EndpointType::GetGameAnalytics,
-            method: Method::GET,
+            endpoint_type: GetGameAnalytics,
+            method: GET,
             path: [ANALYTICS, GAMES],
             query_params: {
                 opt(GAME_ID, game_id),

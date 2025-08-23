@@ -2,12 +2,11 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
 use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
 
 use crate::{
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{BROADCASTER_ID, MODERATOR_ID},
         BroadcasterId, ModeratorId,
@@ -24,8 +23,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
         ) -> GuestStarSettingsResponse {
-            endpoint_type: EndpointType::GetChannelGuestStarSettings,
-            method: Method::GET,
+            endpoint_type: GetChannelGuestStarSettings,
+            method: GET,
             path: [GUEST_STAR, "channel_settings"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -39,8 +38,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             request: GustStarSettingRequest,
         ) -> NoContent {
-            endpoint_type: EndpointType::UpdateChannelGuestStarSettings,
-            method: Method::PUT,
+            endpoint_type: UpdateChannelGuestStarSettings,
+            method: PUT,
             path: [GUEST_STAR, "channel_settings"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -54,8 +53,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
         ) -> GustStarSessionResponse {
-            endpoint_type: EndpointType::GetGuestStarSession,
-            method: Method::GET,
+            endpoint_type: GetGuestStarSession,
+            method: GET,
             path: [GUEST_STAR, "session"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -68,8 +67,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> GustStarSessionResponse {
-            endpoint_type: EndpointType::CreateGuestStarSession,
-            method: Method::POST,
+            endpoint_type: CreateGuestStarSession,
+            method: POST,
             path: [GUEST_STAR, "session"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -82,8 +81,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             session_id: &str,
         ) -> GustStarSessionResponse {
-            endpoint_type: EndpointType::EndGuestStarSession,
-            method: Method::DELETE,
+            endpoint_type: EndGuestStarSession,
+            method: DELETE,
             path: [GUEST_STAR, "session"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -98,8 +97,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             session_id: &str,
         ) -> GustStarInvitesResponse {
-            endpoint_type: EndpointType::GetGuestStarInvites,
-            method: Method::GET,
+            endpoint_type: GetGuestStarInvites,
+            method: GET,
             path: [GUEST_STAR, "invites"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -116,8 +115,8 @@ endpoints! {
             session_id: &str,
             guest_id: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::SendGuestStarInvite,
-            method: Method::POST,
+            endpoint_type: SendGuestStarInvite,
+            method: POST,
             path: [GUEST_STAR, "invites"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -135,8 +134,8 @@ endpoints! {
             session_id: &str,
             guest_id: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteGuestStarInvite,
-            method: Method::DELETE,
+            endpoint_type: DeleteGuestStarInvite,
+            method: DELETE,
             path: [GUEST_STAR, "invites"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -155,8 +154,8 @@ endpoints! {
             guest_id: &str,
             slot_id: &str,
         ) -> NoContent {
-            endpoint_type: EndpointType::AssignGuestStarSlot,
-            method: Method::POST,
+            endpoint_type: AssignGuestStarSlot,
+            method: POST,
             path: [GUEST_STAR, "slot"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -176,8 +175,8 @@ endpoints! {
             source_slot_id: &str,
             destination_slot_id: Option<&str>,
         ) -> NoContent {
-            endpoint_type: EndpointType::UpdateGuestStarSlot,
-            method: Method::PATCH,
+            endpoint_type: UpdateGuestStarSlot,
+            method: PATCH,
             path: [GUEST_STAR, "slot"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -198,8 +197,8 @@ endpoints! {
             slot_id: &str,
             should_reinvite_guest: Option<&str>,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteGuestStarSlot,
-            method: Method::DELETE,
+            endpoint_type: DeleteGuestStarSlot,
+            method: DELETE,
             path: [GUEST_STAR, "slot"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -220,8 +219,8 @@ endpoints! {
             slot_id: &str,
             opts: UpdateSlotSettingsRequest,
         ) -> NoContent {
-            endpoint_type: EndpointType::UpdateGuestStarSlotSettings,
-            method: Method::PATCH,
+            endpoint_type: UpdateGuestStarSlotSettings,
+            method: PATCH,
             path: [GUEST_STAR, "slot_settings"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

@@ -2,13 +2,12 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{EndPollRequest, PollsRequest};
 use response::PollsResponse;
 use types::PollStatus;
 
 use crate::{
-    request::{EndpointType, RequestBody},
+    request::RequestBody,
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
@@ -24,8 +23,8 @@ endpoints! {
             id: Option<&Id>,
             pagination: Option<PaginationQuery>,
         ) -> PollsResponse {
-            endpoint_type: EndpointType::GetPolls,
-            method: Method::GET,
+            endpoint_type: GetPolls,
+            method: GET,
             path: ["polls"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -43,8 +42,8 @@ endpoints! {
             duration: u64,
             opts: Option<PollsRequest>,
         ) -> PollsResponse {
-            endpoint_type: EndpointType::CreatePoll,
-            method: Method::POST,
+            endpoint_type: CreatePoll,
+            method: POST,
             path: ["polls"],
             headers: [json],
             body: {
@@ -66,8 +65,8 @@ endpoints! {
             id: &Id,
             status: PollStatus,
         ) -> PollsResponse {
-            endpoint_type: EndpointType::EndPoll,
-            method: Method::PATCH,
+            endpoint_type: EndPoll,
+            method: PATCH,
             path: ["polls"],
             headers: [json],
             body: EndPollRequest::new(broadcaster_id, id, status).into_json()

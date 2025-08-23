@@ -1,13 +1,9 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-};
+use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 
 const CHARITY: &str = "charity";
 
@@ -18,8 +14,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> CharityCampaignResponse {
-            endpoint_type: EndpointType::GetCharityCampaign,
-            method: Method::GET,
+            endpoint_type: GetCharityCampaign,
+            method: GET,
             path: [CHARITY, "campaigns"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -32,8 +28,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             pagination: Option<PaginationQuery>,
         ) -> CharityCampaignDonationResponse {
-            endpoint_type: EndpointType::GetCharityCampaignDonations,
-            method: Method::GET,
+            endpoint_type: GetCharityCampaignDonations,
+            method: GET,
             path: [CHARITY, "donations"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

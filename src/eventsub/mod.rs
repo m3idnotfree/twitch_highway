@@ -6,7 +6,6 @@ pub mod subscription_types;
 pub mod transport;
 
 use condition::Condition;
-use reqwest::Method;
 use response::EventSubscriptionsResponse;
 
 use crate::{
@@ -15,7 +14,7 @@ use crate::{
         response::CreateEventSubscriptionsResponse,
         transport::TransportType,
     },
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{ID, SUBSCRIPTIONS},
         PaginationQuery, SubscriptionId,
@@ -29,10 +28,10 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription>
         fn create_eventsub<T: TransportType>(
             &self,
-            req: CreateEventSubRequest<Condition, T>
+            req: CreateEventSubRequest<Condition, T>,
         ) -> CreateEventSubscriptionsResponse {
-            endpoint_type: EndpointType::CreateEventSub,
-            method: Method::POST,
+            endpoint_type: CreateEventSub,
+            method: POST,
             path: [EVENTSUB, SUBSCRIPTIONS],
             headers: [json],
             body: req.into_json()
@@ -43,8 +42,8 @@ endpoints! {
             &self,
             subscription_id: &SubscriptionId,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteEventSub,
-            method: Method::DELETE,
+            endpoint_type: DeleteEventSub,
+            method: DELETE,
             path: [EVENTSUB, SUBSCRIPTIONS],
             query_params: {
                 query(ID, subscription_id)
@@ -57,8 +56,8 @@ endpoints! {
             opts: Option<GetEventRequest>,
             pagination: Option<PaginationQuery>,
         ) -> EventSubscriptionsResponse {
-            endpoint_type: EndpointType::GetEventSub,
-            method: Method::GET,
+            endpoint_type: GetEventSub,
+            method: GET,
             path: [EVENTSUB, SUBSCRIPTIONS],
             query_params: {
                 opt_into_query(opts),

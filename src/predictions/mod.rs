@@ -2,13 +2,12 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::CreatePredictionRequest;
 use response::PredictionsResponse;
 use types::PredictionStatus;
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody},
+    request::{NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
@@ -24,8 +23,8 @@ endpoints! {
             id: Option<&[Id]>,
             pagination: Option<PaginationQuery>,
         ) -> PredictionsResponse {
-            endpoint_type: EndpointType::GetPredictions,
-            method: Method::GET,
+            endpoint_type: GetPredictions,
+            method: GET,
             path: ["predictions"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -42,8 +41,8 @@ endpoints! {
             outcomes: &[Title],
             prediction_window: u64,
         ) -> PredictionsResponse {
-            endpoint_type: EndpointType::CreatePrediction,
-            method: Method::POST,
+            endpoint_type: CreatePrediction,
+            method: POST,
             path: ["predictions"],
             headers: [json],
             body: CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window).into_json()
@@ -57,8 +56,8 @@ endpoints! {
             status: PredictionStatus,
             winning_outcome_id: Option<&str>,
         ) -> PredictionsResponse {
-            endpoint_type: EndpointType::EndPrediction,
-            method: Method::PATCH,
+            endpoint_type: EndPrediction,
+            method: PATCH,
             path: ["predictions"],
             headers: [json],
             body: {

@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{BlockReason, BlockSourceContext};
 use response::{
     BlockUserListResponse, UpdateUsersResponse, UserActiveExtensionsResponse,
@@ -11,7 +10,7 @@ use response::{
 use types::UserActiveExtensions;
 
 use crate::{
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{BROADCASTER_ID, EXTENSIONS, ID, USER_ID},
         BroadcasterId, Id, PaginationQuery, UserId,
@@ -30,8 +29,8 @@ endpoints! {
             ids: Option<&[Id]>,
             logins: Option<&[&str]>,
         ) -> UsersInfoResponse {
-            endpoint_type: EndpointType::GetUsers,
-            method: Method::GET,
+            endpoint_type: GetUsers,
+            method: GET,
             path: [USERS],
             query_params: {
                 opt_extend(ids.map(|ids| ids.iter().map(|id| (ID, id)))),
@@ -41,8 +40,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#update-user>
         fn update_user(&self, description: Option<&str>) -> UpdateUsersResponse {
-            endpoint_type: EndpointType::UpdateUser,
-            method: Method::PUT,
+            endpoint_type: UpdateUser,
+            method: PUT,
             path: [USERS],
             query_params: {
                 opt("description", description)
@@ -55,8 +54,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             pagination: Option<PaginationQuery>,
         ) -> BlockUserListResponse {
-            endpoint_type: EndpointType::GetUserBlockList,
-            method: Method::GET,
+            endpoint_type: GetUserBlockList,
+            method: GET,
             path: [USERS, BLOCKS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -71,8 +70,8 @@ endpoints! {
             source_context: Option<BlockSourceContext>,
             reason: Option<BlockReason>,
         ) -> NoContent {
-            endpoint_type: EndpointType::BlockUser,
-            method: Method::PUT,
+            endpoint_type: BlockUser,
+            method: PUT,
             path: [USERS, BLOCKS],
             query_params: {
                 query("target_user_id", target_user_id),
@@ -83,8 +82,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
         fn unblock_user(&self, target_user_id: &UserId) -> NoContent {
-            endpoint_type: EndpointType::UnblockUser,
-            method: Method::DELETE,
+            endpoint_type: UnblockUser,
+            method: DELETE,
             path: [USERS, BLOCKS],
             query_params: {
                 query("target_user_id", target_user_id)
@@ -93,8 +92,8 @@ endpoints! {
 
         /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
         fn get_user_extensions(&self) -> UserExtensionsResponse {
-            endpoint_type: EndpointType::GetUserExtensions,
-            method: Method::GET,
+            endpoint_type: GetUserExtensions,
+            method: GET,
             path: [USERS, EXTENSIONS, "list"]
         }
 
@@ -103,8 +102,8 @@ endpoints! {
             &self,
             user_id: Option<&UserId>,
         ) -> UserActiveExtensionsResponse {
-            endpoint_type: EndpointType::GetUserActiveExtensions,
-            method: Method::GET,
+            endpoint_type: GetUserActiveExtensions,
+            method: GET,
             path: [USERS, EXTENSIONS],
             query_params: {
                 opt(USER_ID, user_id)
@@ -116,8 +115,8 @@ endpoints! {
             &self,
             data: UserActiveExtensions,
         ) -> UserActiveExtensionsResponse {
-            endpoint_type: EndpointType::UpdateUserExtensions,
-            method: Method::PUT,
+            endpoint_type: UpdateUserExtensions,
+            method: PUT,
             path: [USERS, EXTENSIONS],
             headers: [json],
             body: data.into_json()

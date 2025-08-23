@@ -1,13 +1,9 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::GoalsResponse;
 
-use crate::{
-    request::EndpointType,
-    types::{constants::BROADCASTER_ID, BroadcasterId},
-};
+use crate::types::{constants::BROADCASTER_ID, BroadcasterId};
 
 endpoints! {
     GoalsAPI {
@@ -16,8 +12,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> GoalsResponse {
-            endpoint_type: EndpointType::GetCreatorGoals,
-            method: Method::GET,
+            endpoint_type: GetCreatorGoals,
+            method: GET,
             path: ["goals"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)

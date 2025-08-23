@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{
     CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
     RedemptionStatusQuery, UpdateCustomRewardRequest,
@@ -10,7 +9,7 @@ use request::{
 use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody},
+    request::{NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, CustomRewardId, PaginationQuery, RedemptionId, RewardId,
@@ -31,8 +30,8 @@ endpoints! {
             cost: u64,
             opts: Option<CustomRewardsBody>,
         ) -> CustomRewardsResponse {
-            endpoint_type: EndpointType::CreateCustomRewards,
-            method: Method::POST,
+            endpoint_type: CreateCustomRewards,
+            method: POST,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -47,8 +46,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             custom_reward_id: &CustomRewardId,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteCustomReward,
-            method: Method::DELETE,
+            endpoint_type: DeleteCustomReward,
+            method: DELETE,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -63,8 +62,8 @@ endpoints! {
             custom_reward_ids: Option<&[CustomRewardId]>,
             only_manageable_rewards: Option<bool>,
         ) -> CustomRewardsResponse {
-            endpoint_type: EndpointType::GetCustomReward,
-            method: Method::GET,
+            endpoint_type: GetCustomReward,
+            method: GET,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -81,8 +80,8 @@ endpoints! {
             opts: Option<CustomRewardRedemptionQuery>,
             pagination: Option<PaginationQuery>,
         ) -> CustomRewardsRedemptionResponse {
-            endpoint_type: EndpointType::GetCustomRewardRedemption,
-            method: Method::GET,
+            endpoint_type: GetCustomRewardRedemption,
+            method: GET,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -99,8 +98,8 @@ endpoints! {
             custom_reward_id: &CustomRewardId,
             opts: Option<UpdateCustomRewardRequest>,
         ) -> CustomRewardsResponse {
-            endpoint_type: EndpointType::UpdateCustomReward,
-            method: Method::PATCH,
+            endpoint_type: UpdateCustomReward,
+            method: PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -118,8 +117,8 @@ endpoints! {
             reward_id: &RewardId,
             status: RedemptionStatusQuery,
         ) -> CustomRewardsRedemptionResponse {
-            endpoint_type: EndpointType::UpdateRedemptionStatus,
-            method: Method::PATCH,
+            endpoint_type: UpdateRedemptionStatus,
+            method: PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS, "redemptions"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id.as_str()),

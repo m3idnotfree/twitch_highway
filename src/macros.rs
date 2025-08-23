@@ -482,8 +482,8 @@ macro_rules! automatic_impl {
 ///     TraitName {
 ///         /// Documentation for the endpoint
 ///         fn method_name(&self, param: Type) -> ResponseType {
-///             endpoint_type: EndpointType::MethodName,
-///             method: Method::GET,
+///             endpoint_type: MethodName,
+///             method: GET,
 ///             path: ["segment1", "segment2"],
 ///             query_params: {
 ///                 query("key", value),
@@ -529,8 +529,8 @@ macro_rules! endpoints {
                     $(, $param_name:ident: $param_type:ty )* $(,)?
                 ) -> $return_type:ty
                 {
-                        endpoint_type: $endpoint_type:expr,
-                        method: $http_method:expr,
+                        endpoint_type: $endpoint_type:ident,
+                        method: $http_method:ident,
                         path: [$($path_segment:expr),* $(,)?]
                         $(, query_params: {$($query_config:tt)*})?
                         $(, headers: [$($header_config:tt)*])?
@@ -569,9 +569,9 @@ macro_rules! endpoints {
                     let body = endpoints!(@body_handler $($body_expr)?);
 
                     crate::request::TwitchAPIRequest::new(
-                        $endpoint_type,
+                        crate::request::EndpointType::$endpoint_type,
                         url,
-                        $http_method,
+                        reqwest::Method::$http_method,
                         headers,
                         body,
                     )

@@ -2,11 +2,10 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
 use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
-use crate::{request::EndpointType, types::PaginationQuery};
+use crate::types::PaginationQuery;
 
 endpoints! {
     EntitlementsAPI {
@@ -16,8 +15,8 @@ endpoints! {
             opts: Option<DropEntitlementRequest>,
             pagination: Option<PaginationQuery>,
         ) -> DropsEntitlementsResponse {
-            endpoint_type: EndpointType::GetDropsEntitlements,
-            method: Method::GET,
+            endpoint_type: GetDropsEntitlements,
+            method: GET,
             path: ["entitlements", "drops"],
             query_params: {
                 opt_into_query(opts),
@@ -30,8 +29,8 @@ endpoints! {
             &self,
             opts: Option<UpdateEntitlementsRequest>,
         ) -> UpdateDropEntitlementsResponse {
-            endpoint_type: EndpointType::UpdateDropsEntitlements,
-            method: Method::PATCH,
+            endpoint_type: UpdateDropsEntitlements,
+            method: PATCH,
             path: ["entitlements", "drops"],
             headers:[json],
             body: opts.and_then(|o| o.into_json())

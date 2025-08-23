@@ -1,14 +1,10 @@
 pub mod request;
 pub mod response;
 
-use asknothingx2_util::api::Method;
 use request::GetGamesRequest;
 use response::GamesResponse;
 
-use crate::{
-    request::EndpointType,
-    types::{constants::GAMES, PaginationQuery},
-};
+use crate::types::{constants::GAMES, PaginationQuery};
 
 endpoints! {
     GamesAPI {
@@ -17,8 +13,8 @@ endpoints! {
             &self,
             pagination: Option<PaginationQuery>,
         ) -> GamesResponse {
-            endpoint_type: EndpointType::GetTopGames,
-            method: Method::GET,
+            endpoint_type: GetTopGames,
+            method: GET,
             path: [GAMES, "top"],
             query_params: {
                 pagination(pagination)
@@ -30,8 +26,8 @@ endpoints! {
             &self,
             request: GetGamesRequest,
         ) -> GamesResponse {
-            endpoint_type: EndpointType::GetGames,
-            method: Method::GET,
+            endpoint_type: GetGames,
+            method: GET,
             path: [GAMES],
             query_params: {
                 into_query(request)

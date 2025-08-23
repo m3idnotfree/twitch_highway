@@ -1,13 +1,9 @@
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use response::{CategoriesResponse, ChannelsResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{constants::CHANNELS, PaginationQuery},
-};
+use crate::types::{constants::CHANNELS, PaginationQuery};
 
 endpoints! {
     SearchAPI {
@@ -17,8 +13,8 @@ endpoints! {
             query: &str,
             pagination: Option<PaginationQuery>,
         ) -> CategoriesResponse {
-            endpoint_type: EndpointType::SearchCategories,
-            method: Method::GET,
+            endpoint_type: SearchCategories,
+            method: GET,
             path: ["search", "categories"],
             query_params: {
                 query("query", query),
@@ -33,8 +29,8 @@ endpoints! {
             live_only: Option<bool>,
             pagination: Option<PaginationQuery>,
         ) -> ChannelsResponse {
-            endpoint_type: EndpointType::SearchChannels,
-            method: Method::GET,
+            endpoint_type: SearchChannels,
+            method: GET,
             path: ["search", CHANNELS],
             query_params: {
                 query("query", query),

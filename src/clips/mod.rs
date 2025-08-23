@@ -2,14 +2,10 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{ClipsSelector, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
 
-use crate::{
-    request::EndpointType,
-    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-};
+use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 
 endpoints! {
     ClipsAPI {
@@ -19,8 +15,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             has_delay: Option<bool>,
         ) -> CreateClipsResponse {
-            endpoint_type: EndpointType::CreateClip,
-            method: Method::POST,
+            endpoint_type: CreateClip,
+            method: POST,
             path: ["clips"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -35,8 +31,8 @@ endpoints! {
             opts: Option<GetClipsRequest>,
             pagination: Option<PaginationQuery>,
         ) -> ClipsInfoResponse {
-            endpoint_type: EndpointType::GetClips,
-            method: Method::GET,
+            endpoint_type: GetClips,
+            method: GET,
             path: ["clips"],
             query_params: {
                 into_query(clips_selector),

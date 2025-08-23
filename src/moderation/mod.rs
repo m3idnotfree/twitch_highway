@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::{
     AddBlockedTermRequest, AutoModAction, BanUserRequest, CheckAutoMod, CheckAutoModStatusRequest,
     ManageHeldAutoModMeussageRequest, UpdateAutoModSettingsRequest, UpdateShieldModeStatusRequest,
@@ -17,7 +16,7 @@ use types::UnbanRequestStatus;
 
 use crate::{
     moderation::request::BanUserRequestWrapper,
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{BROADCASTER_ID, CHANNELS, CHAT, ID, MODERATOR_ID, SETTINGS, USER_ID},
         BroadcasterId, Id, ModeratorId, PaginationQuery, UserId,
@@ -34,8 +33,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             data: &[CheckAutoMod],
         ) -> CheckAutoModStatusResponse {
-            endpoint_type: EndpointType::CheckAutoModStatus,
-            method: Method::POST,
+            endpoint_type: CheckAutoModStatus,
+            method: POST,
             path: [MODERATION, "enforcements", "status"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -51,8 +50,8 @@ endpoints! {
             msg_id: &str,
             action: AutoModAction,
         ) -> NoContent {
-            endpoint_type: EndpointType::ManageHeldAutoModMessages,
-            method: Method::POST,
+            endpoint_type: ManageHeldAutoModMessages,
+            method: POST,
             path: [MODERATION, "automod", "message"],
             headers: [json],
             body:ManageHeldAutoModMeussageRequest::new(user_id, msg_id, action).into_json()
@@ -64,8 +63,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
         ) -> AutoModSettingsResponse {
-            endpoint_type: EndpointType::GetAutoModSettings,
-            method: Method::GET,
+            endpoint_type: GetAutoModSettings,
+            method: GET,
             path: [MODERATION, "automod", SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -80,8 +79,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             opts: Option<UpdateAutoModSettingsRequest>,
         ) -> AutoModSettingsResponse {
-            endpoint_type: EndpointType::UpdateAutoModSettings,
-            method: Method::PUT,
+            endpoint_type: UpdateAutoModSettings,
+            method: PUT,
             path: [MODERATION, "automod", SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -98,8 +97,8 @@ endpoints! {
             user_id: Option<&[UserId]>,
             pagination: Option<PaginationQuery>,
         ) -> GetBannedUsersResponse {
-            endpoint_type: EndpointType::GetBannedUsers,
-            method: Method::GET,
+            endpoint_type: GetBannedUsers,
+            method: GET,
             path: [MODERATION, "banned"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -115,8 +114,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             data: BanUserRequest,
         ) -> BanUsersResponse {
-            endpoint_type: EndpointType::BanUsers,
-            method: Method::POST,
+            endpoint_type: BanUsers,
+            method: POST,
             path: [MODERATION, "bans"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -133,8 +132,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             user_id: &UserId,
         ) -> NoContent {
-            endpoint_type: EndpointType::BanUsers,
-            method: Method::DELETE,
+            endpoint_type: BanUsers,
+            method: DELETE,
             path: [MODERATION, "bans"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -152,8 +151,8 @@ endpoints! {
             user_id: Option<&UserId>,
             pagination: Option<PaginationQuery>,
         ) -> UnbanRequestResponse {
-            endpoint_type: EndpointType::GetUnbanRequests,
-            method: Method::GET,
+            endpoint_type: GetUnbanRequests,
+            method: GET,
             path: [MODERATION, "unban_requests"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -173,8 +172,8 @@ endpoints! {
             status: UnbanRequestStatus,
             resolution_text: Option<&str>,
         ) -> UnbanRequestResponse {
-            endpoint_type: EndpointType::ResolveUnbanRequests,
-            method: Method::PATCH,
+            endpoint_type: ResolveUnbanRequests,
+            method: PATCH,
             path: [MODERATION, "unban_requests"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -192,8 +191,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             pagination: Option<PaginationQuery>,
         ) -> BlockedTermsResponse {
-            endpoint_type: EndpointType::GetBlockedTerms,
-            method: Method::GET,
+            endpoint_type: GetBlockedTerms,
+            method: GET,
             path: [MODERATION, "blocked_terms"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -209,8 +208,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             text: &str,
         ) -> BlockedTermsResponse {
-            endpoint_type: EndpointType::AddBlockedTerm,
-            method: Method::POST,
+            endpoint_type: AddBlockedTerm,
+            method: POST,
             path: [MODERATION, "blocked_terms"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -227,8 +226,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             id: &Id,
         ) -> NoContent {
-            endpoint_type: EndpointType::RemoveBlockedTerm,
-            method: Method::DELETE,
+            endpoint_type: RemoveBlockedTerm,
+            method: DELETE,
             path: [MODERATION, "blocked_terms"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -244,8 +243,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             message_id: Option<&str>,
         ) -> NoContent {
-            endpoint_type: EndpointType::DeleteChatMessages,
-            method: Method::DELETE,
+            endpoint_type: DeleteChatMessages,
+            method: DELETE,
             path: [MODERATION, CHAT],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -260,8 +259,8 @@ endpoints! {
             user_id: &UserId,
             pagination: Option<PaginationQuery>,
         ) -> ModeratedChannelResponse {
-            endpoint_type: EndpointType::GetModeratedChannels,
-            method: Method::GET,
+            endpoint_type: GetModeratedChannels,
+            method: GET,
             path: [MODERATION, CHANNELS],
             query_params: {
                 query(USER_ID, user_id),
@@ -276,8 +275,8 @@ endpoints! {
             user_id: Option<&UserId>,
             pagination: Option<PaginationQuery>,
         ) -> ModeratorsResponse {
-            endpoint_type: EndpointType::GetModerators,
-            method: Method::GET,
+            endpoint_type: GetModerators,
+            method: GET,
             path: [MODERATION, "moderators"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -292,8 +291,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             user_id: &UserId,
         ) -> NoContent {
-            endpoint_type: EndpointType::AddChannelModerator,
-            method: Method::POST,
+            endpoint_type: AddChannelModerator,
+            method: POST,
             path: [MODERATION, "moderators"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -307,8 +306,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             user_id: &UserId,
         ) -> NoContent {
-            endpoint_type: EndpointType::RemoveChannelModerator,
-            method: Method::DELETE,
+            endpoint_type: RemoveChannelModerator,
+            method: DELETE,
             path: [MODERATION, "moderators"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -323,8 +322,8 @@ endpoints! {
             user_ids: Option<&[UserId]>,
             pagination: Option<PaginationQuery>,
         ) -> ModeratorsResponse {
-            endpoint_type: EndpointType::GetVIPs,
-            method: Method::GET,
+            endpoint_type: GetVIPs,
+            method: GET,
             path: [CHANNELS, "vips"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -339,8 +338,8 @@ endpoints! {
             user_id: &UserId,
             broadcaster_id: &BroadcasterId,
         ) -> NoContent {
-            endpoint_type: EndpointType::AddChannelVIP,
-            method: Method::POST,
+            endpoint_type: AddChannelVIP,
+            method: POST,
             path: [CHANNELS, "vips"],
             query_params: {
                 query(USER_ID, user_id),
@@ -354,8 +353,8 @@ endpoints! {
             user_id: &UserId,
             broadcaster_id: &BroadcasterId,
         ) -> NoContent {
-            endpoint_type: EndpointType::RemoveChannelVIP,
-            method: Method::DELETE,
+            endpoint_type: RemoveChannelVIP,
+            method: DELETE,
             path: [CHANNELS, "vips"],
             query_params: {
                 query(USER_ID, user_id),
@@ -370,8 +369,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             is_active: bool,
         ) -> ShieldModeStatusResponse {
-            endpoint_type: EndpointType::UpdateShieldModeStatus,
-            method: Method::PUT,
+            endpoint_type: UpdateShieldModeStatus,
+            method: PUT,
             path: [MODERATION, "shield_mode"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -387,8 +386,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
         ) -> ShieldModeStatusResponse {
-            endpoint_type: EndpointType::GetShieldModeStatus,
-            method: Method::GET,
+            endpoint_type: GetShieldModeStatus,
+            method: GET,
             path: [MODERATION, "shield_mode"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
@@ -403,8 +402,8 @@ endpoints! {
             moderator_id: &ModeratorId,
             data: WarnChatUser,
         ) -> WarnChatUsersResponse {
-            endpoint_type: EndpointType::WarnChatUser,
-            method: Method::POST,
+            endpoint_type: WarnChatUser,
+            method: POST,
             path: [MODERATION, "warnings"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),

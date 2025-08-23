@@ -1,5 +1,5 @@
 use chrono::{DateTime, FixedOffset};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use crate::{
     eventsub::{condition::Condition, subscription_types::SubscriptionType},

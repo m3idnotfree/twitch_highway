@@ -2,7 +2,6 @@ pub mod request;
 pub mod response;
 pub mod types;
 
-use asknothingx2_util::api::Method;
 use request::ModifyChannelRequest;
 use response::{
     ChannelEditorsResponse, ChannelFollowersResponse, ChannelInfoResponse,
@@ -10,7 +9,7 @@ use response::{
 };
 
 use crate::{
-    request::{EndpointType, NoContent},
+    request::NoContent,
     types::{
         constants::{BROADCASTER_ID, CHANNELS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
@@ -24,8 +23,8 @@ endpoints! {
             &self,
             broadcaster_ids: &[BroadcasterId],
         ) -> ChannelInfoResponse {
-            endpoint_type: EndpointType::GetChanelInformation,
-            method: Method::GET,
+            endpoint_type: GetChanelInformation,
+            method: GET,
             path: [CHANNELS],
             query_params: {
                 extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)))
@@ -38,8 +37,8 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             opts: Option<ModifyChannelRequest>,
         ) -> NoContent {
-            endpoint_type: EndpointType::ModifyChannelInformation,
-            method: Method::PATCH,
+            endpoint_type: ModifyChannelInformation,
+            method: PATCH,
             path: [CHANNELS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -53,8 +52,8 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
         ) -> ChannelEditorsResponse {
-            endpoint_type: EndpointType::GetChannelEditors,
-            method: Method::GET,
+            endpoint_type: GetChannelEditors,
+            method: GET,
             path: [CHANNELS, "editors"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id)
@@ -68,8 +67,8 @@ endpoints! {
             broadcaster_id: Option<&BroadcasterId>,
             pagination: Option<PaginationQuery>,
         ) -> FollowerdChannelsResponse {
-            endpoint_type: EndpointType::GetFollowedChannels,
-            method: Method::GET,
+            endpoint_type: GetFollowedChannels,
+            method: GET,
             path: [CHANNELS, "followed"],
             query_params: {
                 query(USER_ID, user_id),
@@ -85,8 +84,8 @@ endpoints! {
             user_id: Option<&UserId>,
             pagination: Option<PaginationQuery>,
         ) -> ChannelFollowersResponse {
-            endpoint_type: EndpointType::GetChannelFollowers,
-            method: Method::GET,
+            endpoint_type: GetChannelFollowers,
+            method: GET,
             path: [CHANNELS, "followers"],
             query_params: {
                 opt(USER_ID, user_id),
