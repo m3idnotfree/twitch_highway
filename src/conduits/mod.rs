@@ -5,11 +5,10 @@ pub mod types;
 use crate::{
     conduits::{request::UpdateConduitShardsRequest, response::ConduitResponse},
     request::NoContent,
-    types::{ConduitId, Status},
+    types::{constants::EVENTSUB, ConduitId, Status},
 };
 
 const CONDUITS: &str = "conduits";
-const EVENTSUB: &str = "eventsub";
 
 endpoints! {
     ConduitsAPI {

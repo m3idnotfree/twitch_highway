@@ -16,12 +16,10 @@ use crate::{
     },
     request::NoContent,
     types::{
-        constants::{ID, SUBSCRIPTIONS},
+        constants::{EVENTSUB, ID, SUBSCRIPTIONS},
         PaginationQuery, SubscriptionId,
     },
 };
-
-const EVENTSUB: &str = "eventsub";
 
 endpoints! {
     EventSubAPI {

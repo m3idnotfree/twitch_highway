@@ -103,3 +103,6 @@ pub(crate) const SETTINGS: &str = "settings";
 
 #[cfg(any(feature = "games", feature = "analytics"))]
 pub(crate) const GAMES: &str = "games";
+
+#[cfg(any(feature = "conduits", feature = "eventsub"))]
+pub(crate) const EVENTSUB: &str = "eventsub";
