@@ -1,15 +1,14 @@
+pub mod request;
+pub mod response;
+
 use asknothingx2_util::api::Method;
 use request::GetGamesRequest;
 use response::GamesResponse;
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{constants::GAMES, PaginationQuery},
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
 
 endpoints! {
     GamesAPI {

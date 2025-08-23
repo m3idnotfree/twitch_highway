@@ -1,19 +1,18 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::BitsLeaderboardRequest;
 use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{
         constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
         BroadcasterId, ExtensionId, Id, PaginationQuery,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     BitsAPI {

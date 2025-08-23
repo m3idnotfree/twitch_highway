@@ -1,20 +1,19 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{EndPollRequest, PollsRequest};
 use response::PollsResponse;
 use types::PollStatus;
 
 use crate::{
-    request::{EndpointType, RequestBody, TwitchAPIRequest},
+    request::{EndpointType, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     PollsAPI {

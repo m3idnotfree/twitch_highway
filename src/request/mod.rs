@@ -1,6 +1,9 @@
 mod endpoint_type;
 mod no_content;
 
+pub use endpoint_type::{EndpointType, TokenType};
+pub use no_content::NoContent;
+
 use std::{any, fmt, marker::PhantomData};
 
 use asknothingx2_util::api::{
@@ -11,9 +14,6 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use url::Url;
 
 use crate::{error, Error};
-
-pub use endpoint_type::{EndpointType, TokenType};
-pub use no_content::NoContent;
 
 #[derive(Debug)]
 pub struct TwitchAPIRequest<ResBody> {

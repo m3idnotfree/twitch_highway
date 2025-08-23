@@ -299,6 +299,12 @@ macro_rules! define_request {
 /// let select = UserSelect::name("alice".to_string());
 /// let select = UserSelect::is_active(true);
 /// ```
+#[cfg(any(
+    feature = "clips",
+    feature = "streams",
+    feature = "teams",
+    feature = "videos",
+))]
 macro_rules! define_select {
     (
         $(#[$struct_meta:meta])*
@@ -518,10 +524,11 @@ macro_rules! endpoints {
         $trait_name:ident {
             $(
                 $(#[$method_attr:meta])*
-                fn $method_name:ident$(<$life:lifetime>)?(
+                fn $method_name:ident$(<$($life:lifetime),* $($generics:ident $(: $bounds:tt)?),*>)?(
                     &self
                     $(, $param_name:ident: $param_type:ty )* $(,)?
-                ) -> $return_type:ty {
+                ) -> $return_type:ty
+                {
                         endpoint_type: $endpoint_type:expr,
                         method: $http_method:expr,
                         path: [$($path_segment:expr),* $(,)?]
@@ -538,19 +545,20 @@ macro_rules! endpoints {
         pub trait $trait_name {
             $(
                 $(#[$method_attr])*
-                fn $method_name$(<$life>)?(
+                fn $method_name$(<$($life),* $($generics $(: $bounds)?),*>)?(
                     &self,
                     $($param_name: $param_type),*
-                ) -> TwitchAPIRequest<$return_type>;
+                ) -> crate::request::TwitchAPIRequest<$return_type>;
             )+
         }
 
-        impl $trait_name for TwitchAPI {
+        impl $trait_name for crate::TwitchAPI {
             $(
-                fn $method_name$(<$life>)?(
+                fn $method_name$(<$($life),* $($generics $(: $bounds)?),*>)?(
                     &self
                     $(, $param_name: $param_type)*
-                ) -> TwitchAPIRequest<$return_type> {
+                ) -> crate::request::TwitchAPIRequest<$return_type>
+                {
                     let mut url = self.build_url();
 
                     url.path_segments_mut().unwrap().extend([$($path_segment),*]);
@@ -560,7 +568,7 @@ macro_rules! endpoints {
                     let headers = endpoints!(@headers self, $($($header_config)*)?);
                     let body = endpoints!(@body_handler $($body_expr)?);
 
-                    TwitchAPIRequest::new(
+                    crate::request::TwitchAPIRequest::new(
                         $endpoint_type,
                         url,
                         $http_method,

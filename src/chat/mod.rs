@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{
     AnnouncementColor, ChatAnnouncementBody, ChatColor, SendChatMessageRequest,
@@ -9,17 +13,14 @@ use response::{
 };
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{
-        constants::{AFTER, BROADCASTER_ID, CHAT, EMOTES, MODERATOR_ID, SETTINGS, USER_ID},
+        constants::{AFTER, BROADCASTER_ID, CHAT, MODERATOR_ID, SETTINGS, USER_ID},
         BroadcasterId, ModeratorId, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const EMOTES: &str = "emotes";
 
 endpoints! {
     ChatAPI {

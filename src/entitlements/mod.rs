@@ -1,16 +1,12 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
 use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
-use crate::{
-    request::{EndpointType, TwitchAPIRequest},
-    types::PaginationQuery,
-    TwitchAPI,
-};
-
-pub mod request;
-pub mod response;
-pub mod types;
+use crate::{request::EndpointType, types::PaginationQuery};
 
 endpoints! {
     EntitlementsAPI {

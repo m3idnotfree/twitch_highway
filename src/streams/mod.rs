@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
 use response::{
@@ -5,17 +9,14 @@ use response::{
 };
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{
-        constants::{BROADCASTER_ID, STREAMS, USER_ID},
+        constants::{BROADCASTER_ID, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const STREAMS: &str = "streams";
 
 endpoints! {
     StreamsAPI {

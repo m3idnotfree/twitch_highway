@@ -1,19 +1,17 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::TeamSelector;
 use response::{ChannelTeamsResponse, TeamsResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
-    types::{
-        constants::{BROADCASTER_ID, TEAMS},
-        BroadcasterId,
-    },
-    TwitchAPI,
+    request::EndpointType,
+    types::{constants::BROADCASTER_ID, BroadcasterId},
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const TEAMS: &str = "teams";
 
 endpoints! {
     TeamsAPI {

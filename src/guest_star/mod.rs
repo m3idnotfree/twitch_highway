@@ -1,19 +1,18 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
 use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{
         constants::{BROADCASTER_ID, MODERATOR_ID},
         BroadcasterId, ModeratorId,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 const GUEST_STAR: &str = "guest_star";
 
@@ -248,7 +247,10 @@ mod tests {
 
     api_test!(
         get_channel_guest_star_settings,
-        [&BroadcasterId::from("932104"), &ModeratorId::from("9321049")]
+        [
+            &BroadcasterId::from("932104"),
+            &ModeratorId::from("9321049")
+        ]
     );
     api_test!(
         update_channel_guest_star_settings,
@@ -259,7 +261,10 @@ mod tests {
     );
     api_test!(
         get_guest_star_session,
-        [&BroadcasterId::from("9321049"), &ModeratorId::from("9321049")]
+        [
+            &BroadcasterId::from("9321049"),
+            &ModeratorId::from("9321049")
+        ]
     );
     api_test!(create_guest_star_session, [&BroadcasterId::from("9321049")]);
     api_test!(

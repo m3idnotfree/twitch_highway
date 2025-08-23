@@ -1,3 +1,4 @@
+#![allow(unused_imports)]
 use asknothingx2_util::{
     api::preset,
     oauth::{AccessToken, ClientId},

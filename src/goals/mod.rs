@@ -1,14 +1,13 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::GoalsResponse;
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{constants::BROADCASTER_ID, BroadcasterId},
-    TwitchAPI,
 };
-
-pub mod response;
-pub mod types;
 
 endpoints! {
     GoalsAPI {

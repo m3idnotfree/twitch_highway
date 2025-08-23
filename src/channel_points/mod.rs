@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{
     CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
@@ -6,17 +10,16 @@ use request::{
 use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
+    request::{EndpointType, NoContent, RequestBody},
     types::{
-        constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REWARD_ID},
+        constants::{BROADCASTER_ID, ID},
         BroadcasterId, CustomRewardId, PaginationQuery, RedemptionId, RewardId,
     },
-    TwitchAPI,
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const CHANNEL_POINTS: &str = "channel_points";
+const CUSTOM_REWARDS: &str = "custom_rewards";
+const REWARD_ID: &str = "reward_id";
 
 endpoints! {
     ChannelPointsAPI {

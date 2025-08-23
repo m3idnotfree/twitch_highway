@@ -1,15 +1,14 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::HypeTrainResponse;
 
 use crate::{
     hype_train::response::HypeTrainStatusResponse,
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-    TwitchAPI,
 };
-
-pub mod response;
-pub mod types;
 
 endpoints! {
     HypeTrainAPI {

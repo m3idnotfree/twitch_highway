@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::ModifyChannelRequest;
 use response::{
@@ -6,17 +10,12 @@ use response::{
 };
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     ChannelsAPI {

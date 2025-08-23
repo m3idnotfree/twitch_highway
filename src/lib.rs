@@ -140,6 +140,7 @@ impl TwitchAPI {
         &self.client_id
     }
 
+    #[allow(dead_code)]
     pub(crate) fn default_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers)
@@ -149,6 +150,21 @@ impl TwitchAPI {
         headers
     }
 
+    #[cfg(any(
+        feature = "ads",
+        feature = "channel-points",
+        feature = "channels",
+        feature = "chat",
+        feature = "extensions",
+        feature = "entitlements",
+        feature = "moderation",
+        feature = "polls",
+        feature = "predictions",
+        feature = "schedule",
+        feature = "streams",
+        feature = "users",
+        feature = "whispers",
+    ))]
     pub(crate) fn header_json(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers)

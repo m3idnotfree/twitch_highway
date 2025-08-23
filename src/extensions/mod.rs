@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{
     ExtensionChatMessageIntoRequestBody, RequiredConfiguration, UpdateExtensoinBitsProductsRequest,
@@ -11,14 +15,12 @@ use types::Segment;
 
 use crate::{
     extensions::request::RequestConfigurationSegment,
-    request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
-    types::{BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery},
-    TwitchAPI,
+    request::{EndpointType, NoContent, RequestBody},
+    types::{
+        constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
+        BroadcasterId, Cost, ExtensionId, JWTToken, PaginationQuery,
+    },
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     ExtensionsAPI {
@@ -32,10 +34,10 @@ endpoints! {
         ) -> ConfigurationSegmentResponse {
             endpoint_type: EndpointType::GetExtensionConfigurationSegment,
             method: Method::GET,
-            path: ["extensions", "configurations"],
+            path: [EXTENSIONS, "configurations"],
             query_params: {
-                opt("broadcaster_id", broadcaster_id),
-                query("extension_id", extension_id),
+                opt(BROADCASTER_ID, broadcaster_id),
+                query(EXTENSION_ID, extension_id),
                 extend(segment.iter().map(|s| ("segment", s)))
             },
             headers: [jwt, jwt_token]
@@ -51,7 +53,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: EndpointType::SetExtensionConfigurationSegment,
             method: Method::PUT,
-            path: ["extensions", "configurations"],
+            path: [EXTENSIONS, "configurations"],
             headers: [json],
             body:  {
             let req = json!({
@@ -73,9 +75,9 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: EndpointType::SetExtensionRequiredConfiguration,
             method: Method::PUT,
-            path: ["extensions", "required_configuration"],
+            path: [EXTENSIONS, "required_configuration"],
             query_params: {
-                query("broadcaster_id", broadcaster_id)
+                query(BROADCASTER_ID, broadcaster_id)
             },
             headers: [json],
             body: RequiredConfiguration::new(extension_id, extension_version, required_configuration).into_json()
@@ -91,21 +93,21 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: EndpointType::SendExtensionPubSubMessage,
             method: Method::POST,
-            path: ["extensions", "pubsub"],
+            path: [EXTENSIONS, "pubsub"],
             headers: [json],
             body: {
                 let required = if let Some(is_global) = is_global_broadcast {
                     serde_json::json!({
                         "target": target,
                         "message": message,
-                        "broadcaster_id": broadcaster_id,
+                        BROADCASTER_ID: broadcaster_id,
                         "is_global_broadcast": is_global
                     })
                 } else {
                     serde_json::json!({
                         "target": target,
                         "message": message,
-                        "broadcaster_id": broadcaster_id,
+                        BROADCASTER_ID: broadcaster_id,
                     })
                 };
                 RequestBody::new(required, None::<NoContent>).into_json()
@@ -120,9 +122,9 @@ endpoints! {
         ) -> ExtensionLiveChannelsRespnose {
             endpoint_type: EndpointType::GetExtensionLiveChannels,
             method: Method::GET,
-            path: ["extensions", "live"],
+            path: [EXTENSIONS, "live"],
             query_params: {
-                query("extension_id", extension_id),
+                query(EXTENSION_ID, extension_id),
                 opt_into_query(pagination)
             }
         }
@@ -134,9 +136,9 @@ endpoints! {
         ) -> ExtensionSecretsResponse {
             endpoint_type: EndpointType::GetExtensionSecrets,
             method: Method::GET,
-            path: ["extensions", "jwt", "secrets"],
+            path: [EXTENSIONS, "jwt", "secrets"],
             query_params: {
-                query("extension_id", extension_id)
+                query(EXTENSION_ID, extension_id)
             }
         }
 
@@ -148,7 +150,7 @@ endpoints! {
         ) -> ExtensionSecretsResponse {
             endpoint_type: EndpointType::CreateExtensionSecret,
             method: Method::POST,
-            path: ["extensions", "jwt", "secrets"],
+            path: [EXTENSIONS, "jwt", "secrets"],
             query_params: {
                 query("extension_id", extension_id),
                 opt("delay", delay.as_ref().map(|d| d.to_string()))
@@ -165,9 +167,9 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: EndpointType::SendExtensionChatMessage,
             method: Method::POST,
-            path: ["extensions", "chat"],
+            path: [EXTENSIONS, CHAT],
             query_params: {
-                query("broadcaster_id", broadcaster_id)
+                query(BROADCASTER_ID, broadcaster_id)
             },
             headers: [json],
             body: ExtensionChatMessageIntoRequestBody::new(text, extension_id, extension_version).into_json()
@@ -181,9 +183,9 @@ endpoints! {
         ) -> ExtensionsResponse {
             endpoint_type: EndpointType::GetExtensions,
             method: Method::GET,
-            path: ["extensions"],
+            path: [EXTENSIONS],
             query_params: {
-                query("extension_id", extension_id),
+                query(EXTENSION_ID, extension_id),
                 opt("extension_version", extension_version)
             }
         }
@@ -196,9 +198,9 @@ endpoints! {
         ) -> ExtensionsResponse {
             endpoint_type: EndpointType::GetReleasedExtensions,
             method: Method::GET,
-            path: ["extensions", "released"],
+            path: [EXTENSIONS, "released"],
             query_params: {
-                query("extension_id", extension_id),
+                query(EXTENSION_ID, extension_id),
                 opt("extension_version", extension_version)
             }
         }
@@ -210,7 +212,7 @@ endpoints! {
         ) -> ExtensionsBitsProductsResponse {
             endpoint_type: EndpointType::GetExtensionBitsProducts,
             method: Method::GET,
-            path: ["bits", "extensions"],
+            path: [BITS, EXTENSIONS],
             query_params: {
                 opt("should_include_all", should_inclue_all.as_ref().map(|b| b.to_string()))
             }
@@ -226,7 +228,7 @@ endpoints! {
         ) -> ExtensionsBitsProductsResponse {
             endpoint_type: EndpointType::GetReleasedExtensions,
             method: Method::PUT,
-            path: ["bits", "extensions"],
+            path: [BITS, EXTENSIONS],
             headers: [json],
             body: {
                 let required = serde_json::json!({

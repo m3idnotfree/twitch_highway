@@ -1,14 +1,13 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::StartRaidResponse;
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{constants::BROADCASTER_ID, BroadcasterId},
-    TwitchAPI,
 };
-
-pub mod response;
-pub mod types;
 
 endpoints! {
     RaidAPI {

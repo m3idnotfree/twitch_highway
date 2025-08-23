@@ -1,14 +1,13 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::{CategoriesResponse, ChannelsResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{constants::CHANNELS, PaginationQuery},
-    TwitchAPI,
 };
-
-pub mod response;
-pub mod types;
 
 endpoints! {
     SearchAPI {

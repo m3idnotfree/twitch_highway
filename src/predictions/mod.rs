@@ -1,20 +1,19 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::CreatePredictionRequest;
 use response::PredictionsResponse;
 use types::PredictionStatus;
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
+    request::{EndpointType, NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID},
         BroadcasterId, Id, PaginationQuery, Title,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     PredictionsAPI {

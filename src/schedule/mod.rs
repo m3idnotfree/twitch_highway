@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{
     ChannelStreamScheduleRequest, CreateScheduleSegmentRequest, UpdateScheduleRequest,
@@ -6,17 +10,12 @@ use request::{
 use response::ScheduleResponse;
 
 use crate::{
-    request::{EndpointType, NoContent, RequestBody, TwitchAPIRequest},
+    request::{EndpointType, NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID, SETTINGS},
         BroadcasterId, Id, PaginationQuery,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     ScheduleAPI {

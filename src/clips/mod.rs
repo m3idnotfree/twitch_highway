@@ -1,16 +1,15 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{ClipsSelector, GetClipsRequest};
 use response::{ClipsInfoResponse, CreateClipsResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     ClipsAPI {

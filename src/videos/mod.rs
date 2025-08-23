@@ -1,19 +1,17 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{VideoSelector, VideosRequest};
 use response::{DeleteVideosResponse, VideosResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
-    types::{
-        constants::{ID, VIDEOS},
-        Id, PaginationQuery,
-    },
-    TwitchAPI,
+    request::EndpointType,
+    types::{constants::ID, Id, PaginationQuery},
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const VIDEOS: &str = "videos";
 
 endpoints! {
     VideosAPI {

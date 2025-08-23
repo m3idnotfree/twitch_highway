@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{BlockReason, BlockSourceContext};
 use response::{
@@ -7,17 +11,16 @@ use response::{
 use types::UserActiveExtensions;
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{
-        constants::{BLOCKS, BROADCASTER_ID, EXTENSIONS, ID, LOGIN, USERS, USER_ID},
+        constants::{BROADCASTER_ID, EXTENSIONS, ID, USER_ID},
         BroadcasterId, Id, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const USERS: &str = "users";
+const BLOCKS: &str = "blocks";
+const LOGIN: &str = "login";
 
 endpoints! {
     UserAPI {

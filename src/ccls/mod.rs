@@ -1,15 +1,12 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::CclLocale;
 use response::CclsResponse;
 
-use crate::{
-    request::{EndpointType, TwitchAPIRequest},
-    TwitchAPI,
-};
-
-pub mod request;
-pub mod response;
-pub mod types;
+use crate::request::EndpointType;
 
 endpoints! {
     CclsAPI {

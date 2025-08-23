@@ -1,3 +1,7 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::{
     AddBlockedTermRequest, AutoModAction, BanUserRequest, CheckAutoMod, CheckAutoModStatusRequest,
@@ -13,17 +17,12 @@ use types::UnbanRequestStatus;
 
 use crate::{
     moderation::request::BanUserRequestWrapper,
-    request::{EndpointType, NoContent, TwitchAPIRequest},
+    request::{EndpointType, NoContent},
     types::{
         constants::{BROADCASTER_ID, CHANNELS, CHAT, ID, MODERATOR_ID, SETTINGS, USER_ID},
         BroadcasterId, Id, ModeratorId, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 const MODERATION: &str = "moderation";
 

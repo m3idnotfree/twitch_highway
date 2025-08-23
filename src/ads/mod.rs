@@ -3,12 +3,11 @@ use request::StartCommercialBody;
 use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{
         constants::{BROADCASTER_ID, CHANNELS},
         BroadcasterId,
     },
-    TwitchAPI,
 };
 
 pub mod request;

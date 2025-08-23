@@ -1,17 +1,16 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{
         constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},
         BroadcasterId, PaginationQuery, UserId,
     },
-    TwitchAPI,
 };
-
-pub mod response;
-pub mod types;
 
 endpoints! {
     SubscriptionsAPI {
@@ -62,6 +61,9 @@ mod tests {
     );
     api_test!(
         check_user_subscription,
-        [&BroadcasterId::from("149747285"), &UserId::from("141981764")]
+        [
+            &BroadcasterId::from("149747285"),
+            &UserId::from("141981764")
+        ]
     );
 }

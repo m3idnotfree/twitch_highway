@@ -1,19 +1,20 @@
+pub mod request;
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use request::AnalyticsRequest;
 use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
+    request::EndpointType,
     types::{
-        constants::{ANALYTICS, EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
+        constants::{EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
         ExtensionId, GameId, PaginationQuery,
     },
-    TwitchAPI,
 };
 
-pub mod request;
-pub mod response;
-pub mod types;
+const ANALYTICS: &str = "analytics";
 
 endpoints! {
     AnalyticsAPI {

@@ -27,6 +27,7 @@ chat = []
 clips = []
 entitlements = []
 extensions = []
+eventsub = []
 games = []
 goals = []
 guest-star = []
@@ -56,6 +57,7 @@ full = [
   "clips",
   "entitlements",
   "extensions",
+  "eventsub",
   "games",
   "goals",
   "guest-star",

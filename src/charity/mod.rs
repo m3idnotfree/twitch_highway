@@ -1,17 +1,15 @@
+pub mod response;
+pub mod types;
+
 use asknothingx2_util::api::Method;
 use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
 use crate::{
-    request::{EndpointType, TwitchAPIRequest},
-    types::{
-        constants::{BROADCASTER_ID, CHARITY},
-        BroadcasterId, PaginationQuery,
-    },
-    TwitchAPI,
+    request::EndpointType,
+    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
 };
 
-pub mod response;
-pub mod types;
+const CHARITY: &str = "charity";
 
 endpoints! {
     CharityAPI {

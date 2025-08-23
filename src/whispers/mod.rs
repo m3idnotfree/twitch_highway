@@ -1,13 +1,14 @@
+pub mod request;
+
 use asknothingx2_util::api::Method;
 use request::*;
 
 use crate::{
-    request::{EndpointType, NoContent, TwitchAPIRequest},
-    types::{constants::*, UserId},
-    TwitchAPI,
+    request::{EndpointType, NoContent},
+    types::UserId,
 };
 
-pub mod request;
+const WHISPERS: &str = "whispers";
 
 endpoints! {
     WhisperAPI {
