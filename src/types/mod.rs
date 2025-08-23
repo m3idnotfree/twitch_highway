@@ -13,7 +13,7 @@ pub use image::Images;
 pub use new_types::{
     BroadcasterId, CampaignId, CategoryId, ConduitId, CustomRewardId, ExtensionClientId,
     ExtensionId, GameId, Id, JWTToken, ModeratorId, OrganizationId, RedemptionId, RewardId,
-    SessionId, UserId,
+    SessionId, SubscriptionId, UserId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
