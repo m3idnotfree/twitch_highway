@@ -4,6 +4,7 @@ mod date_range;
 mod image;
 mod new_types;
 mod pagination;
+mod status;
 mod title;
 
 pub use category::Category;
@@ -19,3 +20,6 @@ pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
 
 pub(crate) mod constants;
+
+#[cfg(any(feature = "eventsub", feature = "conduits"))]
+pub use status::Status;

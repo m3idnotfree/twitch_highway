@@ -3,11 +3,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    eventsub::{
-        condition::Condition, subscription::Status, subscription_types::SubscriptionType,
-        transport::Transport,
-    },
-    types::{Pagination, SubscriptionId},
+    eventsub::{condition::Condition, subscription_types::SubscriptionType, transport::Transport},
+    types::{Pagination, Status, SubscriptionId},
 };
 
 #[derive(Debug, Serialize, Deserialize)]

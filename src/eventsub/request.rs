@@ -1,10 +1,8 @@
 use serde::Serialize;
 
 use crate::{
-    eventsub::{
-        subscription::Status, subscription_types::SubscriptionType, transport::TransportType,
-    },
-    types::UserId,
+    eventsub::{subscription_types::SubscriptionType, transport::TransportType},
+    types::{Status, UserId},
 };
 
 #[derive(Debug, Serialize)]
