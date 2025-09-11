@@ -25,9 +25,12 @@ impl TwitchApiTest {
         let mut url_parsed = Url::parse(&mock_server.uri()).unwrap();
         url_parsed.set_path("/helix");
 
-        let api = TwitchAPI::new(
+        let api = TwitchAPI::with_client(
             AccessToken::new("2gbdx6oar67tqtcmt49t3wpcgycthx".to_string()),
             ClientId::new("wbmytr93xzw8zbg0p1izqyzzc5mbiz".to_string()),
+            preset::testing("twitch-highway-test/1.0")
+                .build_client()
+                .unwrap(),
         )
         .set_url(url_parsed);
 
@@ -55,23 +58,7 @@ impl TwitchApiTest {
         F: FnOnce(&TwitchAPI) -> TwitchAPIRequest<T>,
         T: DeserializeOwned,
     {
-        let resp = f(&self.api);
-
-        let url = resp.url().clone();
-
-        resp.set_client(
-            preset::testing("twitch-highway-test/1.0")
-                .build_client()
-                .unwrap(),
-        )
-        .set_url(
-            self.server
-                .uri()
-                .parse::<Url>()
-                .unwrap()
-                .join(url.path())
-                .unwrap(),
-        )
+        f(&self.api)
     }
 }
 

@@ -6,9 +6,7 @@ pub use no_content::NoContent;
 
 use std::{any, fmt, marker::PhantomData};
 
-use asknothingx2_util::api::{
-    preset, HeaderMap, HeaderMut, IntoRequestBuilder, Method, StatusCode,
-};
+use asknothingx2_util::api::{HeaderMap, HeaderMut, IntoRequestBuilder, Method, StatusCode};
 use reqwest::{Client, RequestBuilder};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use url::Url;
@@ -36,6 +34,7 @@ where
         method: Method,
         headers: HeaderMap,
         body: Option<String>,
+        client: Client,
     ) -> Self {
         Self {
             kind,
@@ -43,9 +42,7 @@ where
             method,
             url,
             body,
-            client: preset::rest_api("twitch-highway/1.0")
-                .build_client()
-                .unwrap(),
+            client,
             _phantom: PhantomData,
         }
     }

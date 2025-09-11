@@ -80,10 +80,10 @@ pub use error::Error;
 use std::sync::LazyLock;
 
 use asknothingx2_util::{
-    api::HeaderMut,
+    api::{preset, HeaderMut},
     oauth::{AccessToken, ClientId},
 };
-use reqwest::header::HeaderMap;
+use reqwest::{header::HeaderMap, Client};
 use url::Url;
 
 #[cfg(feature = "extensions")]
@@ -93,11 +93,12 @@ const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
 static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BASE).unwrap());
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TwitchAPI {
     access_token: AccessToken,
     client_id: ClientId,
     url: Url,
+    client: Client,
 }
 
 impl TwitchAPI {
@@ -106,6 +107,18 @@ impl TwitchAPI {
             access_token,
             client_id,
             url: BASE_URL.clone(),
+            client: preset::rest_api("twitch-highway/1.0")
+                .build_client()
+                .unwrap(),
+        }
+    }
+
+    pub fn with_client(access_token: AccessToken, client_id: ClientId, client: Client) -> Self {
+        Self {
+            access_token,
+            client_id,
+            url: BASE_URL.clone(),
+            client,
         }
     }
 
@@ -114,6 +127,9 @@ impl TwitchAPI {
             access_token,
             client_id,
             url,
+            client: preset::rest_api("twitch-highway/1.0")
+                .build_client()
+                .unwrap(),
         }
     }
 
@@ -129,6 +145,11 @@ impl TwitchAPI {
 
     pub fn set_url(mut self, url: Url) -> Self {
         self.url = url;
+        self
+    }
+
+    pub fn set_client(mut self, client: Client) -> Self {
+        self.client = client;
         self
     }
 

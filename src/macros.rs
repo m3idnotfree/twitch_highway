@@ -574,6 +574,7 @@ macro_rules! endpoints {
                         reqwest::Method::$http_method,
                         headers,
                         body,
+                        self.client.clone()
                     )
                 }
             )+
