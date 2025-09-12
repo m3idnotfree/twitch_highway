@@ -8,7 +8,7 @@ pub use request::{
 };
 pub use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 pub use types::{
-    CustomRewards, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus, Reward,
+    CustomReward, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus, Reward,
 };
 
 use crate::{
@@ -47,14 +47,14 @@ endpoints! {
         fn delete_custom_reward(
             &self,
             broadcaster_id: &BroadcasterId,
-            custom_reward_id: &RewardId,
+            reward_id: &RewardId,
         ) -> NoContent {
             endpoint_type: DeleteCustomReward,
             method: DELETE,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
-                query(ID, custom_reward_id)
+                query(ID, reward_id)
             }
         }
 
@@ -80,6 +80,7 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
             reward_id: &RewardId,
+            status: Option<RedemptionStatus>,
             opts: Option<CustomRewardRedemptionQuery>,
             pagination: Option<PaginationQuery>,
         ) -> CustomRewardsRedemptionResponse {
@@ -89,6 +90,7 @@ endpoints! {
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(REWARD_ID, reward_id),
+                opt("status", status),
                 opt_into_query(opts),
                 pagination(pagination)
             }
@@ -98,27 +100,27 @@ endpoints! {
         fn update_custom_reward(
             &self,
             broadcaster_id: &BroadcasterId,
-            custom_reward_id: &RewardId,
-            opts: Option<UpdateCustomRewardRequest>,
+            reward_id: &RewardId,
+            update: UpdateCustomRewardRequest,
         ) -> CustomRewardsResponse {
             endpoint_type: UpdateCustomReward,
             method: PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
-                query(ID, custom_reward_id)
+                query(ID, reward_id)
             },
             headers: [json],
-            body: opts.and_then(|o| o.into_json())
+            body: update.into_json()
         }
 
         /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
         fn update_redemption_status(
             &self,
-            redemption_ids: &[RedemptionId],
             broadcaster_id: &BroadcasterId,
             reward_id: &RewardId,
-            status: RedemptionStatusQuery,
+            redemption_ids: &[RedemptionId],
+            status: RedemptionStatus,
         ) -> CustomRewardsRedemptionResponse {
             endpoint_type: UpdateRedemptionStatus,
             method: PATCH,
@@ -129,7 +131,7 @@ endpoints! {
                 extend(redemption_ids.iter().map(|id| (ID, id)))
             },
             headers: [json],
-            body: status.into_json()
+            body: RedemptionStatusQuery::new(status).into_json()
         }
     }
 }
@@ -137,10 +139,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        channel_points::{
-            ChannelPointsAPI, CustomRewardRedemptionQuery, RedemptionStatus, RedemptionStatusQuery,
-            UpdateCustomRewardRequest,
-        },
+        channel_points::{ChannelPointsAPI, RedemptionStatus, UpdateCustomRewardRequest},
         types::{BroadcasterId, RedemptionId, RewardId},
     };
 
@@ -169,7 +168,8 @@ mod tests {
         [
             &BroadcasterId::from("274637212"),
             &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
-            Some(CustomRewardRedemptionQuery::new().status(RedemptionStatus::CANCELED)),
+            Some(RedemptionStatus::CANCELED),
+            None,
             None
         ]
     );
@@ -178,16 +178,16 @@ mod tests {
         [
             &BroadcasterId::from("274637212"),
             &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
-            Some(UpdateCustomRewardRequest::new().is_enabled(false)),
+            UpdateCustomRewardRequest::new().is_enabled(false),
         ]
     );
     api_test!(
         update_redemption_status,
         [
-            &[RedemptionId::from("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
             &BroadcasterId::from("274637212"),
             &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
-            RedemptionStatusQuery::new(RedemptionStatus::CANCELED),
+            &[RedemptionId::from("17fa2df1-ad76-4804-bfa5-a40ef63efe63")],
+            RedemptionStatus::CANCELED,
         ]
     );
 
@@ -208,6 +208,7 @@ mod tests {
             &BroadcasterId::from("274637212"),
             &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             None,
+            None,
             None
         ]
     );
@@ -217,7 +218,7 @@ mod tests {
         [
             &BroadcasterId::from("274637212"),
             &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
-            Some(UpdateCustomRewardRequest::new().title("game analysis 2v2")),
+            UpdateCustomRewardRequest::new().title("game analysis 2v2"),
         ]
     );
 }

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::{BroadcasterId, Images, RedemptionId, RewardId, UserId};
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct CustomRewards {
+pub struct CustomReward {
     pub broadcaster_id: BroadcasterId,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broadcaster_login: Option<String>,
@@ -100,7 +100,7 @@ mod tests {
     use serde_json::json;
 
     use crate::channel_points::{
-        CustomRewards, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus,
+        CustomReward, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus,
     };
 
     #[test]
@@ -192,7 +192,7 @@ mod tests {
             "cooldown_expires_at": "2023-12-01T17:30:00Z"
         });
 
-        let reward: CustomRewards = serde_json::from_value(json_data).unwrap();
+        let reward: CustomReward = serde_json::from_value(json_data).unwrap();
 
         assert_eq!(reward.title, "Complete Reward");
         assert_eq!(reward.cost, 2500);

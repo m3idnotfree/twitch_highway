@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::{channel_points::RedemptionStatus, types::RedemptionId};
 
 define_request!(
-    #[derive(Debug, Clone, Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     CustomRewardsRequiredBody<'a> {
         req: {
             title: &'a str,
@@ -13,7 +13,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Debug, Clone, Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     CustomRewardsBody<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -61,7 +61,6 @@ define_request!(
     CustomRewardRedemptionQuery<'a> {
         opts: {
             sort: &'a str,
-            status: RedemptionStatus,
             id: RedemptionId,
         };
         into_query
@@ -201,7 +200,6 @@ mod tests {
     fn custom_reward_redemption_query() {
         let query = CustomRewardRedemptionQuery::new()
             .sort("newest")
-            .status(RedemptionStatus::UNFULFILLED)
             .id(RedemptionId::from("redemption123"));
 
         let mut url = url::Url::parse("https://api.twitch.tv/helix").unwrap();
@@ -211,7 +209,6 @@ mod tests {
 
         let query_str = url.query().unwrap();
         assert!(query_str.contains("sort=newest"));
-        assert!(query_str.contains("status=UNFULFILLED"));
         assert!(query_str.contains("id=redemption123"));
     }
 }

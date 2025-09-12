@@ -1,10 +1,10 @@
 use serde::Deserialize;
 
-use crate::channel_points::{CustomRewards, CustomRewardsRedemption};
+use crate::channel_points::{CustomReward, CustomRewardsRedemption};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CustomRewardsResponse {
-    pub data: Option<Vec<CustomRewards>>,
+    pub data: Option<Vec<CustomReward>>,
 }
 
 #[derive(Debug, Clone, Deserialize)]

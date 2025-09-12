@@ -158,7 +158,6 @@ new_type!(Id);
 new_type!(ExtensionId);
 new_type!(GameId);
 new_type!(RewardId);
-new_type!(CustomRewardId);
 new_type!(RedemptionId);
 new_type!(SessionId);
 new_type!(ConduitId);
@@ -192,8 +191,6 @@ mod tests {
         assert_eq!(game_id.as_str(), "gameid");
         let reward_id = RewardId::from("rewardid");
         assert_eq!(reward_id.as_str(), "rewardid");
-        let custom_reward_id = CustomRewardId::from("customrewardid");
-        assert_eq!(custom_reward_id.as_str(), "customrewardid");
         let redemption_id = RedemptionId::from("redemptionid");
         assert_eq!(redemption_id.as_str(), "redemptionid");
         let jwt_token = JWTToken::from("jwttoken");
