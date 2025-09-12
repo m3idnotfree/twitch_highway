@@ -269,5 +269,5 @@ pub mod videos;
 #[cfg(feature = "whispers")]
 pub mod whispers;
 
-#[cfg(test)]
-mod test_utils;
+#[cfg(feature = "test")]
+pub mod test_utils;

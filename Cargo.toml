@@ -76,7 +76,9 @@ full = [
   "users",
   "videos",
   "whispers",
+  "test",
 ]
+test = ["wiremock", "anyhow"]
 
 [dependencies]
 asknothingx2-util = { version = "0.1.7", features = ["api", "oauth", "serde"] }
@@ -86,11 +88,13 @@ itoa = "1.0.15"
 reqwest = "0.12.22"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.137"
-twitch_oauth_token = { version = "2.0.1" }
+twitch_oauth_token = { version = "2.0.2" }
 url = "2.5.4"
-
+wiremock = { version = "0.6.4", optional = true }
+anyhow = { version = "1.0.99", optional = true }
 
 [dev-dependencies]
+twitch_oauth_token = { version = "2.0.2", features = ["test"] }
 dotenv = "0.15.0"
 tokio = { version = "1.43.0", features = ["full"] }
-wiremock = "0.6.4"
+
