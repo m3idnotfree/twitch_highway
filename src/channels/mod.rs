@@ -38,7 +38,7 @@ endpoints! {
         fn modify_channel_info(
             &self,
             broadcaster_id: &BroadcasterId,
-            opts: Option<ModifyChannelRequest>,
+            modify: ModifyChannelRequest,
         ) -> NoContent {
             endpoint_type: ModifyChannelInformation,
             method: PATCH,
@@ -47,7 +47,7 @@ endpoints! {
                 query(BROADCASTER_ID, broadcaster_id)
             },
             headers: [json],
-            body: opts.and_then(|o| o.into_json())
+            body: modify.into_json()
         }
 
         /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
@@ -115,13 +115,11 @@ mod tests {
         modify_channel_info,
         [
             &BroadcasterId::from("41245072"),
-            Some(
-                ModifyChannelRequest::new()
-                    .title("there are helicopters in the game? REASON TO PLAY FORTNITE found")
-                    .game_id(&GameId::from("33214"))
-                    .broadcaster_language("en")
-                    .tags(&["LevelingUp"])
-            )
+            ModifyChannelRequest::new()
+                .title("there are helicopters in the game? REASON TO PLAY FORTNITE found")
+                .game_id(&GameId::from("33214"))
+                .broadcaster_language("en")
+                .tags(&["LevelingUp"])
         ]
     );
 
@@ -139,15 +137,13 @@ mod tests {
         modify_channel_info2,
         [
             &BroadcasterId::from("41245072"),
-            Some(
-                ModifyChannelRequest::new()
-                    .game_id(&GameId::from("SomeGameID"))
-                        .content_classification_labels(&[
-                            ContentClassificationLabel::new(ContentClassificationLabelsID::Gambling, true),
-                            ContentClassificationLabel::new(ContentClassificationLabelsID::DrugsIntoxication, false)
-                    ])
-                    .is_branded_content(true)
-            )
+            ModifyChannelRequest::new()
+                .game_id(&GameId::from("SomeGameID"))
+                    .content_classification_labels(&[
+                        ContentClassificationLabel::new(ContentClassificationLabelsID::Gambling, true),
+                        ContentClassificationLabel::new(ContentClassificationLabelsID::DrugsIntoxication, false)
+                ])
+                .is_branded_content(true)
         ]
     );
 
