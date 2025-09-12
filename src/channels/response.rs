@@ -1,21 +1,22 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{
+    channels::{ChannelEditor, ChannelFollower, ChannelInfo, FollowedChannel},
+    types::Pagination,
+};
 
-use super::types::{ChannelEditor, ChannelFollower, ChannelInfo, FollowedChannel};
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelInfoResponse {
     pub data: Vec<ChannelInfo>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelEditorsResponse {
     pub data: Vec<ChannelEditor>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FollowerdChannelsResponse {
     pub data: Option<Vec<FollowedChannel>>,
     pub total: u64,
@@ -27,7 +28,7 @@ pub struct FollowerdChannelsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelFollowersResponse {
     pub data: Option<Vec<ChannelFollower>>,
     pub total: u64,
@@ -44,7 +45,7 @@ mod tests {
     use chrono::Timelike;
     use serde_json::json;
 
-    use crate::channels::response::{
+    use crate::channels::{
         ChannelEditorsResponse, ChannelFollowersResponse, ChannelInfoResponse,
         FollowerdChannelsResponse,
     };

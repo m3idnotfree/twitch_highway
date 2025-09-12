@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Prediction {
     pub id: Id,
     pub broadcaster_id: BroadcasterId,
@@ -19,7 +19,7 @@ pub struct Prediction {
     pub locked_at: Option<DateTime<FixedOffset>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PredictionOutComes {
     pub id: Id,
     pub title: String,
@@ -29,7 +29,7 @@ pub struct PredictionOutComes {
     pub color: PredictionColor,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PredictionStatus {
     ACTIVE,
     CANCELED,
@@ -54,7 +54,7 @@ impl AsRef<str> for PredictionStatus {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TopPredictor {
     pub user_id: UserId,
     pub user_name: String,
@@ -63,7 +63,7 @@ pub struct TopPredictor {
     pub channel_points_won: u64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PredictionColor {
     BLUE,
     PINK,
@@ -86,7 +86,7 @@ impl AsRef<str> for PredictionColor {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::predictions::{Prediction, PredictionColor, PredictionStatus};
 
     #[test]
     fn prediction_status_enum() {

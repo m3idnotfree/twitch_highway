@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::CclLocale;
-use response::CclsResponse;
+pub use request::CclLocale;
+pub use response::CclsResponse;
+pub use types::Ccl;
 
 endpoints! {
     CclsAPI {

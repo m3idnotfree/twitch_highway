@@ -1,11 +1,9 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{predictions::Prediction, types::Pagination};
 
-use super::types::Prediction;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PredictionsResponse {
     pub data: Vec<Prediction>,
     #[serde(
@@ -18,8 +16,9 @@ pub struct PredictionsResponse {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use serde_json::json;
+
+    use crate::predictions::PredictionsResponse;
 
     #[test]
     fn predictions_response_deserialization() {

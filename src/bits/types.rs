@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Cost, Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BitsLeaderboard {
     pub user_id: UserId,
     pub user_login: String,
@@ -12,7 +12,7 @@ pub struct BitsLeaderboard {
     pub score: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionTransaction {
     pub id: Id,
     pub timestamp: String,
@@ -26,7 +26,7 @@ pub struct ExtensionTransaction {
     pub product_data: TransactionProductData,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Cheermotes {
     pub prefix: String,
     pub tiers: Vec<Tier>,
@@ -37,7 +37,7 @@ pub struct Cheermotes {
     pub is_charitable: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Tier {
     pub min_bits: u64,
     pub id: TierLevel,
@@ -77,20 +77,20 @@ pub enum Type {
     Sponsored,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Images {
     pub dark: Dark,
     pub light: Light,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Dark {
     pub animated: Imagess,
     #[serde(rename = "static")]
     pub static_image: Imagess,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Light {
     pub animated: Imagess,
     #[serde(rename = "static")]
@@ -98,7 +98,7 @@ pub struct Light {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Imagess {
     #[serde(rename(serialize = "1", deserialize = "1"))]
     pub One: String,
@@ -113,7 +113,7 @@ pub struct Imagess {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionProductData {
     pub domain: String,
     pub sku: String,
@@ -137,7 +137,7 @@ mod tests {
     use chrono::{DateTime, FixedOffset, Timelike};
     use serde_json::json;
 
-    use crate::bits::types::{Cheermotes, Images, TierLevel, TransactionProductData, Type};
+    use crate::bits::{Cheermotes, Images, TierLevel, TransactionProductData, Type};
 
     #[test]
     fn tier_level_enum() {

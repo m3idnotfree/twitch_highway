@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::Id;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     ChannelStreamScheduleRequest<'a> {
         opts: {
             start_time: &'a str,
@@ -15,7 +15,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     UpdateScheduleRequest<'a> {
         opts: {
             vacation_start_time: &'a str,
@@ -28,7 +28,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     CreateScheduleSegmentRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -43,7 +43,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Default, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
     UpdateScheduleSegmentRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]

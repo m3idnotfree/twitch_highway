@@ -1,11 +1,12 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Pagination};
+use crate::{
+    schedule::{Segment, Vacation},
+    types::{BroadcasterId, Pagination},
+};
 
-use super::types::{Segment, Vacation};
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScheduleResponse {
     pub data: Schedule,
     #[serde(
@@ -16,7 +17,7 @@ pub struct ScheduleResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Schedule {
     pub segments: Vec<Segment>,
     pub broadcaster_id: BroadcasterId,

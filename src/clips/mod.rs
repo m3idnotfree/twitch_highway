@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{ClipsSelector, GetClipsRequest};
-use response::{ClipsInfoResponse, CreateClipsResponse};
+pub use request::{ClipsSelector, GetClipsRequest};
+pub use response::{ClipsInfoResponse, CreateClipsResponse};
+pub use types::{Clip, CreateClip};
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 
@@ -15,6 +16,7 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             has_delay: Option<bool>,
         ) -> CreateClipsResponse {
+        // ClipsInfoResponse
             endpoint_type: CreateClip,
             method: POST,
             path: ["clips"],
@@ -46,7 +48,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        clips::{request::ClipsSelector, ClipsAPI},
+        clips::{ClipsAPI, ClipsSelector},
         types::{BroadcasterId, Id, PaginationQuery},
     };
 

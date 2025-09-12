@@ -1,11 +1,9 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use super::types::Video;
+use crate::{types::Pagination, videos::Video};
 
-use crate::types::Pagination;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideosResponse {
     pub data: Vec<Video>,
     #[serde(
@@ -16,7 +14,7 @@ pub struct VideosResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteVideosResponse {
     pub data: Vec<String>,
 }

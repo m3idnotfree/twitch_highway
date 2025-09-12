@@ -1,13 +1,13 @@
 use serde::Deserialize;
 
-use super::types::{CustomRewards, CustomRewardsRedemption};
+use crate::channel_points::{CustomRewards, CustomRewardsRedemption};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CustomRewardsResponse {
     pub data: Option<Vec<CustomRewards>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CustomRewardsRedemptionResponse {
     pub data: Vec<CustomRewardsRedemption>,
 }
@@ -16,7 +16,7 @@ pub struct CustomRewardsRedemptionResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::channel_points::response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
+    use crate::channel_points::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 
     #[test]
     fn custom_rewards_response_deserialization() {

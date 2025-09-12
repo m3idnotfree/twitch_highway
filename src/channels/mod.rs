@@ -1,12 +1,15 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::ModifyChannelRequest;
-use response::{
+pub use request::{
+    ContentClassificationLabel, ContentClassificationLabelsID, ModifyChannelRequest,
+};
+pub use response::{
     ChannelEditorsResponse, ChannelFollowersResponse, ChannelInfoResponse,
     FollowerdChannelsResponse,
 };
+pub use types::{ChannelEditor, ChannelFollower, ChannelInfo, FollowedChannel};
 
 use crate::{
     request::NoContent,
@@ -100,10 +103,8 @@ endpoints! {
 mod tests {
     use crate::{
         channels::{
-            request::{
-                ContentClassificationLabel, ContentClassificationLabelsID, ModifyChannelRequest,
-            },
-            ChannelsAPI,
+            ChannelsAPI, ContentClassificationLabel, ContentClassificationLabelsID,
+            ModifyChannelRequest,
         },
         types::{BroadcasterId, GameId, UserId},
     };

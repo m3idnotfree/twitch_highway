@@ -1,9 +1,12 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
+
+pub use request::{Shard, Transport, UpdateConduitShardsRequest};
+pub use response::ConduitResponse;
+pub use types::Conduit;
 
 use crate::{
-    conduits::{request::UpdateConduitShardsRequest, response::ConduitResponse},
     request::NoContent,
     types::{constants::EVENTSUB, ConduitId, Status},
 };
@@ -92,10 +95,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        conduits::{
-            request::{Shard, UpdateConduitShardsRequest},
-            ConduitsAPI,
-        },
+        conduits::{ConduitsAPI, Shard, UpdateConduitShardsRequest},
         types::ConduitId,
     };
 

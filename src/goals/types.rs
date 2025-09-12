@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Goal {
     pub id: Id,
     pub broadcaster_id: BroadcasterId,
@@ -17,7 +17,7 @@ pub struct Goal {
     pub created_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum GoalType {
     Follower,
@@ -25,13 +25,13 @@ pub enum GoalType {
     SubscriptionCount,
     NewSubscription,
     NewSubscriptionCount,
-    // #[cfg(feature = "test")]
+    #[cfg(feature = "test")]
     Subscriber,
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::goals::types::GoalType;
+    use crate::goals::GoalType;
 
     #[test]
     fn goal_type_enum() {
@@ -41,7 +41,7 @@ mod tests {
             (GoalType::SubscriptionCount, "subscription_count"),
             (GoalType::NewSubscription, "new_subscription"),
             (GoalType::NewSubscriptionCount, "new_subscription_count"),
-            // #[cfg(feature = "test")]
+            #[cfg(feature = "test")]
             (GoalType::Subscriber, "subscriber"),
         ];
 

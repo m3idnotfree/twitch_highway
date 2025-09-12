@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{VideoSelector, VideosRequest};
-use response::{DeleteVideosResponse, VideosResponse};
+pub use request::{VideoSelector, VideosRequest};
+pub use response::{DeleteVideosResponse, VideosResponse};
+pub use types::{MutedSegment, Period, Sort, Type, Video};
 
 use crate::types::{constants::ID, Id, PaginationQuery};
 
@@ -47,7 +48,7 @@ endpoints! {
 mod tests {
     use crate::{
         types::Id,
-        videos::{request::VideoSelector, VideosAPI},
+        videos::{VideoSelector, VideosAPI},
     };
 
     api_test!(

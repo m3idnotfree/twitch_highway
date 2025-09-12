@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Poll {
     pub id: Id,
     pub broadcaster_id: BroadcasterId,
@@ -21,7 +21,7 @@ pub struct Poll {
     pub ended_at: Option<DateTime<FixedOffset>>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Choices {
     pub id: Id,
     pub title: String,
@@ -30,7 +30,7 @@ pub struct Choices {
     pub bits_votes: u64,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PollStatus {
     ACTIVE,
     COMPLETED,
@@ -42,7 +42,7 @@ pub enum PollStatus {
 
 #[cfg(test)]
 mod tests {
-    use crate::polls::types::PollStatus;
+    use crate::polls::PollStatus;
 
     #[test]
     fn poll_status_enum() {

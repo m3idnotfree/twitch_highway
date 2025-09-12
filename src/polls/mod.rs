@@ -1,10 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{EndPollRequest, PollsRequest};
-use response::PollsResponse;
-use types::PollStatus;
+pub use request::{EndPollRequest, PollsRequest};
+pub use response::PollsResponse;
+pub use types::{Choices, Poll, PollStatus};
 
 use crate::{
     request::RequestBody,
@@ -77,7 +77,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        polls::{request::PollsRequest, types::PollStatus, PollsAPI},
+        polls::{PollStatus, PollsAPI, PollsRequest},
         types::{BroadcasterId, Id, Title},
     };
 

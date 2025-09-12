@@ -1,7 +1,8 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::StartRaidResponse;
+pub use response::StartRaidResponse;
+pub use types::StartRaid;
 
 use crate::{
     request::NoContent,

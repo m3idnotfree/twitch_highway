@@ -5,7 +5,7 @@ use crate::{
     types::{Status, UserId},
 };
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct CreateEventSubRequest<Condition, T: TransportType> {
     #[serde(rename = "type")]
     pub kind: SubscriptionType,
@@ -34,7 +34,7 @@ where
 }
 
 define_request! {
-    #[derive(Debug, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     GetEventRequest<'a> {
         opts: {
             status: Status => "status",

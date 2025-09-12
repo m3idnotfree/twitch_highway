@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarSetting {
     pub is_moderator_send_live_enabled: bool,
     pub slot_count: Option<u64>,
@@ -13,7 +13,7 @@ pub struct GustStarSetting {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GroupLayout {
     TILED_LAYOUT,
     SCREENSHARE_LAYOUT,
@@ -49,13 +49,13 @@ impl From<GroupLayout> for String {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarSession {
     pub id: Id,
     pub guests: Vec<Guest>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Guest {
     pub slot_id: Option<String>,
     pub user_id: UserId,
@@ -68,14 +68,14 @@ pub struct Guest {
     pub video_settings: GuestSetting,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuestSetting {
     pub is_available: bool,
     pub is_host_enabled: bool,
     pub is_guest_enabled: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuestStarInvite {
     pub user_id: UserId,
     pub invited_at: String,
@@ -87,7 +87,7 @@ pub struct GuestStarInvite {
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum GuestStarStatus {
     INVITED,
     ACCEPTED,
@@ -96,7 +96,7 @@ pub enum GuestStarStatus {
 
 #[cfg(test)]
 mod tests {
-    use crate::guest_star::types::{GroupLayout, GuestStarStatus};
+    use crate::guest_star::{GroupLayout, GuestStarStatus};
 
     #[test]
     fn group_layout_enum() {

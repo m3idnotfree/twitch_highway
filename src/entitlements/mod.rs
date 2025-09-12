@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
-use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
+pub use request::{DropEntitlementRequest, UpdateEntitlementsRequest};
+pub use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
+pub use types::{DropEntitlement, DropEntitlementStatus, FulfillmentStatus, UpdateDropEntitlement};
 
 use crate::types::PaginationQuery;
 
@@ -42,8 +43,7 @@ endpoints! {
 mod tests {
     use crate::{
         entitlements::{
-            request::{DropEntitlementRequest, FulfillmentStatus, UpdateEntitlementsRequest},
-            EntitlementsAPI,
+            DropEntitlementRequest, EntitlementsAPI, FulfillmentStatus, UpdateEntitlementsRequest,
         },
         types::{GameId, UserId},
     };

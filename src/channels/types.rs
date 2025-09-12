@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, GameId, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelInfo {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -18,14 +18,14 @@ pub struct ChannelInfo {
     pub is_branded_content: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelEditor {
     pub user_id: UserId,
     pub user_name: String,
     pub created_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FollowedChannel {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -33,7 +33,7 @@ pub struct FollowedChannel {
     pub followed_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelFollower {
     pub user_id: UserId,
     pub user_login: String,

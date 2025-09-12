@@ -1,18 +1,17 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
-
-use super::types::{
-    Badge, ChatSetting, Chatter, Emote, MessageResponse, SharedChatSession, UserColor,
+use crate::{
+    chat::{Badge, ChatSetting, Chatter, Emote, MessageResponse, SharedChatSession, UserColor},
+    types::Pagination,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BadgesResponse {
     pub data: Vec<Badge>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatSettingResponse {
     pub data: Vec<ChatSetting>,
 }
@@ -20,7 +19,7 @@ pub struct ChatSettingResponse {
 /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
 /// spec paginarion must include event empty.
 /// but mock server remove paginiation field
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChattersResponse {
     pub data: Vec<Chatter>,
     #[serde(
@@ -32,7 +31,7 @@ pub struct ChattersResponse {
     pub total: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EmotesResponse {
     pub data: Vec<Emote>,
     pub template: String,
@@ -44,17 +43,17 @@ pub struct EmotesResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SendChatMessageResponse {
     pub data: Vec<MessageResponse>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SharedChatSessionResponse {
     pub data: Vec<SharedChatSession>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UsersColorResponse {
     pub data: Vec<UserColor>,
 }
@@ -64,7 +63,7 @@ mod tests {
     use serde_json::json;
 
     use crate::{
-        chat::response::{
+        chat::{
             BadgesResponse, ChatSettingResponse, ChattersResponse, EmotesResponse,
             SendChatMessageResponse, SharedChatSessionResponse, UsersColorResponse,
         },

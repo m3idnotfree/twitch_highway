@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::GameId;
 
 define_request!(
-    #[derive(Default, Serialize)]
+    #[derive(Debug, Clone, Default, Serialize)]
     ModifyChannelRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -26,7 +26,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     ContentClassificationLabel {
         req: {
             id: ContentClassificationLabelsID,
@@ -50,7 +50,7 @@ mod tests {
     use serde_json::json;
 
     use crate::{
-        channels::request::{
+        channels::{
             ContentClassificationLabel, ContentClassificationLabelsID, ModifyChannelRequest,
         },
         types::GameId,

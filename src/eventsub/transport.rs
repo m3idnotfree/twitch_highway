@@ -6,7 +6,7 @@ use url::Url;
 
 use crate::types::{ConduitId, SessionId};
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum TransportMethod {
     Webhook,

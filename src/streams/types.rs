@@ -3,12 +3,12 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Id, UserId};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct StreamKey {
     pub stream_key: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Stream {
     pub id: Id,
     pub user_id: UserId,
@@ -30,7 +30,7 @@ pub struct Stream {
 }
 
 #[allow(non_snake_case)]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Marker {
     pub id: Id,
     pub created_at: DateTime<FixedOffset>,
@@ -40,7 +40,7 @@ pub struct Marker {
     pub URL: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StreamMarker {
     pub user_id: UserId,
     pub user_name: String,
@@ -48,7 +48,7 @@ pub struct StreamMarker {
     pub videos: Vec<StreamVideos>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StreamVideos {
     pub video_id: String,
     pub markers: Vec<Marker>,

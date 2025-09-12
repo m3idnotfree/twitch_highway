@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::types::BroadcasterId;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     StartCommercialBody<'a> {
         req: {
              broadcaster_id: &'a BroadcasterId,
@@ -17,7 +17,7 @@ define_request!(
 mod tests {
     use serde_json::{json, Value};
 
-    use crate::{ads::request::StartCommercialBody, types::BroadcasterId};
+    use crate::{ads::StartCommercialBody, types::BroadcasterId};
 
     #[test]
     fn start_commercial_body_serialization() {

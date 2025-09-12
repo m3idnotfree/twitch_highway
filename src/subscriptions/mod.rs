@@ -1,7 +1,8 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
+pub use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
+pub use types::{Subscription, Tier};
 
 use crate::types::{
     constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER_ID},

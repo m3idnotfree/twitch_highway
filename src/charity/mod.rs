@@ -1,7 +1,8 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
+pub use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
+pub use types::{Amount, CharityCampaign, CharityCampaignDonation};
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 

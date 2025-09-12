@@ -1,15 +1,17 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::BitsLeaderboardRequest;
-use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
+pub use request::BitsLeaderboardRequest;
+pub use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
+pub use types::{
+    BitsLeaderboard, Cheermotes, Dark, ExtensionTransaction, Images, Imagess, Light, ProductType,
+    Tier, TierLevel, TransactionProductData, Type,
+};
 
-use crate::{
-    types::{
-        constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
-        BroadcasterId, ExtensionId, Id, PaginationQuery,
-    },
+use crate::types::{
+    constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
+    BroadcasterId, ExtensionId, Id, PaginationQuery,
 };
 
 endpoints! {

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Category, Id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Segment {
     pub id: Id,
     pub start_time: DateTime<FixedOffset>,
@@ -14,7 +14,7 @@ pub struct Segment {
     pub is_recurring: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Vacation {
     pub start_time: String,
     pub end_time: String,

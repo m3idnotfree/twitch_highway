@@ -1,14 +1,15 @@
-use request::StartCommercialBody;
-use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
+mod request;
+mod response;
+mod types;
+
+pub use request::StartCommercialBody;
+pub use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
+pub use types::{AdSchedule, SnoozeNextAd, StartCommercial};
 
 use crate::types::{
     constants::{BROADCASTER_ID, CHANNELS},
     BroadcasterId,
 };
-
-pub mod request;
-pub mod response;
-pub mod types;
 
 endpoints! {
     AdsAPI {
@@ -55,9 +56,7 @@ endpoints! {
 
 #[cfg(test)]
 mod tests {
-    use crate::types::BroadcasterId;
-
-    use super::AdsAPI;
+    use crate::{ads::AdsAPI, types::BroadcasterId};
 
     api_test!(start_commercial, [&BroadcasterId::from("141981764"), 60]);
     api_test!(get_ad_schedule, [&BroadcasterId::from("123")]);

@@ -129,7 +129,7 @@ where
     }
 }
 
-#[cfg(test)]
+#[cfg(feature = "test")]
 impl<ResBody> TwitchAPIRequest<ResBody>
 where
     ResBody: DeserializeOwned,

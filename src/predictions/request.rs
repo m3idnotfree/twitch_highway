@@ -1,11 +1,9 @@
 use serde::Serialize;
 
-use crate::types::{BroadcasterId, Id, Title};
-
-use super::types::PredictionStatus;
+use crate::types::{BroadcasterId, Title};
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CreatePredictionRequest<'a> {
         req: {
             broadcaster_id: &'a BroadcasterId,
@@ -17,16 +15,16 @@ define_request!(
     }
 );
 
-define_request!(
-    #[derive(Serialize)]
-    EndPredictionRequest<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId,
-            id: &'a Id,
-            status: PredictionStatus,
-        },
-        opts: {
-            winning_outcome_id: &'a str
-        };
-    }
-);
+// define_request!(
+//     #[derive(Serialize)]
+//     EndPredictionRequest<'a> {
+//         req: {
+//             broadcaster_id: &'a BroadcasterId,
+//             id: &'a Id,
+//             status: PredictionStatus,
+//         },
+//         opts: {
+//             winning_outcome_id: &'a str
+//         };
+//     }
+// );

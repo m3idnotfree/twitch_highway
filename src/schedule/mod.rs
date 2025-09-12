@@ -1,12 +1,13 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{
+pub use request::{
     ChannelStreamScheduleRequest, CreateScheduleSegmentRequest, UpdateScheduleRequest,
     UpdateScheduleSegmentRequest,
 };
-use response::ScheduleResponse;
+pub use response::{Schedule, ScheduleResponse};
+pub use types::{Segment, Vacation};
 
 use crate::{
     request::{NoContent, RequestBody},
@@ -126,10 +127,8 @@ endpoints! {
 mod tests {
     use crate::{
         schedule::{
-            request::{
-                CreateScheduleSegmentRequest, UpdateScheduleRequest, UpdateScheduleSegmentRequest,
-            },
-            ScheduleAPI,
+            CreateScheduleSegmentRequest, ScheduleAPI, UpdateScheduleRequest,
+            UpdateScheduleSegmentRequest,
         },
         types::{BroadcasterId, Id},
     };

@@ -1,7 +1,8 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::{CategoriesResponse, ChannelsResponse};
+pub use response::{CategoriesResponse, ChannelsResponse};
+pub use types::Channel;
 
 use crate::types::{constants::CHANNELS, PaginationQuery};
 

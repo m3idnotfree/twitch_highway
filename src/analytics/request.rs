@@ -2,7 +2,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     AnalyticsRequest<'a> {
         opts: {
             #[serde(rename = "type")]
@@ -46,7 +46,7 @@ mod tests {
 
     use chrono::{DateTime, FixedOffset};
 
-    use crate::analytics::request::{AnalyticsRequest, AnalyticsType};
+    use crate::analytics::{AnalyticsRequest, AnalyticsType};
 
     #[test]
     fn analytics_type_serialization() {

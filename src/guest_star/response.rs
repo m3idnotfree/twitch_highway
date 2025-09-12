@@ -1,18 +1,18 @@
 use serde::{Deserialize, Serialize};
 
-use super::types::{GuestStarInvite, GustStarSession, GustStarSetting};
+use crate::guest_star::{GuestStarInvite, GustStarSession, GustStarSetting};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GuestStarSettingsResponse {
     pub data: Vec<GustStarSetting>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarSessionResponse {
     pub data: Vec<GustStarSession>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarInvitesResponse {
     pub data: Vec<GuestStarInvite>,
 }
@@ -21,7 +21,7 @@ pub struct GustStarInvitesResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::guest_star::response::{
+    use crate::guest_star::{
         GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse,
     };
 

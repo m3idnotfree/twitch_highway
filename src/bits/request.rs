@@ -4,7 +4,7 @@ use serde::Serialize;
 use crate::types::UserId;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     BitsLeaderboardRequest<'a> {
         opts: {
             count: u64 ; u64,
@@ -15,13 +15,14 @@ define_request!(
         into_query
     }
 );
+
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
 
     use chrono::{DateTime, FixedOffset};
 
-    use crate::{bits::request::BitsLeaderboardRequest, types::UserId};
+    use crate::{bits::BitsLeaderboardRequest, types::UserId};
 
     #[test]
     fn bits_leaderboard_request_serialization() {

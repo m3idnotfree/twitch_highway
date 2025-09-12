@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::AnalyticsRequest;
-use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
+pub use request::{AnalyticsRequest, AnalyticsType};
+pub use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
+pub use types::{ExtensionAnalytic, GameAnalytic};
 
 use crate::types::{
     constants::{EXTENSIONS, EXTENSION_ID, GAMES, GAME_ID},
@@ -53,7 +54,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        analytics::{request::AnalyticsRequest, AnalyticsAPI},
+        analytics::{AnalyticsAPI, AnalyticsRequest},
         types::{GameId, PaginationQuery},
     };
 

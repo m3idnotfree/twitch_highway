@@ -3,9 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{GameId, Id, UserId};
 
-use super::request::FulfillmentStatus;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DropEntitlement {
     pub id: Id,
     pub benefit_id: String,
@@ -16,7 +14,7 @@ pub struct DropEntitlement {
     pub last_updated: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateDropEntitlement {
     pub status: DropEntitlementStatus,
     pub ids: Vec<Id>,
@@ -32,9 +30,39 @@ pub enum DropEntitlementStatus {
     UPDATE_FAILED,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum FulfillmentStatus {
+    CLAIMED,
+    FULFILLED,
+}
+
+impl FulfillmentStatus {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::CLAIMED => "CLAIMED",
+            Self::FULFILLED => "FULFILLED",
+        }
+    }
+}
+
+impl From<FulfillmentStatus> for String {
+    fn from(status: FulfillmentStatus) -> Self {
+        match status {
+            FulfillmentStatus::CLAIMED => "CLAIMED".to_string(),
+            FulfillmentStatus::FULFILLED => "FULFILLED".to_string(),
+        }
+    }
+}
+
+impl AsRef<str> for FulfillmentStatus {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::entitlements::types::DropEntitlementStatus;
+    use crate::entitlements::DropEntitlementStatus;
 
     #[test]
     fn drop_entitlement_status_enum() {

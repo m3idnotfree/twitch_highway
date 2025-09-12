@@ -2,12 +2,12 @@ use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 
 use crate::{
-    eventsub::{condition::Condition, subscription_types::SubscriptionType},
+    eventsub::{Condition, SubscriptionType},
     types::{Status, SubscriptionId},
 };
 
 /// <https://dev.twitch.tv/docs/eventsub/eventsub-reference/#subscription>
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct Subscription {
     pub id: SubscriptionId,
     #[serde(rename = "type")]

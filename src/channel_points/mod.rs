@@ -1,18 +1,21 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{
+pub use request::{
     CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
     RedemptionStatusQuery, UpdateCustomRewardRequest,
 };
-use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
+pub use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
+pub use types::{
+    CustomRewards, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus, Reward,
+};
 
 use crate::{
     request::{NoContent, RequestBody},
     types::{
         constants::{BROADCASTER_ID, ID},
-        BroadcasterId, CustomRewardId, PaginationQuery, RedemptionId, RewardId,
+        BroadcasterId, PaginationQuery, RedemptionId, RewardId,
     },
 };
 
@@ -44,7 +47,7 @@ endpoints! {
         fn delete_custom_reward(
             &self,
             broadcaster_id: &BroadcasterId,
-            custom_reward_id: &CustomRewardId,
+            custom_reward_id: &RewardId,
         ) -> NoContent {
             endpoint_type: DeleteCustomReward,
             method: DELETE,
@@ -59,7 +62,7 @@ endpoints! {
         fn get_custom_reward(
             &self,
             broadcaster_id: &BroadcasterId,
-            custom_reward_ids: Option<&[CustomRewardId]>,
+            custom_reward_ids: Option<&[RewardId]>,
             only_manageable_rewards: Option<bool>,
         ) -> CustomRewardsResponse {
             endpoint_type: GetCustomReward,
@@ -95,7 +98,7 @@ endpoints! {
         fn update_custom_reward(
             &self,
             broadcaster_id: &BroadcasterId,
-            custom_reward_id: &CustomRewardId,
+            custom_reward_id: &RewardId,
             opts: Option<UpdateCustomRewardRequest>,
         ) -> CustomRewardsResponse {
             endpoint_type: UpdateCustomReward,
@@ -135,14 +138,12 @@ endpoints! {
 mod tests {
     use crate::{
         channel_points::{
-            request::{
-                CustomRewardRedemptionQuery, RedemptionStatusQuery, UpdateCustomRewardRequest,
-            },
-            types::RedemptionStatus,
-            ChannelPointsAPI,
+            ChannelPointsAPI, CustomRewardRedemptionQuery, RedemptionStatus, RedemptionStatusQuery,
+            UpdateCustomRewardRequest,
         },
-        types::{BroadcasterId, CustomRewardId, RedemptionId, RewardId},
+        types::{BroadcasterId, RedemptionId, RewardId},
     };
+
     api_test!(
         create_custom_rewards,
         [
@@ -156,7 +157,7 @@ mod tests {
         delete_custom_reward,
         [
             &BroadcasterId::from("274637212"),
-            &CustomRewardId::from("b045196d-9ce7-4a27-a9b9-279ed341ab28"),
+            &RewardId::from("b045196d-9ce7-4a27-a9b9-279ed341ab28"),
         ]
     );
     api_test!(
@@ -176,7 +177,7 @@ mod tests {
         update_custom_reward,
         [
             &BroadcasterId::from("274637212"),
-            &CustomRewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             Some(UpdateCustomRewardRequest::new().is_enabled(false)),
         ]
     );
@@ -198,7 +199,7 @@ mod tests {
     api_test!(extra
         get_custom_reward,
         get_custom_reward3,
-        [&BroadcasterId::from("274637212"), Some(&[CustomRewardId::from("2af127c-7326-4483-a52b-b0da0be61c01")]), None]
+        [&BroadcasterId::from("274637212"), Some(&[RewardId::from("2af127c-7326-4483-a52b-b0da0be61c01")]), None]
     );
     api_test!(extra
         get_custom_reward_redemption,
@@ -215,7 +216,7 @@ mod tests {
         update_custom_reward2,
         [
             &BroadcasterId::from("274637212"),
-            &CustomRewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
+            &RewardId::from("92af127c-7326-4483-a52b-b0da0be61c01"),
             Some(UpdateCustomRewardRequest::new().title("game analysis 2v2")),
         ]
     );

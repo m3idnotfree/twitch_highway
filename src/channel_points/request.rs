@@ -1,11 +1,9 @@
 use serde::Serialize;
 
-use crate::types::RedemptionId;
-
-use super::types::RedemptionStatus;
+use crate::{channel_points::RedemptionStatus, types::RedemptionId};
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CustomRewardsRequiredBody<'a> {
         req: {
             title: &'a str,
@@ -15,7 +13,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CustomRewardsBody<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -49,7 +47,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     RedemptionStatusQuery {
         req: {
             status: RedemptionStatus
@@ -59,7 +57,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CustomRewardRedemptionQuery<'a> {
         opts: {
             sort: &'a str,
@@ -71,7 +69,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Default)]
+    #[derive(Debug, Clone, Copy, Default, Serialize)]
     UpdateCustomRewardRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -106,17 +104,15 @@ define_request!(
         into_json
     }
 );
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;
 
     use crate::{
         channel_points::{
-            request::{
-                CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
-                RedemptionStatusQuery, UpdateCustomRewardRequest,
-            },
-            types::RedemptionStatus,
+            CustomRewardRedemptionQuery, CustomRewardsBody, CustomRewardsRequiredBody,
+            RedemptionStatus, RedemptionStatusQuery, UpdateCustomRewardRequest,
         },
         types::RedemptionId,
     };

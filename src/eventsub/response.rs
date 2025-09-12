@@ -3,11 +3,11 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    eventsub::{condition::Condition, subscription_types::SubscriptionType, transport::Transport},
+    eventsub::{Condition, SubscriptionType, Transport},
     types::{Pagination, Status, SubscriptionId},
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateEventSubscriptionsResponse {
     pub data: Vec<EventSubData>,
     pub total_cost: u64,
@@ -20,7 +20,7 @@ pub struct CreateEventSubscriptionsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventSubscriptionsResponse {
     pub data: Vec<EventSubData>,
     pub total_cost: u64,
@@ -33,7 +33,7 @@ pub struct EventSubscriptionsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct EventSubData {
     pub id: SubscriptionId,
     pub status: Status,

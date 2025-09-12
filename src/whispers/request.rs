@@ -12,7 +12,7 @@ define_request!(
 
 #[cfg(test)]
 mod tests {
-    use crate::whispers::request::SendWhisperBody;
+    use crate::whispers::SendWhisperBody;
 
     #[test]
     fn send_whisper_body_serialization() {

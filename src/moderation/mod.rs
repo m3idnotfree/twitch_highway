@@ -1,21 +1,23 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{
-    AddBlockedTermRequest, AutoModAction, BanUserRequest, CheckAutoMod, CheckAutoModStatusRequest,
-    ManageHeldAutoModMeussageRequest, UpdateAutoModSettingsRequest, UpdateShieldModeStatusRequest,
-    WarnChatUser, WarnChatUserRequest,
+pub use request::{
+    AddBlockedTermRequest, AutoModAction, BanUserRequest, BanUserRequestWrapper, CheckAutoMod,
+    CheckAutoModStatusRequest, ManageHeldAutoModMeussageRequest, UpdateAutoModSettingsRequest,
+    UpdateShieldModeStatusRequest, WarnChatUserBody, WarnChatUserRequest,
 };
-use response::{
+pub use response::{
     AutoModSettingsResponse, BanUsersResponse, BlockedTermsResponse, CheckAutoModStatusResponse,
     GetBannedUsersResponse, ModeratedChannelResponse, ModeratorsResponse, ShieldModeStatusResponse,
     UnbanRequestResponse, WarnChatUsersResponse,
 };
-use types::UnbanRequestStatus;
+pub use types::{
+    AutoModSetting, AutoModStatus, BanUser, BannedUser, BlockedTerm, ModeratedChannel, Moderator,
+    ShieldModeStatus, UnbanRequest, UnbanRequestStatus, WarnChatUser,
+};
 
 use crate::{
-    moderation::request::BanUserRequestWrapper,
     request::NoContent,
     types::{
         constants::{BROADCASTER_ID, CHANNELS, CHAT, ID, MODERATOR_ID, SETTINGS, USER_ID},
@@ -400,7 +402,7 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
-            data: WarnChatUser,
+            data: WarnChatUserRequest,
         ) -> WarnChatUsersResponse {
             endpoint_type: WarnChatUser,
             method: POST,
@@ -410,7 +412,7 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             },
             headers: [json],
-            body: WarnChatUserRequest::new(data).into_json()
+            body: WarnChatUserBody::new(data).into_json()
         }
     }
 }
@@ -419,12 +421,8 @@ endpoints! {
 mod tests {
     use crate::{
         moderation::{
-            request::{
-                AutoModAction, BanUserRequest, CheckAutoMod, UpdateAutoModSettingsRequest,
-                WarnChatUser,
-            },
-            types::UnbanRequestStatus,
-            ModerationAPI,
+            AutoModAction, BanUserRequest, CheckAutoMod, ModerationAPI, UnbanRequestStatus,
+            UpdateAutoModSettingsRequest, WarnChatUserRequest,
         },
         test_utils::TwitchApiTest,
         types::{BroadcasterId, Id, ModeratorId, PaginationQuery, UserId},
@@ -589,7 +587,7 @@ mod tests {
         [
             &BroadcasterId::from("404040"),
             &ModeratorId::from("404041"),
-            WarnChatUser::new(&UserId::from("9876"), "stop doing that!"),
+            WarnChatUserRequest::new(&UserId::from("9876"), "stop doing that!"),
         ]
     );
 

@@ -1,12 +1,13 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::HypeTrainResponse;
-
-use crate::{
-    hype_train::response::HypeTrainStatusResponse,
-    types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery},
+pub use response::{HypeTrainResponse, HypeTrainStatusResponse};
+pub use types::{
+    AllTimeHigh, ContributionType, Current, HypeTrain, HypeTrainContribution, HypeTrainEvent,
+    HypeTrainStatus, HypeTrainType, SharedAllTimeHigh, SharedTrainParticipant, TopContribution,
 };
+
+use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 
 endpoints! {
     HypeTrainAPI {

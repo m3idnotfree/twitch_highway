@@ -1,13 +1,16 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{BlockReason, BlockSourceContext};
-use response::{
+pub use request::{BlockReason, BlockSourceContext};
+pub use response::{
     BlockUserListResponse, UpdateUsersResponse, UserActiveExtensionsResponse,
     UserExtensionsResponse, UsersInfoResponse,
 };
-use types::UserActiveExtensions;
+pub use types::{
+    BlockUser, BroadcasterType, Component, ExtensionType, Overlay, Panel, User,
+    UserActiveExtensions, UserExtension, UserType,
+};
 
 use crate::{
     request::NoContent,
@@ -130,11 +133,9 @@ mod tests {
 
     use crate::{
         types::{BroadcasterId, Id, UserId},
-        users::{
-            types::{Component, Overlay, Panel, UserActiveExtensions},
-            UserAPI,
-        },
+        users::{Component, Overlay, Panel, UserAPI, UserActiveExtensions},
     };
+
     api_test!(get_users, [Some(&[Id::from("141981764")]), None]);
     api_test!(update_user, [Some("BaldAngel")]);
     api_test!(

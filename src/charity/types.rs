@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaign {
     pub id: Id,
     pub broadcaster_id: BroadcasterId,
@@ -16,7 +16,7 @@ pub struct CharityCampaign {
     pub target_amount: Amount,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaignDonation {
     pub id: Id,
     pub campaign_id: String,
@@ -26,7 +26,7 @@ pub struct CharityCampaignDonation {
     pub amount: Amount,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Amount {
     pub value: u64,
     pub decimal_places: u64,
@@ -38,7 +38,7 @@ mod tests {
     use serde_json::json;
 
     use crate::{
-        charity::types::{Amount, CharityCampaignDonation},
+        charity::{Amount, CharityCampaignDonation},
         types::{Id, UserId},
     };
 

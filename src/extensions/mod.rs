@@ -1,19 +1,24 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{
-    ExtensionChatMessageIntoRequestBody, RequiredConfiguration, UpdateExtensoinBitsProductsRequest,
+pub use request::{
+    ExtensionChatMessageIntoRequestBody, RequestConfigurationSegment, RequiredConfiguration,
+    UpdateExtensoinBitsProductsRequest,
 };
-use response::{
+pub use response::{
     ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose, ExtensionSecretsResponse,
     ExtensionsBitsProductsResponse, ExtensionsResponse,
 };
+pub use types::{
+    BitsProductExtension, Component, ConfigurationLocation, ConfigurationSegment, Extension,
+    LiveChannel, Mobile, Panel, Secret, SecretData, Segment, State, SubscriptionsSupportLevel,
+    VideoOverlay, Views,
+};
+
 use serde_json::json;
-use types::Segment;
 
 use crate::{
-    extensions::request::RequestConfigurationSegment,
     request::{NoContent, RequestBody},
     types::{
         constants::{BITS, BROADCASTER_ID, CHAT, EXTENSIONS, EXTENSION_ID},
@@ -245,9 +250,7 @@ endpoints! {
 mod tests {
     use crate::{
         extensions::{
-            request::{RequestConfigurationSegment, UpdateExtensoinBitsProductsRequest},
-            types::Segment,
-            ExtensionsAPI,
+            ExtensionsAPI, RequestConfigurationSegment, Segment, UpdateExtensoinBitsProductsRequest,
         },
         types::{BroadcasterId, Cost, CostType, ExtensionId, JWTToken},
     };

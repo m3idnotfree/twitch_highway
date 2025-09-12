@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::types::BroadcasterId;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     SendChatMessageRequest<'a> {
         req: {
             broadcaster_id: &'a BroadcasterId,
@@ -22,7 +22,7 @@ define_request!(
 
 define_request!(
     /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
-    #[derive(Default, Serialize)]
+    #[derive(Debug, Clone, Copy, Default, Serialize)]
     UpdateChatSettingsRequest {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -48,7 +48,7 @@ define_request!(
     }
 );
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub enum ChatColor {
     Blue,
     BlueViolet,
@@ -90,7 +90,7 @@ impl ChatColor {
 }
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     ChatAnnouncementBody<'a> {
         req: {
             message: &'a str,
@@ -100,7 +100,7 @@ define_request!(
     }
 );
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum AnnouncementColor {
     Blue,
@@ -124,7 +124,7 @@ impl AnnouncementColor {
 
 #[cfg(test)]
 mod tests {
-    use crate::chat::request::{AnnouncementColor, ChatColor};
+    use crate::chat::{AnnouncementColor, ChatColor};
 
     #[test]
     fn chat_color_enum() {

@@ -1,11 +1,12 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Category, Pagination};
+use crate::{
+    search::Channel,
+    types::{Category, Pagination},
+};
 
-use super::types::Channel;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CategoriesResponse {
     pub data: Vec<Category>,
     #[serde(
@@ -16,7 +17,7 @@ pub struct CategoriesResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelsResponse {
     pub data: Vec<Channel>,
     #[serde(

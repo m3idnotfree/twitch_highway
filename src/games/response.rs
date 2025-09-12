@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Category, Pagination};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GamesResponse {
     pub data: Vec<Category>,
     #[serde(
@@ -18,7 +18,7 @@ pub struct GamesResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::games::response::GamesResponse;
+    use crate::games::GamesResponse;
 
     #[test]
     fn games_response_deserialization() {

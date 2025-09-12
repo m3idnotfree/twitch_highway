@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id, ModeratorId, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoModStatus {
     pub msg_id: String,
     pub is_permitted: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoModSetting {
     pub broadcaster_id: BroadcasterId,
     pub moderator_id: String,
@@ -24,7 +24,7 @@ pub struct AutoModSetting {
     pub sex_based_terms: u64,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BannedUser {
     pub user_id: UserId,
     pub user_login: String,
@@ -37,7 +37,7 @@ pub struct BannedUser {
     pub moderator_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BanUser {
     pub broadcaster_id: BroadcasterId,
     pub moderator_id: ModeratorId,
@@ -46,7 +46,7 @@ pub struct BanUser {
     pub end_time: Option<DateTime<FixedOffset>>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum UnbanRequestStatus {
     Pending,
@@ -74,7 +74,7 @@ impl AsRef<str> for UnbanRequestStatus {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnbanRequest {
     pub id: Id,
     pub broadcaster_name: String,
@@ -93,7 +93,7 @@ pub struct UnbanRequest {
     pub resolution_text: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockedTerm {
     pub broadcaster_id: BroadcasterId,
     pub moderator_id: ModeratorId,
@@ -104,21 +104,21 @@ pub struct BlockedTerm {
     pub expires_at: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModeratedChannel {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Moderator {
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShieldModeStatus {
     pub is_active: bool,
     pub moderator_id: ModeratorId,
@@ -127,7 +127,7 @@ pub struct ShieldModeStatus {
     pub last_activated_at: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WarnChatUser {
     pub broadcaster_id: BroadcasterId,
     pub user_id: UserId,
@@ -137,7 +137,7 @@ pub struct WarnChatUser {
 
 #[cfg(test)]
 mod tests {
-    use crate::moderation::types::UnbanRequestStatus;
+    use crate::moderation::UnbanRequestStatus;
 
     #[test]
     fn unban_request_status_enum() {

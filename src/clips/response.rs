@@ -1,16 +1,17 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{
+    clips::{Clip, CreateClip},
+    types::Pagination,
+};
 
-use super::types::{Clip, CreateClip};
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CreateClipsResponse {
     pub data: Vec<CreateClip>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClipsInfoResponse {
     pub data: Vec<Clip>,
     #[serde(
@@ -25,7 +26,7 @@ pub struct ClipsInfoResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::clips::response::{ClipsInfoResponse, CreateClipsResponse};
+    use crate::clips::{ClipsInfoResponse, CreateClipsResponse};
 
     #[test]
     fn create_clips_response_deserialization() {

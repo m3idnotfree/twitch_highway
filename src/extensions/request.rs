@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::{BroadcasterId, ExtensionId};
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     RequestConfigurationSegment<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -18,7 +18,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     RequiredConfiguration<'a> {
         req: {
             extension_id: &'a ExtensionId,
@@ -30,7 +30,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     ExtensionChatMessageIntoRequestBody<'a> {
         req: {
             text: &'a str,
@@ -42,7 +42,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     UpdateExtensoinBitsProductsRequest<'a> {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]

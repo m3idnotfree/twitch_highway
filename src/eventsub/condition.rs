@@ -8,7 +8,7 @@ use crate::types::{
 
 define_request!(
     /// <https://dev.twitch.tv/docs/eventsub/eventsub-reference/#conditions>
-    #[derive(Default, Debug, Clone, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Default, Serialize, Deserialize)]
     Condition {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]

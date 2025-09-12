@@ -1,7 +1,8 @@
-pub mod response;
-pub mod types;
+mod response;
+mod types;
 
-use response::GoalsResponse;
+pub use response::GoalsResponse;
+pub use types::{Goal, GoalType};
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId};
 

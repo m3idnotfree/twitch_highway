@@ -6,7 +6,7 @@ use serde_json::Value;
 
 use crate::types::{BroadcasterId, Cost, Id};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Segment {
     Broadcaster,
@@ -30,7 +30,7 @@ impl From<Segment> for String {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConfigurationSegment {
     pub segment: Segment,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,7 +39,7 @@ pub struct ConfigurationSegment {
     pub version: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiveChannel {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_name: String,
@@ -48,20 +48,20 @@ pub struct LiveChannel {
     pub title: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SecretData {
     pub format_version: u64,
     pub secrets: Vec<Secret>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Secret {
     pub content: String,
     pub active_at: DateTime<FixedOffset>,
     pub expires_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Extension {
     pub author_name: String,
     pub bits_enabled: bool,
@@ -88,7 +88,7 @@ pub struct Extension {
     pub allowlisted_panel_urls: Vec<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ConfigurationLocation {
     Hosted,
@@ -96,7 +96,7 @@ pub enum ConfigurationLocation {
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum State {
     Approved,
     AssetsUploaded,
@@ -109,14 +109,14 @@ pub enum State {
     Released,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SubscriptionsSupportLevel {
     None,
     Optional,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Views {
     pub mobile: Mobile,
     pub panel: Panel,
@@ -124,25 +124,25 @@ pub struct Views {
     pub component: Component,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mobile {
     pub viewer_url: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Panel {
     pub viewer_url: String,
     pub height: u64,
     pub can_link_external_content: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoOverlay {
     pub viewer_url: String,
     pub can_link_external_content: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Component {
     pub viewer_url: String,
     pub aspect_width: u64,
@@ -158,7 +158,7 @@ pub struct Component {
     pub can_link_external_content: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BitsProductExtension {
     pub sku: String,
     pub cost: Cost,
@@ -176,9 +176,7 @@ impl BitsProductExtension {
 
 #[cfg(test)]
 mod tests {
-    use crate::extensions::types::{
-        ConfigurationLocation, Segment, State, SubscriptionsSupportLevel,
-    };
+    use crate::extensions::{ConfigurationLocation, Segment, State, SubscriptionsSupportLevel};
 
     #[test]
     fn segment_enum() {

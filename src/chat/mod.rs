@@ -1,14 +1,18 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{
+pub use request::{
     AnnouncementColor, ChatAnnouncementBody, ChatColor, SendChatMessageRequest,
     UpdateChatSettingsRequest,
 };
-use response::{
+pub use response::{
     BadgesResponse, ChatSettingResponse, ChattersResponse, EmotesResponse, SendChatMessageResponse,
     SharedChatSessionResponse, UsersColorResponse,
+};
+pub use types::{
+    Badge, BroadcasterIdField, ChatSetting, Chatter, DropReason, Emote, EmoteType, Format,
+    MessageResponse, Scale, SharedChatSession, ThemeMode, UserColor, Version,
 };
 
 use crate::{
@@ -237,10 +241,8 @@ endpoints! {
 mod tests {
     use crate::{
         chat::{
-            request::{
-                AnnouncementColor, ChatColor, SendChatMessageRequest, UpdateChatSettingsRequest,
-            },
-            ChatAPI,
+            AnnouncementColor, ChatAPI, ChatColor, SendChatMessageRequest,
+            UpdateChatSettingsRequest,
         },
         types::{BroadcasterId, ModeratorId, UserId},
     };

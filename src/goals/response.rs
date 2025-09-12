@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::types::Goal;
+use crate::goals::Goal;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GoalsResponse {
     pub data: Vec<Goal>,
 }
@@ -11,7 +11,7 @@ pub struct GoalsResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::goals::response::GoalsResponse;
+    use crate::goals::GoalsResponse;
 
     #[test]
     fn goals_response_deserialization() {

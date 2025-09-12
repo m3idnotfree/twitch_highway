@@ -1,19 +1,18 @@
-pub mod condition;
-pub mod request;
-pub mod response;
-pub mod subscription;
-pub mod subscription_types;
-pub mod transport;
+mod condition;
+mod request;
+mod response;
+mod subscription;
+mod subscription_types;
+mod transport;
 
-use condition::Condition;
-use response::EventSubscriptionsResponse;
+pub use condition::Condition;
+pub use request::{CreateEventSubRequest, GetEventRequest};
+pub use response::{CreateEventSubscriptionsResponse, EventSubData, EventSubscriptionsResponse};
+pub use subscription::Subscription;
+pub use subscription_types::SubscriptionType;
+pub use transport::{Transport, TransportMethod, TransportType};
 
 use crate::{
-    eventsub::{
-        request::{CreateEventSubRequest, GetEventRequest},
-        response::CreateEventSubscriptionsResponse,
-        transport::TransportType,
-    },
     request::NoContent,
     types::{
         constants::{EVENTSUB, ID, SUBSCRIPTIONS},
@@ -70,10 +69,7 @@ mod tests {
     use url::Url;
 
     use crate::{
-        eventsub::{
-            condition::Condition, request::CreateEventSubRequest,
-            subscription_types::SubscriptionType, transport::Transport, EventSubAPI,
-        },
+        eventsub::{Condition, CreateEventSubRequest, EventSubAPI, SubscriptionType, Transport},
         types::{ConduitId, SessionId, SubscriptionId, UserId},
     };
 

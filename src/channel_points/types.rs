@@ -3,15 +3,15 @@ use std::fmt;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, CustomRewardId, Images, RedemptionId, RewardId, UserId};
+use crate::types::{BroadcasterId, Images, RedemptionId, RewardId, UserId};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CustomRewards {
     pub broadcaster_id: BroadcasterId,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broadcaster_login: Option<String>,
     pub broadcaster_name: String,
-    pub id: CustomRewardId,
+    pub id: RewardId,
     pub title: String,
     pub prompt: String,
     pub cost: u64,
@@ -31,7 +31,7 @@ pub struct CustomRewards {
     pub cooldown_expires_at: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct CustomRewardsRedemption {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -47,7 +47,7 @@ pub struct CustomRewardsRedemption {
     pub reward: Reward,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct MaxPerStreamSetting {
     pub is_enabled: bool,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -58,7 +58,7 @@ pub struct MaxPerStreamSetting {
     pub global_cooldown_seconds: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Reward {
     pub id: RewardId,
     pub title: String,
@@ -97,10 +97,9 @@ impl AsRef<str> for RedemptionStatus {
 
 #[cfg(test)]
 mod tests {
-
     use serde_json::json;
 
-    use crate::channel_points::types::{
+    use crate::channel_points::{
         CustomRewards, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus,
     };
 

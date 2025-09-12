@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Subscription {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -27,7 +27,7 @@ pub struct Subscription {
     pub user_login: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Tier {
     #[serde(rename(deserialize = "1000"))]
     Tier1,

@@ -1,11 +1,12 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
-use response::{
+pub use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
+pub use response::{
     CreateStreamMarkerResponse, GetStreamMarkersResponse, StreamKeyResponse, StreamsResponse,
 };
+pub use types::{Marker, Stream, StreamKey, StreamMarker, StreamVideos};
 
 use crate::types::{
     constants::{BROADCASTER_ID, USER_ID},
@@ -92,10 +93,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        streams::{
-            request::{GetStreamsRequest, StreamMarkerSelector},
-            StreamsAPI,
-        },
+        streams::{GetStreamsRequest, StreamMarkerSelector, StreamsAPI},
         test_utils::TwitchApiTest,
         types::{BroadcasterId, PaginationQuery, UserId},
     };

@@ -1,16 +1,17 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{
+    charity::{CharityCampaign, CharityCampaignDonation},
+    types::Pagination,
+};
 
-use super::types::{CharityCampaign, CharityCampaignDonation};
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaignResponse {
     pub data: Vec<CharityCampaign>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaignDonationResponse {
     pub data: Vec<CharityCampaignDonation>,
     #[serde(
@@ -25,7 +26,7 @@ pub struct CharityCampaignDonationResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::charity::response::{CharityCampaignDonationResponse, CharityCampaignResponse};
+    use crate::charity::{CharityCampaignDonationResponse, CharityCampaignResponse};
 
     #[test]
     fn charity_campaign_response_deserialization() {

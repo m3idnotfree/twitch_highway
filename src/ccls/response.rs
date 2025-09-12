@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
-use super::types::Ccl;
+use crate::ccls::types::Ccl;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CclsResponse {
     pub data: Vec<Ccl>,
 }
@@ -11,7 +11,7 @@ pub struct CclsResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::ccls::response::CclsResponse;
+    use crate::ccls::CclsResponse;
 
     #[test]
     fn ccls_response_deserialization() {

@@ -1,9 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::TeamSelector;
-use response::{ChannelTeamsResponse, TeamsResponse};
+pub use request::TeamSelector;
+pub use response::{ChannelTeamsResponse, TeamsResponse};
+pub use types::{BroadcasterTeam, Team, TeamUser};
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId};
 
@@ -39,7 +40,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        teams::{request::TeamSelector, TeamsAPI},
+        teams::{TeamSelector, TeamsAPI},
         types::{BroadcasterId, Id},
     };
 

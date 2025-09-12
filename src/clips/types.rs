@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id};
+use crate::types::{BroadcasterId, GameId, Id};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateClip {
     pub edit_url: String,
     pub id: Id,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Clip {
     pub id: Id,
     pub url: String,
@@ -18,7 +18,7 @@ pub struct Clip {
     pub creator_id: String,
     pub creator_name: String,
     pub video_id: String,
-    pub game_id: String,
+    pub game_id: GameId,
     pub language: String,
     pub title: String,
     pub view_count: u64,

@@ -1,16 +1,14 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{subscriptions::Subscription, types::Pagination};
 
-use super::types::Subscription;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserSubscriptionResponse {
     pub data: Vec<Subscription>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BroadcasterSubscriptionResponse {
     pub data: Vec<Subscription>,
     #[serde(

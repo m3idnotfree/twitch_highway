@@ -1,7 +1,7 @@
 use crate::types::{BroadcasterId, GameId, Id};
 
 define_select!(
-    #[derive(Debug)]
+    #[derive(Debug, Clone)]
     ClipsSelector<'a> {
             broadcaster_id: &'a BroadcasterId => BROADCASTER_ID as by_broadcaster_id,
             game_id: &'a GameId => GAME_ID as by_game_id,
@@ -11,6 +11,7 @@ define_select!(
 );
 
 define_request!(
+    #[derive(Debug, Clone, Copy)]
     GetClipsRequest<'a> {
         opts: {
             started_at: &'a str => STARTED_AT,

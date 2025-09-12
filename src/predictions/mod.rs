@@ -1,10 +1,10 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::CreatePredictionRequest;
-use response::PredictionsResponse;
-use types::PredictionStatus;
+pub use request::CreatePredictionRequest;
+pub use response::PredictionsResponse;
+pub use types::{Prediction, PredictionColor, PredictionOutComes, PredictionStatus, TopPredictor};
 
 use crate::{
     request::{NoContent, RequestBody},
@@ -85,7 +85,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        predictions::{types::PredictionStatus, PredictionsAPI},
+        predictions::{PredictionStatus, PredictionsAPI},
         types::{BroadcasterId, Id, Title},
     };
 

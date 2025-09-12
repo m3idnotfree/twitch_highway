@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::types::Id;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     GetGamesRequest<'a> {
         opts: {
             ids: &'a [Id] => ID ; vec,

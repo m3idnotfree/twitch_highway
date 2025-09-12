@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BroadcasterTeam {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
@@ -19,7 +19,7 @@ pub struct BroadcasterTeam {
     pub id: Id,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Team {
     pub users: Vec<TeamUser>,
     pub background_image_url: Option<String>,
@@ -33,7 +33,7 @@ pub struct Team {
     pub id: Id,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TeamUser {
     pub user_id: UserId,
     pub user_name: String,

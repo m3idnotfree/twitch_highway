@@ -1,16 +1,16 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use super::types::{
+use crate::extensions::{
     BitsProductExtension, ConfigurationSegment, Extension, LiveChannel, SecretData,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConfigurationSegmentResponse {
     pub data: Vec<ConfigurationSegment>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionLiveChannelsRespnose {
     pub data: Vec<LiveChannel>,
     #[serde(
@@ -21,17 +21,17 @@ pub struct ExtensionLiveChannelsRespnose {
     pub pagination: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionSecretsResponse {
     pub data: Vec<SecretData>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionsResponse {
     pub data: Vec<Extension>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionsBitsProductsResponse {
     pub data: Vec<BitsProductExtension>,
 }
@@ -40,7 +40,7 @@ pub struct ExtensionsBitsProductsResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::extensions::response::{
+    use crate::extensions::{
         ConfigurationSegmentResponse, ExtensionSecretsResponse, ExtensionsBitsProductsResponse,
     };
 

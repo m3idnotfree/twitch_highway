@@ -1,11 +1,12 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::{hype_train::types::HypeTrainStatus, types::Pagination};
+use crate::{
+    hype_train::{HypeTrain, HypeTrainStatus},
+    types::Pagination,
+};
 
-use super::types::HypeTrain;
-
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HypeTrainResponse {
     pub data: Vec<HypeTrain>,
     #[serde(
@@ -16,7 +17,7 @@ pub struct HypeTrainResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HypeTrainStatusResponse {
     pub data: Vec<HypeTrainStatus>,
 }
@@ -25,7 +26,7 @@ pub struct HypeTrainStatusResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::hype_train::response::HypeTrainResponse;
+    use crate::hype_train::HypeTrainResponse;
 
     #[test]
     fn hype_train_response_deserialization() {

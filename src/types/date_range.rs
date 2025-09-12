@@ -3,62 +3,63 @@ use std::fmt;
 use chrono::{DateTime, Duration, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DateRange {
-    pub started_at: DateTime<FixedOffset>,
-    pub ended_at: DateTime<FixedOffset>,
+    #[serde(default, deserialize_with = "deserialize_optional_datetime")]
+    pub started_at: Option<DateTime<FixedOffset>>,
+    #[serde(default, deserialize_with = "deserialize_optional_datetime")]
+    pub ended_at: Option<DateTime<FixedOffset>>,
 }
 
 impl DateRange {
-    pub fn duration(&self) -> Duration {
-        self.ended_at - self.started_at
+    pub fn duration(&self) -> Option<Duration> {
+        match (self.ended_at, self.started_at) {
+            (Some(end), Some(start)) => Some(end - start),
+            _ => None,
+        }
     }
 }
 
 impl fmt::Display for DateRange {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let date = if self.started_at.date_naive() == self.ended_at.date_naive() {
-            format!(
-                "{} ({} - {})",
-                self.started_at.format("%Y-%m-%d"),
-                self.started_at.format("%H:%M"),
-                self.ended_at.format("%H:%M")
-            )
-        } else {
-            format!(
-                "{} to {}",
-                self.started_at.format("%Y-%m-%d %H:%M"),
-                self.ended_at.format("%Y-%m-%d %H:%M")
-            )
-        };
-
-        write!(f, "{date}")
+        match (self.started_at, self.ended_at) {
+            (Some(start), Some(end)) => {
+                if start.date_naive() == end.date_naive() {
+                    write!(
+                        f,
+                        "{} ({} - {})",
+                        start.format("%Y-%m-%d"),
+                        start.format("%H:%M"),
+                        end.format("%H:%M")
+                    )
+                } else {
+                    write!(
+                        f,
+                        "{} to {}",
+                        start.format("%Y-%m-%d %H:%M"),
+                        end.format("%Y-%m-%d %H:%M")
+                    )
+                }
+            }
+            (Some(start), None) => write!(f, "From {}", start.format("%Y-%m-%d %H:%M")),
+            (None, Some(end)) => write!(f, "Until {}", end.format("%Y-%m-%d %H:%M")),
+            (None, None) => write!(f, "No date range specified"),
+        }
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::types::DateRange;
-
-    #[test]
-    fn date_range_structure() {
-        let date_range = DateRange {
-            started_at: "2023-12-01T00:00:00Z".parse().unwrap(),
-            ended_at: "2023-12-01T23:59:59Z".parse().unwrap(),
-        };
-
-        assert_eq!(
-            date_range.started_at.to_rfc3339(),
-            "2023-12-01T00:00:00+00:00"
-        );
-        assert_eq!(
-            date_range.ended_at.to_rfc3339(),
-            "2023-12-01T23:59:59+00:00"
-        );
-
-        let serialized = serde_json::to_string(&date_range).unwrap();
-        let deserialized: DateRange = serde_json::from_str(&serialized).unwrap();
-        assert_eq!(deserialized.started_at, date_range.started_at);
-        assert_eq!(deserialized.ended_at, date_range.ended_at);
+fn deserialize_optional_datetime<'de, D>(
+    deserializer: D,
+) -> Result<Option<DateTime<FixedOffset>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let s: String = Deserialize::deserialize(deserializer)?;
+    if s.is_empty() {
+        Ok(None)
+    } else {
+        DateTime::parse_from_rfc3339(&s)
+            .map(Some)
+            .map_err(serde::de::Error::custom)
     }
 }

@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 
-use super::types::GroupLayout;
+use crate::guest_star::GroupLayout;
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     GustStarSettingRequest {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -22,7 +22,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
     UpdateSlotSettingsRequest {
         opts: {
             is_audio_enabled: bool ; bool,

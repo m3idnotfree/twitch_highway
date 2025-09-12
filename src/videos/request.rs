@@ -1,8 +1,9 @@
 use crate::types::{GameId, Id, UserId};
 
-use super::types::{Period, Sort, Type};
+use crate::videos::{Period, Sort, Type};
 
 define_select!(
+    #[derive(Debug, Clone)]
     VideoSelector<'a> {
         ids: &'a [Id] => ID as by_ids ; vec,
         user_id: &'a UserId => USER_ID as by_user_id,
@@ -12,6 +13,7 @@ define_select!(
 );
 
 define_request! {
+    #[derive(Debug, Clone)]
     VideosRequest {
         opts: {
             language: String | into,
@@ -29,10 +31,7 @@ mod tests {
 
     use crate::{
         types::{GameId, Id, UserId},
-        videos::{
-            request::{VideoSelector, VideosRequest},
-            types::{Period, Sort, Type},
-        },
+        videos::{Period, Sort, Type, VideoSelector, VideosRequest},
     };
 
     #[test]

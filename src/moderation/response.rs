@@ -1,24 +1,25 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
-
-use super::types::{
-    AutoModSetting, AutoModStatus, BanUser, BannedUser, BlockedTerm, ModeratedChannel, Moderator,
-    ShieldModeStatus, UnbanRequest, WarnChatUser,
+use crate::{
+    moderation::{
+        AutoModSetting, AutoModStatus, BanUser, BannedUser, BlockedTerm, ModeratedChannel,
+        Moderator, ShieldModeStatus, UnbanRequest, WarnChatUser,
+    },
+    types::Pagination,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CheckAutoModStatusResponse {
     pub data: Vec<AutoModStatus>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoModSettingsResponse {
     pub data: Vec<AutoModSetting>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetBannedUsersResponse {
     pub data: Vec<BannedUser>,
     #[serde(
@@ -29,12 +30,12 @@ pub struct GetBannedUsersResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BanUsersResponse {
     pub data: Vec<BanUser>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnbanRequestResponse {
     pub data: Vec<UnbanRequest>,
     #[serde(
@@ -45,7 +46,7 @@ pub struct UnbanRequestResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockedTermsResponse {
     pub data: Vec<BlockedTerm>,
     #[serde(
@@ -56,7 +57,7 @@ pub struct BlockedTermsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModeratedChannelResponse {
     pub data: Vec<ModeratedChannel>,
     #[serde(
@@ -67,7 +68,7 @@ pub struct ModeratedChannelResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ModeratorsResponse {
     pub data: Vec<Moderator>,
     #[serde(
@@ -78,12 +79,12 @@ pub struct ModeratorsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ShieldModeStatusResponse {
     pub data: Vec<ShieldModeStatus>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WarnChatUsersResponse {
     pub data: Vec<WarnChatUser>,
 }
@@ -92,7 +93,7 @@ pub struct WarnChatUsersResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::moderation::response::{CheckAutoModStatusResponse, GetBannedUsersResponse};
+    use crate::moderation::{CheckAutoModStatusResponse, GetBannedUsersResponse};
 
     #[test]
     fn check_automod_status_response_deserialization() {

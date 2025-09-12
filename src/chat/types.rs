@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{BroadcasterId, Id, Images, ModeratorId, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "emote")]
 pub struct Emote {
     pub id: Id,
@@ -23,13 +23,13 @@ pub struct Emote {
     pub theme_mode: Vec<ThemeMode>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Badge {
     pub set_id: String,
     pub versions: Vec<Version>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChatSetting {
     pub broadcaster_id: BroadcasterId,
     pub emote_mode: bool,
@@ -51,14 +51,14 @@ pub struct ChatSetting {
     pub unique_chat_mode: bool,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Chatter {
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MessageResponse {
     pub message_id: String,
     pub is_sent: bool,
@@ -66,13 +66,13 @@ pub struct MessageResponse {
     pub drop_reason: Option<DropReason>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DropReason {
     pub code: String,
     pub message: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SharedChatSession {
     pub session_id: String,
     pub host_broadcaster_id: String,
@@ -83,12 +83,12 @@ pub struct SharedChatSession {
     pub updated_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BroadcasterIdField {
     pub broadcaster_id: BroadcasterId,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserColor {
     pub user_id: UserId,
     pub user_name: String,
@@ -113,25 +113,25 @@ pub enum EmoteType {
     Owl2019,
     Twofactor,
     Limitedtime,
-    #[cfg(feature = "mock-api")]
+    #[cfg(feature = "test")]
     Subscription,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Format {
     Animated,
     Static,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ThemeMode {
     Dark,
     Light,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Scale {
     #[serde(rename(serialize = "1.0", deserialize = "1.0"))]
     Small,
@@ -141,7 +141,7 @@ pub enum Scale {
     Large,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Version {
     pub id: Id,
     pub image_url_1x: String,
@@ -155,7 +155,7 @@ pub struct Version {
 
 #[cfg(test)]
 mod tests {
-    use crate::chat::types::{EmoteType, Format, Scale, ThemeMode};
+    use crate::chat::{EmoteType, Format, Scale, ThemeMode};
 
     #[test]
     fn emote_type_serialization() {

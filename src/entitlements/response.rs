@@ -1,11 +1,12 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::types::Pagination;
+use crate::{
+    entitlements::{DropEntitlement, UpdateDropEntitlement},
+    types::Pagination,
+};
 
-use super::types::{DropEntitlement, UpdateDropEntitlement};
-
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DropsEntitlementsResponse {
     pub data: Vec<DropEntitlement>,
     #[serde(
@@ -16,7 +17,7 @@ pub struct DropsEntitlementsResponse {
     pub pagination: Option<Pagination>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateDropEntitlementsResponse {
     pub data: Vec<UpdateDropEntitlement>,
 }
@@ -25,9 +26,7 @@ pub struct UpdateDropEntitlementsResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::entitlements::response::{
-        DropsEntitlementsResponse, UpdateDropEntitlementsResponse,
-    };
+    use crate::entitlements::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 
     #[test]
     fn drops_entitlements_response_deserialization() {

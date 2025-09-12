@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::types::UserId;
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CheckAutoModStatusRequest<'a> {
         req: {
             data: &'a [CheckAutoMod]
@@ -13,7 +13,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize)]
      CheckAutoMod {
         req: {
             msg_id: String | into,
@@ -23,7 +23,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
      ManageHeldAutoModMeussageRequest<'a> {
         req: {
             user_id: &'a UserId,
@@ -34,14 +34,14 @@ define_request!(
     }
 );
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AutoModAction {
     ALLOW,
     DENY,
 }
 
 define_request!(
-    #[derive(Default, Serialize)]
+    #[derive(Debug, Clone, Copy, Default, Serialize)]
     UpdateAutoModSettingsRequest {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -68,7 +68,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     BanUserRequest<'a> {
         req: {
             user_id: &'a UserId
@@ -83,7 +83,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     BanUserRequestWrapper<'a>{
         req: {
             data: BanUserRequest<'a>
@@ -93,7 +93,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     AddBlockedTermRequest<'a> {
         req: {
             text: &'a str
@@ -103,7 +103,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     UpdateShieldModeStatusRequest {
         req: {
             is_active: bool
@@ -113,18 +113,18 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
-    WarnChatUserRequest<'a> {
+    #[derive(Debug, Clone, Serialize)]
+    WarnChatUserBody<'a> {
         req: {
-            data: WarnChatUser<'a>
+            data: WarnChatUserRequest<'a>
         };
         into_json
     }
 );
 
 define_request!(
-    #[derive(Serialize)]
-    WarnChatUser<'a> {
+    #[derive(Debug, Clone, Serialize)]
+    WarnChatUserRequest<'a> {
         req: {
             user_id: &'a UserId,
             reason: &'a str
@@ -134,7 +134,7 @@ define_request!(
 
 #[cfg(test)]
 mod tests {
-    use crate::moderation::request::AutoModAction;
+    use crate::moderation::AutoModAction;
 
     #[test]
     fn automod_action_enum() {

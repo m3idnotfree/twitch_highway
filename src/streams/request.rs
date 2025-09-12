@@ -3,7 +3,7 @@ use serde::Serialize;
 use crate::types::{GameId, UserId};
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     GetStreamsRequest<'a> {
         opts: {
             user_id	:&'a [UserId] => USER_ID ; vec,
@@ -18,7 +18,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     CreateStreamMarkerRequest<'a> {
         req: {
             user_id: &'a UserId,
@@ -30,7 +30,7 @@ define_request!(
 );
 
 define_select!(
-    #[derive(Debug, Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     StreamMarkerSelector<'a> {
         user_id: &'a UserId => USER_ID as by_user_id,
         video_id: &'a str as by_video_id,
@@ -38,12 +38,12 @@ define_select!(
     into_query
 );
 
-define_request!(
-    #[derive(Serialize)]
-    GetStreamMarkerRequest<'a> {
-        opts: {
-            video_id: &'a str,
-            user_id: &'a UserId => USER_ID
-        }
-    }
-);
+// define_request!(
+//     #[derive(Serialize)]
+//     GetStreamMarkerRequest<'a> {
+//         opts: {
+//             video_id: &'a str,
+//             user_id: &'a UserId => USER_ID
+//         }
+//     }
+// );

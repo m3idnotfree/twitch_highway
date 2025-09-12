@@ -1,11 +1,12 @@
 use serde::Serialize;
 
-use crate::types::{BroadcasterId, Id};
-
-use super::types::PollStatus;
+use crate::{
+    polls::PollStatus,
+    types::{BroadcasterId, Id},
+};
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Copy, Serialize)]
     PollsRequest {
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -17,7 +18,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Serialize)]
+    #[derive(Debug, Clone, Serialize)]
     EndPollRequest<'a> {
         req: {
             broadcaster_id: &'a BroadcasterId,

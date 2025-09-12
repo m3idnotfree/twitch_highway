@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Id;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ccl {
     pub id: Id,
     pub description: String,

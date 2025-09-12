@@ -1,9 +1,13 @@
-pub mod request;
-pub mod response;
-pub mod types;
+mod request;
+mod response;
+mod types;
 
-use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
-use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
+pub use request::{GustStarSettingRequest, UpdateSlotSettingsRequest};
+pub use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
+pub use types::{
+    GroupLayout, Guest, GuestSetting, GuestStarInvite, GuestStarStatus, GustStarSession,
+    GustStarSetting,
+};
 
 use crate::{
     request::NoContent,
@@ -237,9 +241,7 @@ endpoints! {
 mod tests {
     use crate::{
         guest_star::{
-            request::{GustStarSettingRequest, UpdateSlotSettingsRequest},
-            types::GroupLayout,
-            GuestStarAPI,
+            GroupLayout, GuestStarAPI, GustStarSettingRequest, UpdateSlotSettingsRequest,
         },
         types::{BroadcasterId, ModeratorId},
     };

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{Id, UserId};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
     pub id: Id,
     pub login: String,
@@ -26,7 +26,7 @@ pub struct User {
     pub created_at: DateTime<FixedOffset>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum UserType {
     Admin,
@@ -36,7 +36,7 @@ pub enum UserType {
     Normal,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BroadcasterType {
     Affiliate,
@@ -45,14 +45,14 @@ pub enum BroadcasterType {
     Normal,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockUser {
     pub user_id: UserId,
     pub user_login: String,
     pub display_name: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserExtension {
     pub id: Id,
     pub version: String,
@@ -62,7 +62,7 @@ pub struct UserExtension {
     pub kind: Vec<ExtensionType>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ExtensionType {
     Component,
@@ -72,7 +72,7 @@ pub enum ExtensionType {
 }
 
 define_request!(
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     UserActiveExtensions {
         req: {
             panel: HashMap<String, Panel>,
@@ -84,7 +84,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     Panel {
         req: {
             active: bool,
@@ -101,7 +101,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     Overlay {
         req: {
             active: bool,
@@ -118,7 +118,7 @@ define_request!(
 );
 
 define_request!(
-    #[derive(Debug, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     Component {
         req: {
             active: bool

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::Id;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Channel {
     pub broadcaster_language: String,
     pub broadcaster_login: String,

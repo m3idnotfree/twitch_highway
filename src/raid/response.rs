@@ -1,8 +1,8 @@
 use serde::Deserialize;
 
-use super::types::StartRaid;
+use crate::raid::StartRaid;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct StartRaidResponse {
     pub data: Vec<StartRaid>,
 }

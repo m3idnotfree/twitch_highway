@@ -1,8 +1,8 @@
-pub mod request;
-pub mod response;
+mod request;
+mod response;
 
-use request::GetGamesRequest;
-use response::GamesResponse;
+pub use request::GetGamesRequest;
+pub use response::GamesResponse;
 
 use crate::types::{constants::GAMES, PaginationQuery};
 
@@ -39,7 +39,7 @@ endpoints! {
 #[cfg(test)]
 mod tests {
     use crate::{
-        games::{request::GetGamesRequest, GamesAPI},
+        games::{GamesAPI, GetGamesRequest},
         types::Id,
     };
 
