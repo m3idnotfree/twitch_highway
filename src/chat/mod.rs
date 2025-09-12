@@ -147,7 +147,7 @@ endpoints! {
             &self,
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
-            opts: Option<UpdateChatSettingsRequest>,
+            update: UpdateChatSettingsRequest,
         ) -> ChatSettingResponse {
             endpoint_type: UpdateChatSettings,
             method: PATCH,
@@ -157,7 +157,7 @@ endpoints! {
                 query(MODERATOR_ID, moderator_id)
             },
             headers: [json],
-            body: opts.and_then(|o| o.into_json())
+            body: update.into_json()
         }
 
         /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
@@ -270,7 +270,7 @@ mod tests {
         [
             &BroadcasterId::from("1234"),
             &ModeratorId::from("5678"),
-            Some(UpdateChatSettingsRequest::new().follower_mode(false)),
+            UpdateChatSettingsRequest::new().follower_mode(false),
         ]
     );
     api_test!(
@@ -313,7 +313,7 @@ mod tests {
         [
             &BroadcasterId::from("1234"),
             &ModeratorId::from("5678"),
-            Some(UpdateChatSettingsRequest::new().slow_mode(true).slow_mode_wait_time(10)),
+            UpdateChatSettingsRequest::new().slow_mode(true).slow_mode_wait_time(10),
         ]
     );
 
