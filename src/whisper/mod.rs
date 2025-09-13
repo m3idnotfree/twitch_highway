@@ -30,7 +30,7 @@ endpoints! {
 
 #[cfg(test)]
 mod tests {
-    use crate::{types::UserId, whispers::WhisperAPI};
+    use crate::{types::UserId, whisper::WhisperAPI};
 
     api_test!(
         send_whisper,

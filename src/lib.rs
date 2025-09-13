@@ -39,7 +39,7 @@
 //! - [`teams`][crate::teams::TeamsAPI]
 //! - [`users`][crate::users::UserAPI]
 //! - [`videos`][crate::videos::VideosAPI]
-//! - [`whispers`][crate::whispers::WhisperAPI]
+//! - [`whisper`][crate::whisper::WhisperAPI]
 //! - Tags: deprecated
 //!
 //! ## Error Handling
@@ -186,7 +186,7 @@ impl TwitchAPI {
         feature = "schedule",
         feature = "streams",
         feature = "users",
-        feature = "whispers",
+        feature = "whisper",
     ))]
     pub(crate) fn header_json(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
@@ -266,8 +266,8 @@ pub mod teams;
 pub mod users;
 #[cfg(feature = "videos")]
 pub mod videos;
-#[cfg(feature = "whispers")]
-pub mod whispers;
+#[cfg(feature = "whisper")]
+pub mod whisper;
 
 #[cfg(feature = "test")]
 pub mod test_utils;

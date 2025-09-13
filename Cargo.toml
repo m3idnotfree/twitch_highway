@@ -44,7 +44,7 @@ subscriptions = []
 teams = []
 users = []
 videos = []
-whispers = []
+whisper = []
 mock-api = ["subscriptions", "streams", "videos", "teams"]
 full = [
   "ads",
@@ -75,7 +75,7 @@ full = [
   "teams",
   "users",
   "videos",
-  "whispers",
+  "whisper",
   "test",
 ]
 test = ["wiremock", "anyhow"]

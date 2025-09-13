@@ -4578,7 +4578,7 @@ impl TwitchApiTest {
     }
 }
 
-#[cfg(feature = "whispers")]
+#[cfg(feature = "whisper")]
 impl TwitchApiTest {
     pub async fn send_whisper(&self) {
         self.api_mock("POST", "/whispers")
