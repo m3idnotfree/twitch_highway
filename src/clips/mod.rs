@@ -16,7 +16,6 @@ endpoints! {
             broadcaster_id: &BroadcasterId,
             has_delay: Option<bool>,
         ) -> CreateClipsResponse {
-        // ClipsInfoResponse
             endpoint_type: CreateClip,
             method: POST,
             path: ["clips"],

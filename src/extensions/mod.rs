@@ -53,7 +53,6 @@ endpoints! {
             extension_id: &ExtensionId,
             segment: Segment,
             opts: Option<RequestConfigurationSegment>,
-        // ) -> ConfigurationSegmentResponse {
         ) -> NoContent {
             endpoint_type: SetExtensionConfigurationSegment,
             method: PUT,

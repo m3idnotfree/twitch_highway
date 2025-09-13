@@ -15,12 +15,14 @@ const CONDUITS: &str = "conduits";
 
 endpoints! {
     ConduitsAPI {
+        /// <https://dev.twitch.tv/docs/api/reference/#get-conduits>
         fn get_conduits (&self) -> ConduitResponse {
             endpoint_type: GetConduits,
             method: GET,
             path: [EVENTSUB, CONDUITS],
         }
 
+        /// <https://dev.twitch.tv/docs/api/reference/#create-conduits>
         fn create_conduits(&self, shard_count: u64) -> ConduitResponse {
             endpoint_type: CreateConduits,
             method: POST,
@@ -35,6 +37,7 @@ endpoints! {
             }
         }
 
+        /// <https://dev.twitch.tv/docs/api/reference/#update-conduits>
         fn update_conduits(
             &self,
             conduit_id: &ConduitId,
@@ -54,6 +57,7 @@ endpoints! {
             }
         }
 
+        /// <https://dev.twitch.tv/docs/api/reference/#delete-conduit>
         fn delete_conduits(&self, conduit_id: &ConduitId) -> NoContent {
             endpoint_type: DeleteConduit,
             method: DELETE,
@@ -63,6 +67,7 @@ endpoints! {
             }
         }
 
+        /// <https://dev.twitch.tv/docs/api/reference/#get-conduit-shards>
         fn get_conduit_shards(&self,
             conduit_id: &ConduitId,
             status: Option<Status>,
@@ -78,6 +83,7 @@ endpoints! {
             }
         }
 
+        /// <https://dev.twitch.tv/docs/api/reference/#update-conduit-shards>
         fn update_conduit_shards(
             &self,
             req: UpdateConduitShardsRequest,
