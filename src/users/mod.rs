@@ -42,12 +42,12 @@ endpoints! {
         }
 
         /// <https://dev.twitch.tv/docs/api/reference/#update-user>
-        fn update_user(&self, description: Option<&str>) -> UpdateUsersResponse {
+        fn update_user(&self, description: &str) -> UpdateUsersResponse {
             endpoint_type: UpdateUser,
             method: PUT,
             path: [USERS],
             query_params: {
-                opt("description", description)
+                query("description", description)
             }
         }
 
@@ -137,7 +137,7 @@ mod tests {
     };
 
     api_test!(get_users, [Some(&[Id::from("141981764")]), None]);
-    api_test!(update_user, [Some("BaldAngel")]);
+    api_test!(update_user, ["BaldAngel"]);
     api_test!(
         get_user_block_list,
         [&BroadcasterId::from("141981764"), None]
