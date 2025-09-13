@@ -1,6 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+use crate::serde_helpers::deserialize_optional_datetime;
 use crate::types::{BroadcasterId, Id, ModeratorId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,7 +30,8 @@ pub struct BannedUser {
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
-    pub expires_at: DateTime<FixedOffset>,
+    #[serde(default, deserialize_with = "deserialize_optional_datetime")]
+    pub expires_at: Option<DateTime<FixedOffset>>,
     pub created_at: DateTime<FixedOffset>,
     pub reason: String,
     pub moderator_id: ModeratorId,
@@ -137,7 +139,9 @@ pub struct WarnChatUser {
 
 #[cfg(test)]
 mod tests {
-    use crate::moderation::UnbanRequestStatus;
+    use serde_json::json;
+
+    use crate::moderation::{BannedUser, UnbanRequestStatus};
 
     #[test]
     fn unban_request_status_enum() {
@@ -159,5 +163,22 @@ mod tests {
             let deserialized: UnbanRequestStatus = serde_json::from_str(&serialized).unwrap();
             assert_eq!(deserialized.as_str(), expected_str);
         }
+    }
+
+    #[test]
+    fn banned_user() {
+        let input = json!({
+              "user_id": "78325877",
+              "user_login": "fisherskateboard566",
+              "user_name": "FisherSkateboard566",
+              "expires_at": "",
+              "created_at": "2024-12-22T04:49:22Z",
+              "reason": "CLI ban",
+              "moderator_id": "6549720",
+              "moderator_login": "fishersteve14",
+              "moderator_name": "FisherSteve14"
+        });
+
+        serde_json::from_value::<BannedUser>(input).unwrap();
     }
 }

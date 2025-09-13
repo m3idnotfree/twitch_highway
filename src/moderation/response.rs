@@ -1,4 +1,7 @@
-use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
+use asknothingx2_util::serde::{
+    deserialize_empty_array_as_none, deserialize_empty_object_as_none,
+    serialize_none_as_empty_array, serialize_none_as_empty_object,
+};
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -21,7 +24,12 @@ pub struct AutoModSettingsResponse {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetBannedUsersResponse {
-    pub data: Vec<BannedUser>,
+    #[serde(
+        default,
+        serialize_with = "serialize_none_as_empty_array",
+        deserialize_with = "deserialize_empty_array_as_none"
+    )]
+    pub data: Option<Vec<BannedUser>>,
     #[serde(
         default,
         serialize_with = "serialize_none_as_empty_object",
@@ -146,10 +154,12 @@ mod tests {
 
         let response: GetBannedUsersResponse = serde_json::from_value(json_data).unwrap();
 
-        assert_eq!(response.data.len(), 1);
+        assert!(response.data.is_some());
+        let data = response.data.unwrap();
+        assert_eq!(data.len(), 1);
         assert!(response.pagination.is_some());
 
-        let banned_user = &response.data[0];
+        let banned_user = &data[0];
         assert_eq!(banned_user.user_id.as_str(), "banned_user_1");
         assert_eq!(banned_user.user_login, "banneduser1");
         assert_eq!(banned_user.reason, "Spam");

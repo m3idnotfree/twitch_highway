@@ -134,7 +134,10 @@ define_request!(
 
 #[cfg(test)]
 mod tests {
-    use crate::moderation::AutoModAction;
+    use crate::{
+        moderation::{AutoModAction, BanUserRequest, BanUserRequestWrapper},
+        types::UserId,
+    };
 
     #[test]
     fn automod_action_enum() {
@@ -151,5 +154,18 @@ mod tests {
             let re_serialized = serde_json::to_string(&deserialized).unwrap();
             assert_eq!(serialized, re_serialized);
         }
+    }
+
+    #[test]
+    fn ban_user_request() {
+        let user_id = UserId::from("9876");
+        let req = BanUserRequest::new(&user_id)
+            .duration(300)
+            .reason("no reason");
+        let wrapper = BanUserRequestWrapper::new(req).into_json().unwrap();
+        assert_eq!(
+            r#"{"data":{"user_id":"9876","duration":300,"reason":"no reason"}}"#,
+            wrapper
+        )
     }
 }
