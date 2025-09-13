@@ -47,3 +47,21 @@ define_select!(
 //         }
 //     }
 // );
+
+#[cfg(test)]
+mod tests {
+    use crate::{streams::CreateStreamMarkerRequest, types::UserId};
+
+    #[test]
+    fn create_stream_marker_request() {
+        let user_id = UserId::from("123");
+        let req = CreateStreamMarkerRequest::new(&user_id, Some("hello, this is a marker!"))
+            .into_json()
+            .unwrap();
+
+        assert_eq!(
+            r#"{"user_id":"123","description":"hello, this is a marker!"}"#,
+            req
+        );
+    }
+}

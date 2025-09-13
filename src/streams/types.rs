@@ -14,17 +14,19 @@ pub struct Stream {
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
-    pub game_id: String,
-    pub game_name: String,
+    pub game_id: Option<String>,
+    pub game_name: Option<String>,
     #[serde(rename = "type")]
     pub kind: Option<String>,
     pub title: String,
-    pub tags: Vec<String>,
+    #[serde(default)]
+    pub tags: Option<Vec<String>>,
     pub viewer_count: u64,
     pub started_at: DateTime<FixedOffset>,
     pub language: String,
-    pub thumbnail_url: String,
+    pub thumbnail_url: Option<String>,
     // deprecated
+    #[serde(default)]
     pub tag_ids: Option<Vec<String>>,
     pub is_mature: Option<bool>,
 }
