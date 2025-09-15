@@ -1,5 +1,5 @@
-use serde::{de::Visitor, Deserialize, Serialize};
-use std::fmt;
+use serde::{Deserialize, Serialize};
+use std::{fmt, ops::Deref};
 
 macro_rules! new_type {
     (
@@ -9,7 +9,8 @@ macro_rules! new_type {
         $(,)?
     })?
     ) => {
-        #[derive(Debug, Clone, PartialEq, Eq, Hash)]
+        #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+        #[serde(transparent)]
         pub struct $name(String);
 
         impl $name {
@@ -33,6 +34,15 @@ macro_rules! new_type {
                 self.as_str()
             }
         }
+
+        impl Deref for $name {
+            type Target = str;
+
+            fn deref(&self) -> &str {
+                self.as_str()
+            }
+        }
+
         impl From<$name> for String {
             fn from(id: $name) -> Self {
                 id.0
@@ -48,48 +58,6 @@ macro_rules! new_type {
         impl From<&str> for $name {
             fn from(s: &str) -> Self {
                 Self(s.to_string())
-            }
-        }
-
-        impl Serialize for $name {
-            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-            where
-                S: serde::Serializer,
-            {
-                serializer.serialize_str(&self.0)
-            }
-        }
-
-        impl<'de> Deserialize<'de> for $name {
-            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-            where
-                D: serde::Deserializer<'de>,
-            {
-                struct IdVisitor;
-
-                impl<'de> Visitor<'de> for IdVisitor {
-                    type Value = $name;
-
-                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                        formatter.write_str(stringify!($name))
-                    }
-
-                    fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        Ok($name::from(value))
-                    }
-
-                    fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
-                    where
-                        E: serde::de::Error,
-                    {
-                        Ok($name::from(value))
-                    }
-                }
-
-                deserializer.deserialize_string(IdVisitor)
             }
         }
     };
