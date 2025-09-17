@@ -134,6 +134,7 @@ new_type!(CategoryId);
 new_type!(CampaignId);
 new_type!(ExtensionClientId);
 new_type!(SubscriptionId);
+new_type!(MessageId);
 
 new_type!(JWTToken);
 

@@ -1,4 +1,6 @@
 pub mod webhook;
+pub mod websocket;
+
 #[macro_use]
 mod subscription_types;
 
