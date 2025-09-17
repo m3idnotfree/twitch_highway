@@ -239,3 +239,34 @@ define_subscription_types! {
         WhisperReceived("user.whisper.message", "1"),
     }
 }
+
+macro_rules! resolve_subscription_type {
+    ($sub_type:expr, $version:expr) => {
+        resolve_subscription_type!(@internal $sub_type, $version)
+    };
+
+    ($sub_type:expr, opt $version:expr) => {
+        resolve_subscription_type!(@internal $sub_type, $version; opt)
+    };
+
+    (@internal $sub_type:expr,  $version:expr $(; $opt:tt)?) => {
+        match ($sub_type, $version) {
+            (SubscriptionType::AutomodMessageHold, resolve_subscription_type!(@version "2", $( $opt)?)) => SubscriptionType::AutomodMessageHoldV2,
+            (SubscriptionType::AutomodMessageUpdate, resolve_subscription_type!(@version "2", $( $opt)?)) => {
+                SubscriptionType::AutomodMessageUpdateV2
+            }
+            (SubscriptionType::ChannelModerate, resolve_subscription_type!(@version "2", $( $opt)?)) => SubscriptionType::ChannelModerateV2,
+            (SubscriptionType::ChannelPointsAutomaticRewardRedemptionAdd, resolve_subscription_type!(@version "2", $( $opt)?)) => {
+                SubscriptionType::ChannelPointsAutomaticRewardRedemptionAddV2
+            }
+            (kind, _) => kind,
+        }
+    };
+
+    (@version $version:expr,) => {
+        $version
+    };
+    (@version $version:expr, opt) => {
+        Some($version)
+    };
+}

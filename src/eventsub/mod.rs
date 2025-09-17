@@ -1,9 +1,11 @@
 pub mod webhook;
+#[macro_use]
+mod subscription_types;
+
 mod condition;
 mod request;
 mod response;
 mod subscription;
-mod subscription_types;
 mod transport;
 
 pub use condition::Condition;
@@ -12,6 +14,7 @@ pub use response::{CreateEventSubscriptionsResponse, EventSubData, EventSubscrip
 pub use subscription::Subscription;
 pub use subscription_types::SubscriptionType;
 pub use transport::{Transport, TransportMethod, TransportType};
+pub(crate) use resolve_subscription_type;
 
 use crate::{
     request::NoContent,
