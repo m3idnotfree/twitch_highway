@@ -9,12 +9,13 @@ use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use subtle::ConstantTimeEq;
 
-use crate::eventsub::SubscriptionType;
+use crate::eventsub::{Subscription, SubscriptionType};
 
 const MESSAGE_ID: &str = "twitch-eventsub-message-id";
 const MESSAGE_TIMESTAMP: &str = "twitch-eventsub-message-timestamp";
 const MESSAGE_SIGNATURE: &str = "twitch-eventsub-message-signature";
 
+#[allow(dead_code)]
 const MESSAGE_RETRY: &str = "twitch-eventsub-message-retry";
 
 const SUBSCRIPTION_TYPE: &str = "twitch-eventsub-subscription-type";
@@ -158,37 +159,24 @@ impl HeaderProvider for Vec<(String, String)> {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Notification {
     pub subscription: Subscription,
     pub event: serde_json::Value,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Challenge {
     pub challenge: String,
     pub subscription: Subscription,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Revoke {
     pub subscription: Subscription,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Subscription {
-    pub id: String,
-    pub status: String,
-    #[serde(rename = "type")]
-    pub subscription_type: SubscriptionType,
-    pub version: String,
-    pub cost: u64,
-    pub condition: serde_json::Value,
-    pub created_at: String,
-    pub transport: serde_json::Value,
-}
-
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum MessageType {
     Verification,
     Notification,

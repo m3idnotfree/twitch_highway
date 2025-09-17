@@ -10,11 +10,12 @@ use crate::{
 #[derive(Debug, Clone, Serialize)]
 pub struct Subscription {
     pub id: SubscriptionId,
+    pub status: Status,
     #[serde(rename = "type")]
     pub kind: SubscriptionType,
     pub version: String,
-    pub status: Status,
     pub cost: u64,
+    pub transport: serde_json::Value,
     pub condition: Condition,
     pub created_at: DateTime<FixedOffset>,
 }
@@ -29,48 +30,28 @@ impl<'de> serde::Deserialize<'de> for Subscription {
             id: SubscriptionId,
             status: Status,
             #[serde(rename = "type")]
-            kind: SubscriptionType,
+            subscription_type: SubscriptionType,
             version: String,
             condition: Condition,
             created_at: DateTime<FixedOffset>,
             cost: u64,
+            transport: serde_json::Value,
         }
 
         let helper = Helper::deserialize(deserializer)?;
 
-        let kind = match helper.kind {
-            kind @ SubscriptionType::AutomodMessageHold => {
-                if helper.version == "2" {
-                    SubscriptionType::AutomodMessageHoldV2
-                } else {
-                    kind
-                }
-            }
-            kind @ SubscriptionType::AutomodMessageUpdate => {
-                if helper.version == "2" {
-                    SubscriptionType::AutomodMessageUpdateV2
-                } else {
-                    kind
-                }
-            }
-            kind @ SubscriptionType::ChannelModerate => {
-                if helper.version == "2" {
-                    SubscriptionType::ChannelModerateV2
-                } else {
-                    kind
-                }
-            }
-            _ => helper.kind,
-        };
+        let subscription_type =
+            resolve_subscription_type!(helper.subscription_type, helper.version.as_ref());
 
         Ok(Subscription {
             id: helper.id,
             status: helper.status,
-            kind,
+            kind: subscription_type,
             version: helper.version,
             condition: helper.condition,
             created_at: helper.created_at,
             cost: helper.cost,
+            transport: helper.transport,
         })
     }
 }
