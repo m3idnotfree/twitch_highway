@@ -12,10 +12,11 @@ mod transport;
 
 pub use condition::Condition;
 pub use request::{CreateEventSubRequest, GetEventRequest};
-pub use response::{CreateEventSubscriptionsResponse, EventSubData, EventSubscriptionsResponse};
+pub use response::{CreateEventSubscriptionsResponse, EventSubscriptionsResponse};
 pub use subscription::Subscription;
 pub use subscription_types::SubscriptionType;
-pub use transport::{Transport, TransportMethod, TransportType};
+pub use transport::{Transport, TransportType};
+
 pub(crate) use resolve_subscription_type;
 
 use crate::{
