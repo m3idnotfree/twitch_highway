@@ -98,7 +98,7 @@ macro_rules! define_message {
     (
         $(#[$meta:meta])*
         struct $name:ident<$generic:ident> {
-            payload: $payload:ident,
+            payload: $payload:ty,
             $message_type:expr
         }
     ) => {
@@ -142,7 +142,7 @@ macro_rules! define_message {
                         A: serde::de::MapAccess<'de>,
                     {
                         let mut metadata: Option<MetaData> = None;
-                        let mut payload: Option<$generic> = None;
+                        let mut payload: Option<$payload> = None;
 
                         while let Some(key) = map.next_key::<Field>()? {
                             match key {
@@ -207,7 +207,7 @@ define_message!(
 define_message!(
 /// <https://dev.twitch.tv/docs/eventsub/handling-websocket-events/#revocation-message>
     struct Revocation {
-        payload: SubscriptionPayload,
+        payload: RevocationPayload,
         MessageType::Revocation
     }
 );
@@ -223,7 +223,7 @@ define_message!(
 define_message!(
 /// <https://dev.twitch.tv/docs/eventsub/handling-websocket-events/#notification-message>
     struct Notification<T> {
-        payload: T,
+        payload: NotificationPayload<T>,
         MessageType::Notification
     }
 );
@@ -244,6 +244,12 @@ pub struct Session {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SubscriptionPayload {
+pub struct RevocationPayload {
     pub subscription: Subscription,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NotificationPayload<T> {
+    pub subscription: Subscription,
+    pub event: T,
 }
