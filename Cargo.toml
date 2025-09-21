@@ -28,7 +28,7 @@ clips = []
 conduits = []
 entitlements = []
 extensions = []
-eventsub = ["axum", "tokio", "rand", "hmac", "sha2", "hex", "subtle", "tokio-tungstenite", "futures-util", "tracing", "tracing-subscriber", "anyhow"]
+eventsub = ["axum", "tokio", "rand", "hmac", "sha2", "hex", "subtle", "thiserror", "tokio-tungstenite", "futures-util", "tracing", "tracing-subscriber", "anyhow"]
 games = []
 goals = []
 guest-star = []
@@ -92,6 +92,7 @@ http = { version = "1.3.1" }
 # websocket
 tokio-tungstenite = { version = "0.27.0", features = ["rustls-tls-webpki-roots"], optional = true }
 futures-util = { version = "0.3.31", optional = true }
+thiserror = { version = "2.0.16", optional = true }
 
 
 [dev-dependencies]
