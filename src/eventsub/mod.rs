@@ -1,4 +1,6 @@
+#[cfg(feature = "webhook")]
 pub mod webhook;
+#[cfg(feature = "websocket")]
 pub mod websocket;
 
 #[macro_use]

@@ -123,20 +123,14 @@ pub trait HeaderProvider {
     fn get_header(&self, name: &str) -> Option<&str>;
 }
 
-#[cfg(any(
-    feature = "axum",
-    feature = "hyper",
-    feature = "warp",
-    feature = "tower",
-    feature = "reqwest"
-))]
+#[cfg(feature = "webhook-http")]
 impl HeaderProvider for http::HeaderMap {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.get(name)?.to_str().ok()
     }
 }
 
-#[cfg(feature = "actix-web")]
+#[cfg(feature = "webhook-actix")]
 impl HeaderProvider for actix_web::http::header::HeaderMap {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.get(name)?.to_str().ok()
@@ -243,7 +237,7 @@ impl Display for WebhookError {
 
 impl std::error::Error for WebhookError {}
 
-#[cfg(feature = "axum")]
+#[cfg(feature = "webhook-axum")]
 impl axum::response::IntoResponse for WebhookError {
     fn into_response(self) -> Response {
         match self {
