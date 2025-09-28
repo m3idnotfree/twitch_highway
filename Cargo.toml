@@ -97,7 +97,7 @@ futures-util = { version = "0.3.31", optional = true }
 thiserror = { version = "2.0.16", optional = true }
 
 # router
-tower = { version = "0.5.2", features = ["util"], optional = true }
+tower = { version = "0.5.2", features = ["limit", "util"], optional = true }
 pin-project-lite = { version = "0.2.16", optional = true }
 
 [dev-dependencies]

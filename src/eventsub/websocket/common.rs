@@ -1,9 +1,11 @@
 use std::{
+    convert::Infallible,
     error::Error as StdError,
-    fmt::{Debug, Display, Formatter, Result as FmtResult},
+    fmt::{Display, Formatter, Result as FmtResult},
 };
 
 use tokio_tungstenite::tungstenite::Utf8Bytes;
+use url::Url;
 
 use crate::eventsub::{
     websocket::{MessageType, Scanner},
@@ -16,33 +18,6 @@ pub struct Request {
     pub subscription_type: Option<SubscriptionType>,
     pub scanner: Scanner,
     pub data: Utf8Bytes,
-}
-
-// WARN: For testing only
-// must be removed before production
-impl Default for Request {
-    fn default() -> Self {
-        let raw = r#"
-{
-  "metadata": {
-    "message_id": "9e004721-472b-d507-8465-c7ad77872e6c",
-    "message_type": "session_welcome",
-    "message_timestamp": "2025-09-16T20:32:13.868394Z"
-  },
-  "payload": {
-    "session": {
-      "id": "8255e39d_d5e714f3",
-      "status": "connected",
-      "keepalive_timeout_seconds": 10,
-      "reconnect_url": null,
-      "connected_at": "2025-09-16T20:32:13.868343Z"
-    }
-  }
-}
-"#;
-
-        Self::from(raw)
-    }
 }
 
 impl From<&str> for Request {
@@ -69,12 +44,95 @@ impl From<Utf8Bytes> for Request {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub struct Response {
-    pub reconnect: bool,
+    status: Status,
     pub url: Option<String>,
+    pub error_type: Option<String>,
+    pub error_reason: Option<String>,
 }
 
+impl Default for Response {
+    fn default() -> Self {
+        Self {
+            status: Status::Success,
+            url: None,
+            error_type: None,
+            error_reason: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum Status {
+    Success,
+    Reconnect,
+    NotFound,
+    Error,
+}
+
+impl Display for Status {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self {
+            Status::Success => f.write_str("success"),
+            Status::Reconnect => f.write_str("reconnect"),
+            Status::NotFound => f.write_str("not found"),
+            Status::Error => f.write_str("error"),
+        }
+    }
+}
+
+impl Response {
+    pub fn ok() -> Self {
+        Self::default()
+    }
+
+    pub fn reconnect(url: Option<impl Into<String>>) -> Self {
+        Self {
+            status: Status::Reconnect,
+            url: url.map(Into::into),
+            ..Default::default()
+        }
+    }
+
+    pub fn not_found() -> Self {
+        Self {
+            status: Status::NotFound,
+            ..Default::default()
+        }
+    }
+
+    pub fn error(error_type: impl Into<String>, reason: impl Into<String>) -> Self {
+        Self {
+            status: Status::Error,
+            error_type: Some(error_type.into()),
+            error_reason: Some(reason.into()),
+            ..Default::default()
+        }
+    }
+
+    pub fn is_success(&self) -> bool {
+        matches!(self.status, Status::Success)
+    }
+
+    pub fn is_reconnect(&self) -> bool {
+        matches!(self.status, Status::Reconnect)
+    }
+
+    pub fn is_not_found(&self) -> bool {
+        matches!(self.status, Status::NotFound)
+    }
+
+    pub fn is_error(&self) -> bool {
+        matches!(self.status, Status::Error)
+    }
+}
+
+/// # Rules
+///
+/// - `()` -> Success (no data)
+/// - `Url` -> Reconnect with URL
+/// - `Box<dyn Error>` -> Error
 pub trait IntoResponse {
     fn into_response(self) -> Response;
 }
@@ -87,7 +145,13 @@ impl IntoResponse for Response {
 
 impl IntoResponse for () {
     fn into_response(self) -> Response {
-        Response::default()
+        Response::ok()
+    }
+}
+
+impl IntoResponse for Url {
+    fn into_response(self) -> Response {
+        Response::reconnect(Some(self))
     }
 }
 
@@ -104,21 +168,17 @@ where
     }
 }
 
-impl IntoResponse for anyhow::Result<()> {
+impl<E> IntoResponse for Box<E>
+where
+    E: StdError + ?Sized + 'static,
+{
     fn into_response(self) -> Response {
-        Response::default()
+        Response::error("error", self.to_string())
     }
 }
 
-#[derive(Debug)]
-pub enum Error {
-    NotFound,
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        f.write_str(stringify!(Self))
+impl IntoResponse for Infallible {
+    fn into_response(self) -> Response {
+        Response::ok()
     }
 }
-
-impl StdError for Error {}
