@@ -85,3 +85,30 @@ impl Display for SubscriptionRejection {
 }
 
 impl StdError for SubscriptionRejection {}
+
+#[derive(Debug)]
+pub struct EventRejection {
+    pub reason: String,
+}
+
+impl EventRejection {
+    pub fn new(reason: impl Into<String>) -> Self {
+        Self {
+            reason: reason.into(),
+        }
+    }
+}
+
+impl IntoResponse for EventRejection {
+    fn into_response(self) -> Response {
+        Response::error("event_extraction_failed", self.reason)
+    }
+}
+
+impl Display for EventRejection {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "Failed to extract event: {}", self.reason)
+    }
+}
+
+impl StdError for EventRejection {}

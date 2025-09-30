@@ -5,12 +5,16 @@ use std::{
     ops::{Deref, DerefMut},
 };
 
+use serde::de::DeserializeOwned;
+
 use crate::eventsub::{
     websocket::{
-        router::extract::rejection::{MetaRejection, SessionRejection, SubscriptionRejection},
+        router::extract::rejection::{
+            EventRejection, MetaRejection, SessionRejection, SubscriptionRejection,
+        },
         IntoResponse, MetaData, Request, Session as SessionPayload,
     },
-    SubscriptionType as SubscriptionPayload,
+    Subscription as SubscriptionPayload,
 };
 
 pub trait Extract<S>: Sized {
@@ -65,6 +69,27 @@ impl<S> Extract<S> for Subscription {
 
         serde_json::from_str(scanner)
             .map_err(|e| SubscriptionRejection::new(format!("Invalid subscription JSON: {}", e)))
+            .map(Self)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Event<T>(pub T);
+
+impl<S, T> Extract<S> for Event<T>
+where
+    T: DeserializeOwned,
+{
+    type Rejection = EventRejection;
+
+    fn call(req: &Request, _state: &S) -> Result<Self, Self::Rejection> {
+        let scanner = req
+            .scanner
+            .get_event(&req.data)
+            .map_err(|_| EventRejection::new("Event data not found in request"))?;
+
+        serde_json::from_str(scanner)
+            .map_err(|e| EventRejection::new(format!("Invalid event JSON: {}", e)))
             .map(Self)
     }
 }
