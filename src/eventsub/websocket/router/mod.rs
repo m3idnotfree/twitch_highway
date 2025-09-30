@@ -10,6 +10,7 @@ use std::{
     collections::HashMap,
     convert::Infallible,
     fmt::{Debug, Formatter, Result as FmtResult},
+    future::{self, Ready},
     task::{Context, Poll},
 };
 
@@ -191,6 +192,20 @@ impl Service<Request> for Router {
 
     fn call(&mut self, req: Request) -> Self::Future {
         self.call_with_state(req, ())
+    }
+}
+
+impl Service<()> for Router {
+    type Response = Self;
+    type Error = Infallible;
+    type Future = Ready<Result<Self::Response, Self::Error>>;
+
+    fn poll_ready(&mut self, _cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+        Poll::Ready(Ok(()))
+    }
+
+    fn call(&mut self, _req: ()) -> Self::Future {
+        future::ready(Ok(self.clone().with_state(())))
     }
 }
 
