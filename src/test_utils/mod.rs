@@ -1,4 +1,3 @@
-#![allow(unused_imports)]
 use asknothingx2_util::{
     api::preset,
     oauth::{AccessToken, ClientId},
@@ -26,8 +25,8 @@ impl TwitchApiTest {
         url_parsed.set_path("/helix");
 
         let api = TwitchAPI::with_client(
-            AccessToken::new("2gbdx6oar67tqtcmt49t3wpcgycthx".to_string()),
-            ClientId::new("wbmytr93xzw8zbg0p1izqyzzc5mbiz".to_string()),
+            AccessToken::from("2gbdx6oar67tqtcmt49t3wpcgycthx"),
+            ClientId::from("wbmytr93xzw8zbg0p1izqyzzc5mbiz"),
             preset::testing("twitch-highway-test/1.0")
                 .build_client()
                 .unwrap(),
