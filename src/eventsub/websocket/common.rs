@@ -2,13 +2,14 @@ use std::{
     convert::Infallible,
     error::Error as StdError,
     fmt::{Display, Formatter, Result as FmtResult},
+    str::FromStr,
 };
 
 use tokio_tungstenite::tungstenite::Utf8Bytes;
 use url::Url;
 
 use crate::eventsub::{
-    websocket::{MessageType, Scanner},
+    websocket::{scanner, MessageType, Scanner},
     SubscriptionType,
 };
 
@@ -20,27 +21,20 @@ pub struct Request {
     pub data: Utf8Bytes,
 }
 
-impl From<&str> for Request {
-    fn from(value: &str) -> Self {
-        let scanner = Scanner::new(value).unwrap();
-        Self {
-            message_type: scanner.message_type,
-            subscription_type: scanner.subscription_type,
-            scanner,
-            data: value.into(),
-        }
     }
 }
 
-impl From<Utf8Bytes> for Request {
-    fn from(value: Utf8Bytes) -> Self {
-        let scanner = Scanner::new(&value).unwrap();
-        Self {
+impl FromStr for Request {
+    type Err = scanner::ScanError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let scanner = Scanner::new(s)?;
+        Ok(Self {
             message_type: scanner.message_type,
             subscription_type: scanner.subscription_type,
             scanner,
-            data: value,
-        }
+            data: s.into(),
+        })
     }
 }
 
