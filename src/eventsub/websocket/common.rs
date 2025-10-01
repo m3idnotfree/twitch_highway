@@ -21,6 +21,17 @@ pub struct Request {
     pub data: Utf8Bytes,
 }
 
+impl Request {
+    pub fn is_keepalive(&self) -> bool {
+        matches!(self.message_type, MessageType::SessionKeepalive)
+    }
+
+    pub fn is_reconnect(&self) -> bool {
+        matches!(self.message_type, MessageType::SessionReconnect)
+    }
+
+    pub fn get_reconnect_url(&self) -> &str {
+        self.scanner.get_reconnect_url(&self.data).unwrap()
     }
 }
 
