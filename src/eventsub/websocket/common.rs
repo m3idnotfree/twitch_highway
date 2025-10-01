@@ -51,7 +51,7 @@ impl FromStr for Request {
 
 #[derive(Debug, Clone)]
 pub struct Response {
-    status: Status,
+    pub status: Status,
     pub url: Option<String>,
     pub error_type: Option<String>,
     pub error_reason: Option<String>,
@@ -69,7 +69,7 @@ impl Default for Response {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-enum Status {
+pub enum Status {
     Success,
     Reconnect,
     NotFound,
@@ -130,6 +130,36 @@ impl Response {
 
     pub fn is_error(&self) -> bool {
         matches!(self.status, Status::Error)
+    }
+}
+
+impl Display for Response {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        match self.status {
+            Status::Success => write!(f, "Response: success"),
+            Status::Reconnect => {
+                if let Some(ref url) = self.url {
+                    write!(f, "Response: reconnect to '{}'", url)
+                } else {
+                    write!(f, "Response: reconnect")
+                }
+            }
+            Status::NotFound => write!(f, "Response: not found"),
+            Status::Error => match (&self.error_type, &self.error_reason) {
+                (Some(error_type), Some(reason)) => {
+                    write!(f, "Response: error [{}] - {}", error_type, reason)
+                }
+                (Some(error_type), None) => {
+                    write!(f, "Response: error [{}]", error_type)
+                }
+                (None, Some(reason)) => {
+                    write!(f, "Response: error - {}", reason)
+                }
+                (None, None) => {
+                    write!(f, "Response: error")
+                }
+            },
+        }
     }
 }
 
