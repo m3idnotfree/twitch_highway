@@ -7,6 +7,7 @@ const SUBSCRIPTION: &str = "\"subscription\"";
 const SESSION: &str = "\"session\"";
 const SUBSCRIPTION_TYPE: &str = "\"subscription_type\"";
 const MESSAGE_TYPE: &str = "\"message_type\"";
+const RECONNECT_URL: &str = "\"reconnect_url\"";
 
 #[derive(Debug, Default, Clone, Copy)]
 struct Section {
@@ -95,6 +96,12 @@ impl Scanner {
     #[inline]
     pub fn get_event<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
         self.extract_object_from_payload(data, EVENT)
+    }
+
+    #[inline]
+    pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
+        let session = InternalScanner::find_section(data, SESSION)?;
+        Self::extract_string_field(data, &session, RECONNECT_URL)
     }
 
     #[inline]
