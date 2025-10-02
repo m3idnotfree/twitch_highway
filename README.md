@@ -82,8 +82,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error> {
 - charity
 - chat
 - clips
+- conduits
 - entitlements
 - extensions
+- eventsub
 - games
 - goals
 - guest-star
@@ -102,8 +104,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error> {
 - whispers
 - full
 
-Note: Conduits and EventSub are not implemented yet, but are planned for future releases.
-
 ## License
 
-Licensed under the MIT license.
+Licensed under either of:
+
+- Apache License, Version 2.0
+- MIT license
