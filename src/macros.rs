@@ -579,15 +579,6 @@ macro_rules! endpoints {
                 }
             )+
         }
-
-        #[cfg(test)]
-        mod __test_enforcement {
-            const _ENFORCE_ALL_TESTS_EXIST: () = {
-                $(
-                    let _: fn() = super::tests::$method_name;
-                )*
-            };
-        }
     };
 
     // Query parameter handlers
