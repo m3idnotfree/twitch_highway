@@ -60,31 +60,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        bits::{request::BitsLeaderboardRequest, BitsAPI},
-        types::{BroadcasterId, ExtensionId},
-    };
-
-    api_test!(
-        get_bits_leaderboard,
-        [Some(
-            BitsLeaderboardRequest::new()
-                .count(2)
-                .period("week")
-                .started_at(&"2018-02-05T08:00:00Z".parse().unwrap())
-        )]
-    );
-    api_test!(get_cheermotes, [Some(&BroadcasterId::from("41245072"))]);
-    api_test!(
-        get_extension_transactions,
-        [&ExtensionId::from("1234"), None, None]
-    );
-
-    api_test!(extra
-        get_cheermotes, 
-        get_cheermotes2, 
-        [Some(&BroadcasterId::from("41245072"))]);
-}

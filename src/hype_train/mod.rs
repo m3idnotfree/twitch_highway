@@ -40,20 +40,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        hype_train::HypeTrainAPI,
-        types::{BroadcasterId, PaginationQuery},
-    };
-
-    api_test!(
-        get_hype_train_events,
-        [
-            &BroadcasterId::from("270954519"),
-            Some(PaginationQuery::new().first(1))
-        ]
-    );
-    api_test!(get_hype_train_status, [&BroadcasterId::from("123")]);
-}

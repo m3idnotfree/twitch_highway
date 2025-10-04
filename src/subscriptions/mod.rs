@@ -44,23 +44,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        subscriptions::SubscriptionsAPI,
-        types::{BroadcasterId, UserId},
-    };
-
-    api_test!(
-        get_broadcaster_subscriptions,
-        [&BroadcasterId::from("141981764"), None, None]
-    );
-    api_test!(
-        check_user_subscription,
-        [
-            &BroadcasterId::from("149747285"),
-            &UserId::from("141981764")
-        ]
-    );
-}

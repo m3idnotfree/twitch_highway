@@ -42,17 +42,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{raid::RaidAPI, types::BroadcasterId};
-
-    api_test!(
-        start_raid,
-        [
-            &BroadcasterId::from("12345678"),
-            &BroadcasterId::from("12345678")
-        ]
-    );
-    api_test!(cancel_raid, [&BroadcasterId::from("12345678")]);
-}

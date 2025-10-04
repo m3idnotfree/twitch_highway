@@ -129,23 +129,6 @@ where
     }
 }
 
-#[cfg(feature = "test")]
-impl<ResBody> TwitchAPIRequest<ResBody>
-where
-    ResBody: DeserializeOwned,
-{
-    pub fn set_url(mut self, mut url: Url) -> Self {
-        url.set_query(self.url.query());
-        self.url = url;
-        self
-    }
-
-    pub fn set_client(mut self, client: Client) -> Self {
-        self.client = client;
-        self
-    }
-}
-
 impl<ResBody> IntoRequestBuilder for TwitchAPIRequest<ResBody>
 where
     ResBody: DeserializeOwned,

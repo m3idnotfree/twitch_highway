@@ -43,17 +43,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        types::Id,
-        videos::{VideoSelector, VideosAPI},
-    };
-
-    api_test!(
-        get_videos,
-        [VideoSelector::by_ids(&[Id::from("335921245")]), None, None]
-    );
-    api_test!(delete_videos, [&[Id::from("1234"), Id::from("9876")],]);
-}

@@ -35,17 +35,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        games::{GamesAPI, GetGamesRequest},
-        types::Id,
-    };
-
-    api_test!(get_top_games, [None]);
-    api_test!(
-        get_games,
-        [GetGamesRequest::new().ids(&[Id::from("33214")])]
-    );
-}

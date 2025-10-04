@@ -43,30 +43,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        clips::{ClipsAPI, ClipsSelector},
-        types::{BroadcasterId, Id, PaginationQuery},
-    };
-
-    api_test!(create_clip, [&BroadcasterId::from("44322889"), None]);
-    api_test!(
-        get_clips,
-        [
-            ClipsSelector::by_ids(&[Id::from("AwkwardHelplessSalamanderSwiftRage")]),
-            None,
-            None
-        ]
-    );
-    api_test!(extra
-        get_clips,
-        get_clips2,
-        [
-            ClipsSelector::by_broadcaster_id(&BroadcasterId::from("1234")),
-            None,
-            Some(PaginationQuery::new().first(5))
-        ]
-    );
-}

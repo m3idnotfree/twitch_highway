@@ -269,7 +269,4 @@ pub mod videos;
 #[cfg(feature = "whisper")]
 pub mod whisper;
 
-#[cfg(feature = "test")]
-pub mod test_utils;
-
 mod serde_helpers;

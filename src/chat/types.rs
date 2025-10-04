@@ -113,7 +113,7 @@ pub enum EmoteType {
     Owl2019,
     Twofactor,
     Limitedtime,
-    #[cfg(feature = "test")]
+    // #[cfg(feature = "test")]
     Subscription,
 }
 

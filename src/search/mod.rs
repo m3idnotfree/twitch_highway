@@ -41,24 +41,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{search::SearchAPI, test_utils::TwitchApiTest};
-
-    api_test!(search_categories, ["fort", None]);
-    api_test!(search_channels, ["twitchdev", None, None]);
-
-    #[tokio::test]
-    pub(crate) async fn search_channels_2() {
-        let suite = TwitchApiTest::new().await;
-
-        suite.search_channels_2().await;
-
-        let _ = suite
-            .execute(|api| api.search_channels("a_seagull", Some(true), None))
-            .json()
-            .await
-            .unwrap();
-    }
-}

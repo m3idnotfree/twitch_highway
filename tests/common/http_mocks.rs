@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use asknothingx2_util::{
     api::preset,
     oauth::{AccessToken, ClientId},
@@ -10,15 +12,15 @@ use wiremock::{
     Mock, MockBuilder, MockServer, ResponseTemplate,
 };
 
-use crate::{request::TwitchAPIRequest, TwitchAPI};
+use twitch_highway::{request::TwitchAPIRequest, TwitchAPI};
 
 #[derive(Debug)]
-pub struct TwitchApiTest {
+pub struct HttpMock {
     api: TwitchAPI,
     pub server: MockServer,
 }
 
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn new() -> Self {
         let mock_server = MockServer::start().await;
         let mut url_parsed = Url::parse(&mock_server.uri()).unwrap();
@@ -33,7 +35,7 @@ impl TwitchApiTest {
         )
         .set_url(url_parsed);
 
-        TwitchApiTest {
+        HttpMock {
             api,
             server: mock_server,
         }
@@ -62,7 +64,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "ads")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn start_commercial(&self) {
         self.api_mock("POST", "/channels/commercial")
             .and(header("content-type", "application/json"))
@@ -114,7 +116,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "analytics")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_extension_analytics(&self) {
         self.api_mock("GET", "/analytics/extensions")
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -177,7 +179,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "bits")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_bits_leaderboard(&self) {
         self.api_mock("GET", "/bits/leaderboard")
             .and(query_param("count", "2"))
@@ -356,7 +358,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "channels")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_channel_info(&self) {
         self.api_mock("GET", "/channels")
             .and(query_param("broadcaster_id", "141981764"))
@@ -499,7 +501,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "channel-points")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn create_custom_rewards(&self) {
         self.api_mock("POST", "/channel_points/custom_rewards")
             .and(query_param("broadcaster_id", "274637212"))
@@ -890,7 +892,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "charity")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_charity_campaign(&self) {
         self.api_mock("GET", "/charity/campaigns")
             .and(query_param("broadcaster_id", "123456"))
@@ -962,7 +964,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "chat")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_chatters(&self) {
         self.api_mock("GET", "/chat/chatters")
             .and(query_param("broadcaster_id", "123456"))
@@ -1406,7 +1408,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "clips")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn create_clip(&self) {
         self.api_mock("POST", "/clips")
             .and(query_param("broadcaster_id", "44322889"))
@@ -1486,7 +1488,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "conduits")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_conduits(&self) {
         self.api_mock("GET", "/eventsub/conduits")
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -1672,7 +1674,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "ccls")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_content_classification_labels(&self) {
         self.api_mock("GET", "/content_classification_labels")
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -1720,7 +1722,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "entitlements")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_drops_entitlements(&self) {
         self.api_mock("GET", "/entitlements/drops")
             .and(query_param("user_id", "25009227"))
@@ -1803,7 +1805,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "extensions")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_extension_configuration_segment(&self) {
         self.basic_mock("GET", "/extensions/configurations")
             .and(query_param(
@@ -2188,7 +2190,7 @@ impl TwitchApiTest {
     }
 }
 #[cfg(feature = "eventsub")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn create_eventsub(&self) {
         self.api_mock("POST", "/eventsub/subscriptions")
             .and(header("content-type", "application/json"))
@@ -2362,7 +2364,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "games")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_top_games(&self) {
         self.api_mock("GET", "/games/top")
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -2399,7 +2401,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "goals")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_creator_goals(&self) {
         self.api_mock("GET", "/goals")
             .and(query_param("broadcaster_id", "141981764"))
@@ -2424,7 +2426,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "guest-star")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_channel_guest_star_settings(&self) {
         self.api_mock("GET", "/guest_star/channel_settings")
             .and(query_param("broadcaster_id", "932104"))
@@ -2704,7 +2706,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "hype-train")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_hype_train_events(&self) {
         self.api_mock("GET", "/hypetrain/events")
             .and(query_param("broadcaster_id", "270954519"))
@@ -2814,7 +2816,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "moderation")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn check_automod_status(&self) {
         self.api_mock("POST", "/moderation/enforcements/status")
             .and(query_param("broadcaster_id", "12345"))
@@ -3405,7 +3407,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "polls")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_polls(&self) {
         self.api_mock("GET", "/polls")
             .and(query_param("broadcaster_id", "141981764"))
@@ -3552,7 +3554,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "predictions")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_predictions(&self) {
         self.api_mock("GET", "/predictions")
             .and(query_param("broadcaster_id", "55696719"))
@@ -3702,7 +3704,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "raid")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn start_raid(&self) {
         self.api_mock("POST", "/raids")
             .and(query_param("from_broadcaster_id", "12345678"))
@@ -3729,7 +3731,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "schedule")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_channel_stream_schedule(&self) {
         self.api_mock("GET", "/schedule")
             .and(query_param("broadcaster_id", "141981764"))
@@ -3886,7 +3888,7 @@ END:VCALENDAR%
 }
 
 #[cfg(feature = "search")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn search_categories(&self) {
         self.api_mock("GET", "/search/categories")
             .and(query_param("query", "fort"))
@@ -3968,7 +3970,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "streams")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_stream_key(&self) {
         self.api_mock("GET", "/streams/key")
             .and(query_param("broadcaster_id", "141981764"))
@@ -4128,7 +4130,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "subscriptions")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_broadcaster_subscriptions(&self) {
         self.api_mock("GET", "/subscriptions")
             .and(query_param("broadcaster_id", "141981764"))
@@ -4180,7 +4182,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "teams")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_channel_teams(&self) {
         self.api_mock("GET", "/teams/channel")
             .and(query_param("broadcaster_id", "96909659"))
@@ -4242,7 +4244,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "users")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_users(&self) {
         self.api_mock("GET", "/users")
             .and(query_param("id", "141981764"))
@@ -4529,7 +4531,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "videos")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn get_videos(&self) {
         self.api_mock("GET", "/videos")
             .and(query_param("id", "335921245"))
@@ -4578,7 +4580,7 @@ impl TwitchApiTest {
 }
 
 #[cfg(feature = "whisper")]
-impl TwitchApiTest {
+impl HttpMock {
     pub async fn send_whisper(&self) {
         self.api_mock("POST", "/whispers")
             .and(query_param("from_user_id", "123"))

@@ -27,13 +27,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{types::UserId, whisper::WhisperAPI};
-
-    api_test!(
-        send_whisper,
-        [&UserId::from("123"), &UserId::from("456"), "hello"]
-    );
-}

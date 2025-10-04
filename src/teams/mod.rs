@@ -36,14 +36,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        teams::{TeamSelector, TeamsAPI},
-        types::{BroadcasterId, Id},
-    };
-
-    api_test!(get_channel_teams, [&BroadcasterId::from("96909659")]);
-    api_test!(get_teams, [TeamSelector::by_id(&Id::from("6358"))]);
-}

@@ -47,7 +47,6 @@ videos = []
 whisper = []
 mock-api = ["subscriptions", "streams", "videos", "teams"]
 full = ["ads", "analytics", "bits", "ccls", "channel-points", "channels", "charity", "chat", "clips", "conduits", "entitlements", "extensions", "eventsub", "games", "goals", "guest-star", "hype-train", "moderation", "polls", "predictions", "raid", "schedule", "search", "streams", "subscriptions", "teams", "users", "videos", "whisper"]
-test = ["twitch_oauth_token", "wiremock", "anyhow", "rand"]
 
 # webhook
 webhook = ["webhook-http", "webhook-actix", "webhook-axum", "webhook-verify"]
@@ -59,7 +58,7 @@ webhook-axum = ["axum"]
 # websocket
 websocket = ["websocket-router", "websocket-client"]
 websocket-router = ["dep:tower", "pin-project-lite"]
-websocket-client = ["tokio", "thiserror", "tokio-tungstenite", "futures-util", "anyhow", "tracing"]
+websocket-client = ["tokio", "thiserror", "tokio-tungstenite", "futures-util", "tracing"]
 
 [dependencies]
 asknothingx2-util = { version = "0.1.10", features = ["api", "oauth", "serde"] }
@@ -73,11 +72,6 @@ url = "2.5.7"
 
 rand = { version = "0.9.2", optional = true }
 
-wiremock = { version = "0.6.5", optional = true }
-anyhow = { version = "1.0.100", optional = true }
-
-
-twitch_oauth_token = { version = "2.0.7", features = ["test"], optional = true }
 
 # eventsub
 axum = { version = "0.8.6", features = ["ws"], optional = true }
@@ -107,6 +101,15 @@ chrono-tz = { version = "0.10.4", optional = true }
 serde_with = { version = "3.15.0", optional = true }
 
 [dev-dependencies]
+anyhow = "1.0.100"
+axum = { version = "0.8.6", features = ["ws"] }
 dotenv = "0.15.0"
+pin-project-lite = "0.2.16"
+rand = "0.9.2"
+regex = "1.11.3"
+thiserror = "2.0.17"
 tokio = { version = "1.47.1", features = ["full"] }
-
+tracing-subscriber = "0.3.20"
+twitch_highway = { path = ".", features = ["streams"] }
+twitch_oauth_token = { version = "2.0.8", features = ["test"] }
+wiremock = "0.6.5"

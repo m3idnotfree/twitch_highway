@@ -22,10 +22,3 @@ endpoints! {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::ccls::CclsAPI;
-
-    api_test!(get_content_classification_labels, [None]);
-}
