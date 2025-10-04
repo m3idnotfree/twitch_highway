@@ -13,6 +13,16 @@ use crate::types::{
 
 endpoints! {
     AdsAPI {
+        /// Starts a commercial break on the specified channel
+        ///
+        /// # Arguments
+        /// * `broadcaster_id` - The ID of the partner or affiliate broadcaster.
+        /// * `length` - The length of the commercial to run, maximum 180.
+        ///
+        /// # Required Scope
+        /// `channel:edit:commercial`
+        ///
+        /// # Reference
         /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
         fn start_commercial(
             &self,
@@ -26,6 +36,16 @@ endpoints! {
             body: StartCommercialBody::new(broadcaster_id, length).into_json()
         }
 
+        /// Gets the broadcaster's ad schedule and details about scheduled ads
+        ///
+        /// # Arguments
+        /// * `broadcaster_id` - The ID of the broadcaster. must match the user ID in the
+        ///   auth token.
+        ///
+        /// # Required Scope
+        /// `channel:read:ads`
+        ///
+        /// # Reference
         /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
         fn get_ad_schedule(
             &self,
@@ -39,6 +59,16 @@ endpoints! {
             }
         }
 
+        /// Snoozes the next scheduled ad for the broadcaster
+        ///
+        /// # Arguments
+        /// * `broadcaster_id` - The ID of the broadcaster. must match the user ID in the
+        ///   auth token.
+        ///
+        /// # Required Scope
+        /// `channel:manage:ads`
+        ///
+        /// # Reference
         /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
         fn snooze_next_ad(
             &self,
