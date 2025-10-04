@@ -16,7 +16,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 default = []
-ads = []
+ads = ["serde_with"]
 analytics = []
 bits = []
 ccls = []
@@ -100,6 +100,8 @@ tracing = { version = "0.1.41", optional = true }
 # router
 tower = { version = "0.5.2", features = ["limit", "util"], optional = true }
 pin-project-lite = { version = "0.2.16", optional = true }
+
+serde_with = { version = "3.15.0", optional = true }
 
 [dev-dependencies]
 dotenv = "0.15.0"
