@@ -1,7 +1,6 @@
 use chrono::{DateTime, FixedOffset};
 use serde::Deserialize;
 
-#[cfg(feature = "moderation")]
 pub fn deserialize_optional_datetime<'de, D>(
     deserializer: D,
 ) -> Result<Option<DateTime<FixedOffset>>, D::Error>
