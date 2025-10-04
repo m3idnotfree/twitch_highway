@@ -26,6 +26,11 @@ use crate::{
 };
 
 const MODERATION: &str = "moderation";
+const AUTOMOD: &str = "automod";
+const MODERATORS: &str = "moderators";
+const BLOCKED_TERMS: &str = "blocked_terms";
+const VIPS: &str = "vips";
+const SHIELD_MODE: &str = "shield_mode";
 
 endpoints! {
     ModerationAPI {
@@ -54,7 +59,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: ManageHeldAutoModMessages,
             method: POST,
-            path: [MODERATION, "automod", "message"],
+            path: [MODERATION,AUTOMOD, "message"],
             headers: [json],
             body:ManageHeldAutoModMeussageRequest::new(user_id, msg_id, action).into_json()
         }
@@ -67,7 +72,7 @@ endpoints! {
         ) -> AutoModSettingsResponse {
             endpoint_type: GetAutoModSettings,
             method: GET,
-            path: [MODERATION, "automod", SETTINGS],
+            path: [MODERATION, AUTOMOD, SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
@@ -83,7 +88,7 @@ endpoints! {
         ) -> AutoModSettingsResponse {
             endpoint_type: UpdateAutoModSettings,
             method: PUT,
-            path: [MODERATION, "automod", SETTINGS],
+            path: [MODERATION, AUTOMOD, SETTINGS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
@@ -195,7 +200,7 @@ endpoints! {
         ) -> BlockedTermsResponse {
             endpoint_type: GetBlockedTerms,
             method: GET,
-            path: [MODERATION, "blocked_terms"],
+            path: [MODERATION, BLOCKED_TERMS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id),
@@ -212,7 +217,7 @@ endpoints! {
         ) -> BlockedTermsResponse {
             endpoint_type: AddBlockedTerm,
             method: POST,
-            path: [MODERATION, "blocked_terms"],
+            path: [MODERATION, BLOCKED_TERMS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
@@ -230,7 +235,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: RemoveBlockedTerm,
             method: DELETE,
-            path: [MODERATION, "blocked_terms"],
+            path: [MODERATION, BLOCKED_TERMS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id),
@@ -279,7 +284,7 @@ endpoints! {
         ) -> ModeratorsResponse {
             endpoint_type: GetModerators,
             method: GET,
-            path: [MODERATION, "moderators"],
+            path: [MODERATION, MODERATORS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 opt(USER_ID, user_id),
@@ -295,7 +300,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: AddChannelModerator,
             method: POST,
-            path: [MODERATION, "moderators"],
+            path: [MODERATION, MODERATORS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(USER_ID, user_id)
@@ -310,7 +315,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: RemoveChannelModerator,
             method: DELETE,
-            path: [MODERATION, "moderators"],
+            path: [MODERATION, MODERATORS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(USER_ID, user_id)
@@ -326,7 +331,7 @@ endpoints! {
         ) -> ModeratorsResponse {
             endpoint_type: GetVIPs,
             method: GET,
-            path: [CHANNELS, "vips"],
+            path: [CHANNELS, VIPS],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 opt_extend(user_ids.map(|ids| ids.iter().map(|id| (USER_ID, id)))),
@@ -342,7 +347,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: AddChannelVIP,
             method: POST,
-            path: [CHANNELS, "vips"],
+            path: [CHANNELS, VIPS],
             query_params: {
                 query(USER_ID, user_id),
                 query(BROADCASTER_ID, broadcaster_id)
@@ -357,7 +362,7 @@ endpoints! {
         ) -> NoContent {
             endpoint_type: RemoveChannelVIP,
             method: DELETE,
-            path: [CHANNELS, "vips"],
+            path: [CHANNELS, VIPS],
             query_params: {
                 query(USER_ID, user_id),
                 query(BROADCASTER_ID, broadcaster_id)
@@ -373,7 +378,7 @@ endpoints! {
         ) -> ShieldModeStatusResponse {
             endpoint_type: UpdateShieldModeStatus,
             method: PUT,
-            path: [MODERATION, "shield_mode"],
+            path: [MODERATION, SHIELD_MODE],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
@@ -390,7 +395,7 @@ endpoints! {
         ) -> ShieldModeStatusResponse {
             endpoint_type: GetShieldModeStatus,
             method: GET,
-            path: [MODERATION, "shield_mode"],
+            path: [MODERATION, SHIELD_MODE],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 query(MODERATOR_ID, moderator_id)
