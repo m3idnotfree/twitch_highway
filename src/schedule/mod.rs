@@ -9,6 +9,9 @@ pub use request::{
 pub use response::{Schedule, ScheduleResponse};
 pub use types::{Segment, Vacation};
 
+use chrono::{DateTime, TimeZone};
+use chrono_tz::Tz;
+
 use crate::{
     request::{NoContent, RequestBody},
     types::{
@@ -64,11 +67,11 @@ endpoints! {
             }
         }
         /// <https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment>
-        fn create_channel_stream_schedule_segment(
+        fn create_channel_stream_schedule_segment<T: TimeZone>(
             &self,
             broadcaster_id: &BroadcasterId,
-            start_time: &str,
-            timezone: &str,
+            start_time: &DateTime<T>,
+            timezone: Tz,
             duration: &str,
             opts: Option<CreateScheduleSegmentRequest>,
         ) -> ScheduleResponse {
@@ -81,8 +84,8 @@ endpoints! {
             headers: [json],
             body: {
                 RequestBody::new(serde_json::json!({
-                    "start_time": start_time,
-                    "timezone": timezone,
+                    "start_time": &start_time.to_rfc3339(),
+                    "timezone": timezone.name(),
                     "duration": duration,
                 }), opts).into_json()
             }
