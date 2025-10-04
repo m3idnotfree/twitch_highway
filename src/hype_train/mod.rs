@@ -9,6 +9,8 @@ pub use types::{
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 
+const HYPE_TRAIN: &str = "hypetrain";
+
 endpoints! {
     HypeTrainAPI {
         /// <https://dev.twitch.tv/docs/api/reference/#get-hype-train-events>
@@ -19,7 +21,7 @@ endpoints! {
         ) -> HypeTrainResponse {
             endpoint_type: GetHypeTrainEvents,
             method: GET,
-            path: ["hypetrain", "events"],
+            path: [HYPE_TRAIN, "events"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
                 pagination(pagination)
@@ -33,7 +35,7 @@ endpoints! {
         ) -> HypeTrainStatusResponse {
             endpoint_type: GetHypeTrainStatus,
             method: GET,
-            path: ["hypetrain","status"],
+            path: [HYPE_TRAIN,"status"],
             query_params: {
                 query(BROADCASTER_ID, broadcaster_id),
             }
