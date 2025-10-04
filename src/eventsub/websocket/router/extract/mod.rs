@@ -10,7 +10,7 @@ use serde::de::DeserializeOwned;
 use crate::eventsub::{
     websocket::{
         router::extract::rejection::{
-            EventRejection, MetaRejection, SessionRejection, SubscriptionRejection,
+            EventRejection, MetaRejection, SessionRejection, StringRejection, SubscriptionRejection,
         },
         IntoResponse, MetaData, Request, Session as SessionPayload,
     },
@@ -21,6 +21,14 @@ pub trait Extract<S>: Sized {
     type Rejection: IntoResponse;
 
     fn call(req: &Request, state: &S) -> Result<Self, Self::Rejection>;
+}
+
+impl<S> Extract<S> for String {
+    type Rejection = StringRejection;
+
+    fn call(req: &Request, _state: &S) -> Result<Self, Self::Rejection> {
+        Ok(req.data.to_string())
+    }
 }
 
 #[derive(Debug, Clone)]

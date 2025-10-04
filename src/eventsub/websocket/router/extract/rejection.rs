@@ -112,3 +112,30 @@ impl Display for EventRejection {
 }
 
 impl StdError for EventRejection {}
+
+#[derive(Debug)]
+pub struct StringRejection {
+    pub reason: String,
+}
+
+impl StringRejection {
+    pub fn new(reason: impl Into<String>) -> Self {
+        Self {
+            reason: reason.into(),
+        }
+    }
+}
+
+impl IntoResponse for StringRejection {
+    fn into_response(self) -> Response {
+        Response::error("string_extraction_failed", self.reason)
+    }
+}
+
+impl Display for StringRejection {
+    fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
+        write!(f, "Failed to extract metadata: {}", self.reason)
+    }
+}
+
+impl StdError for StringRejection {}
