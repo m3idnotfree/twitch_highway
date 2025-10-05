@@ -27,6 +27,7 @@ pub struct Trigger {
     // webhook
     forward_address: Option<String>,
     secret: Option<String>,
+    verify: bool,
     item_id: Option<String>,
     // websocket
     transport: Option<String>,
@@ -39,6 +40,7 @@ impl Trigger {
             config,
             forward_address: None,
             secret: None,
+            verify: false,
             item_id: None,
             transport: None,
             session: None,
@@ -65,6 +67,11 @@ impl Trigger {
         self
     }
 
+    pub fn with_verify(mut self) -> Self {
+        self.verify = true;
+        self
+    }
+
     pub fn event(&self, event: impl Into<String>) -> TriggerExecution {
         TriggerExecution {
             trigger: self.clone(),
@@ -86,7 +93,13 @@ impl IntoFuture for TriggerExecution {
         TriggerFuture {
             future: Box::pin(async move {
                 let mut child = self.trigger.config;
-                child.add_args(["event", "trigger", &self.event]);
+                child.add_arg("event");
+
+                if self.trigger.verify {
+                    child.add_args(["verify-subscription", &self.event]);
+                } else {
+                    child.add_args(["trigger", &self.event]);
+                }
 
                 if let Some(forward_address) = &self.trigger.forward_address {
                     child.add_args(["-F".to_string(), forward_address.clone()]);

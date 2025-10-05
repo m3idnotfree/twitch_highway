@@ -57,14 +57,23 @@ mod webhook {
     use std::sync::Arc;
 
     use axum::{
-        self, body::Bytes, extract::State, http::header::HeaderMap, response::IntoResponse,
-        routing::post, Router,
+        self,
+        body::Body,
+        body::Bytes,
+        extract::State,
+        http::{header::HeaderMap, StatusCode},
+        response::Response,
+        routing::post,
+        Router,
     };
     use tokio::{
         net::TcpListener,
         sync::{oneshot, Mutex},
     };
-    use twitch_highway::eventsub::webhook::{generate_secret, verify_event_message};
+    use twitch_highway::eventsub::webhook::{
+        generate_secret, get_message_type, verify_event_message, Challenge, MessageType,
+        Notification, Revoke, VerificationError,
+    };
 
     use crate::common::trigger_webhook_event;
 
@@ -120,6 +129,32 @@ mod webhook {
         let _ = shutdown_tx.send(());
     }
 
+    #[tokio::test]
+    async fn verify_message() {
+        let secret = generate_secret();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        let (shutdown_tx, shutdown_rx) = oneshot::channel();
+        let (result_tx, result_rx) = oneshot::channel();
+
+        tokio::spawn(axum_server(
+            secret.clone(),
+            listener,
+            shutdown_rx,
+            result_tx,
+        ));
+
+        let forward_address = format!("http://{}/eventsub", addr);
+        let trigger = trigger_webhook_event(&forward_address, &secret).with_verify();
+        trigger.event("subscribe").await.unwrap();
+
+        let verify_result = result_rx.await.unwrap();
+        assert!(verify_result);
+
+        let _ = shutdown_tx.send(());
+    }
+
     async fn axum_server(
         secret: String,
         listener: TcpListener,
@@ -147,12 +182,48 @@ mod webhook {
         State(state): State<AppState>,
         headers: HeaderMap,
         body: Bytes,
-    ) -> impl IntoResponse {
-        let verify = verify_event_message(&headers, &body, &state.secret);
-        let is_valid = verify.is_ok();
+    ) -> Result<Response, VerificationError> {
+        let verify = verify_event_message(&headers, &body, &state.secret).is_ok();
+        let is_valid = verify;
 
         if let Some(tx) = state.result_tx.lock().await.take() {
             let _ = tx.send(is_valid);
+        }
+
+        if let Ok(message_type) = get_message_type(&headers) {
+            match message_type {
+                MessageType::Verification => {
+                    let challenge: Challenge = serde_json::from_slice(&body).unwrap();
+
+                    Ok(Response::builder()
+                        .status(StatusCode::OK)
+                        .header("Content-Type", "text/plain")
+                        .body(Body::from(challenge.challenge))
+                        .unwrap())
+                }
+                MessageType::Notification => {
+                    let _notification: Notification<serde_json::Value> =
+                        serde_json::from_slice(&body).unwrap();
+
+                    Ok(Response::builder()
+                        .status(StatusCode::NO_CONTENT)
+                        .body(Body::empty())
+                        .unwrap())
+                }
+                MessageType::Revocation => {
+                    let _revocation: Revoke = serde_json::from_slice(&body).unwrap();
+
+                    Ok(Response::builder()
+                        .status(StatusCode::NO_CONTENT)
+                        .body(Body::empty())
+                        .unwrap())
+                }
+            }
+        } else {
+            Ok(Response::builder()
+                .status(StatusCode::FORBIDDEN)
+                .body(Body::empty())
+                .unwrap())
         }
     }
 
