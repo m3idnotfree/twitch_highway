@@ -49,7 +49,7 @@ full = ["ads", "analytics", "bits", "ccls", "channel-points", "channels", "chari
 
 webhook = ["webhook-actix", "webhook-axum", "webhook-http", "webhook-verify"]
 webhook-actix = ["actix-http"]
-webhook-axum = ["axum-core", "http"]
+webhook-axum = ["axum-core", "webhook-http"]
 webhook-http = ["http"]
 webhook-verify = ["hex", "hmac", "rand", "sha2", "subtle"]
 
