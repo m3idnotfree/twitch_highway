@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 use crate::{
-    eventsub::{subscription_types::SubscriptionType, transport::TransportType},
+    eventsub::{subscription_types::SubscriptionType, transport::TransportType, Condition},
     types::{Status, UserId},
 };
 
 #[derive(Debug, Clone, Serialize)]
-pub struct CreateEventSubRequest<Condition, T: TransportType> {
+pub struct CreateEventSubRequest<T: TransportType> {
     #[serde(rename = "type")]
     pub kind: SubscriptionType,
     pub version: String,
@@ -14,9 +14,8 @@ pub struct CreateEventSubRequest<Condition, T: TransportType> {
     pub transport: T,
 }
 
-impl<Condition, T> CreateEventSubRequest<Condition, T>
+impl<T> CreateEventSubRequest<T>
 where
-    Condition: Serialize,
     T: TransportType + Serialize,
 {
     pub fn new(kind: SubscriptionType, condition: Condition, transport: T) -> Self {

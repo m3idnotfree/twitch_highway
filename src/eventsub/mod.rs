@@ -34,7 +34,7 @@ endpoints! {
         /// <https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription>
         fn create_eventsub<T: TransportType>(
             &self,
-            req: CreateEventSubRequest<Condition, T>,
+            req: CreateEventSubRequest<T>,
         ) -> CreateEventSubscriptionsResponse {
             endpoint_type: CreateEventSub,
             method: POST,
