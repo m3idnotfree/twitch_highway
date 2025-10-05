@@ -37,50 +37,54 @@ pub fn verify_event_message<H: HeaderAccess>(
     headers: &H,
     body: &[u8],
     secret: &str,
-) -> Result<(), WebhookError> {
+) -> Result<(), VerificationError> {
     let signature = headers
         .get_header(MESSAGE_SIGNATURE)
-        .ok_or(WebhookError::MissingHeader(MESSAGE_SIGNATURE))?;
+        .ok_or(VerificationError::MissingHeader(MESSAGE_SIGNATURE))?;
 
     let hmac_signature = hmac_signature(headers, body, secret)?;
 
     if verify_message(&hmac_signature, signature) {
         Ok(())
     } else {
-        Err(WebhookError::InvalidSignature)
+        Err(VerificationError::InvalidSignature)
     }
 }
 
-pub fn get_message_type<H: HeaderAccess>(headers: &H) -> Result<MessageType, WebhookError> {
+pub fn get_message_type<H: HeaderAccess>(headers: &H) -> Result<MessageType, VerificationError> {
     let s = headers
         .get_header(MESSAGE_TYPE)
-        .ok_or(WebhookError::MissingHeader(MESSAGE_TYPE))?;
+        .ok_or(VerificationError::MissingHeader(MESSAGE_TYPE))?;
 
-    MessageType::from_str(s).map_err(|_| WebhookError::UnknownMessageType(s.to_string()))
+    MessageType::from_str(s).map_err(|_| VerificationError::UnknownMessageType(s.to_string()))
 }
 
 pub fn get_subscription_type<H: HeaderAccess>(
     headers: &H,
-) -> Result<SubscriptionType, WebhookError> {
+) -> Result<SubscriptionType, VerificationError> {
     let s = headers
         .get_header(SUBSCRIPTION_TYPE)
-        .ok_or(WebhookError::MissingHeader(SUBSCRIPTION_TYPE))?;
+        .ok_or(VerificationError::MissingHeader(SUBSCRIPTION_TYPE))?;
 
-    SubscriptionType::from_str(s).map_err(|_| WebhookError::UnknownSubscriptionType(s.to_string()))
+    SubscriptionType::from_str(s)
+        .map_err(|_| VerificationError::UnknownSubscriptionType(s.to_string()))
 }
 
 pub fn get_subscription_version<H: HeaderAccess>(headers: &H) -> &str {
     headers.get_header(SUBSCRIPTION_VERSION).unwrap_or("")
 }
 
-fn get_hmac_message<H: HeaderAccess>(headers: &H, body: &[u8]) -> Result<Vec<u8>, WebhookError> {
+fn get_hmac_message<H: HeaderAccess>(
+    headers: &H,
+    body: &[u8],
+) -> Result<Vec<u8>, VerificationError> {
     let message_id = headers
         .get_header(MESSAGE_ID)
-        .ok_or(WebhookError::MissingHeader(MESSAGE_ID))?;
+        .ok_or(VerificationError::MissingHeader(MESSAGE_ID))?;
 
     let message_timestamp = headers
         .get_header(MESSAGE_TIMESTAMP)
-        .ok_or(WebhookError::MissingHeader(MESSAGE_TIMESTAMP))?;
+        .ok_or(VerificationError::MissingHeader(MESSAGE_TIMESTAMP))?;
 
     let mut message = Vec::with_capacity(message_id.len() + message_timestamp.len() + body.len());
 
@@ -114,7 +118,7 @@ fn hmac_signature<H: HeaderAccess>(
     headers: &H,
     body: &[u8],
     secret: &str,
-) -> Result<String, WebhookError> {
+) -> Result<String, VerificationError> {
     Ok(get_hmac(secret, &get_hmac_message(headers, body)?))
 }
 
@@ -214,7 +218,7 @@ impl TryFrom<&str> for MessageType {
 }
 
 #[derive(Debug, Clone)]
-pub enum WebhookError {
+pub enum VerificationError {
     MissingHeader(&'static str),
     InvalidHeader(&'static str),
     InvalidSignature,
@@ -222,29 +226,29 @@ pub enum WebhookError {
     UnknownSubscriptionType(String),
 }
 
-impl Display for WebhookError {
+impl Display for VerificationError {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
-            Self::MissingHeader(header) => write!(f, "Missing required header: {}", header),
-            Self::InvalidHeader(header) => write!(f, "Invalid header format: {}", header),
-            Self::InvalidSignature => write!(f, "Invalid webhook signature"),
-            Self::UnknownMessageType(msg) => write!(f, "Unknown message type: {}", msg),
-            Self::UnknownSubscriptionType(msg) => write!(f, "Unknown subscription type: {}", msg),
+            Self::MissingHeader(header) => write!(f, "missing required header: {}", header),
+            Self::InvalidHeader(header) => write!(f, "invalid header format: {}", header),
+            Self::InvalidSignature => write!(f, "invalid webhook signature"),
+            Self::UnknownMessageType(msg) => write!(f, "unknown message type: {}", msg),
+            Self::UnknownSubscriptionType(msg) => write!(f, "unknown subscription type: {}", msg),
         }
     }
 }
 
-impl std::error::Error for WebhookError {}
+impl std::error::Error for VerificationError {}
 
 #[cfg(feature = "webhook-axum")]
-impl axum_core::response::IntoResponse for WebhookError {
+impl axum_core::response::IntoResponse for VerificationError {
     fn into_response(self) -> axum_core::response::Response {
         match self {
-            WebhookError::MissingHeader(_) | WebhookError::InvalidHeader(_) => {
+            VerificationError::MissingHeader(_) | VerificationError::InvalidHeader(_) => {
                 http::StatusCode::BAD_REQUEST.into_response()
             }
-            WebhookError::InvalidSignature => http::StatusCode::FORBIDDEN.into_response(),
-            WebhookError::UnknownMessageType(_) | Self::UnknownSubscriptionType(_) => {
+            VerificationError::InvalidSignature => http::StatusCode::FORBIDDEN.into_response(),
+            VerificationError::UnknownMessageType(_) | Self::UnknownSubscriptionType(_) => {
                 http::StatusCode::NO_CONTENT.into_response()
             }
         }
