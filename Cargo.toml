@@ -57,7 +57,7 @@ webhook-axum = ["axum"]
 
 # websocket
 websocket = ["websocket-router", "websocket-client"]
-websocket-router = ["dep:tower", "pin-project-lite"]
+websocket-router = ["dep:tower", "pin-project-lite", "tracing"]
 websocket-client = ["tokio", "thiserror", "tokio-tungstenite", "futures-util", "tracing"]
 
 [dependencies]

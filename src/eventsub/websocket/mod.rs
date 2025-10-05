@@ -13,7 +13,7 @@ mod types;
 pub use client::{client, Client, Config, Error, WithGracefulShutdown};
 
 #[cfg(feature = "websocket-router")]
-pub use router::{extract, layers, routes, Router};
+pub use router::{extract, layer, routes, Router};
 
 pub use common::{IntoResponse, Request, Response};
 pub use messages::*;
