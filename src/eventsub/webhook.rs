@@ -3,7 +3,6 @@ use std::{
     str::FromStr,
 };
 
-use axum::response::Response;
 use hmac::{Hmac, Mac};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
@@ -238,15 +237,15 @@ impl Display for WebhookError {
 impl std::error::Error for WebhookError {}
 
 #[cfg(feature = "webhook-axum")]
-impl axum::response::IntoResponse for WebhookError {
-    fn into_response(self) -> Response {
+impl axum_core::response::IntoResponse for WebhookError {
+    fn into_response(self) -> axum_core::response::Response {
         match self {
             WebhookError::MissingHeader(_) | WebhookError::InvalidHeader(_) => {
-                axum::http::StatusCode::BAD_REQUEST.into_response()
+                http::StatusCode::BAD_REQUEST.into_response()
             }
-            WebhookError::InvalidSignature => axum::http::StatusCode::FORBIDDEN.into_response(),
+            WebhookError::InvalidSignature => http::StatusCode::FORBIDDEN.into_response(),
             WebhookError::UnknownMessageType(_) | Self::UnknownSubscriptionType(_) => {
-                axum::http::StatusCode::NO_CONTENT.into_response()
+                http::StatusCode::NO_CONTENT.into_response()
             }
         }
     }
