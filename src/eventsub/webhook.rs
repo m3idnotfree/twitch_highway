@@ -33,7 +33,7 @@ pub fn generate_secret() -> String {
     hex::encode(rand::random::<[u8; 32]>())
 }
 
-pub fn verify_event_message<H: HeaderProvider>(
+pub fn verify_event_message<H: HeaderAccess>(
     headers: &H,
     body: &[u8],
     secret: &str,
@@ -51,7 +51,7 @@ pub fn verify_event_message<H: HeaderProvider>(
     }
 }
 
-pub fn get_message_type<H: HeaderProvider>(headers: &H) -> Result<MessageType, WebhookError> {
+pub fn get_message_type<H: HeaderAccess>(headers: &H) -> Result<MessageType, WebhookError> {
     let s = headers
         .get_header(MESSAGE_TYPE)
         .ok_or(WebhookError::MissingHeader(MESSAGE_TYPE))?;
@@ -59,7 +59,7 @@ pub fn get_message_type<H: HeaderProvider>(headers: &H) -> Result<MessageType, W
     MessageType::from_str(s).map_err(|_| WebhookError::UnknownMessageType(s.to_string()))
 }
 
-pub fn get_subscription_type<H: HeaderProvider>(
+pub fn get_subscription_type<H: HeaderAccess>(
     headers: &H,
 ) -> Result<SubscriptionType, WebhookError> {
     let s = headers
@@ -69,11 +69,11 @@ pub fn get_subscription_type<H: HeaderProvider>(
     SubscriptionType::from_str(s).map_err(|_| WebhookError::UnknownSubscriptionType(s.to_string()))
 }
 
-pub fn get_subscription_version<H: HeaderProvider>(headers: &H) -> &str {
+pub fn get_subscription_version<H: HeaderAccess>(headers: &H) -> &str {
     headers.get_header(SUBSCRIPTION_VERSION).unwrap_or("")
 }
 
-fn get_hmac_message<H: HeaderProvider>(headers: &H, body: &[u8]) -> Result<Vec<u8>, WebhookError> {
+fn get_hmac_message<H: HeaderAccess>(headers: &H, body: &[u8]) -> Result<Vec<u8>, WebhookError> {
     let message_id = headers
         .get_header(MESSAGE_ID)
         .ok_or(WebhookError::MissingHeader(MESSAGE_ID))?;
@@ -110,7 +110,7 @@ fn verify_message(hmac: &str, signature: &str) -> bool {
     hmac.as_bytes().ct_eq(signature.as_bytes()).into()
 }
 
-fn hmac_signature<H: HeaderProvider>(
+fn hmac_signature<H: HeaderAccess>(
     headers: &H,
     body: &[u8],
     secret: &str,
@@ -118,25 +118,25 @@ fn hmac_signature<H: HeaderProvider>(
     Ok(get_hmac(secret, &get_hmac_message(headers, body)?))
 }
 
-pub trait HeaderProvider {
+pub trait HeaderAccess {
     fn get_header(&self, name: &str) -> Option<&str>;
 }
 
 #[cfg(feature = "webhook-http")]
-impl HeaderProvider for http::HeaderMap {
+impl HeaderAccess for http::HeaderMap {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.get(name)?.to_str().ok()
     }
 }
 
 #[cfg(feature = "webhook-actix")]
-impl HeaderProvider for actix_web::http::header::HeaderMap {
+impl HeaderAccess for actix_http::header::HeaderMap {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.get(name)?.to_str().ok()
     }
 }
 
-impl HeaderProvider for &[(&str, &str)] {
+impl HeaderAccess for &[(&str, &str)] {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.iter()
             .find(|(key, _)| key.eq_ignore_ascii_case(name))
@@ -144,7 +144,7 @@ impl HeaderProvider for &[(&str, &str)] {
     }
 }
 
-impl HeaderProvider for Vec<(String, String)> {
+impl HeaderAccess for Vec<(String, String)> {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.iter()
             .find(|(key, _)| key.eq_ignore_ascii_case(name))
