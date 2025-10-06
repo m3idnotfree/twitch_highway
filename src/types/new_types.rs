@@ -122,19 +122,20 @@ new_type!(UserId {
     broadcaster: [to, into],
     moderator: [to, into]
 });
-new_type!(Id);
+new_type!(CampaignId);
+new_type!(CategoryId);
+new_type!(ChoiceId);
+new_type!(ConduitId);
+new_type!(ExtensionClientId);
 new_type!(ExtensionId);
 new_type!(GameId);
-new_type!(RewardId);
-new_type!(RedemptionId);
-new_type!(SessionId);
-new_type!(ConduitId);
-new_type!(OrganizationId);
-new_type!(CategoryId);
-new_type!(CampaignId);
-new_type!(ExtensionClientId);
-new_type!(SubscriptionId);
+new_type!(Id);
 new_type!(MessageId);
+new_type!(OrganizationId);
+new_type!(RedemptionId);
+new_type!(RewardId);
+new_type!(SessionId);
+new_type!(SubscriptionId);
 
 new_type!(JWTToken);
 

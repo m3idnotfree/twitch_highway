@@ -12,9 +12,9 @@ pub use cost::{Cost, CostType};
 pub use date_range::DateRange;
 pub use image::Images;
 pub use new_types::{
-    BroadcasterId, CampaignId, CategoryId, ConduitId, ExtensionClientId, ExtensionId, GameId, Id,
-    JWTToken, MessageId, ModeratorId, OrganizationId, RedemptionId, RewardId, SessionId,
-    SubscriptionId, UserId,
+    BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, ExtensionClientId, ExtensionId,
+    GameId, Id, JWTToken, MessageId, ModeratorId, OrganizationId, RedemptionId, RewardId,
+    SessionId, SubscriptionId, UserId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;

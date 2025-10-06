@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id};
+use crate::types::{BroadcasterId, ChoiceId, Id};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Poll {
@@ -23,10 +23,11 @@ pub struct Poll {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Choices {
-    pub id: Id,
+    pub id: ChoiceId,
     pub title: String,
     pub votes: u64,
     pub channel_points_votes: u64,
+    /// Not used, will be set to 0.
     pub bits_votes: u64,
 }
 
