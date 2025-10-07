@@ -3,6 +3,8 @@ pub mod webhook;
 #[cfg(feature = "websocket")]
 pub mod websocket;
 
+pub mod events;
+
 #[macro_use]
 mod subscription_types;
 
