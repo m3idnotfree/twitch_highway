@@ -1,3 +1,4 @@
+pub mod conduit;
 pub mod entitlement;
 pub mod hype_train;
 
