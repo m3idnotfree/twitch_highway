@@ -11,9 +11,10 @@ pub use cost::{Cost, CostType};
 pub use date_range::DateRange;
 pub use image::Images;
 pub use new_types::{
-    BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, ExtensionClientId, ExtensionId,
-    GameId, GoalId, HypeTrainId, Id, JWTToken, MessageId, ModeratorId, OrganizationId,
-    RedemptionId, RewardId, SessionId, StreamId, SubscriptionId, TransactionId, UserId, WhisperId,
+    BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, EmoteId, ExtensionClientId,
+    ExtensionId, GameId, GoalId, HypeTrainId, Id, JWTToken, MessageId, ModeratorId, OrganizationId,
+    OutcomeId, PredictionId, RedemptionId, RewardId, SessionId, StreamId, SubscriptionId,
+    TransactionId, UserId, WhisperId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
@@ -29,6 +30,11 @@ pub use status::Status;
 mod top_predictor;
 #[cfg(any(feature = "eventsub", feature = "predictions"))]
 pub use top_predictor::TopPredictor;
+
+#[cfg(any(feature = "eventsub", feature = "predictions"))]
+mod outcome;
+#[cfg(any(feature = "eventsub", feature = "predictions"))]
+pub use outcome::{Outcome, OutocmeColor};
 
 #[cfg(any(feature = "eventsub", feature = "hype-train"))]
 mod top_contribution;

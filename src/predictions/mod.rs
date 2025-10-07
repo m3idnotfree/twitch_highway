@@ -4,7 +4,7 @@ mod types;
 
 pub use request::CreatePredictionRequest;
 pub use response::PredictionsResponse;
-pub use types::{Prediction, PredictionColor, PredictionOutComes, PredictionStatus};
+pub use types::{Prediction, PredictionStatus};
 
 use crate::{
     request::{NoContent, RequestBody},
