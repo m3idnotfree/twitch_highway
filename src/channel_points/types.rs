@@ -3,7 +3,7 @@ use std::fmt;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Images, RedemptionId, RewardId, UserId};
+use crate::types::{BroadcasterId, Images, RedemptionId, Reward, RewardId, UserId};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CustomReward {
@@ -56,14 +56,6 @@ pub struct MaxPerStreamSetting {
     pub max_per_user_per_stream: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub global_cooldown_seconds: Option<u64>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Reward {
-    pub id: RewardId,
-    pub title: String,
-    pub prompt: String,
-    pub cost: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

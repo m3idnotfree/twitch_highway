@@ -41,3 +41,8 @@ mod top_contribution;
 
 #[cfg(any(feature = "eventsub", feature = "hype-train"))]
 pub use top_contribution::{ContributionType, TopContribution};
+
+#[cfg(any(feature = "eventsub", feature = "channel-points"))]
+mod reward;
+#[cfg(any(feature = "eventsub", feature = "channel-points"))]
+pub use reward::Reward;

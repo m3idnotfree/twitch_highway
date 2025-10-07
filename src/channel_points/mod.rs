@@ -7,9 +7,7 @@ pub use request::{
     RedemptionStatusQuery, UpdateCustomRewardRequest,
 };
 pub use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
-pub use types::{
-    CustomReward, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus, Reward,
-};
+pub use types::{CustomReward, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus};
 
 use crate::{
     request::{NoContent, RequestBody},
