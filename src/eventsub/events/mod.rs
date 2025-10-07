@@ -8,6 +8,7 @@ pub mod polls;
 
 mod charity;
 mod extension;
+mod follow;
 mod goals;
 mod raid;
 mod stream;
@@ -19,6 +20,7 @@ pub use charity::{
     CharityDonation,
 };
 pub use extension::BitsTransactionCreate;
+pub use follow::ChannelFollow;
 pub use goals::{GoalType, Goals};
 pub use raid::Raid;
 pub use stream::{StreamOffline, StreamOnline, StreamType};
