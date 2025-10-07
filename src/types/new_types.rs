@@ -136,6 +136,7 @@ new_type!(Id);
 new_type!(MessageId);
 new_type!(OrganizationId);
 new_type!(OutcomeId);
+new_type!(PollId);
 new_type!(PredictionId);
 new_type!(RedemptionId);
 new_type!(RewardId);
@@ -143,6 +144,7 @@ new_type!(SessionId);
 new_type!(StreamId);
 new_type!(SubscriptionId);
 new_type!(TransactionId);
+new_type!(UnbanRequestId);
 new_type!(WhisperId);
 
 new_type!(JWTToken);

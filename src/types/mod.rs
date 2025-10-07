@@ -15,8 +15,8 @@ pub use image::Images;
 pub use new_types::{
     BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, EmoteId, ExtensionClientId,
     ExtensionId, GameId, GoalId, HypeTrainId, Id, JWTToken, MessageId, ModeratorId, OrganizationId,
-    OutcomeId, PredictionId, RedemptionId, RewardId, SessionId, StreamId, SubscriptionId,
-    TransactionId, UserId, WhisperId,
+    OutcomeId, PollId, PredictionId, RedemptionId, RewardId, SessionId, StreamId, SubscriptionId,
+    TransactionId, UnbanRequestId, UserId, WhisperId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;

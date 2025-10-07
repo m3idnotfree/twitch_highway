@@ -1,6 +1,7 @@
 pub mod conduit;
 pub mod entitlement;
 pub mod hype_train;
+pub mod polls;
 
 mod charity;
 mod extension;
