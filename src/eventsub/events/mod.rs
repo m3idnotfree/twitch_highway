@@ -1,3 +1,4 @@
+pub mod entitlement;
 pub mod hype_train;
 
 mod extension;
