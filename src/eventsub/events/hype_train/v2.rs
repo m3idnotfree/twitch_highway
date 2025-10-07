@@ -62,10 +62,9 @@ pub struct HypeTrainEnd {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum HypeTrainType {
     Treasure,
-    #[serde(rename = "golden_kappa")]
     GoldenKappa,
     Regular,
 }
