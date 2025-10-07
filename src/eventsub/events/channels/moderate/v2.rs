@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, ModeratorId, UserId};
-
-use crate::eventsub::events::moderate::{
-    AutomodTermsModeration, BanModeration, DeleteModeration, FollowersModeration, ModModeration,
-    RaidModeration, SlowModeration, TimeoutModeration, UnbanModeration, UnbanRequestModeration,
-    UnmodModeration, UnraidModeration, UntimeoutModeration, UnvipModeration, VipModeration,
+use crate::{
+    eventsub::events::channels::moderate::{
+        AutomodTermsModeration, BanModeration, DeleteModeration, FollowersModeration,
+        ModModeration, RaidModeration, SlowModeration, TimeoutModeration, UnbanModeration,
+        UnbanRequestModeration, UnmodModeration, UnraidModeration, UntimeoutModeration,
+        UnvipModeration, VipModeration,
+    },
+    types::{BroadcasterId, ModeratorId, UserId},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
