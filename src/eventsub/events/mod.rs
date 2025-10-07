@@ -23,8 +23,7 @@ mod user;
 mod whisper;
 
 pub use charity::{
-    CharityAmount, CharityCampaignProgress, CharityCampaignStart, CharityCampaignStop,
-    CharityDonation,
+    CharityCampaignProgress, CharityCampaignStart, CharityCampaignStop, CharityDonation,
 };
 pub use cheer::ChannelCheer;
 pub use extension::BitsTransactionCreate;
