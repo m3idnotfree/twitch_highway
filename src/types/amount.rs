@@ -24,7 +24,7 @@ mod tests {
         assert_eq!(amount.currency, "USD");
 
         let serialized = serde_json::to_string(&amount).unwrap();
-        let expected = json!({
+        let expected = serde_json::json!({
             "value": 2550,
             "decimal_places": 2,
             "currency": "USD"

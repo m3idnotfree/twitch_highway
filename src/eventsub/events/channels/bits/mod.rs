@@ -1,7 +1,6 @@
-use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, ModeratorId, UserId};
+use crate::types::{BroadcasterId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ChannelBitsUse {
