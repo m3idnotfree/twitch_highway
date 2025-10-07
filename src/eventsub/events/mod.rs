@@ -2,12 +2,17 @@ pub mod conduit;
 pub mod entitlement;
 pub mod hype_train;
 
+mod charity;
 mod extension;
 mod goals;
 mod stream;
 mod user;
 mod whisper;
 
+pub use charity::{
+    CharityAmount, CharityCampaignProgress, CharityCampaignStart, CharityCampaignStop,
+    CharityDonation,
+};
 pub use extension::BitsTransactionCreate;
 pub use goals::{GoalType, Goals};
 pub use stream::{StreamOffline, StreamOnline, StreamType};
