@@ -139,6 +139,7 @@ new_type!(RewardId);
 new_type!(SessionId);
 new_type!(StreamId);
 new_type!(SubscriptionId);
+new_type!(TransactionId);
 new_type!(WhisperId);
 
 new_type!(JWTToken);
