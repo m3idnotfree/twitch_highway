@@ -1,4 +1,5 @@
 mod category;
+mod choice;
 mod cost;
 mod date_range;
 mod image;
@@ -7,6 +8,7 @@ mod pagination;
 mod title;
 
 pub use category::Category;
+pub use choice::Choice;
 pub use cost::{Cost, CostType};
 pub use date_range::DateRange;
 pub use image::Images;

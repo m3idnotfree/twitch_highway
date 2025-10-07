@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, ChoiceId, Id};
+use crate::types::{BroadcasterId, Choice, Id};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Poll {
@@ -10,7 +10,7 @@ pub struct Poll {
     pub broadcaster_name: String,
     pub broadcaster_login: String,
     pub title: String,
-    pub choices: Vec<Choices>,
+    pub choices: Vec<Choice>,
     pub bits_voting_enabled: bool,
     pub bits_per_vote: u64,
     pub channel_points_voting_enabled: bool,
@@ -19,16 +19,6 @@ pub struct Poll {
     pub duration: u64,
     pub started_at: DateTime<FixedOffset>,
     pub ended_at: Option<DateTime<FixedOffset>>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Choices {
-    pub id: ChoiceId,
-    pub title: String,
-    pub votes: u64,
-    pub channel_points_votes: u64,
-    /// Not used, will be set to 0.
-    pub bits_votes: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

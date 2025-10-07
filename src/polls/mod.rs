@@ -4,7 +4,7 @@ mod types;
 
 pub use request::{EndPollRequest, PollsRequest};
 pub use response::PollsResponse;
-pub use types::{Choices, Poll, PollStatus};
+pub use types::{Poll, PollStatus};
 
 use crate::{
     request::RequestBody,
