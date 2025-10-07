@@ -269,5 +269,5 @@ pub mod videos;
 #[cfg(feature = "whisper")]
 pub mod whisper;
 
-#[cfg(feature = "moderation")]
+#[cfg(any(feature = "eventsub", feature = "moderation"))]
 mod serde_helpers;
