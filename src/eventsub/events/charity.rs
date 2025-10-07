@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, CampaignId, UserId};
+use crate::types::{Amount, BroadcasterId, CampaignId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityDonation {
@@ -17,7 +17,7 @@ pub struct CharityDonation {
     pub charity_description: String,
     pub charity_logo: String,
     pub charity_website: String,
-    pub amount: CharityAmount,
+    pub amount: Amount,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -30,8 +30,8 @@ pub struct CharityCampaignStart {
     pub charity_description: String,
     pub charity_logo: String,
     pub charity_website: String,
-    pub current_amount: CharityAmount,
-    pub target_amount: CharityAmount,
+    pub current_amount: Amount,
+    pub target_amount: Amount,
     pub started_at: DateTime<FixedOffset>,
 }
 
@@ -45,8 +45,8 @@ pub struct CharityCampaignProgress {
     pub charity_description: String,
     pub charity_logo: String,
     pub charity_website: String,
-    pub current_amount: CharityAmount,
-    pub target_amount: CharityAmount,
+    pub current_amount: Amount,
+    pub target_amount: Amount,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,14 +59,7 @@ pub struct CharityCampaignStop {
     pub charity_description: String,
     pub charity_logo: String,
     pub charity_website: String,
-    pub current_amount: CharityAmount,
-    pub target_amount: CharityAmount,
+    pub current_amount: Amount,
+    pub target_amount: Amount,
     pub stopped_at: DateTime<FixedOffset>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CharityAmount {
-    pub value: u64,
-    pub decimal_places: u32,
-    pub currency: String,
 }

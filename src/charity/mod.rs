@@ -2,7 +2,7 @@ mod response;
 mod types;
 
 pub use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
-pub use types::{Amount, CharityCampaign, CharityCampaignDonation};
+pub use types::{CharityCampaign, CharityCampaignDonation};
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};
 

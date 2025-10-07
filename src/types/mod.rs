@@ -48,3 +48,8 @@ pub use top_contribution::{ContributionType, TopContribution};
 mod reward;
 #[cfg(any(feature = "eventsub", feature = "channel-points"))]
 pub use reward::Reward;
+
+#[cfg(any(feature = "charity", feature = "eventsub",))]
+mod amount;
+#[cfg(any(feature = "charity", feature = "eventsub",))]
+pub use amount::Amount;
