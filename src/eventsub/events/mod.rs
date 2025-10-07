@@ -2,6 +2,7 @@ pub mod conduit;
 pub mod entitlement;
 pub mod guest_star;
 pub mod hype_train;
+pub mod moderate;
 pub mod moderator;
 pub mod polls;
 
