@@ -22,11 +22,10 @@ pub struct StreamOffline {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum StreamType {
     Live,
     Playlist,
-    #[serde(rename = "watch_party")]
     WatchParty,
     Premiere,
     Rerun,
