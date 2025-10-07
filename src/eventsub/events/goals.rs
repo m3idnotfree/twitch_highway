@@ -24,18 +24,13 @@ pub struct Goals {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "snake_case")]
 pub enum GoalType {
     Follow,
     Subscription,
-    #[serde(rename = "subscription_count")]
     SubscriptionCount,
-    #[serde(rename = "new_subscription")]
     NewSubscription,
-    #[serde(rename = "new_subscription_count")]
     NewSubscriptionCount,
-    #[serde(rename = "new_bit")]
     NewBit,
-    #[serde(rename = "new_cheerer")]
     NewCheerer,
 }
