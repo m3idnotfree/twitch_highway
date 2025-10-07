@@ -12,6 +12,7 @@ mod follow;
 mod goals;
 mod raid;
 mod stream;
+mod unban;
 mod user;
 mod whisper;
 
@@ -24,5 +25,8 @@ pub use follow::ChannelFollow;
 pub use goals::{GoalType, Goals};
 pub use raid::Raid;
 pub use stream::{StreamOffline, StreamOnline, StreamType};
+pub use unban::{
+    ChannelUnban, ChannelUnbanRequestCreate, ChannelUnbanRequestResolve, UnbanRequestStatus,
+};
 pub use user::{UserAuthorizationGrant, UserAuthorizationRevoke, UserUpdate};
 pub use whisper::{Whisper, WhisperReceived};
