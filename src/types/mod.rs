@@ -4,7 +4,6 @@ mod date_range;
 mod image;
 mod new_types;
 mod pagination;
-mod status;
 mod title;
 
 pub use category::Category;
@@ -22,4 +21,11 @@ pub use title::Title;
 pub(crate) mod constants;
 
 #[cfg(any(feature = "eventsub", feature = "conduits"))]
+mod status;
+#[cfg(any(feature = "eventsub", feature = "conduits"))]
 pub use status::Status;
+
+#[cfg(any(feature = "eventsub", feature = "predictions"))]
+mod top_predictor;
+#[cfg(any(feature = "eventsub", feature = "predictions"))]
+pub use top_predictor::TopPredictor;

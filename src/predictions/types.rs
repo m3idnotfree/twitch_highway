@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, UserId};
+use crate::types::{BroadcasterId, Id, TopPredictor};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Prediction {
@@ -52,15 +52,6 @@ impl AsRef<str> for PredictionStatus {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TopPredictor {
-    pub user_id: UserId,
-    pub user_name: String,
-    pub user_login: String,
-    pub channel_points_used: u64,
-    pub channel_points_won: u64,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -185,6 +176,6 @@ mod tests {
         let top_predictor = outcome.top_predictors.as_ref().unwrap();
         assert_eq!(top_predictor[0].user_id.as_str(), "user123");
         assert_eq!(top_predictor[0].channel_points_used, 1000);
-        assert_eq!(top_predictor[0].channel_points_won, 2000);
+        assert_eq!(top_predictor[0].channel_points_won, Some(2000));
     }
 }
