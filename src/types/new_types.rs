@@ -135,6 +135,7 @@ new_type!(OrganizationId);
 new_type!(RedemptionId);
 new_type!(RewardId);
 new_type!(SessionId);
+new_type!(StreamId);
 new_type!(SubscriptionId);
 new_type!(WhisperId);
 
