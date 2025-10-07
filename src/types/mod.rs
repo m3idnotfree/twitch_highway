@@ -12,8 +12,8 @@ pub use date_range::DateRange;
 pub use image::Images;
 pub use new_types::{
     BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, ExtensionClientId, ExtensionId,
-    GameId, Id, JWTToken, MessageId, ModeratorId, OrganizationId, RedemptionId, RewardId,
-    SessionId, StreamId, SubscriptionId, UserId, WhisperId,
+    GameId, HypeTrainId, Id, JWTToken, MessageId, ModeratorId, OrganizationId, RedemptionId,
+    RewardId, SessionId, StreamId, SubscriptionId, UserId, WhisperId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;

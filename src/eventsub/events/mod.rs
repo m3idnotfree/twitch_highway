@@ -1,3 +1,5 @@
+pub mod hype_train;
+
 mod stream;
 mod user;
 mod whisper;

@@ -129,6 +129,7 @@ new_type!(ConduitId);
 new_type!(ExtensionClientId);
 new_type!(ExtensionId);
 new_type!(GameId);
+new_type!(HypeTrainId);
 new_type!(Id);
 new_type!(MessageId);
 new_type!(OrganizationId);
