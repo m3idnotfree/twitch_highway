@@ -29,3 +29,9 @@ pub use status::Status;
 mod top_predictor;
 #[cfg(any(feature = "eventsub", feature = "predictions"))]
 pub use top_predictor::TopPredictor;
+
+#[cfg(any(feature = "eventsub", feature = "hype-train"))]
+mod top_contribution;
+
+#[cfg(any(feature = "eventsub", feature = "hype-train"))]
+pub use top_contribution::{ContributionType, TopContribution};

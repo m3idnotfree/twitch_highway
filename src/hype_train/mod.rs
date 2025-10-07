@@ -3,8 +3,8 @@ mod types;
 
 pub use response::{HypeTrainResponse, HypeTrainStatusResponse};
 pub use types::{
-    AllTimeHigh, ContributionType, Current, HypeTrain, HypeTrainContribution, HypeTrainEvent,
-    HypeTrainStatus, HypeTrainType, SharedAllTimeHigh, SharedTrainParticipant, TopContribution,
+    AllTimeHigh, Current, HypeTrain, HypeTrainContribution, HypeTrainEvent, HypeTrainStatus,
+    HypeTrainType, SharedAllTimeHigh, SharedTrainParticipant,
 };
 
 use crate::types::{constants::BROADCASTER_ID, BroadcasterId, PaginationQuery};

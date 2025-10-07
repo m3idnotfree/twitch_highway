@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, UserId};
+use crate::types::{BroadcasterId, Id, TopContribution};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HypeTrain {
@@ -62,16 +62,6 @@ pub struct Current {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct TopContribution {
-    pub user_id: UserId,
-    pub user_login: String,
-    pub user_name: String,
-    #[serde(rename = "type")]
-    pub kind: ContributionType,
-    pub total: u64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SharedTrainParticipant {
     pub broadcaster_user_id: BroadcasterId,
     pub broadcaster_user_login: String,
@@ -90,14 +80,6 @@ pub struct SharedAllTimeHigh {
     pub level: u64,
     pub total: u64,
     pub achieved_at: DateTime<FixedOffset>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum ContributionType {
-    Bits,
-    Subscription,
-    Other,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
