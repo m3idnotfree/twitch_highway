@@ -9,6 +9,7 @@ pub mod polls;
 mod charity;
 mod extension;
 mod goals;
+mod raid;
 mod stream;
 mod user;
 mod whisper;
@@ -19,6 +20,7 @@ pub use charity::{
 };
 pub use extension::BitsTransactionCreate;
 pub use goals::{GoalType, Goals};
+pub use raid::Raid;
 pub use stream::{StreamOffline, StreamOnline, StreamType};
 pub use user::{UserAuthorizationGrant, UserAuthorizationRevoke, UserUpdate};
 pub use whisper::{Whisper, WhisperReceived};
