@@ -1,3 +1,4 @@
+pub mod automod;
 pub mod channels;
 pub mod chat;
 pub mod conduit;
