@@ -1,6 +1,6 @@
 mod request;
 
-pub use request::SendWhisperBody;
+use request::SendWhisperBody;
 
 use crate::{request::NoContent, types::UserId};
 
