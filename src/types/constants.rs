@@ -82,6 +82,8 @@ pub(crate) const CHANNELS: &str = "channels";
 
 #[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
 pub(crate) const STARTED_AT: &str = "started_at";
+#[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
+pub(crate) const ENDED_AT: &str = "ended_at";
 
 pub(crate) const BEFORE: &str = "before";
 pub(crate) const FIRST: &str = "first";

@@ -33,6 +33,22 @@ macro_rules! api_test {
                 .unwrap();
         }
     };
+    (build $endpoint:ident |$api:ident| {$($body:tt)*}) => {
+        #[tokio::test]
+        pub(crate) async fn $endpoint() {
+            let suite = crate::common::HttpMock::new().await;
+
+            suite.$endpoint().await;
+
+            let _ = suite
+                .execute(|$api| {
+                    $($body)*.build()
+                })
+                .json()
+                .await
+                .unwrap();
+        }
+    };
 
     (send $endpoint:ident, $([$($param:expr),* $(,)?])?) => {
         #[tokio::test]

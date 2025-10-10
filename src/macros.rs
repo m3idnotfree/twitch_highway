@@ -680,3 +680,393 @@ macro_rules! endpoints {
         None
     };
 }
+
+macro_rules! define_request_builder {
+    (
+        $(#[$meta:meta])*
+        $name:ident<$lt:lifetime>{$(
+            $(#[$opt_meta:meta])*
+            $opt_f:ident: $opt_t:ty
+            $([$($opt_config:tt)*])?
+        ),* $(,)?
+        } -> $return:ty;
+        endpoint_type: $endpoint:ident,
+        method: $method:ident,
+        path: [$($path:expr),* $(,)?]
+        $(, header: [$($header_config:tt)*] )?
+        $(, body: $($body:expr)?)?
+        $(,)?
+    ) => {
+        define_request_builder!(@impl
+            $(#[$meta])*,
+            $name,
+            {
+                <$lt>
+                [],
+            },
+            {},
+            {$(
+                $(#[$opt_meta])*
+                $opt_f: $opt_t
+                $([$($opt_config)*])?
+            ),*},
+            endpoint_type: $endpoint,
+            method: $method,
+            path: [$($path),*],
+            header: [$($($header_config:tt)*)?],
+            body: $($body:expr)?,
+            return: $return
+        );
+    };
+    (
+        $(#[$meta:meta])*
+        $name:ident<$lt:lifetime, $($gen:ident $(: $bound:path)?),+>{$(
+            $(#[$opt_meta:meta])*
+            $opt_f:ident: $opt_t:ty
+            $([$($opt_config:tt)*])?
+        ),* $(,)?
+        } -> $return:ty;
+        endpoint_type: $endpoint:ident,
+        method: $method:ident,
+        path: [$($path:expr),* $(,)?]
+        $(, header: [$($header_config:tt)*] )?
+        $(, body: $($body:expr)?)?
+        $(,)?
+    ) => {
+        define_request_builder!(@impl
+            $(#[$meta])*,
+            $name,
+            {
+                <$lt>
+                [$($gen $(: $bound)?),+],
+            },
+            {},
+            {$(
+                $(#[$opt_meta])*
+                $opt_f: $opt_t
+                $([$($opt_config)*])?
+            ),*},
+            endpoint_type: $endpoint,
+            method: $method,
+            path: [$($path),*]
+            header: [$($($header_config:tt)*)?],
+            body: $($body:expr)?,
+            return: $return
+        );
+    };
+    (
+        $(#[$meta:meta])*
+        $name:ident<$lt:lifetime, $($gen:ident $(: $bound:path)?),+> {
+            $(req: {$(
+                $(#[$req_meta:meta])*
+                $req_f:ident: $req_t:ty
+                $([$($req_config:tt)*])?
+            ),* $(,)?})? $(,)?
+
+            $(opts: {$(
+                $(#[$opt_meta:meta])*
+                $opt_f:ident: $opt_t:ty
+                $([$($opt_config:tt)*])?
+            ),* $(,)?})? $(,)?
+        } -> $return:ty;
+        endpoint_type: $endpoint:ident,
+        method: $method:ident,
+        path: [$($path:expr),* $(,)?]
+        $(, header: [$($header_config:tt)*] )?
+        $(, body: $($body:expr)?)?
+        $(,)?
+    ) => {
+        define_request_builder!(@impl
+            $(#[$meta])*,
+            $name,
+            {
+                <$lt>
+                [$($gen $(: $bound)*),+],
+            },
+            {$($(
+                $(#[$req_meta])*
+                $req_f: $req_t
+                $([$($req_config)*])?
+            ),*)?},
+            {$($(
+                $(#[$opt_meta])*
+                $opt_f: $opt_t
+                $([$($opt_config)*])?
+            ),*)?},
+            endpoint_type: $endpoint,
+            method: $method,
+            path: [$($path),*]
+            header: [$($($header_config:tt)*)?],
+            body: $($body:expr)?,
+            return: $return
+        );
+    };
+
+    (@impl $(#[$meta:meta])*,
+        $name:ident,
+        {$(
+            <$($lt:lifetime)?>
+            [$($($gen:ident $(: $bound:path)*),+)?],
+        )?},
+        {$($(
+            $(#[$req_m:meta])*
+            $req_f:ident: $req_t:ty
+            $([$($req_config:tt)*])?
+        ),+)?},
+        {$($(
+            $(#[$opt_m:meta])*
+            $opt_f:ident: $opt_t:ty
+            $([$($opt_config:tt)*])?
+        ),+)?},
+        endpoint_type: $endpoint:ident,
+        method: $method:ident,
+        path: [$($($path:expr),+ $(,)?)?],
+        header: [$($header_config:tt)?],
+        body: $($body:expr)?,
+        return: $return:ty
+    ) => {
+        $(#[$meta])*
+        pub struct $name
+       $( <$($lt)?, $($($gen $(: $bound)*),+)?>)?
+        {
+            api: $($(&$lt)?)? TwitchAPI,
+            $($(
+                $(#[$req_m])*
+                $req_f: $req_t,
+            )*)?
+            $($(
+                $opt_f: Option<$opt_t>,
+            )*)?
+        }
+
+        impl$(<$($lt)?, $($($gen $(: $bound)*),+)?>)? $name$(<$($lt)?, $($($gen),+)?>)? {
+            pub fn new(
+                api: $($(&$lt)?)? TwitchAPI,
+
+            $($(
+                $req_f: define_request_builder!(@param_type $req_t $([$($req_config)*])?)),
+            +)?) -> Self {
+                Self {
+                    api,
+                    $($(
+                        $req_f: define_request_builder!(@param_value $req_f $([$($req_config)*])?),
+                    )+)?
+                    $($(
+                        $opt_f: None,
+                    )+)?
+                }
+            }
+            $($(
+                define_request_builder!(@opt_method $(#[$opt_m])* $opt_f: $opt_t $(, [$($opt_config)*])?);
+            )+)?
+
+            pub fn build(self) -> TwitchAPIRequest<$return> {
+                let mut url = self.api.build_url();
+                let headers = define_request_builder!(@headers self, $($($header_config)*)?);
+                let body = define_request_builder!(@body $($body)?);
+
+                $(url.path_segments_mut().unwrap().extend([$($path),+]);)?
+
+                let mut query = url.query_pairs_mut();
+
+                $($(
+                    define_request_builder!(@req_query query, $req_f, self.$req_f $(, [$($req_config)*])?);
+                )+)?
+
+                $($(
+                    define_request_builder!(@opt_query query, $opt_f, self.$opt_f $(, [$($opt_config)*])?);
+                )+)?
+
+                drop(query);
+
+                TwitchAPIRequest::new(
+                    $crate::request::EndpointType::$endpoint,
+                    url,
+                    reqwest::Method::$method,
+                    headers,
+                    body,
+                    self.api.client.clone(),
+                )
+            }
+
+            pub async fn send(self) -> Result<reqwest::Response, $crate::Error> {
+                self.build().send().await
+            }
+
+            pub async fn json(self) -> Result<$return, $crate::Error> {
+                self.build().json().await
+            }
+        }
+    };
+
+    (@param_type $type:ty [$($config:tt)*]) => {
+        define_request_builder!(@param_type_parse $type, into: false, $($config)*)
+    };
+    (@param_type $type:ty) => {
+        $type
+    };
+    (@param_type_parse $type:ty, into: $into_flag:tt, into $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_type_parse $type, into: true $(, $($rest)*)?)
+    };
+
+    (@param_type_parse $type:ty, into: $into_flag:tt, key = $key:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_type_parse $type, into: $into_flag $(, $($rest)*)?)
+    };
+    (@param_type_parse $type:ty, into: $into_flag:tt, convert = $conv:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_type_parse $type, into: $into_flag $(, $($rest)*)?)
+    };
+    (@param_type_parse $type:ty, into: $into_flag:tt, method = $method:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_type_parse $type, into: $into_flag $(, $($rest)*)?)
+    };
+
+    (@param_type_parse $type:ty, into: true $(,)?) => {
+        impl Into<$type>
+    };
+    (@param_type_parse $type:ty, into: false $(,)?) => {
+        $type
+    };
+
+    (@param_value $field:ident [$($config:tt)*]) => {
+        define_request_builder!(@param_value_parse $field, into: false, $($config)*)
+    };
+    (@param_value $field:ident) => {
+        $field
+    };
+
+    (@param_value_parse $field:ident, into: $into_flag:tt, into $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_value_parse $field, into: true $(, $($rest)*)?)
+    };
+
+    (@param_value_parse $field:ident, into: $into_flag:tt, key = $key:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_value_parse $field, into: $into_flag $(, $($rest)*)?)
+    };
+    (@param_value_parse $field:ident, into: $into_flag:tt, convert = $conv:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_value_parse $field, into: $into_flag $(, $($rest)*)?)
+    };
+    (@param_value_parse $field:ident, into: $into_flag:tt, method = $method:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_value_parse $field, into: $into_flag $(, $($rest)*)?)
+    };
+
+    (@param_value_parse $field:ident, into: true $(,)?) => {
+        $field.into()
+    };
+
+    (@param_value_parse $field:ident, into: false $(,)?) => {
+        $field
+    };
+
+    (@opt_method $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, [$($config:tt)*]) => {
+        define_request_builder!(@opt_method_parse $(#[$attr])* $opt_f: $opt_t, method: $opt_f, into: false, $($config)*);
+    };
+
+    (@opt_method $(#[$attr:meta])* $opt_f:ident: $opt_t:ty) => {
+        $(#[$attr])*
+        pub fn $opt_f(mut self, value: $opt_t) -> Self {
+            self.$opt_f = Some(value);
+            self
+        }
+    };
+
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $current_method:ident, into: $into_flag:tt, method = $new_method:ident $(, $($rest:tt)*)?) => {
+        define_request_builder!(@opt_method_parse $(#[$attr])* $opt_f: $opt_t, method: $new_method, into: $into_flag $(, $($rest)*)?)
+    };
+
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $current_method:ident, into: $into_flag:tt, into $(, $($rest:tt)*)?) => {
+        define_request_builder!(@opt_method_parse $(#[$attr])* $opt_f: $opt_t, method: $current_method, into: true $(, $($rest)*)?)
+    };
+
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $current_method:ident, into: $into_flag:tt, key = $key:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@opt_method_parse $(#[$attr])* $opt_f: $opt_t, method: $current_method, into: $into_flag $(, $($rest)*)?);
+    };
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $current_method:ident, into: $into_flag:tt, convert = $conv:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@opt_method_parse $(#[$attr])* $opt_f: $opt_t, method: $current_method, into: $into_flag $(, $($rest)*)?);
+    };
+
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $method_name:ident, into: true $(,)?) => {
+        $(#[$attr])*
+        pub fn $method_name(mut self, value: impl Into<$opt_t>) -> Self {
+            self.$opt_f = Some(value.into());
+            self
+        }
+    };
+
+    (@opt_method_parse $(#[$attr:meta])* $opt_f:ident: $opt_t:ty, method: $method_name:ident, into: false $(,)?) => {
+        $(#[$attr])*
+        pub fn $method_name(mut self, value: $opt_t) -> Self {
+            self.$opt_f = Some(value);
+            self
+        }
+    };
+
+
+    (@req_query $query:expr, $field:ident, $value:expr, [$($config:tt)*]) => {
+        define_request_builder!(@req_query_parse $query, $field, $value, key: stringify!($field), convert: none, $($config)*)
+    };
+    (@req_query $query:expr, $field:ident, $value:expr) => {
+        $query.append_pair(stringify!($field), $value);
+    };
+
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, key = $new_key:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@req_query_parse $query, $field, $value, key: $new_key, convert: $conv $(, $($rest)*)?)
+    };
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, convert = $new_conv:ident $(, $($rest:tt)*)?) => {
+        define_request_builder!(@req_query_parse $query, $field, $value, key: $current_key, convert: $new_conv $(, $($rest)*)?)
+    };
+
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, into $(, $($rest:tt)*)?) => {
+        define_request_builder!(@req_query_parse $query, $field, $value, key: $current_key, convert: $conv $(, $($rest)*)?)
+    };
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, method = $method:tt $(, $($rest:tt)*)?) => {
+        define_request_builder!(@req_query_parse $query, $field, $value, key: $current_key, convert: $conv $(, $($rest)*)?)
+    };
+
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $key:expr, convert: $conv:tt $(,)?) => {
+        define_request_builder!(@convert $query, $key, $value, $conv)
+    };
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $key:expr, convert: none $(,)?) => {
+        $query.append_pair($key, $value)
+    };
+
+    (@opt_query $query:expr, $field:ident, $value:expr, [$($config:tt)*]) => {
+        if let Some(val) = $value {
+            define_request_builder!(@req_query_parse $query, $field, val, key: stringify!($field), convert: none, $($config)*);
+        }
+    };
+    (@opt_query $query:expr, $field:ident, $value:expr) => {
+        if let Some(val) = $value {
+            $query.append_pair(stringify!($field), val);
+        }
+    };
+
+    (@convert $query:expr, $key:expr, $value:expr, none) => {
+        $query.append_pair($key, $value);
+    };
+    (@convert $url:expr, $key:expr, $value:expr, as_ref) => {
+        $url.append_pair($key, $value.as_ref());
+    };
+    (@convert $url:expr, $key:expr, $value:expr, to_string) => {
+        $url.append_pair($key, &$value.to_string());
+    };
+    (@convert $url:expr, $key:expr, $value:expr, rfc3339) => {
+        $url.append_pair($key, &$value.to_rfc3339());
+    };
+    (@convert $url:expr, $key:expr, $value:expr, rfc3339_opt) => {
+        $url.append_pair($key, &$value.to_rfc3339_opts(chrono::SecondsFormat::Secs, true));
+    };
+    (@convert $url:expr, $key:expr, $value:expr, bool) => {
+        $url.append_pair($key, &$value.to_string());
+    };
+
+    (@headers $self:ident, json) => {
+        $self.api.header_json()
+    };
+    (@headers $self:ident, ) => {
+        $self.api.default_headers()
+    };
+    (@headers $self:ident, jwt, $token:expr) => {
+        $self.api..build_jwt_headers(&$token)
+    };
+
+    (@body $body:expr) => { $body };
+    (@body) => { None }
+}
