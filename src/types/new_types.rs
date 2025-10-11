@@ -144,6 +144,7 @@ new_type!(PredictionId);
 new_type!(RedemptionId);
 new_type!(RewardId);
 new_type!(SessionId);
+new_type!(ShardId);
 new_type!(StreamId);
 new_type!(SubscriptionId);
 new_type!(TransactionId);

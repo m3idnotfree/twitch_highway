@@ -45,6 +45,7 @@ pub(crate) const USER_ID: &str = "user_id";
     feature = "bits",
     feature = "channel-points",
     feature = "clips",
+    feature = "conduits",
     feature = "entitlements",
     feature = "eventsub",
     feature = "games",
@@ -126,8 +127,10 @@ pub(crate) const CHANNEL_POINTS: &str = "channel_points";
 pub(crate) const CUSTOM_REWARDS: &str = "custom_rewards";
 #[cfg(feature = "channel-points")]
 pub(crate) const REDEMPTIONS: &str = "redemptions";
-#[cfg(feature = "channel-points")]
+
+#[cfg(any(feature = "channel-points", feature = "conduits"))]
 pub(crate) const STATUS: &str = "status";
+
 #[cfg(feature = "channel-points")]
 pub(crate) const SORT: &str = "sort";
 #[cfg(feature = "channel-points")]
@@ -187,3 +190,10 @@ pub(crate) const CLIPS: &str = "clips";
 pub(crate) const IS_FEATURED: &str = "is_featured";
 #[cfg(feature = "clips")]
 pub(crate) const HAS_DELAY: &str = "has_delay";
+
+#[cfg(feature = "conduits")]
+pub(crate) const CONDUITS: &str = "conduits";
+#[cfg(feature = "conduits")]
+pub(crate) const CONDUIT_ID: &str = "conduit_id";
+#[cfg(feature = "conduits")]
+pub(crate) const SHARDS: &str = "shards";
