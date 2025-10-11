@@ -127,6 +127,7 @@ new_type!(CategoryId);
 new_type!(ChoiceId);
 new_type!(ConduitId);
 new_type!(EmoteId);
+new_type!(EntitlementId);
 new_type!(ExtensionClientId);
 new_type!(ExtensionId);
 new_type!(GameId);

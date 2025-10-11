@@ -139,3 +139,13 @@ pub(crate) const FOLLOWERS: &str = "followers";
 pub(crate) const FOLLOWED: &str = "followed";
 #[cfg(feature = "channels")]
 pub(crate) const EDITORS: &str = "editors";
+
+#[cfg(feature = "charity")]
+pub(crate) const CHARITY: &str = "charity";
+#[cfg(feature = "charity")]
+pub(crate) const DONATIONS: &str = "donations";
+
+#[cfg(feature = "entitlements")]
+pub(crate) const ENTITLEMENTS: &str = "entitlements";
+#[cfg(feature = "entitlements")]
+pub(crate) const DROPS: &str = "drops";

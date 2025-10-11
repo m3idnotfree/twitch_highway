@@ -1,11 +1,11 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{GameId, Id, UserId};
+use crate::types::{EntitlementId, GameId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DropEntitlement {
-    pub id: Id,
+    pub id: EntitlementId,
     pub benefit_id: String,
     pub timestamp: DateTime<FixedOffset>,
     pub user_id: UserId,
@@ -17,7 +17,7 @@ pub struct DropEntitlement {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateDropEntitlement {
     pub status: DropEntitlementStatus,
-    pub ids: Vec<Id>,
+    pub ids: Vec<EntitlementId>,
 }
 
 #[allow(non_camel_case_types)]
