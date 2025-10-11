@@ -87,6 +87,21 @@ impl AsRef<str> for RedemptionStatus {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum Sort {
+    OLDEST,
+    NEWEST,
+}
+
+impl AsRef<str> for Sort {
+    fn as_ref(&self) -> &str {
+        match self {
+            Self::OLDEST => "OLDEST",
+            Self::NEWEST => "NEWEST",
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;

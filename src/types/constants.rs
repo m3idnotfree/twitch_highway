@@ -119,3 +119,16 @@ pub(crate) const LEADERBOARD: &str = "leaderboard";
 pub(crate) const TRANSACTIONS: &str = "transactions";
 #[cfg(feature = "bits")]
 pub(crate) const CHEERMOTES: &str = "cheermotes";
+
+#[cfg(feature = "channel-points")]
+pub(crate) const CHANNEL_POINTS: &str = "channel_points";
+#[cfg(feature = "channel-points")]
+pub(crate) const CUSTOM_REWARDS: &str = "custom_rewards";
+#[cfg(feature = "channel-points")]
+pub(crate) const REDEMPTIONS: &str = "redemptions";
+#[cfg(feature = "channel-points")]
+pub(crate) const STATUS: &str = "status";
+#[cfg(feature = "channel-points")]
+pub(crate) const SORT: &str = "sort";
+#[cfg(feature = "channel-points")]
+pub(crate) const REWARD_ID: &str = "reward_id";
