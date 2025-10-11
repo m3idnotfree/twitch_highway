@@ -180,3 +180,10 @@ pub(crate) const TO_BROADCASTER_ID: &str = "to_broadcaster_id";
 pub(crate) const MESSAGES: &str = "messages";
 #[cfg(feature = "chat")]
 pub(crate) const COLOR: &str = "color";
+
+#[cfg(feature = "clips")]
+pub(crate) const CLIPS: &str = "clips";
+#[cfg(feature = "clips")]
+pub(crate) const IS_FEATURED: &str = "is_featured";
+#[cfg(feature = "clips")]
+pub(crate) const HAS_DELAY: &str = "has_delay";

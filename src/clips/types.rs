@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, GameId, Id};
+use crate::types::{BroadcasterId, ClipId, GameId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateClip {
     pub edit_url: String,
-    pub id: Id,
+    pub id: ClipId,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Clip {
-    pub id: Id,
+    pub id: ClipId,
     pub url: String,
     pub embed_url: String,
     pub broadcaster_id: BroadcasterId,

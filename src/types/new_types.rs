@@ -125,6 +125,7 @@ new_type!(UserId {
 new_type!(CampaignId);
 new_type!(CategoryId);
 new_type!(ChoiceId);
+new_type!(ClipId);
 new_type!(ConduitId);
 new_type!(EmoteId);
 new_type!(EmoteSetId);
