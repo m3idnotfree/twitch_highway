@@ -1,238 +1,890 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::{
-    AnnouncementColor, ChatAnnouncementBody, ChatColor, SendChatMessageRequest,
-    UpdateChatSettingsRequest,
-};
 pub use response::{
     BadgesResponse, ChatSettingResponse, ChattersResponse, EmotesResponse, SendChatMessageResponse,
     SharedChatSessionResponse, UsersColorResponse,
 };
 pub use types::{
-    Badge, BroadcasterIdField, ChatSetting, Chatter, DropReason, Emote, EmoteType, Format,
-    MessageResponse, Scale, SharedChatSession, ThemeMode, UserColor, Version,
+    AnnouncementColor, Badge, BroadcasterIdField, ChatColor, ChatSetting, Chatter, DropReason,
+    Emote, EmoteType, Format, MessageResponse, Scale, SharedChatSession, ThemeMode, UserColor,
+    Version,
+};
+
+pub use builder::{
+    GetChatSettingsBuilder, GetChattersBuilder, GetUserEmotesBuilder, SendChatAnnouncementBuilder,
+    SendChatMessageBuilder, UpdateChatSettingsBuilder,
 };
 
 use crate::{
     request::NoContent,
+    request::TwitchAPIRequest,
     types::{
-        constants::{AFTER, BROADCASTER_ID, CHAT, MODERATOR_ID, SETTINGS, USER_ID},
-        BroadcasterId, ModeratorId, PaginationQuery, UserId,
+        constants::{
+            BADGES, BROADCASTER_ID, CHAT, COLOR, EMOTES, EMOTE_SET_ID, FROM_BROADCASTER_ID, GLOBAL,
+            MODERATOR_ID, SESSION, SET, SHARED_CHAT, SHOUTOUTS, TO_BROADCASTER_ID, USER_ID,
+        },
+        BroadcasterId, ModeratorId, UserId,
     },
+    TwitchAPI,
 };
 
-const EMOTES: &str = "emotes";
+pub trait ChatAPI {
+    /// Gets the list of users that are connected to the broadcaster’s chat session
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetChattersBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, ModeratorId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_chatters(&BroadcasterId::from("1234"), &ModeratorId::from("5678")
+    ///     .first(5)
+    ///     .after("eyJiI...")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `moderator:read:chatters`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
+    fn get_chatters<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> GetChattersBuilder<'a>;
 
-endpoints! {
-    ChatAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-chatters>
-        fn get_chatters(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            pagination: Option<PaginationQuery>,
-        ) -> ChattersResponse {
-            endpoint_type: GetChatters,
-            method: GET,
-            path: [CHAT, "chatters"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                query(MODERATOR_ID, moderator_id),
-                pagination(pagination)
-            }
-        }
+    /// Gets the broadcaster’s list of custom emotes
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - An ID that identifies the broadcaster whose emotes you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`EmotesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_emotes(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
+    fn get_channel_emotes(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<EmotesResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-emotes>
-        fn get_channel_emotes(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> EmotesResponse {
-            endpoint_type: GetChannelEmotes,
-            method: GET,
-            path: [CHAT, EMOTES],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Gets the list of global emotes
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`EmotesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::chat::ChatAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_global_emotes()
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
+    fn get_global_emotes(&self) -> TwitchAPIRequest<EmotesResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
-        fn get_global_emotes(&self) -> EmotesResponse {
-            endpoint_type: GetGlobalEmotes,
-            method: GET,
-            path: [CHAT, EMOTES, "global"]
-        }
+    /// Gets emotes for one or more specified emote sets
+    ///
+    /// # Arguments
+    ///
+    /// * `emote_set_ids` - An ID that identifies the emote set to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`EmotesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::chat::ChatAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_emote_sets(["e1", "e2"])
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
+    fn get_emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
-        fn get_emote_sets(
-            &self,
-            emote_set_ids: &[&str],
-        ) -> EmotesResponse {
-            endpoint_type: GetEmoteSets,
-            method: GET,
-            path: [CHAT, EMOTES, "set"],
-            query_params: {
-                extend(emote_set_ids.iter().map(|x| ("emote_set_id", *x)))
-            }
-        }
+    /// Gets the broadcaster’s list of custom chat badges
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose chat badges you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BadgesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_chat_badges(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
+    fn get_channel_chat_badges(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<BadgesResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
-        fn get_channel_chat_badges(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> BadgesResponse {
-            endpoint_type: GetChannelChatBadges,
-            method: GET,
-            path: [CHAT, "badges"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Gets Twitch’s list of chat badges
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BadgesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::chat::ChatAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_global_chat_badges()
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
+    fn get_global_chat_badges(&self) -> TwitchAPIRequest<BadgesResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
-        fn get_global_chat_badges(&self) -> BadgesResponse {
-            endpoint_type: GetGlobalChatBadges,
-            method: GET,
-            path: [CHAT, "badges", "global"]
-        }
+    /// Gets the broadcaster’s chat settings
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose chat settings you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetChatSettingsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, ModeratorId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_chat_settings(&BroadcasterId::from("1234"))
+    ///     .moderator_id(&ModeratorId::from("5678"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
+    fn get_chat_settings<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChatSettingsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
-        fn get_chat_settings(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            moderator_id: Option<&ModeratorId>,
-        ) -> ChatSettingResponse {
-            endpoint_type: GetChatSettings,
-            method: GET,
-            path: [CHAT, SETTINGS],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                opt(MODERATOR_ID, moderator_id)
-            }
-        }
+    /// Retrieves the active shared chat session for a channel
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The User ID of the channel broadcaster.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SharedChatSessionResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_shared_chat_session(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
+    fn get_shared_chat_session(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<SharedChatSessionResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-shared-chat-session>
-        fn get_shared_chat_session(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> SharedChatSessionResponse {
-            endpoint_type: GetShardChatSession,
-            method: GET,
-            path: ["shared_chat", "session"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Retrieves emotes available to the user across all channels
+    ///
+    /// # Arguments
+    ///
+    /// * `user_id` - The ID of the user.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetUserEmotesBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, UserId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_user_emotes(&UserId::from("5678"))
+    ///     .broadcaster_id(&BroadcasterId::from("1234"))
+    ///     .after("eyJiI...")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:emotes`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
+    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
-        fn get_user_emotes(
-            &self,
-            user_id: &UserId,
-            after: Option<&str>,
-            broadcaster_id: Option<BroadcasterId>,
-        ) -> EmotesResponse {
-            endpoint_type: GetUserEmotes,
-            method: GET,
-            path: [CHAT, EMOTES, "user"],
-            query_params: {
-                query(USER_ID, user_id),
-                opt(AFTER, after),
-                opt(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Updates the broadcaster’s chat settings
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose chat settings you want to update.
+    /// * `moderator_id` - The ID of a user that has permission to moderate the broadcaster’s chat room, or the broadcaster’s ID if they’re making the update.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UpdateChatSettingsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, ModeratorId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .update_chat_settings(
+    ///         &BroadcasterId::from("1234"),
+    ///         &ModeratorId::from("5678"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `moderator:manage:chat_settings`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
+    fn update_chat_settings<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> UpdateChatSettingsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#update-chat-settings>
-        fn update_chat_settings(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            update: UpdateChatSettingsRequest,
-        ) -> ChatSettingResponse {
-            endpoint_type: UpdateChatSettings,
-            method: PATCH,
-            path: [CHAT, SETTINGS],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                query(MODERATOR_ID, moderator_id)
-            },
-            headers: [json],
-            body: update.into_json()
-        }
+    /// Sends an announcement to the broadcaster’s chat room
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room to send the announcement to.
+    /// * `moderator_id` - The ID of a user who has permission to moderate the broadcaster’s chat room, or the broadcaster’s ID if they’re sending the announcement.
+    /// * `message` - (max 500)
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SendChatAnnouncementBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::{ChatAPI, AnnouncementColor},
+    ///     types::{BroadcasterId, ModeratorId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .send_chat_announcement(
+    ///         &BroadcasterId::from("1234"),
+    ///         &ModeratorId::from("5678"),
+    ///         "message")
+    ///     .color(AnnouncementColor::Blue)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `moderator:manage:announcements`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
+    fn send_chat_announcement<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+        message: &'a str,
+    ) -> SendChatAnnouncementBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-announcement>
-        fn send_chat_announcement(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            message: &str,
-            color: Option<AnnouncementColor>,
-        ) -> NoContent {
-            endpoint_type: SendChatAnnouncement,
-            method: POST,
-            path: [CHAT, "announcements"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                query(MODERATOR_ID, moderator_id)
-            },
-            headers: [json],
-            body: ChatAnnouncementBody::new(message, color).into_json()
-        }
+    /// Sends a Shoutout to the specified broadcaster
+    ///
+    /// # Arguments
+    ///
+    /// * `from_broadcaster_id` - The ID of the broadcaster that’s sending the Shoutout.
+    /// * `to_broadcaster_id` - The ID of the broadcaster that’s receiving the Shoutout.
+    /// * `moderator_id` - The ID of the broadcaster or a user that is one of the broadcaster’s moderators.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`NoContent`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, ModeratorId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .send_a_shoutout(
+    ///         &BroadcasterId::from("1234"),
+    ///         &BroadcasterId::from("1234"),
+    ///         ModeratorId::from("5678")&
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `moderator:manage:shoutouts`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
+    fn send_a_shoutout(
+        &self,
+        from_broadcaster_id: &BroadcasterId,
+        to_broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> TwitchAPIRequest<NoContent>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#send-a-shoutout>
-        fn send_a_shoutout(
-            &self,
-            from_broadcaster_id: &BroadcasterId,
-            to_broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-        ) -> NoContent {
-            endpoint_type: SendAShoutout,
-            method: POST,
-            path: [CHAT, "shoutouts"],
-            query_params: {
-                query("from_broadcaster_id", from_broadcaster_id),
-                query("to_broadcaster_id", to_broadcaster_id),
-                query(MODERATOR_ID, moderator_id)
-            }
-        }
+    /// Sends a message to the broadcaster’s chat room
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose chat room the message will be sent to.
+    /// * `sender_id` - The ID of the user sending the message.
+    /// * `message` - (max 500)
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SendChatMessageBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::{BroadcasterId, UserId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let broadcaster_id = ;
+    /// let response = api
+    ///     .send_chat_message(
+    ///         &BroadcasterId::from("1234"),
+    ///         &UserId::from("5678"),
+    ///         "message"
+    ///     )
+    ///     .for_source_only(true)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// Requires an app access token or user access token that includes the user:write:chat scope. If app access token used, then additionally requires user:bot scope from chatting user, and either channel:bot scope from broadcaster or moderator status.
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
+    fn send_chat_message<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        sender_id: &'a UserId,
+        message: &'a str,
+    ) -> SendChatMessageBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#send-chat-message>
-        fn send_chat_message(
-            &self,
-            req: SendChatMessageRequest,
-        ) -> SendChatMessageResponse {
-            endpoint_type: SendChatMessage,
-            method: POST,
-            path: [CHAT, "messages"],
-            headers: [json],
-            body: req.into_json()
-        }
+    /// Gets the color used for the user’s name in chat
+    ///
+    /// # Arguments
+    ///
+    /// * `user_ids` - The ID of the user whose username color you want to get. (max 100)
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UsersColorResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::ChatAPI,
+    ///     types::UserId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_user_chat_color(&[UserId::from("1234")])
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
+    fn get_user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
-        fn get_user_chat_color(
-            &self,
-            user_id: &[UserId],
-        ) -> UsersColorResponse {
-            endpoint_type: GetUserChatColor,
-            method: GET,
-            path: [CHAT, "color"],
-            query_params: {
-                extend(user_id.iter().map(|x| (USER_ID, x)))
-            }
-        }
-        /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
-        fn update_user_chat_color(
-            &self,
-            user_id: &UserId,
-            color: ChatColor,
-        ) -> NoContent {
-            endpoint_type: UpdateUserChatColor,
-            method: PUT,
-            path: [CHAT, "color"],
-            query_params: {
-                query(USER_ID, user_id),
-                query("color", color.as_str())
-            }
-        }
+    /// Updates the color used for the user’s name in chat
+    ///
+    /// # Arguments
+    ///
+    /// * `user_id` - The ID of the user whose chat color you want to update.
+    /// * `color` -
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`NoContent`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     chat::{ChatAPI, ChatColor},
+    ///     types:UserId:
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let user_id = UserId::from("1234");
+    /// let response = api
+    ///     .update_user_chat_color(&user_id, ChatColor::BlueViolet)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `No scope required`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-user-chat-color>
+    fn update_user_chat_color(
+        &self,
+        user_id: &UserId,
+        color: ChatColor,
+    ) -> TwitchAPIRequest<NoContent>;
+}
+
+impl ChatAPI for TwitchAPI {
+    fn get_chatters<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> GetChattersBuilder<'a> {
+        GetChattersBuilder::new(self, broadcaster_id, moderator_id)
+    }
+    fn get_channel_emotes(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<EmotesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHAT, EMOTES]);
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetChannelEmotes,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_global_emotes(&self) -> TwitchAPIRequest<EmotesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[CHAT, EMOTES, GLOBAL]);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetGlobalEmotes,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[CHAT, EMOTES, SET]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.extend_pairs(emote_set_ids.iter().map(|id| (EMOTE_SET_ID, id)));
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetEmoteSets,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
+    fn get_channel_chat_badges(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<BadgesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHAT, BADGES]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetChannelChatBadges,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_global_chat_badges(&self) -> TwitchAPIRequest<BadgesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[CHAT, BADGES, GLOBAL]);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetGlobalChatBadges,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_chat_settings<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChatSettingsBuilder<'a> {
+        GetChatSettingsBuilder::new(self, broadcaster_id)
+    }
+    fn get_shared_chat_session(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<SharedChatSessionResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[SHARED_CHAT, SESSION]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetShardChatSession,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a> {
+        GetUserEmotesBuilder::new(self, user_id)
+    }
+    fn update_chat_settings<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> UpdateChatSettingsBuilder<'a> {
+        UpdateChatSettingsBuilder::new(self, broadcaster_id, moderator_id)
+    }
+    fn send_chat_announcement<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+        message: &'a str,
+    ) -> SendChatAnnouncementBuilder<'a> {
+        SendChatAnnouncementBuilder::new(self, broadcaster_id, moderator_id, message)
+    }
+    fn send_a_shoutout(
+        &self,
+        from_broadcaster_id: &BroadcasterId,
+        to_broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> TwitchAPIRequest<NoContent> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHAT, SHOUTOUTS]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(FROM_BROADCASTER_ID, from_broadcaster_id);
+        query.append_pair(TO_BROADCASTER_ID, to_broadcaster_id);
+        query.append_pair(MODERATOR_ID, moderator_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::SendAShoutout,
+            url,
+            reqwest::Method::POST,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn send_chat_message<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        sender_id: &'a UserId,
+        message: &'a str,
+    ) -> SendChatMessageBuilder<'a> {
+        SendChatMessageBuilder::new(self, broadcaster_id, sender_id, message)
+    }
+    fn get_user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.extend_pairs(user_ids.iter().map(|id| (USER_ID, id)));
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetUserChatColor,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn update_user_chat_color(
+        &self,
+        user_id: &UserId,
+        color: ChatColor,
+    ) -> TwitchAPIRequest<NoContent> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(USER_ID, user_id);
+        query.append_pair(COLOR, color.as_ref());
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::UpdateUserChatColor,
+            url,
+            reqwest::Method::PUT,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
     }
 }

@@ -153,6 +153,75 @@ pub struct Version {
     pub click_url: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, Serialize)]
+pub enum ChatColor {
+    Blue,
+    BlueViolet,
+    CadetBlue,
+    Chocolate,
+    Coral,
+    DodgerBlue,
+    Firebrick,
+    GoldenRod,
+    Green,
+    HotPink,
+    OrangeRed,
+    Red,
+    SeaGreen,
+    SpringGreen,
+    YellowGreen,
+}
+
+impl ChatColor {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Blue => "blue",
+            Self::BlueViolet => "blue_violet",
+            Self::CadetBlue => "cadet_blue",
+            Self::Chocolate => "chocolate",
+            Self::Coral => "coral",
+            Self::DodgerBlue => "dodger_blue",
+            Self::Firebrick => "firebrick",
+            Self::GoldenRod => "golden_rod",
+            Self::Green => "green",
+            Self::HotPink => "hot_pink",
+            Self::OrangeRed => "orange_red",
+            Self::Red => "red",
+            Self::SeaGreen => "sea_green",
+            Self::SpringGreen => "spring_green",
+            Self::YellowGreen => "yellow_green",
+        }
+    }
+}
+
+impl AsRef<str> for ChatColor {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+#[derive(Debug, Clone, Copy, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AnnouncementColor {
+    Blue,
+    Green,
+    Orange,
+    Purple,
+    Primary,
+}
+
+impl AnnouncementColor {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Blue => "blue",
+            Self::Green => "green",
+            Self::Orange => "orange",
+            Self::Purple => "purple",
+            Self::Primary => "primary",
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::chat::{EmoteType, Format, Scale, ThemeMode};

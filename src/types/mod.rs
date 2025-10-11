@@ -11,7 +11,7 @@ pub use choice::Choice;
 pub use cost::{Cost, CostType};
 pub use image::Images;
 pub use new_types::{
-    BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, EmoteId, EntitlementId,
+    BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, EmoteId, EmoteSetId, EntitlementId,
     ExtensionClientId, ExtensionId, GameId, GoalId, HypeTrainId, Id, JWTToken, MessageId,
     ModeratorId, OrganizationId, OutcomeId, PollId, PredictionId, RedemptionId, RewardId,
     SessionId, StreamId, SubscriptionId, TransactionId, UnbanRequestId, UserId, WhisperId,
