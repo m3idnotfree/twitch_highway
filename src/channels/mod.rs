@@ -1,100 +1,291 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::{
-    ContentClassificationLabel, ContentClassificationLabelsID, ModifyChannelRequest,
-};
+pub use builder::{GetChannelFollowersRequest, GetFollowedChannels, ModifyChannelInfoBuilder};
 pub use response::{
     ChannelEditorsResponse, ChannelFollowersResponse, ChannelInfoResponse,
     FollowerdChannelsResponse,
 };
-pub use types::{ChannelEditor, ChannelFollower, ChannelInfo, FollowedChannel};
-
-use crate::{
-    request::NoContent,
-    types::{
-        constants::{BROADCASTER_ID, CHANNELS, USER_ID},
-        BroadcasterId, PaginationQuery, UserId,
-    },
+pub use types::{
+    ChannelEditor, ChannelFollower, ChannelInfo, ContentClassificationLabel,
+    ContentClassificationLabelsID, FollowedChannel,
 };
 
-endpoints! {
-    ChannelsAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
-        fn get_channel_info(
-            &self,
-            broadcaster_ids: &[BroadcasterId],
-        ) -> ChannelInfoResponse {
-            endpoint_type: GetChanelInformation,
-            method: GET,
-            path: [CHANNELS],
-            query_params: {
-                extend(broadcaster_ids.iter().map(|x| (BROADCASTER_ID, x)))
-            }
-        }
+use crate::{
+    request::TwitchAPIRequest,
+    types::{
+        constants::{BROADCASTER_ID, CHANNELS, EDITORS},
+        BroadcasterId, UserId,
+    },
+    TwitchAPI,
+};
 
-        /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
-        fn modify_channel_info(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            modify: ModifyChannelRequest,
-        ) -> NoContent {
-            endpoint_type: ModifyChannelInformation,
-            method: PATCH,
-            path: [CHANNELS],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            },
-            headers: [json],
-            body: modify.into_json()
-        }
+pub trait ChannelsAPI {
+    /// Gets information about one or more channels
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_ids` - The ID of the broadcaster whose channel you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`ChannelInfoResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     channels::ChannelsAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_info(&[BroadcasterId::from("1234")])
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-information>
+    fn get_channel_info(
+        &self,
+        broadcaster_ids: &[BroadcasterId],
+    ) -> TwitchAPIRequest<ChannelInfoResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
-        fn get_channel_editors(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> ChannelEditorsResponse {
-            endpoint_type: GetChannelEditors,
-            method: GET,
-            path: [CHANNELS, "editors"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Updates a channel’s properties
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`ModifyChannelInfoBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     channels::{ChannelsAPI, ContentClassificationLabel, ContentClassificationLabelsID},
+    ///     types::{BroadcasterId, GameId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .modify_channel_info(&BroadcasterId::from("1234"))
+    ///     .broadcaster_language("")
+    ///     .title("")
+    ///     .game_id(&GameId::from(""))
+    ///     .delay(5)
+    ///     .tags(&[""])
+    ///     .content_classification_labels(&[ContentClassificationLabel::new(ContentClassificationLabelsID::Gambling, false)])
+    ///     .is_branded_content(false)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:manage:broadcast`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#modify-channel-information>
+    fn modify_channel_info<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> ModifyChannelInfoBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
-        fn get_followed_channels(
-            &self,
-            user_id: &UserId,
-            broadcaster_id: Option<&BroadcasterId>,
-            pagination: Option<PaginationQuery>,
-        ) -> FollowerdChannelsResponse {
-            endpoint_type: GetFollowedChannels,
-            method: GET,
-            path: [CHANNELS, "followed"],
-            query_params: {
-                query(USER_ID, user_id),
-                opt(BROADCASTER_ID, broadcaster_id),
-                pagination(pagination)
-            }
-        }
+    /// Gets the broadcaster’s list editors
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the channel.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`ChannelEditorsResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     channels::ChannelsAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_editor(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:read:editors`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-editors>
+    fn get_channel_editor(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<ChannelEditorsResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
-        fn get_channel_followers(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            user_id: Option<&UserId>,
-            pagination: Option<PaginationQuery>,
-        ) -> ChannelFollowersResponse {
-            endpoint_type: GetChannelFollowers,
-            method: GET,
-            path: [CHANNELS, "followers"],
-            query_params: {
-                opt(USER_ID, user_id),
-                query(BROADCASTER_ID, broadcaster_id),
-                pagination(pagination)
-            }
-        }
+    /// Gets a list of broadcasters that the specified user follows
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`FollowerdChannelsResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     channels::ChannelsAPI,
+    ///     types::{BroadcasterId, UserId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_followed_channels(&UserId::from("1234"))
+    ///     .broadcaster_id(&BroadcasterId::from("5678"))
+    ///     .first(5)
+    ///     .after("eyJiI...")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:follows`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-followed-channels>
+    fn get_followed_channels<'a>(&'a self, user_id: &'a UserId) -> GetFollowedChannels<'a>;
+
+    /// Gets a list of users that follow the specified broadcaster
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`ChannelFollowersResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     channels::ChannelsAPI,
+    ///     types::{BroadcasterId,UserId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_followers(&BroadcasterId::from("1234"))
+    ///     .user_id(&UserId::from("5678"))
+    ///     .first(5)
+    ///     .after("eyJiI...")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `moderator:read:followers`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-followers>
+    fn get_channel_followers<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChannelFollowersRequest<'a>;
+}
+
+impl ChannelsAPI for TwitchAPI {
+    fn get_channel_info(
+        &self,
+        broadcaster_ids: &[BroadcasterId],
+    ) -> TwitchAPIRequest<ChannelInfoResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHANNELS]);
+        let mut query = url.query_pairs_mut();
+
+        query.extend_pairs(broadcaster_ids.iter().map(|id| (BROADCASTER_ID, id)));
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetChanelInformation,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn modify_channel_info<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> ModifyChannelInfoBuilder<'a> {
+        ModifyChannelInfoBuilder::new(self, broadcaster_id)
+    }
+    fn get_channel_editor(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<ChannelEditorsResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[CHANNELS, EDITORS]);
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetChannelEditors,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_followed_channels<'a>(&'a self, user_id: &'a UserId) -> GetFollowedChannels<'a> {
+        GetFollowedChannels::new(self, user_id)
+    }
+    fn get_channel_followers<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChannelFollowersRequest<'a> {
+        GetChannelFollowersRequest::new(self, broadcaster_id)
     }
 }

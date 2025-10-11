@@ -40,3 +40,25 @@ pub struct ChannelFollower {
     pub user_name: String,
     pub followed_at: DateTime<FixedOffset>,
 }
+
+#[derive(Debug, Clone, Serialize)]
+pub struct ContentClassificationLabel {
+    id: ContentClassificationLabelsID,
+    is_enabled: bool,
+}
+
+impl ContentClassificationLabel {
+    pub fn new(id: ContentClassificationLabelsID, is_enabled: bool) -> Self {
+        Self { id, is_enabled }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum ContentClassificationLabelsID {
+    DebatedSocialIssuesAndPolitics,
+    DrugsIntoxication,
+    SexualThemes,
+    ViolentGraphic,
+    Gambling,
+    ProfanityVulgarity,
+}

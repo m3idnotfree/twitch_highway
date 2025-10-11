@@ -132,3 +132,10 @@ pub(crate) const STATUS: &str = "status";
 pub(crate) const SORT: &str = "sort";
 #[cfg(feature = "channel-points")]
 pub(crate) const REWARD_ID: &str = "reward_id";
+
+#[cfg(feature = "channels")]
+pub(crate) const FOLLOWERS: &str = "followers";
+#[cfg(feature = "channels")]
+pub(crate) const FOLLOWED: &str = "followed";
+#[cfg(feature = "channels")]
+pub(crate) const EDITORS: &str = "editors";
