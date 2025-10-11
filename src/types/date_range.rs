@@ -1,13 +1,24 @@
 use std::fmt;
 
+use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, Duration, FixedOffset};
 use serde::{Deserialize, Serialize};
 
+use crate::serde_helpers::deserialize_optional_datetime;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DateRange {
-    #[serde(default, deserialize_with = "deserialize_optional_datetime")]
+    #[serde(
+        default,
+        serialize_with = "serialize_none_as_empty_string",
+        deserialize_with = "deserialize_optional_datetime"
+    )]
     pub started_at: Option<DateTime<FixedOffset>>,
-    #[serde(default, deserialize_with = "deserialize_optional_datetime")]
+    #[serde(
+        default,
+        serialize_with = "serialize_none_as_empty_string",
+        deserialize_with = "deserialize_optional_datetime"
+    )]
     pub ended_at: Option<DateTime<FixedOffset>>,
 }
 
@@ -48,18 +59,34 @@ impl fmt::Display for DateRange {
     }
 }
 
-fn deserialize_optional_datetime<'de, D>(
-    deserializer: D,
-) -> Result<Option<DateTime<FixedOffset>>, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    let s: String = Deserialize::deserialize(deserializer)?;
-    if s.is_empty() {
-        Ok(None)
-    } else {
-        DateTime::parse_from_rfc3339(&s)
-            .map(Some)
-            .map_err(serde::de::Error::custom)
+#[cfg(test)]
+mod tests {
+    use crate::types::DateRange;
+
+    #[test]
+    fn base() {
+        let json =
+            "{\"started_at\":\"2018-03-01T00:00:00Z\",\"ended_at\":\"2018-06-01T00:00:00Z\"}";
+
+        let date_range: DateRange = serde_json::from_str(json).unwrap();
+
+        assert!(date_range.started_at.is_some());
+        assert!(date_range.ended_at.is_some());
+
+        let round_tip = serde_json::to_string(&date_range).unwrap();
+        assert_eq!(round_tip, json);
+    }
+
+    #[test]
+    fn empty_ended_at() {
+        let json = "{\"started_at\":\"2018-03-01T00:00:00Z\",\"ended_at\":\"\"}";
+
+        let date_range: DateRange = serde_json::from_str(json).unwrap();
+
+        assert!(date_range.started_at.is_some());
+        assert!(date_range.ended_at.is_none());
+
+        let round_tip = serde_json::to_string(&date_range).unwrap();
+        assert_eq!(round_tip, json);
     }
 }

@@ -756,7 +756,7 @@ macro_rules! define_request_builder {
     };
     (
         $(#[$meta:meta])*
-        $name:ident<$lt:lifetime, $($gen:ident $(: $bound:path)?),+> {
+        $name:ident<$lt:lifetime> {
             $(req: {$(
                 $(#[$req_meta:meta])*
                 $req_f:ident: $req_t:ty
@@ -781,7 +781,7 @@ macro_rules! define_request_builder {
             $name,
             {
                 <$lt>
-                [$($gen $(: $bound)*),+],
+                [],
             },
             {$($(
                 $(#[$req_meta])*
@@ -795,12 +795,60 @@ macro_rules! define_request_builder {
             ),*)?},
             endpoint_type: $endpoint,
             method: $method,
-            path: [$($path),*]
+            path: [$($path),*],
             header: [$($($header_config:tt)*)?],
             body: $($body:expr)?,
             return: $return
         );
     };
+    //  (
+    //     $(#[$meta:meta])*
+    //     $name:ident<$lt:lifetime, $($gen:ident $(: $bound:path)?),+> {
+    //         $(req: {$(
+    //             $(#[$req_meta:meta])*
+    //             $req_f:ident: $req_t:ty
+    //             $([$($req_config:tt)*])?
+    //         ),* $(,)?})? $(,)?
+    //
+    //         $(opts: {$(
+    //             $(#[$opt_meta:meta])*
+    //             $opt_f:ident: $opt_t:ty
+    //             $([$($opt_config:tt)*])?
+    //         ),* $(,)?})? $(,)?
+    //     } -> $return:ty;
+    //     endpoint_type: $endpoint:ident,
+    //     method: $method:ident,
+    //     path: [$($path:expr),* $(,)?]
+    //     $(, header: [$($header_config:tt)*] )?
+    //     $(, body: $($body:expr)?)?
+    //     $(,)?
+    // ) => {
+    //     define_request_builder!(@impl
+    //         $(#[$meta])*,
+    //         $name,
+    //         {
+    //             <$lt>
+    //             [$($gen $(: $bound)*),+],
+    //         },
+    //         {$($(
+    //             $(#[$req_meta])*
+    //             $req_f: $req_t
+    //             $([$($req_config)*])?
+    //         ),*)?},
+    //         {$($(
+    //             $(#[$opt_meta])*
+    //             $opt_f: $opt_t
+    //             $([$($opt_config)*])?
+    //         ),*)?},
+    //         endpoint_type: $endpoint,
+    //         method: $method,
+    //         path: [$($path),*]
+    //         header: [$($($header_config:tt)*)?],
+    //         body: $($body:expr)?,
+    //         return: $return
+    //     );
+    // };
+
 
     (@impl $(#[$meta:meta])*,
         $name:ident,
@@ -829,7 +877,7 @@ macro_rules! define_request_builder {
         pub struct $name
        $( <$($lt)?, $($($gen $(: $bound)*),+)?>)?
         {
-            api: $($(&$lt)?)? TwitchAPI,
+            api: $($(&$lt)?)? $crate::TwitchAPI,
             $($(
                 $(#[$req_m])*
                 $req_f: $req_t,
@@ -841,7 +889,7 @@ macro_rules! define_request_builder {
 
         impl$(<$($lt)?, $($($gen $(: $bound)*),+)?>)? $name$(<$($lt)?, $($($gen),+)?>)? {
             pub fn new(
-                api: $($(&$lt)?)? TwitchAPI,
+                api: $($(&$lt)?)? $crate::TwitchAPI,
 
             $($(
                 $req_f: define_request_builder!(@param_type $req_t $([$($req_config)*])?)),
@@ -860,7 +908,7 @@ macro_rules! define_request_builder {
                 define_request_builder!(@opt_method $(#[$opt_m])* $opt_f: $opt_t $(, [$($opt_config)*])?);
             )+)?
 
-            pub fn build(self) -> TwitchAPIRequest<$return> {
+            pub fn build(self) -> $crate::request::TwitchAPIRequest<$return> {
                 let mut url = self.api.build_url();
                 let headers = define_request_builder!(@headers self, $($($header_config)*)?);
                 let body = define_request_builder!(@body $($body)?);
@@ -879,7 +927,7 @@ macro_rules! define_request_builder {
 
                 drop(query);
 
-                TwitchAPIRequest::new(
+                $crate::request::TwitchAPIRequest::new(
                     $crate::request::EndpointType::$endpoint,
                     url,
                     reqwest::Method::$method,
@@ -1055,6 +1103,16 @@ macro_rules! define_request_builder {
     };
     (@convert $url:expr, $key:expr, $value:expr, bool) => {
         $url.append_pair($key, &$value.to_string());
+    };
+    (@convert $url:expr, $key:expr, $value:expr, extend) => {
+        for item in $value.iter() {
+            $url.append_pair($key, item);
+        }
+    };
+    (@convert $url:expr, $key:expr, $value:expr, extend_as_ref) => {
+        for item in $value.iter() {
+            $url.append_pair($key, item.as_ref);
+        }
     };
 
     (@headers $self:ident, json) => {

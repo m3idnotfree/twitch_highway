@@ -1,7 +1,6 @@
 mod category;
 mod choice;
 mod cost;
-mod date_range;
 mod image;
 mod new_types;
 mod pagination;
@@ -10,7 +9,6 @@ mod title;
 pub use category::Category;
 pub use choice::Choice;
 pub use cost::{Cost, CostType};
-pub use date_range::DateRange;
 pub use image::Images;
 pub use new_types::{
     BroadcasterId, CampaignId, CategoryId, ChoiceId, ConduitId, EmoteId, ExtensionClientId,
@@ -53,3 +51,8 @@ pub use reward::Reward;
 mod amount;
 #[cfg(any(feature = "charity", feature = "eventsub",))]
 pub use amount::Amount;
+
+#[cfg(any(feature = "analytics", feature = "bits",))]
+mod date_range;
+#[cfg(any(feature = "analytics", feature = "bits",))]
+pub use date_range::DateRange;

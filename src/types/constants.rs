@@ -82,7 +82,7 @@ pub(crate) const CHANNELS: &str = "channels";
 
 #[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
 pub(crate) const STARTED_AT: &str = "started_at";
-#[cfg(any(feature = "analytics", feature = "bits", feature = "clips",))]
+#[cfg(any(feature = "analytics", feature = "clips",))]
 pub(crate) const ENDED_AT: &str = "ended_at";
 
 pub(crate) const BEFORE: &str = "before";
@@ -108,3 +108,14 @@ pub(crate) const GAMES: &str = "games";
 
 #[cfg(any(feature = "conduits", feature = "eventsub"))]
 pub(crate) const EVENTSUB: &str = "eventsub";
+
+#[cfg(feature = "bits")]
+pub(crate) const PERIOD: &str = "period";
+#[cfg(feature = "bits")]
+pub(crate) const COUNT: &str = "count";
+#[cfg(feature = "bits")]
+pub(crate) const LEADERBOARD: &str = "leaderboard";
+#[cfg(feature = "bits")]
+pub(crate) const TRANSACTIONS: &str = "transactions";
+#[cfg(feature = "bits")]
+pub(crate) const CHEERMOTES: &str = "cheermotes";

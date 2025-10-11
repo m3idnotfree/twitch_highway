@@ -130,6 +130,33 @@ pub enum ProductType {
     BITS_IN_EXTENSION,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Period {
+    Day,
+    Week,
+    Month,
+    Year,
+    All,
+}
+
+impl Period {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Day => "day",
+            Self::Week => "week",
+            Self::Month => "month",
+            Self::Year => "year",
+            Self::All => "all",
+        }
+    }
+}
+
+impl AsRef<str> for Period {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;

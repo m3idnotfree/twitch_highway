@@ -1,62 +1,177 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::BitsLeaderboardRequest;
+pub use builder::{BitsLeaderboardRequest, GetExtensionTransactionsBuilder};
 pub use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 pub use types::{
-    BitsLeaderboard, Cheermotes, Dark, ExtensionTransaction, Images, Imagess, Light, ProductType,
-    Tier, TierLevel, TransactionProductData, Type,
+    BitsLeaderboard, Cheermotes, Dark, ExtensionTransaction, Images, Imagess, Light, Period,
+    ProductType, Tier, TierLevel, TransactionProductData, Type,
 };
 
-use crate::types::{
-    constants::{BITS, BROADCASTER_ID, EXTENSIONS, EXTENSION_ID, ID},
-    BroadcasterId, ExtensionId, Id, PaginationQuery,
+use crate::{
+    request::TwitchAPIRequest,
+    types::{
+        constants::{BITS, BROADCASTER_ID, CHEERMOTES},
+        BroadcasterId, ExtensionId,
+    },
 };
 
-endpoints! {
-    BitsAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
-        fn get_bits_leaderboard(
-            &self,
-            opts: Option<BitsLeaderboardRequest>,
-        ) -> BitsLeaderboardResponse {
-            endpoint_type: GetBitsLeaderboard,
-            method: GET,
-            path: [BITS, "leaderboard"],
-            query_params: {
-                opt_into_query(opts)
-            }
+pub trait BitsAPI {
+    /// Gets the Bits leaderboard for the authenticated broadcaster
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BitsLeaderboardRequest`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     bits::{BitsAPI, Period},
+    ///     types::UserId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_bits_leaderboard()
+    ///     .count(50)
+    ///     .period(Period::Week)
+    ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
+    ///     .user_id(&UserId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `bits:read`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
+    fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a>;
+
+    /// Gets a list of Cheermotes that users can use to cheer Bits in any Bits-enabled channel’s chat room
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - Optional The ID of the broadcaster whose custom Cheermotes you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`CheermotesResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     bits::BitsAPI,
+    ///     types::BroadcasterId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_cheermotes(Some(&BroadcasterId::from("1234")))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
+    fn get_cheermotes(
+        &self,
+        broadcaster_id: Option<&BroadcasterId>,
+    ) -> TwitchAPIRequest<CheermotesResponse>;
+
+    /// Gets an extension’s list of transactions
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetExtensionTransactionsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     bits::BitsAPI,
+    ///     types::{ExtensionId, TransactionId}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_extension_transactions(&ExtensionId::from("1234"))
+    ///     .ids(&[TransactionId::from("5678"), TransactionId::from("6789")])
+    ///     .first(50)
+    ///     .after("eyJiI...")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
+    fn get_extension_transactions<'a>(
+        &'a self,
+        extension_id: &'a ExtensionId,
+    ) -> GetExtensionTransactionsBuilder<'a>;
+}
+
+impl BitsAPI for crate::TwitchAPI {
+    fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a> {
+        BitsLeaderboardRequest::new(self)
+    }
+    fn get_cheermotes(
+        &self,
+        broadcaster_id: Option<&BroadcasterId>,
+    ) -> TwitchAPIRequest<CheermotesResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend([BITS, CHEERMOTES]);
+
+        let mut query = url.query_pairs_mut();
+
+        if let Some(broadcaster_id) = broadcaster_id {
+            query.append_pair(BROADCASTER_ID, broadcaster_id);
         }
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
-        fn get_cheermotes(
-            &self,
-            broadcaster_id: Option<&BroadcasterId>,
-        ) -> CheermotesResponse {
-            endpoint_type: GetCheermotes,
-            method: GET,
-            path: [BITS, "cheermotes"],
-            query_params: {
-                opt(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+        drop(query);
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
-        fn get_extension_transactions(
-            &self,
-            extension_id: &ExtensionId,
-            id: Option<&Id>,
-            pagination: Option<PaginationQuery>,
-        ) -> ExtensionTransactionsResponse {
-            endpoint_type: GetExtensionTransactions,
-            method: GET,
-            path: [EXTENSIONS, "transactions"],
-            query_params: {
-                query(EXTENSION_ID, extension_id),
-                opt(ID, id),
-                pagination(pagination)
-            }
-        }
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetCheermotes,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+
+    fn get_extension_transactions<'a>(
+        &'a self,
+        extension_id: &'a ExtensionId,
+    ) -> GetExtensionTransactionsBuilder<'a> {
+        GetExtensionTransactionsBuilder::new(self, extension_id)
     }
 }
