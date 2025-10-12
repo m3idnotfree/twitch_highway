@@ -93,7 +93,12 @@ pub(crate) const AFTER: &str = "after";
 #[cfg(any(feature = "eventsub", feature = "subscriptions"))]
 pub(crate) const SUBSCRIPTIONS: &str = "subscriptions";
 
-#[cfg(any(feature = "analytics", feature = "eventsub", feature = "videos"))]
+#[cfg(any(
+    feature = "analytics",
+    feature = "eventsub",
+    feature = "streams",
+    feature = "videos"
+))]
 pub(crate) const TYPE: &str = "type";
 
 #[cfg(any(feature = "bits", feature = "extensions"))]
@@ -138,7 +143,7 @@ pub(crate) const REWARD_ID: &str = "reward_id";
 
 #[cfg(feature = "channels")]
 pub(crate) const FOLLOWERS: &str = "followers";
-#[cfg(feature = "channels")]
+#[cfg(any(feature = "channels", feature = "streams"))]
 pub(crate) const FOLLOWED: &str = "followed";
 #[cfg(feature = "channels")]
 pub(crate) const EDITORS: &str = "editors";
@@ -208,6 +213,17 @@ pub(crate) const IGDB_ID: &str = "igdb_id";
 #[cfg(feature = "games")]
 pub(crate) const TOP: &str = "top";
 
+#[cfg(feature = "streams")]
+pub(crate) const VIDEO_ID: &str = "video_id";
+#[cfg(feature = "streams")]
+pub(crate) const MARKERS: &str = "markers";
+#[cfg(feature = "streams")]
+pub(crate) const STREAMS: &str = "streams";
+#[cfg(feature = "streams")]
+pub(crate) const USER_LOGIN: &str = "user_login";
+#[cfg(feature = "streams")]
+pub(crate) const KEY: &str = "key";
+
 #[cfg(feature = "users")]
 pub(crate) const USERS: &str = "users";
 #[cfg(feature = "users")]
@@ -222,12 +238,12 @@ pub(crate) const BLOCKS: &str = "blocks";
 pub(crate) const LOGIN: &str = "login";
 #[cfg(feature = "users")]
 pub(crate) const LIST: &str = "list";
-#[cfg(feature = "users")]
+#[cfg(any(feature = "streams", feature = "users"))]
 pub(crate) const DESCRIPTION: &str = "description";
 
 #[cfg(feature = "videos")]
 pub(crate) const VIDEOS: &str = "videos";
-#[cfg(feature = "videos")]
+#[cfg(any(feature = "streams", feature = "videos"))]
 pub(crate) const LANGUAGE: &str = "language";
 
 #[cfg(feature = "whisper")]

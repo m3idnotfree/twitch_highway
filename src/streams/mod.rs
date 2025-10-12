@@ -1,91 +1,326 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::{CreateStreamMarkerRequest, GetStreamsRequest, StreamMarkerSelector};
+pub use builder::{
+    GetFollowedStreamsBuilder, GetStermaMarkersBuilder, GetStreamsBuilder, StreamMarkerSelect,
+};
 pub use response::{
     CreateStreamMarkerResponse, GetStreamMarkersResponse, StreamKeyResponse, StreamsResponse,
 };
 pub use types::{Marker, Stream, StreamKey, StreamMarker, StreamVideos};
 
-use crate::types::{
-    constants::{BROADCASTER_ID, USER_ID},
-    BroadcasterId, PaginationQuery, UserId,
+use crate::{
+    request::TwitchAPIRequest,
+    types::{
+        constants::{BROADCASTER_ID, DESCRIPTION, KEY, MARKERS, STREAMS, USER_ID},
+        BroadcasterId, UserId, VideoId,
+    },
+    TwitchAPI,
 };
 
-const STREAMS: &str = "streams";
+pub trait StreamsAPI {
+    /// Gets the channel’s stream key
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the channel.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`StreamKeyResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     types::BroadcasterId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_stream_key(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:read:stream_key`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
+    fn get_stream_key(&self, broadcaster_id: &BroadcasterId)
+        -> TwitchAPIRequest<StreamKeyResponse>;
 
-endpoints! {
-    StreamsAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-stream-key>
-        fn get_stream_key(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> StreamKeyResponse {
-            endpoint_type: GetStreamKey,
-            method: GET,
-            path: [STREAMS, "key"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Gets a list of all streams
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetStreamsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     // types::{}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_streams()
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-streams>
+    fn get_streams<'a>(&'a self) -> GetStreamsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-streams>
-        fn get_streams(
-            &self,
-            opts: Option<GetStreamsRequest>,
-            pagination: Option<PaginationQuery>,
-        ) -> StreamsResponse {
-            endpoint_type: GetStreams,
-            method: GET,
-            path: [STREAMS],
-            query_params: {
-                opt_into_query(opts),
-                pagination(pagination)
-            }
-        }
+    /// Gets the list of broadcasters that the user follows and that are streaming live
+    ///
+    /// # Arguments
+    ///
+    /// * `user_id` - The ID of the user whose list of followed streams you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetFollowedStreamsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     types::UserId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let user_id = UserId::from("1234");
+    /// let response = api
+    ///     .get_followed_streams(&user_id)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:follows`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-followed-streams>
+    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreamsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-followed-streams>
-        fn get_followed_streams(
-            &self,
-            user_id: &UserId,
-            pagination: Option<PaginationQuery>,
-        ) -> StreamsResponse {
-            endpoint_type: GetFollowedStreams,
-            method: GET,
-            path: [STREAMS, "followed"],
-            query_params: {
-                query(USER_ID, user_id),
-                pagination(pagination)
-            }
-        }
+    /// Adds a marker to a live stream
+    ///
+    /// # Arguments
+    ///
+    /// * `user_id` - The ID of the broadcaster that’s streaming content.
+    /// * `description` - Optional A short description of the marker to help the user remember
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`CreateStreamMarkerResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     types::UserId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .create_stream_marker(&UserId::from("1234"), None)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#create-stream-marker>
+    fn create_stream_marker(
+        &self,
+        user_id: &UserId,
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<CreateStreamMarkerResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#create-stream-marker>
-        fn create_stream_marker(
-            &self,
-            user_id: &UserId,
-            description: Option<&str>,
-        ) -> CreateStreamMarkerResponse {
-            endpoint_type: CreateStreamMarker,
-            method: POST,
-            path: [STREAMS, "markers"],
-            headers: [json],
-            body: CreateStreamMarkerRequest::new(user_id, description).into_json()
-        }
+    /// Gets a list of markers from the user’s most recent stream or from the specified VOD/video
+    ///
+    /// # Arguments
+    ///
+    /// * `user_id` -
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetStermaMarkersBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     types::UserId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_stream_markers_by_user_id(&UserId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:broadcast` or `channel:manage:broadcast`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-stream-markers>
+    fn get_stream_markers_by_user_id<'a>(
+        &'a self,
+        user_id: &'a UserId,
+    ) -> GetStermaMarkersBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-stream-markers>
-        fn get_stream_markers(
-            &self,
-            selector: StreamMarkerSelector,
-            pagination: Option<PaginationQuery>,
-        ) -> GetStreamMarkersResponse {
-            endpoint_type: GetStreamMarkers,
-            method: GET,
-            path: [STREAMS, "markers"],
-            query_params: {
-                into_query(selector),
-                pagination(pagination)
-            }
-        }
+    /// Gets a list of markers from the user’s most recent stream or from the specified VOD/video
+    ///
+    /// # Arguments
+    ///
+    /// * `video_id` - A video on demand (VOD)/video ID.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetStermaMarkersBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     streams::StreamsAPI,
+    ///     types::VideoId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_stream_markers_by_video_id(&VideoId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:broadcast` or `channel:manage:broadcast`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-stream-markers>
+    fn get_stream_markers_by_video_id<'a>(
+        &'a self,
+        video_id: &'a VideoId,
+    ) -> GetStermaMarkersBuilder<'a>;
+}
+
+impl StreamsAPI for TwitchAPI {
+    fn get_stream_key(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> TwitchAPIRequest<StreamKeyResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[STREAMS, KEY]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetStreamKey,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_streams<'a>(&'a self) -> GetStreamsBuilder<'a> {
+        GetStreamsBuilder::new(self)
+    }
+    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreamsBuilder<'a> {
+        GetFollowedStreamsBuilder::new(self, user_id)
+    }
+    fn create_stream_marker(
+        &self,
+        user_id: &UserId,
+        description: Option<&str>,
+    ) -> TwitchAPIRequest<CreateStreamMarkerResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[STREAMS, MARKERS]);
+
+        let body = if let Some(description) = description {
+            serde_json::json!({USER_ID:user_id,DESCRIPTION:description}).to_string()
+        } else {
+            serde_json::json!({USER_ID:user_id}).to_string()
+        };
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::CreateStreamMarker,
+            url,
+            reqwest::Method::POST,
+            self.header_json(),
+            Some(body),
+            self.client.clone(),
+        )
+    }
+    fn get_stream_markers_by_user_id<'a>(
+        &'a self,
+        user_id: &'a UserId,
+    ) -> GetStermaMarkersBuilder<'a> {
+        GetStermaMarkersBuilder::user_id(self, user_id)
+    }
+    fn get_stream_markers_by_video_id<'a>(
+        &'a self,
+        video_id: &'a VideoId,
+    ) -> GetStermaMarkersBuilder<'a> {
+        GetStermaMarkersBuilder::video_id(self, video_id)
     }
 }
