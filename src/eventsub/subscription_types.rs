@@ -19,6 +19,7 @@ macro_rules! define_subscription_types {
     ) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         $(#[$meta])*
+        #[non_exhaustive]
         pub enum SubscriptionType {
             $(
                 $name,

@@ -128,7 +128,7 @@ pub(crate) const CUSTOM_REWARDS: &str = "custom_rewards";
 #[cfg(feature = "channel-points")]
 pub(crate) const REDEMPTIONS: &str = "redemptions";
 
-#[cfg(any(feature = "channel-points", feature = "conduits"))]
+#[cfg(any(feature = "channel-points", feature = "conduits", feature = "eventsub"))]
 pub(crate) const STATUS: &str = "status";
 
 #[cfg(feature = "channel-points")]
@@ -197,3 +197,6 @@ pub(crate) const CONDUITS: &str = "conduits";
 pub(crate) const CONDUIT_ID: &str = "conduit_id";
 #[cfg(feature = "conduits")]
 pub(crate) const SHARDS: &str = "shards";
+
+#[cfg(feature = "eventsub")]
+pub(crate) const SUBSCRIPTION_ID: &str = "subscription_id";

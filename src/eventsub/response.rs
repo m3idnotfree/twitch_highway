@@ -1,10 +1,11 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::{
-    eventsub::{Condition, SubscriptionType, Transport},
-    types::{Pagination, Status, SubscriptionId},
+    eventsub::{Condition, SubscriptionType},
+    types::{ConduitId, Pagination, SessionId, Status, SubscriptionId},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,7 +43,7 @@ pub struct EventSubData {
     pub version: String,
     pub condition: Condition,
     pub created_at: DateTime<FixedOffset>,
-    pub transport: Transport,
+    pub transport: TransportResponse,
     pub cost: u64,
 }
 
@@ -60,7 +61,7 @@ impl<'de> serde::Deserialize<'de> for EventSubData {
             version: String,
             condition: Condition,
             created_at: DateTime<FixedOffset>,
-            transport: Transport,
+            transport: TransportResponse,
             cost: u64,
         }
 
@@ -102,4 +103,19 @@ impl<'de> serde::Deserialize<'de> for EventSubData {
             cost: helper.cost,
         })
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "method", rename_all = "lowercase")]
+pub enum TransportResponse {
+    Webhook {
+        callback: Url,
+    },
+    Websocket {
+        session_id: SessionId,
+        connected_at: DateTime<FixedOffset>,
+    },
+    Conduit {
+        conduit_id: ConduitId,
+    },
 }
