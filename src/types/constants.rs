@@ -180,9 +180,9 @@ pub(crate) const EMOTES: &str = "emotes";
 pub(crate) const ANNOUNCEMENTS: &str = "announcements";
 #[cfg(feature = "chat")]
 pub(crate) const SHOUTOUTS: &str = "shoutouts";
-#[cfg(feature = "chat")]
+#[cfg(any(feature = "chat", feature = "raid"))]
 pub(crate) const FROM_BROADCASTER_ID: &str = "from_broadcaster_id";
-#[cfg(feature = "chat")]
+#[cfg(any(feature = "chat", feature = "raid"))]
 pub(crate) const TO_BROADCASTER_ID: &str = "to_broadcaster_id";
 #[cfg(feature = "chat")]
 pub(crate) const MESSAGES: &str = "messages";
@@ -205,6 +205,9 @@ pub(crate) const SHARDS: &str = "shards";
 
 #[cfg(feature = "eventsub")]
 pub(crate) const SUBSCRIPTION_ID: &str = "subscription_id";
+
+#[cfg(feature = "raid")]
+pub(crate) const RAIDS: &str = "raids";
 
 #[cfg(feature = "games")]
 pub(crate) const NAME: &str = "name";
