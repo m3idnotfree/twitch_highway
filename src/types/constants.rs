@@ -207,3 +207,8 @@ pub(crate) const NAME: &str = "name";
 pub(crate) const IGDB_ID: &str = "igdb_id";
 #[cfg(feature = "games")]
 pub(crate) const TOP: &str = "top";
+
+#[cfg(feature = "whisper")]
+pub(crate) const FROM_USER_ID: &str = "from_user_id";
+#[cfg(feature = "whisper")]
+pub(crate) const TO_USER_ID: &str = "to_user_id";
