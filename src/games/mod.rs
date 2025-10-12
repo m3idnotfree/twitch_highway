@@ -1,37 +1,80 @@
-mod request;
+mod builder;
 mod response;
 
-pub use request::GetGamesRequest;
+pub use builder::{GetGamesBuilder, GetTopGamesBuilder};
 pub use response::GamesResponse;
 
-use crate::types::{constants::GAMES, PaginationQuery};
+use crate::TwitchAPI;
 
-endpoints! {
-    GamesAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
-        fn get_top_games(
-            &self,
-            pagination: Option<PaginationQuery>,
-        ) -> GamesResponse {
-            endpoint_type: GetTopGames,
-            method: GET,
-            path: [GAMES, "top"],
-            query_params: {
-                pagination(pagination)
-            }
-        }
+pub trait GamesAPI {
+    /// Gets information about all broadcasts on Twitch
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetTopGamesBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::games::GamesAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_top_games()
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-top-games>
+    fn get_top_games<'a>(&'a self) -> GetTopGamesBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-games>
-        fn get_games(
-            &self,
-            request: GetGamesRequest,
-        ) -> GamesResponse {
-            endpoint_type: GetGames,
-            method: GET,
-            path: [GAMES],
-            query_params: {
-                into_query(request)
-            }
-        }
+    /// Gets information about specified categories or games
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetGamesBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::games::GamesAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_games()
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-games>
+    fn get_games<'a>(&'a self) -> GetGamesBuilder<'a>;
+}
+
+impl GamesAPI for TwitchAPI {
+    fn get_top_games<'a>(&'a self) -> GetTopGamesBuilder<'a> {
+        GetTopGamesBuilder::new(self)
+    }
+    fn get_games<'a>(&'a self) -> GetGamesBuilder<'a> {
+        GetGamesBuilder::new(self)
     }
 }

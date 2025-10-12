@@ -200,3 +200,10 @@ pub(crate) const SHARDS: &str = "shards";
 
 #[cfg(feature = "eventsub")]
 pub(crate) const SUBSCRIPTION_ID: &str = "subscription_id";
+
+#[cfg(feature = "games")]
+pub(crate) const NAME: &str = "name";
+#[cfg(feature = "games")]
+pub(crate) const IGDB_ID: &str = "igdb_id";
+#[cfg(feature = "games")]
+pub(crate) const TOP: &str = "top";

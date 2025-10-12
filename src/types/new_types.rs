@@ -105,6 +105,28 @@ macro_rules! new_type {
             BroadcasterId::from(self.0)
         }
     };
+
+    (@category to) => {
+        pub fn to_category(&self) -> CategoryId {
+            CategoryId::from(self.0.clone())
+        }
+    };
+    (@category into) => {
+        pub fn into_category(self) -> CategoryId {
+            CategoryId::from(self.0)
+        }
+    };
+
+    (@game to) => {
+        pub fn to_game(&self) -> GameId {
+            GameId::from(self.0.clone())
+        }
+    };
+    (@game into) => {
+        pub fn into_game(self) -> GameId {
+            GameId::from(self.0)
+        }
+    };
 }
 
 new_type!(BroadcasterId {
@@ -122,6 +144,11 @@ new_type!(UserId {
     broadcaster: [to, into],
     moderator: [to, into]
 });
+new_type!(Id {
+    category: [to, into],
+    game: [to, into]
+});
+
 new_type!(CampaignId);
 new_type!(CategoryId);
 new_type!(ChoiceId);
@@ -135,7 +162,6 @@ new_type!(ExtensionId);
 new_type!(GameId);
 new_type!(GoalId);
 new_type!(HypeTrainId);
-new_type!(Id);
 new_type!(MessageId);
 new_type!(OrganizationId);
 new_type!(OutcomeId);
