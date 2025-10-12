@@ -22,6 +22,12 @@ pub struct Poll {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum EndPollStatus {
+    TERMINATED,
+    ARCHIVED,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum PollStatus {
     ACTIVE,
     COMPLETED,

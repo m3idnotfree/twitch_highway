@@ -133,7 +133,12 @@ pub(crate) const CUSTOM_REWARDS: &str = "custom_rewards";
 #[cfg(feature = "channel-points")]
 pub(crate) const REDEMPTIONS: &str = "redemptions";
 
-#[cfg(any(feature = "channel-points", feature = "conduits", feature = "eventsub"))]
+#[cfg(any(
+    feature = "channel-points",
+    feature = "conduits",
+    feature = "eventsub",
+    feature = "polls"
+))]
 pub(crate) const STATUS: &str = "status";
 
 #[cfg(any(feature = "channel-points", feature = "videos"))]
@@ -218,6 +223,9 @@ pub(crate) const TOP: &str = "top";
 
 #[cfg(feature = "goals")]
 pub(crate) const GOALS: &str = "goals";
+
+#[cfg(feature = "polls")]
+pub(crate) const POLLS: &str = "polls";
 
 #[cfg(feature = "streams")]
 pub(crate) const VIDEO_ID: &str = "video_id";
