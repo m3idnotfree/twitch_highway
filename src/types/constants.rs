@@ -208,6 +208,23 @@ pub(crate) const IGDB_ID: &str = "igdb_id";
 #[cfg(feature = "games")]
 pub(crate) const TOP: &str = "top";
 
+#[cfg(feature = "users")]
+pub(crate) const USERS: &str = "users";
+#[cfg(feature = "users")]
+pub(crate) const TARGET_USER_ID: &str = "target_user_id";
+#[cfg(feature = "users")]
+pub(crate) const SOURCE_CONTEXT: &str = "source_context";
+#[cfg(feature = "users")]
+pub(crate) const REASON: &str = "reason";
+#[cfg(feature = "users")]
+pub(crate) const BLOCKS: &str = "blocks";
+#[cfg(feature = "users")]
+pub(crate) const LOGIN: &str = "login";
+#[cfg(feature = "users")]
+pub(crate) const LIST: &str = "list";
+#[cfg(feature = "users")]
+pub(crate) const DESCRIPTION: &str = "description";
+
 #[cfg(feature = "videos")]
 pub(crate) const VIDEOS: &str = "videos";
 #[cfg(feature = "videos")]

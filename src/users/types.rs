@@ -4,11 +4,11 @@ use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Id, UserId};
+use crate::types::{ExtensionId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
-    pub id: Id,
+    pub id: UserId,
     pub login: String,
     pub display_name: String,
     #[serde(rename = "type")]
@@ -54,7 +54,7 @@ pub struct BlockUser {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserExtension {
-    pub id: Id,
+    pub id: ExtensionId,
     pub version: String,
     pub name: String,
     pub can_activate: bool,
@@ -70,18 +70,115 @@ pub enum ExtensionType {
     Overlay,
     Panel,
 }
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct UserActiveExtensions {
+    panel: HashMap<String, Panel>,
+    overlay: HashMap<String, Overlay>,
+    component: HashMap<String, Component>,
+}
 
-define_request!(
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    UserActiveExtensions {
-        req: {
-            panel: HashMap<String, Panel>,
-            overlay: HashMap<String, Overlay>,
-            component: HashMap<String, Component>,
-        };
-        into_json
+impl UserActiveExtensions {
+    pub fn new() -> Self {
+        Self::default()
     }
-);
+
+    pub fn add_panel(mut self, panel: Panel) -> Self {
+        let count = self.panel.len() + 1;
+        self.panel.insert(format!("{}", count), panel);
+        self
+    }
+
+    pub fn add_panels(mut self, panels: Vec<Panel>) -> Self {
+        let count = self.panel.len() + 1;
+        let mut c = count;
+        for panel in panels.into_iter() {
+            self.panel.insert(format!("{}", c), panel);
+            c += 1;
+        }
+        self
+    }
+
+    pub fn add_overlay(mut self, overlay: Overlay) -> Self {
+        let count = self.overlay.len() + 1;
+        self.overlay.insert(format!("{}", count), overlay);
+        self
+    }
+
+    pub fn add_component(mut self, component: Component) -> Self {
+        let count = self.overlay.len() + 1;
+        self.component.insert(format!("{}", count), component);
+        self
+    }
+
+    pub fn into_json(self) -> Option<String> {
+        serde_json::to_string(&self).ok()
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum BlockSourceContext {
+    Chat,
+    Whisper,
+}
+
+impl BlockSourceContext {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Chat => "chat",
+            Self::Whisper => "whisper",
+        }
+    }
+}
+
+impl AsRef<str> for BlockSourceContext {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl From<BlockSourceContext> for String {
+    fn from(value: BlockSourceContext) -> Self {
+        match value {
+            BlockSourceContext::Chat => "chat".to_string(),
+            BlockSourceContext::Whisper => "whisper".to_string(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum BlockReason {
+    Harassment,
+    Spam,
+    Other,
+}
+
+impl BlockReason {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Self::Harassment => "harassment",
+            Self::Spam => "spam",
+            Self::Other => "other",
+        }
+    }
+}
+
+impl AsRef<str> for BlockReason {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl From<BlockReason> for String {
+    fn from(value: BlockReason) -> String {
+        match value {
+            BlockReason::Harassment => "harassment".to_string(),
+            BlockReason::Spam => "spam".to_string(),
+            BlockReason::Other => "other".to_string(),
+        }
+    }
+}
 
 define_request!(
     #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -91,7 +188,7 @@ define_request!(
         },
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            id: Id,
+            id: ExtensionId,
             #[serde(skip_serializing_if = "Option::is_none")]
             version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -108,7 +205,7 @@ define_request!(
         },
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            id: Id,
+            id: ExtensionId,
             #[serde(skip_serializing_if = "Option::is_none")]
             version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -125,7 +222,7 @@ define_request!(
         },
         opts: {
             #[serde(skip_serializing_if = "Option::is_none")]
-            id: Id,
+            id: ExtensionId,
             #[serde(skip_serializing_if = "Option::is_none")]
             version: String | into,
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -137,3 +234,20 @@ define_request!(
         }
     }
 );
+
+#[cfg(test)]
+mod tests {
+    use crate::{
+        types::ExtensionId,
+        users::{Component, Overlay, Panel, UserActiveExtensions},
+    };
+
+    #[test]
+    fn user_active_extensions() {
+        let panel = Panel::new(true).id(ExtensionId::from("")).version("");
+        let overlay = Overlay::new(true).id(ExtensionId::from("")).version("f");
+        let compomenet = Component::new(true);
+
+        // let user_active_extensions = UserActiveExtensions::new();
+    }
+}

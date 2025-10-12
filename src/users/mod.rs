@@ -1,128 +1,387 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::{BlockReason, BlockSourceContext};
+pub use builder::{
+    BlockUserBuilder, GetUserActiveExtensionsBuilder, GetUserBlockListBuilder, GetUsersBuilder,
+    UpdateUserExtensionsBuilder,
+};
 pub use response::{
     BlockUserListResponse, UpdateUsersResponse, UserActiveExtensionsResponse,
     UserExtensionsResponse, UsersInfoResponse,
 };
 pub use types::{
-    BlockUser, BroadcasterType, Component, ExtensionType, Overlay, Panel, User,
-    UserActiveExtensions, UserExtension, UserType,
+    BlockReason, BlockSourceContext, BlockUser, BroadcasterType, Component, ExtensionType, Overlay,
+    Panel, User, UserActiveExtensions, UserExtension, UserType,
 };
 
 use crate::{
-    request::NoContent,
+    request::{NoContent, TwitchAPIRequest},
     types::{
-        constants::{BROADCASTER_ID, EXTENSIONS, ID, USER_ID},
-        BroadcasterId, Id, PaginationQuery, UserId,
+        constants::{BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USERS},
+        BroadcasterId, UserId,
     },
+    TwitchAPI,
 };
 
-const USERS: &str = "users";
-const BLOCKS: &str = "blocks";
-const LOGIN: &str = "login";
+pub trait UserAPI {
+    /// Gets information about one or more users
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetUsersBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::UserId,
+    ///     users::UserAPI,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_users()
+    ///     .ids(&[UserId::from("1234")])
+    ///     .json()
+    ///     .await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:email`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-users>
+    fn get_users<'a>(&'a self) -> GetUsersBuilder<'a>;
 
-endpoints! {
-    UserAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-users>
-        fn get_users(
-            &self,
-            ids: Option<&[Id]>,
-            logins: Option<&[&str]>,
-        ) -> UsersInfoResponse {
-            endpoint_type: GetUsers,
-            method: GET,
-            path: [USERS],
-            query_params: {
-                opt_extend(ids.map(|ids| ids.iter().map(|id| (ID, id)))),
-                opt_extend(logins.map(|lg| lg.iter().map(|l| (LOGIN, l) )))
-            }
-        }
+    /// Updates the specified user’s information
+    ///
+    /// # Arguments
+    ///
+    /// * `description` - update the chanel's description (max 300).
+    ///   - To remove the description, specify this parameter but don’t set it’s value (for example, ?description=).
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UpdateUsersResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::users::UserAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api.update_user("description").json().await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:edit`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-user>
+    fn update_user(&self, description: &str) -> TwitchAPIRequest<UpdateUsersResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#update-user>
-        fn update_user(&self, description: &str) -> UpdateUsersResponse {
-            endpoint_type: UpdateUser,
-            method: PUT,
-            path: [USERS],
-            query_params: {
-                query("description", description)
-            }
-        }
+    /// Gets the list of users that the broadcaster has blocked
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose list of blocked users you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetUserBlockListBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::BroadcasterId,
+    ///     users::UserAPI,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_user_block_list(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:blocked_users`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
+    fn get_user_block_list<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetUserBlockListBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
-        fn get_user_block_list(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            pagination: Option<PaginationQuery>,
-        ) -> BlockUserListResponse {
-            endpoint_type: GetUserBlockList,
-            method: GET,
-            path: [USERS, BLOCKS],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                pagination(pagination)
-            }
-        }
+    /// Blocks the specified user from interacting with or having contact with the broadcaster
+    ///
+    /// # Arguments
+    ///
+    /// * `target_user_id` - The ID of the user to block.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`BlockUserBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::UserId,
+    ///     users::{BlockReason, BlockSourceContext, UserAPI},
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .block_user(&UserId::from("1234"))
+    ///     .source_context(BlockSourceContext::Chat)
+    ///     .reason(BlockReason::Harassment)
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:manage:blocked_users `
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#block-user>
+    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> BlockUserBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#block-user>
-        fn block_user(
-            &self,
-            target_user_id: &UserId,
-            source_context: Option<BlockSourceContext>,
-            reason: Option<BlockReason>,
-        ) -> NoContent {
-            endpoint_type: BlockUser,
-            method: PUT,
-            path: [USERS, BLOCKS],
-            query_params: {
-                query("target_user_id", target_user_id),
-                opt("source_context", source_context),
-                opt("reason", reason)
-            }
-        }
+    /// Removes the user from the broadcaster’s list of blocked users
+    ///
+    /// # Arguments
+    ///
+    /// * `target_user_id` - The ID of the user to remove from the broadcaster’s list of blocked users.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`NoContent`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::UserId,
+    ///     users::UserAPI,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api.unblock_user(&UserId::from("1234")).json().await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:manage:blocked_users `
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
+    fn unblock_user(&self, target_user_id: &UserId) -> TwitchAPIRequest<NoContent>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
-        fn unblock_user(&self, target_user_id: &UserId) -> NoContent {
-            endpoint_type: UnblockUser,
-            method: DELETE,
-            path: [USERS, BLOCKS],
-            query_params: {
-                query("target_user_id", target_user_id)
-            }
-        }
+    /// Gets a list of all extensions (both active and inactive) that the broadcaster has installed
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UserExtensionsResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::users::UserAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api.get_user_extensions().json().await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `user:read:broadcast or user:edit:broadcast`
+    /// - To include inactive extensions, you must include the user:edit:broadcast scope.
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
+    fn get_user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
-        fn get_user_extensions(&self) -> UserExtensionsResponse {
-            endpoint_type: GetUserExtensions,
-            method: GET,
-            path: [USERS, EXTENSIONS, "list"]
-        }
+    /// Gets the active extensions that the broadcaster has installed for each configuration
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetUserActiveExtensionsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::UserId,
+    ///     users::UserAPI,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_user_active_extensions()
+    ///     .user_id(&UserId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// NOTE: To include extensions that you have under development, you must specify a user access token that includes the `user:read:broadcast` or `user:edit:broadcast` scope.
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
+    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
-        fn get_user_active_extensions(
-            &self,
-            user_id: Option<&UserId>,
-        ) -> UserActiveExtensionsResponse {
-            endpoint_type: GetUserActiveExtensions,
-            method: GET,
-            path: [USERS, EXTENSIONS],
-            query_params: {
-                opt(USER_ID, user_id)
-            }
-        }
+    /// Updates an installed extension’s information
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UpdateUserExtensionsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::users::{Component, Overlay, Panel, UserAPI};
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .update_user_extensions()
+    ///     .add_panel(Panel::new(true))
+    ///     .add_overlay(Overlay::new(true))
+    ///     .add_component(Component::new(true))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
+    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a>;
+}
 
-        /// <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
-        fn update_user_extensions(
-            &self,
-            data: UserActiveExtensions,
-        ) -> UserActiveExtensionsResponse {
-            endpoint_type: UpdateUserExtensions,
-            method: PUT,
-            path: [USERS, EXTENSIONS],
-            headers: [json],
-            body: data.into_json()
-        }
+impl UserAPI for TwitchAPI {
+    fn get_users<'a>(&'a self) -> GetUsersBuilder<'a> {
+        GetUsersBuilder::new(self)
+    }
+    fn update_user(&self, description: &str) -> TwitchAPIRequest<UpdateUsersResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[USERS]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(DESCRIPTION, description);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::UpdateUser,
+            url,
+            reqwest::Method::PUT,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_user_block_list<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetUserBlockListBuilder<'a> {
+        GetUserBlockListBuilder::new(self, broadcaster_id)
+    }
+    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> BlockUserBuilder<'a> {
+        BlockUserBuilder::new(self, target_user_id)
+    }
+    fn unblock_user(&self, target_user_id: &UserId) -> TwitchAPIRequest<NoContent> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut().unwrap().extend(&[USERS, BLOCKS]);
+
+        let mut query = url.query_pairs_mut();
+
+        query.append_pair(TARGET_USER_ID, target_user_id);
+
+        drop(query);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::UnblockUser,
+            url,
+            reqwest::Method::DELETE,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse> {
+        let mut url = self.build_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend(&[USERS, EXTENSIONS, LIST]);
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::GetUserExtensions,
+            url,
+            reqwest::Method::GET,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
+    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a> {
+        GetUserActiveExtensionsBuilder::new(self)
+    }
+    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a> {
+        UpdateUserExtensionsBuilder::new(self)
     }
 }
