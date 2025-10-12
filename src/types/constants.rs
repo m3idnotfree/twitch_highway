@@ -110,7 +110,7 @@ pub(crate) const GAMES: &str = "games";
 #[cfg(any(feature = "conduits", feature = "eventsub"))]
 pub(crate) const EVENTSUB: &str = "eventsub";
 
-#[cfg(feature = "bits")]
+#[cfg(any(feature = "bits", feature = "videos"))]
 pub(crate) const PERIOD: &str = "period";
 #[cfg(feature = "bits")]
 pub(crate) const COUNT: &str = "count";
@@ -131,7 +131,7 @@ pub(crate) const REDEMPTIONS: &str = "redemptions";
 #[cfg(any(feature = "channel-points", feature = "conduits", feature = "eventsub"))]
 pub(crate) const STATUS: &str = "status";
 
-#[cfg(feature = "channel-points")]
+#[cfg(any(feature = "channel-points", feature = "videos"))]
 pub(crate) const SORT: &str = "sort";
 #[cfg(feature = "channel-points")]
 pub(crate) const REWARD_ID: &str = "reward_id";
@@ -207,6 +207,11 @@ pub(crate) const NAME: &str = "name";
 pub(crate) const IGDB_ID: &str = "igdb_id";
 #[cfg(feature = "games")]
 pub(crate) const TOP: &str = "top";
+
+#[cfg(feature = "videos")]
+pub(crate) const VIDEOS: &str = "videos";
+#[cfg(feature = "videos")]
+pub(crate) const LANGUAGE: &str = "language";
 
 #[cfg(feature = "whisper")]
 pub(crate) const FROM_USER_ID: &str = "from_user_id";

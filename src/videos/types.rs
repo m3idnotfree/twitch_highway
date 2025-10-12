@@ -3,11 +3,11 @@ use std::fmt;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Id, UserId};
+use crate::types::{UserId, VideoId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Video {
-    pub id: Id,
+    pub id: VideoId,
     pub stream_id: Option<String>,
     pub user_id: UserId,
     pub user_login: String,

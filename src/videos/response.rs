@@ -1,7 +1,10 @@
 use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_as_empty_object};
 use serde::{Deserialize, Serialize};
 
-use crate::{types::Pagination, videos::Video};
+use crate::{
+    types::{Pagination, VideoId},
+    videos::Video,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideosResponse {
@@ -16,5 +19,5 @@ pub struct VideosResponse {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DeleteVideosResponse {
-    pub data: Vec<String>,
+    pub data: Vec<VideoId>,
 }

@@ -15,7 +15,7 @@ pub use new_types::{
     EntitlementId, ExtensionClientId, ExtensionId, GameId, GoalId, HypeTrainId, Id, JWTToken,
     MessageId, ModeratorId, OrganizationId, OutcomeId, PollId, PredictionId, RedemptionId,
     RewardId, SessionId, ShardId, StreamId, SubscriptionId, TransactionId, UnbanRequestId, UserId,
-    WhisperId,
+    VideoId, WhisperId,
 };
 pub use pagination::{Pagination, PaginationQuery};
 pub use title::Title;
