@@ -216,6 +216,9 @@ pub(crate) const IGDB_ID: &str = "igdb_id";
 #[cfg(feature = "games")]
 pub(crate) const TOP: &str = "top";
 
+#[cfg(feature = "goals")]
+pub(crate) const GOALS: &str = "goals";
+
 #[cfg(feature = "streams")]
 pub(crate) const VIDEO_ID: &str = "video_id";
 #[cfg(feature = "streams")]
