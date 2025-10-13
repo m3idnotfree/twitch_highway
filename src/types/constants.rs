@@ -137,6 +137,7 @@ pub(crate) const REDEMPTIONS: &str = "redemptions";
     feature = "channel-points",
     feature = "conduits",
     feature = "eventsub",
+    feature = "hype-train",
     feature = "moderation",
     feature = "polls"
 ))]
@@ -226,6 +227,11 @@ pub(crate) const TOP: &str = "top";
 
 #[cfg(feature = "goals")]
 pub(crate) const GOALS: &str = "goals";
+
+#[cfg(feature = "hype-train")]
+pub(crate) const HYPE_TRAIN: &str = "hypetrain";
+#[cfg(feature = "hype-train")]
+pub(crate) const EVENTS: &str = "events";
 
 #[cfg(feature = "moderation")]
 pub(crate) const AUTOMOD: &str = "automod";
