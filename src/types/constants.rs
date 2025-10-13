@@ -137,6 +137,7 @@ pub(crate) const REDEMPTIONS: &str = "redemptions";
     feature = "channel-points",
     feature = "conduits",
     feature = "eventsub",
+    feature = "moderation",
     feature = "polls"
 ))]
 pub(crate) const STATUS: &str = "status";
@@ -225,6 +226,31 @@ pub(crate) const TOP: &str = "top";
 
 #[cfg(feature = "goals")]
 pub(crate) const GOALS: &str = "goals";
+
+#[cfg(feature = "moderation")]
+pub(crate) const AUTOMOD: &str = "automod";
+#[cfg(feature = "moderation")]
+pub(crate) const MODERATION: &str = "moderation";
+#[cfg(feature = "moderation")]
+pub(crate) const BLOCKED_TERMS: &str = "blocked_terms";
+#[cfg(feature = "moderation")]
+pub(crate) const MODERATORS: &str = "moderators";
+#[cfg(feature = "moderation")]
+pub(crate) const VIPS: &str = "vips";
+#[cfg(feature = "moderation")]
+pub(crate) const BANNED: &str = "banned";
+#[cfg(feature = "moderation")]
+pub(crate) const BANS: &str = "bans";
+#[cfg(feature = "moderation")]
+pub(crate) const UNBAN_REQUESTS: &str = "unban_requests";
+#[cfg(feature = "moderation")]
+pub(crate) const SHIELD_MODE: &str = "shield_mode";
+#[cfg(feature = "moderation")]
+pub(crate) const ENFORCEMENTS: &str = "enforcements";
+#[cfg(feature = "moderation")]
+pub(crate) const MESSAGE: &str = "message";
+#[cfg(feature = "moderation")]
+pub(crate) const WARNINGS: &str = "warnings";
 
 #[cfg(feature = "polls")]
 pub(crate) const POLLS: &str = "polls";

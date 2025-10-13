@@ -1,8 +1,10 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::serde_helpers::deserialize_optional_datetime;
-use crate::types::{BroadcasterId, Id, ModeratorId, UserId};
+use crate::{
+    serde_helpers::deserialize_optional_datetime,
+    types::{BroadcasterId, Id, ModeratorId, UserId},
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoModStatus {
@@ -135,6 +137,22 @@ pub struct WarnChatUser {
     pub user_id: UserId,
     pub moderator_id: ModeratorId,
     pub reason: String,
+}
+
+define_request!(
+    #[derive(Debug, Clone, Serialize)]
+     CheckAutoMod {
+        req: {
+            msg_id: String | into,
+            msg_text: String | into,
+        }
+    }
+);
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum AutoModAction {
+    ALLOW,
+    DENY,
 }
 
 #[cfg(test)]
