@@ -177,7 +177,7 @@ pub(crate) const EMOTE_SET_ID: &str = "emote_set_id";
 pub(crate) const BADGES: &str = "badges";
 #[cfg(feature = "chat")]
 pub(crate) const SHARED_CHAT: &str = "shared_chat";
-#[cfg(feature = "chat")]
+#[cfg(any(feature = "chat", feature = "guest-star"))]
 pub(crate) const SESSION: &str = "session";
 
 #[cfg(any(feature = "chat", feature = "subscriptions"))]
@@ -227,6 +227,47 @@ pub(crate) const TOP: &str = "top";
 
 #[cfg(feature = "goals")]
 pub(crate) const GOALS: &str = "goals";
+
+#[cfg(feature = "guest-star")]
+pub(crate) const GUEST_STAR: &str = "guest_star";
+#[cfg(feature = "guest-star")]
+pub(crate) const CHANNEL_SETTINGS: &str = "channel_settings";
+#[cfg(feature = "guest-star")]
+pub(crate) const IS_MODERATOR_SEND_LIVE_ENABLED: &str = "is_moderator_send_live_enabled";
+#[cfg(feature = "guest-star")]
+pub(crate) const SLOT_COUNT: &str = "slot_count";
+#[cfg(feature = "guest-star")]
+pub(crate) const IS_BROWSER_SOURCE_AUDIO_ENABLED: &str = "is_browser_source_audio_enabled";
+#[cfg(feature = "guest-star")]
+pub(crate) const GROUP_LAYOUT: &str = "group_layout";
+#[cfg(feature = "guest-star")]
+pub(crate) const REGENERATE_BROWSER_SOURCES: &str = "regenerate_browser_sources";
+#[cfg(feature = "guest-star")]
+pub(crate) const SESSION_ID: &str = "session_id";
+#[cfg(feature = "guest-star")]
+pub(crate) const INVITES: &str = "invites";
+#[cfg(feature = "guest-star")]
+pub(crate) const GUEST_ID: &str = "guest_id";
+#[cfg(feature = "guest-star")]
+pub(crate) const SLOT: &str = "slot";
+#[cfg(feature = "guest-star")]
+pub(crate) const SLOT_ID: &str = "slot_id";
+#[cfg(feature = "guest-star")]
+pub(crate) const SOURCE_SLOT_ID: &str = "source_slot_id";
+#[cfg(feature = "guest-star")]
+pub(crate) const DESTINATION_SLOT_ID: &str = "destination_slot_id";
+#[cfg(feature = "guest-star")]
+pub(crate) const SHOULD_REINVITE_GUEST: &str = "should_reinvite_guest";
+#[cfg(feature = "guest-star")]
+pub(crate) const IS_AUDIO_ENABLED: &str = "is_audio_enabled";
+#[cfg(feature = "guest-star")]
+pub(crate) const IS_VIDEO_ENABLED: &str = "is_video_enabled";
+#[cfg(feature = "guest-star")]
+pub(crate) const IS_LIVE: &str = "is_live";
+#[cfg(feature = "guest-star")]
+pub(crate) const VOLUME: &str = "volume";
+#[cfg(feature = "guest-star")]
+pub(crate) const SLOT_SETTINGS: &str = "slot_settings";
 
 #[cfg(feature = "hype-train")]
 pub(crate) const HYPE_TRAIN: &str = "hypetrain";
