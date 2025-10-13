@@ -214,7 +214,7 @@ pub(crate) const SUBSCRIPTION_ID: &str = "subscription_id";
 #[cfg(feature = "raid")]
 pub(crate) const RAIDS: &str = "raids";
 
-#[cfg(feature = "games")]
+#[cfg(any(feature = "games", feature = "teams"))]
 pub(crate) const NAME: &str = "name";
 #[cfg(feature = "games")]
 pub(crate) const IGDB_ID: &str = "igdb_id";
@@ -237,6 +237,11 @@ pub(crate) const STREAMS: &str = "streams";
 pub(crate) const USER_LOGIN: &str = "user_login";
 #[cfg(feature = "streams")]
 pub(crate) const KEY: &str = "key";
+
+#[cfg(feature = "teams")]
+pub(crate) const TEAMS: &str = "teams";
+#[cfg(feature = "teams")]
+pub(crate) const CHANNEL: &str = "channel";
 
 #[cfg(feature = "users")]
 pub(crate) const USERS: &str = "users";
