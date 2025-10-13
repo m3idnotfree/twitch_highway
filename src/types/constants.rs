@@ -177,8 +177,10 @@ pub(crate) const BADGES: &str = "badges";
 pub(crate) const SHARED_CHAT: &str = "shared_chat";
 #[cfg(feature = "chat")]
 pub(crate) const SESSION: &str = "session";
-#[cfg(feature = "chat")]
+
+#[cfg(any(feature = "chat", feature = "subscriptions"))]
 pub(crate) const USER: &str = "user";
+
 #[cfg(feature = "chat")]
 pub(crate) const EMOTES: &str = "emotes";
 #[cfg(feature = "chat")]
