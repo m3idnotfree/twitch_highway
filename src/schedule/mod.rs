@@ -1,127 +1,343 @@
-mod request;
+mod builder;
 mod response;
 mod types;
 
-pub use request::{
-    ChannelStreamScheduleRequest, CreateScheduleSegmentRequest, UpdateScheduleRequest,
-    UpdateScheduleSegmentRequest,
+pub use builder::{
+    CreateChannelStreamScheduleSegmentBuilder, GetChanelStreamScheduleBuilder,
+    UpdateChannelStreamScheduleBuilder, UpdateChannelStreamScheduleSegmentBulider,
 };
 pub use response::{Schedule, ScheduleResponse};
 pub use types::{Segment, Vacation};
 
-use chrono::{DateTime, TimeZone};
+use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 
 use crate::{
-    request::{NoContent, RequestBody},
+    request::{NoContent, TwitchAPIRequest},
     types::{
-        constants::{BROADCASTER_ID, ID, SETTINGS},
-        BroadcasterId, Id, PaginationQuery,
+        constants::{BROADCASTER_ID, ICALENDAR, ID, SCHEDULE, SEGMENT},
+        BroadcasterId, Id,
     },
+    TwitchAPI,
 };
 
-endpoints! {
-    ScheduleAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule>
-        fn get_channel_stream_schedule(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            opts: Option<ChannelStreamScheduleRequest>,
-            pagination: Option<PaginationQuery>,
-        ) -> ScheduleResponse {
-            endpoint_type: GetChannelStreamSchedule,
-            method: GET,
-            path: ["schedule"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                opt_into_query(opts),
-                pagination(pagination)
-            }
-        }
+pub trait ScheduleAPI {
+    /// Gets the broadcaster’s streaming schedule
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the streaming schedule you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetChanelStreamScheduleBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::BroadcasterId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_stream_schedule(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-stream-schedule>
+    fn get_channel_stream_schedule<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChanelStreamScheduleBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar>
-        fn get_channel_icalendar(
-            &self,
-            broadcaster_id: &BroadcasterId,
-        ) -> String {
-            endpoint_type: GetChanneliCalendar,
-            method: GET,
-            path: ["schedule", "icalendar"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id)
-            }
-        }
+    /// Gets the broadcaster’s streaming schedule as an iCalendar.
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the streaming schedule you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`String`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::BroadcasterId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_channel_icalendar(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar>
+    fn get_channel_icalendar(&self, broadcaster_id: &BroadcasterId) -> TwitchAPIRequest<String>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule>
-        fn update_channel_stream_schedule(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            opts: Option<UpdateScheduleRequest>,
-        ) -> NoContent {
-            endpoint_type: UpdateChannelStreamSchedule,
-            method: PATCH,
-            path: ["schedule", SETTINGS],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                opt_into_query(opts)
-            }
-        }
-        /// <https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment>
-        fn create_channel_stream_schedule_segment<T: TimeZone>(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            start_time: &DateTime<T>,
-            timezone: Tz,
-            duration: &str,
-            opts: Option<CreateScheduleSegmentRequest>,
-        ) -> ScheduleResponse {
-            endpoint_type: CreateChannelStreamScheduleSegment,
-            method: POST,
-            path: ["schedule", "segment"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-            },
-            headers: [json],
-            body: {
-                RequestBody::new(serde_json::json!({
-                    "start_time": &start_time.to_rfc3339(),
-                    "timezone": timezone.name(),
-                    "duration": duration,
-                }), opts).into_json()
-            }
-        }
+    /// Updates the broadcaster’s schedule settings, such as scheduling a vacation.
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose schedule settings you want to update.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UpdateChannelStreamScheduleBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::BroadcasterId,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .update_channel_stream_schedule(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule>
+    fn update_channel_stream_schedule<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> UpdateChannelStreamScheduleBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule-segment>
-        fn update_channel_stream_schedule_segment(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            id: &Id,
-            opts: Option<UpdateScheduleSegmentRequest>,
-        ) -> ScheduleResponse {
-            endpoint_type: UpdateChannelStreamScheduleSegment,
-            method: PATCH,
-            path: ["schedule", "segment"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                query(ID, id)
-            },
-            headers: [json],
-            body: opts.and_then(|o|o.into_json())
-        }
+    /// Adds a single or recurring broadcast to the broadcaster’s streaming schedule.
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the schedule to add the broadcast segment to.
+    /// * `start_time` - The date and time that the broadcast segment starts.
+    /// * `timezone` - The date and time that the broadcast segment starts.
+    /// * `duration` - The length of time. The duration must be in the range 30 through 1380 (23 hours).
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`CreateChanelStreamScheduleSegmentBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::BroadcasterId,
+    /// };
+    /// use chrono::{DateTime, Utc};
+    /// use chrono_tz::America::New_York;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .create_channel_stream_schedule_segment(
+    ///         &BroadcasterId::from("1234"),
+    ///         &"2021-07-01T18:00:00Z".parse::<DateTime<Utc>>().unwrap(),
+    ///         New_York,
+    ///         "60"
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#create-channel-stream-schedule-segment>
+    fn create_channel_stream_schedule_segment<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        start_time: &'a DateTime<Utc>,
+        timezone: Tz,
+        duration: &'a str,
+    ) -> CreateChannelStreamScheduleSegmentBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#delete-channel-stream-schedule-segment>
-        fn delete_channel_stream_schedule_segment(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            id: &Id,
-        ) -> NoContent {
-            endpoint_type: DeleteChannelStreamScheduleSegment,
-            method: DELETE,
-            path: ["schedule", "segment"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                query(ID, id)
-            }
-        }
+    /// Updates a scheduled broadcast segment
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster who owns the broadcast segment to update.
+    /// * `id` - The ID of the broadcast segment to update.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`UpdateChannelStreamScheduleSegmentBulider`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::{BroadcasterId, Id},
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .update_channel_stream_schedule_segment(
+    ///         &BroadcasterId::from("1234"),
+    ///         &Id::from("5678")
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#update-channel-stream-schedule-segment>
+    fn update_channel_stream_schedule_segment<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        id: &'a Id,
+    ) -> UpdateChannelStreamScheduleSegmentBulider<'a>;
+
+    /// Removes a broadcast segment from the broadcaster’s streaming schedule
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that owns the streaming schedule.
+    /// * `id` - The ID of the broadcast segment to remove.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`NoContent`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     schedule::ScheduleAPI,
+    ///     types::{BroadcasterId, Id},
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .delete_channel_stream_schedule_segment(
+    ///         &BroadcasterId::from("1234"),
+    ///         &Id::from("5678")
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#delete-channel-stream-schedule-segment>
+    fn delete_channel_stream_schedule_segment(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        id: &Id,
+    ) -> TwitchAPIRequest<NoContent>;
+}
+
+impl ScheduleAPI for TwitchAPI {
+    fn get_channel_stream_schedule<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetChanelStreamScheduleBuilder<'a> {
+        GetChanelStreamScheduleBuilder::new(self, broadcaster_id)
     }
+    simple_endpoint!(
+        fn get_channel_icalendar(
+            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID]
+        ) -> String;
+            endpoint: GetChanneliCalendar,
+            method: GET,
+            path: [SCHEDULE, ICALENDAR],
+    );
+    fn update_channel_stream_schedule<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> UpdateChannelStreamScheduleBuilder<'a> {
+        UpdateChannelStreamScheduleBuilder::new(self, broadcaster_id)
+    }
+    fn create_channel_stream_schedule_segment<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        start_time: &'a DateTime<Utc>,
+        timezone: Tz,
+        duration: &'a str,
+    ) -> CreateChannelStreamScheduleSegmentBuilder<'a> {
+        CreateChannelStreamScheduleSegmentBuilder::new(
+            self,
+            broadcaster_id,
+            start_time,
+            timezone,
+            duration,
+        )
+    }
+    fn update_channel_stream_schedule_segment<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        id: &'a Id,
+    ) -> UpdateChannelStreamScheduleSegmentBulider<'a> {
+        UpdateChannelStreamScheduleSegmentBulider::new(self, broadcaster_id, id)
+    }
+    simple_endpoint!(
+        fn delete_channel_stream_schedule_segment(
+            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
+            id: &Id [key = ID]
+        ) -> NoContent;
+            endpoint: DeleteChannelStreamScheduleSegment,
+            method: DELETE,
+            path: [SCHEDULE, SEGMENT],
+    );
 }

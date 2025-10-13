@@ -229,6 +229,23 @@ pub(crate) const GOALS: &str = "goals";
 #[cfg(feature = "polls")]
 pub(crate) const POLLS: &str = "polls";
 
+#[cfg(feature = "schedule")]
+pub(crate) const SCHEDULE: &str = "schedule";
+#[cfg(feature = "schedule")]
+pub(crate) const SEGMENT: &str = "segment";
+#[cfg(feature = "schedule")]
+pub(crate) const ICALENDAR: &str = "icalendar";
+#[cfg(feature = "schedule")]
+pub(crate) const START_TIME: &str = "start_time";
+#[cfg(feature = "schedule")]
+pub(crate) const VACATION_START_TIME: &str = "vacation_start_time";
+#[cfg(feature = "schedule")]
+pub(crate) const VACATION_END_TIME: &str = "vacation_end_time";
+#[cfg(feature = "schedule")]
+pub(crate) const TIMEZONE: &str = "timezone";
+#[cfg(feature = "schedule")]
+pub(crate) const IS_VACATION_ENABLED: &str = "is_vacation_enabled";
+
 #[cfg(feature = "search")]
 pub(crate) const QUERY: &str = "query";
 #[cfg(feature = "search")]
