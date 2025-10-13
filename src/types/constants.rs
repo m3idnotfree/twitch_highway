@@ -229,6 +229,9 @@ pub(crate) const GOALS: &str = "goals";
 #[cfg(feature = "polls")]
 pub(crate) const POLLS: &str = "polls";
 
+#[cfg(feature = "predictions")]
+pub(crate) const PREDICTIONS: &str = "predictions";
+
 #[cfg(feature = "schedule")]
 pub(crate) const SCHEDULE: &str = "schedule";
 #[cfg(feature = "schedule")]

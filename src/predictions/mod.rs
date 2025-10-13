@@ -1,83 +1,191 @@
+mod builder;
 mod request;
 mod response;
 mod types;
 
-pub use request::CreatePredictionRequest;
+pub use builder::{EndPredictionBuilder, GetPredictionsBuilder};
 pub use response::PredictionsResponse;
 pub use types::{Prediction, PredictionStatus};
 
+use request::CreatePredictionRequest;
+
 use crate::{
-    request::{NoContent, RequestBody},
-    types::{
-        constants::{BROADCASTER_ID, ID},
-        BroadcasterId, Id, PaginationQuery, Title,
-    },
+    request::TwitchAPIRequest,
+    types::{constants::PREDICTIONS, BroadcasterId, PredictionId, Title},
+    TwitchAPI,
 };
 
-endpoints! {
-    PredictionsAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
-        fn get_predictions(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            id: Option<&[Id]>,
-            pagination: Option<PaginationQuery>,
-        ) -> PredictionsResponse {
-            endpoint_type: GetPredictions,
-            method: GET,
-            path: ["predictions"],
-            query_params: {
-                query(BROADCASTER_ID, broadcaster_id),
-                extend(id.unwrap_or(&[]).iter().map(|id| (ID, id))),
-                pagination(pagination)
-            }
-        }
+pub trait PredictionsAPI {
+    /// Gets a list of Channel Points Predictions that the broadcaster created
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster whose predictions you want to get.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetPredictionsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     predictions::PredictionsAPI,
+    ///     types::BroadcasterId
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_predictions(&BroadcasterId::from("1234"))
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:read:predictions or channel:manage:predictions`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
+    fn get_predictions<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetPredictionsBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
-        fn create_prediction(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            title: &str,
-            outcomes: &[Title],
-            prediction_window: u64,
-        ) -> PredictionsResponse {
-            endpoint_type: CreatePrediction,
-            method: POST,
-            path: ["predictions"],
-            headers: [json],
-            body: CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window).into_json()
-        }
+    /// Creates a Channel Points Prediction
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that’s running the prediction.
+    /// * `title` - The question that the broadcaster is asking.
+    /// * `outcomes` - The list of possible outcomes that the viewers may choose from.
+    ///   - [`Title`]
+    /// * `prediction_window` - The length of time (in seconds) that the prediction will run for. (min 30, max 1800).
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`PredictionsResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     predictions::{PredictionsAPI},
+    ///     types::{BroadcasterId,Title}
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .create_prediction(
+    ///         &BroadcasterId::from("1234"),
+    ///         "title",
+    ///         &[Title::new("title-1")],
+    ///         30
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:manage:predictions`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#create-prediction>
+    fn create_prediction(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        title: &str,
+        outcomes: &[Title],
+        prediction_window: u64,
+    ) -> TwitchAPIRequest<PredictionsResponse>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
-        fn end_prediction(
-            &self,
-            broadcaster_id: &BroadcasterId,
-            id: &Id,
-            status: PredictionStatus,
-            winning_outcome_id: Option<&str>,
-        ) -> PredictionsResponse {
-            endpoint_type: EndPrediction,
-            method: PATCH,
-            path: ["predictions"],
-            headers: [json],
-            body: {
-                let required = if winning_outcome_id.is_some() {
-                    serde_json::json!({
-                        "broadcaster_id": broadcaster_id,
-                        "id": id,
-                        "status":status,
-                        "winning_outcome_id": winning_outcome_id.unwrap()
-                    })
-                } else {
-                    serde_json::json!({
-                        "broadcaster_id": broadcaster_id,
-                        "id": id,
-                        "status":status
-                    })
-                };
+    /// Locks, resolves, or cancels a Channel Points Prediction
+    ///
+    /// # Arguments
+    ///
+    /// * `broadcaster_id` - The ID of the broadcaster that’s running the prediction.
+    /// * `id` - The ID of the prediction to update.
+    /// * `status` - [`PredictionStatus`]
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`EndPredictionBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     predictions::{PredictionsAPI, PredictionStatus},
+    ///     types::{BroadcasterId, PredictionId},
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .end_prediction(
+    ///         &BroadcasterId::from("1234"),
+    ///         &PredictionId::from("5678"),
+    ///         PredictionStatus::ACTIVE,
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `channel:manage:predictions`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#end-prediction>
+    fn end_prediction<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        id: &'a PredictionId,
+        status: PredictionStatus,
+    ) -> EndPredictionBuilder<'a>;
+}
 
-                RequestBody::new(required, None::<NoContent>).into_json()
-            }
-        }
+impl PredictionsAPI for TwitchAPI {
+    fn get_predictions<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+    ) -> GetPredictionsBuilder<'a> {
+        GetPredictionsBuilder::new(self, broadcaster_id)
+    }
+    simple_endpoint!(
+    fn create_prediction(
+        broadcaster_id: &BroadcasterId [skip],
+        title: &str [skip],
+        outcomes: &[Title] [skip],
+        prediction_window: u64 [skip],
+    ) -> PredictionsResponse;
+        endpoint: CreatePrediction,
+        method: POST,
+        path: [PREDICTIONS],
+        headers: [json],
+        body: {CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window).into_json()}
+    );
+    fn end_prediction<'a>(
+        &'a self,
+        broadcaster_id: &'a BroadcasterId,
+        id: &'a PredictionId,
+        status: PredictionStatus,
+    ) -> EndPredictionBuilder<'a> {
+        EndPredictionBuilder::new(self, broadcaster_id, id, status)
     }
 }
