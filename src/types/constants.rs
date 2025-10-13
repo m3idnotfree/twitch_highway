@@ -229,6 +229,13 @@ pub(crate) const GOALS: &str = "goals";
 #[cfg(feature = "polls")]
 pub(crate) const POLLS: &str = "polls";
 
+#[cfg(feature = "search")]
+pub(crate) const QUERY: &str = "query";
+#[cfg(feature = "search")]
+pub(crate) const SEARCH: &str = "search";
+#[cfg(feature = "search")]
+pub(crate) const CATEGORIES: &str = "categories";
+
 #[cfg(feature = "streams")]
 pub(crate) const VIDEO_ID: &str = "video_id";
 #[cfg(feature = "streams")]

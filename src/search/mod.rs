@@ -1,43 +1,90 @@
+mod builder;
 mod response;
 mod types;
 
+pub use builder::{SearchCategoriesBuilder, SearchChannelsBuilder};
 pub use response::{CategoriesResponse, ChannelsResponse};
 pub use types::Channel;
 
-use crate::types::{constants::CHANNELS, PaginationQuery};
+use crate::TwitchAPI;
 
-endpoints! {
-    SearchAPI {
-        /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
-        fn search_categories(
-            &self,
-            query: &str,
-            pagination: Option<PaginationQuery>,
-        ) -> CategoriesResponse {
-            endpoint_type: SearchCategories,
-            method: GET,
-            path: ["search", "categories"],
-            query_params: {
-                query("query", query),
-                pagination(pagination)
-            }
-        }
+pub trait SearchAPI {
+    /// Gets the games or categories that match the specified query
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - The URI-encoded search string.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SearchCategoriesBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::search::SearchAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .search_categories("%23archery")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
+    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a>;
 
-        /// <https://dev.twitch.tv/docs/api/reference/#search-channels>
-        fn search_channels(
-            &self,
-            query: &str,
-            live_only: Option<bool>,
-            pagination: Option<PaginationQuery>,
-        ) -> ChannelsResponse {
-            endpoint_type: SearchChannels,
-            method: GET,
-            path: ["search", CHANNELS],
-            query_params: {
-                query("query", query),
-                opt("live_only", live_only.map(|x| x.to_string())),
-                pagination(pagination)
-            }
-        }
+    /// Gets the channels that match the specified query and have streamed content within the past 6 months
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - The URI-encoded search string.
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`SearchChannelsBuilder`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::search::SearchAPI;
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .search_channels("%20death")
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#search-channels>
+    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a>;
+}
+
+impl SearchAPI for TwitchAPI {
+    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a> {
+        SearchCategoriesBuilder::new(self, query)
+    }
+    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a> {
+        SearchChannelsBuilder::new(self, query)
     }
 }
