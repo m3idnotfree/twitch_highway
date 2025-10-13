@@ -681,6 +681,19 @@ macro_rules! endpoints {
     };
 }
 
+/// # Field
+/// - `key` -
+/// - `convert` -
+/// - `method` -
+/// - `into` -
+/// - `skip` -
+///
+/// # Generated Methods
+///  - `new(required_params) -> Self`
+///  - `optional_field(value) -> Self`
+///  - `build() -> TwitchAPIRequest<ResponseType>`
+///  - `send()` -> Result<Response>`
+///  - `json() -> Result<ResponseType>`
 macro_rules! define_request_builder {
     (
         $(#[$meta:meta])*
@@ -796,7 +809,7 @@ macro_rules! define_request_builder {
             endpoint_type: $endpoint,
             method: $method,
             path: [$($path),*],
-            header: [$($($header_config:tt)*)?],
+            header: [$($($header_config)*)?],
             body: $($body:expr)?,
             return: $return
         );
@@ -869,7 +882,7 @@ macro_rules! define_request_builder {
         endpoint_type: $endpoint:ident,
         method: $method:ident,
         path: [$($($path:expr),+ $(,)?)?],
-        header: [$($header_config:tt)?],
+        header: [$($($header_config:tt)+)?],
         body: $($body:expr)?,
         return: $return:ty
     ) => {
@@ -956,6 +969,9 @@ macro_rules! define_request_builder {
     (@param_type_parse $type:ty, into: $into_flag:tt, into $(, $($rest:tt)*)?) => {
         define_request_builder!(@param_type_parse $type, into: true $(, $($rest)*)?)
     };
+    (@param_type_parse $type:ty, into: $into_flag:tt, skip $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_type_parse $type, into: $into_flag $(, $($rest)*)?)
+    };
 
     (@param_type_parse $type:ty, into: $into_flag:tt, key = $key:tt $(, $($rest:tt)*)?) => {
         define_request_builder!(@param_type_parse $type, into: $into_flag $(, $($rest)*)?)
@@ -983,6 +999,9 @@ macro_rules! define_request_builder {
 
     (@param_value_parse $field:ident, into: $into_flag:tt, into $(, $($rest:tt)*)?) => {
         define_request_builder!(@param_value_parse $field, into: true $(, $($rest)*)?)
+    };
+    (@param_value_parse $field:ident, into: $into_flag:tt, skip $(, $($rest:tt)*)?) => {
+        define_request_builder!(@param_value_parse $field, into: $into_flag $(, $($rest)*)?)
     };
 
     (@param_value_parse $field:ident, into: $into_flag:tt, key = $key:tt $(, $($rest:tt)*)?) => {
@@ -1054,6 +1073,7 @@ macro_rules! define_request_builder {
         $query.append_pair(stringify!($field), $value);
     };
 
+    (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, skip $(, $($rest:tt)*)?) => {};
     (@req_query_parse $query:expr, $field:ident, $value:expr, key: $current_key:expr, convert: $conv:tt, key = $new_key:tt $(, $($rest:tt)*)?) => {
         define_request_builder!(@req_query_parse $query, $field, $value, key: $new_key, convert: $conv $(, $($rest)*)?)
     };
@@ -1111,7 +1131,7 @@ macro_rules! define_request_builder {
     };
     (@convert $url:expr, $key:expr, $value:expr, extend_as_ref) => {
         for item in $value.iter() {
-            $url.append_pair($key, item.as_ref);
+            $url.append_pair($key, item.as_ref());
         }
     };
 
@@ -1121,10 +1141,128 @@ macro_rules! define_request_builder {
     (@headers $self:ident, ) => {
         $self.api.default_headers()
     };
-    (@headers $self:ident, jwt, $token:expr) => {
-        $self.api..build_jwt_headers(&$token)
+    (@headers $self:ident, jwt, $token:ident) => {
+        $self.api.build_jwt_headers(&$self.$token)
     };
 
     (@body $body:expr) => { $body };
     (@body) => { None }
+}
+
+/// # Query
+/// - `skip` - skip query
+/// - `key = CONSTANT` - custom query parameter name
+/// - `convert = type` - conversion startegy
+///     - as_ref
+///     - to_string
+///     - extend
+macro_rules! simple_endpoint {
+    (
+        fn $name:ident(
+            $($param:ident: $type:ty $([$($config:tt)*])?),* $(,)?
+        ) -> $return:ty;
+        endpoint: $endpint:ident,
+        method: $method:ident,
+        path:[$($path:tt)*]
+        $(, headers: [$($header:tt)*])?
+        $(, body: {$($body:tt)*})?
+        $(,)?
+) => {
+    fn $name(&self, $($param: $type),*) -> $crate::request::TwitchAPIRequest<$return> {
+        let mut url = self.build_url();
+        url.path_segments_mut().unwrap().extend(&[$($path)*]);
+
+        {
+            #[allow(unused_mut)]
+            #[allow(unused_variables)]
+            let mut query = url.query_pairs_mut();
+            $(
+                simple_endpoint!(@query query, $param, $param $(, [$($config)*])?);
+            )*
+        }
+
+        let headers = simple_endpoint!(@headers self $([$($header)*])?);
+        let body = simple_endpoint!(@body $({$($body)*})?);
+        $crate::request::TwitchAPIRequest::new(
+            crate::request::EndpointType::$endpint,
+            url,
+            reqwest::Method::$method,
+            headers,
+            body,
+            self.client.clone()
+        )
+    }
+    };
+    (@body) => { None };
+    (@body {$($body:tt)*}) => { {$($body)*} };
+
+    (@headers $self:ident) => { $self.default_headers() };
+    (@headers $self:ident [json]) => { $self.header_json() };
+    (@headers $self:ident [jwt, $token:expr]) => { $self.build_jwt_headers(&$token) };
+
+    (@query $query:expr, $param:ident, $value:expr, [$($config:tt)*]) => {
+        simple_endpoint!(@query_parse $query, $param, $value, key: stringify!($param), $($config)*)
+    };
+    (@query $query:expr, $param:ident, $value:expr) => {
+        $query.append_pair(stringify!($param), $value);
+    };
+
+    // Skip
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $current_key:expr, skip $(, $($rest:tt)*)?) => {};
+
+    // optinal query
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $key:expr, opt, key = $new_key:tt, convert = $conv:tt $(, $($rest:tt)*)?) => {
+        if let Some(value) = $value {
+            simple_endpoint!(@convert $query, $new_key, value, $conv);
+        }
+    };
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $key:expr, opt $(, $($rest:tt)*)?) => {
+        if let Some(value) = $value {
+            simple_endpoint!(@query_parse $query, $param, value, key: $key $(, $($rest)*)?);
+        }
+    };
+
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $current_key:expr, key = $new_key:tt $(, $($rest:tt)*)?) => {
+        simple_endpoint!(@query_parse $query, $param, $value, key: $new_key $(, $($rest)*)?)
+    };
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $key:expr, convert = $conv:tt $(, $($rest:tt)*)?) => {
+        simple_endpoint!(@query_parse $query, $param, $value, key: $key, convert: $conv $(, $($rest)*)?)
+    };
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $key:expr, convert: $conv:tt $(,)?) => {
+        simple_endpoint!(@convert $query, $key, $value, $conv)
+    };
+    (@query_parse $query:expr, $param:ident, $value:expr, key: $key:expr $(,)?) => {
+        $query.append_pair($key, $value)
+    };
+
+    (@convert $query:expr, $key:expr, $value:expr) => {
+        $query.append_pair($key, $value)
+    };
+    (@convert $query:expr, $key:expr, $value:expr, as_ref) => {
+        $query.append_pair($key, $value.as_ref())
+    };
+    (@convert $query:expr, $key:expr, $value:expr, to_string) => {
+        $query.append_pair($key, &$value.to_string())
+    };
+    (@convert $query:expr, $key:expr, $value:expr, extend) => {
+        $query.extend_pairs($value.iter().map(|item| ($key, item)))
+    };
+    (@convert $query:expr, $key:expr, $value:expr, extend_as_ref) => {
+        $query.extend_pairs($value.iter().map(|item| ($key, item.as_ref())))
+    };
+}
+
+macro_rules! opt_method {
+    ($name:ident, &$lt:lifetime $ty:ty) => {
+        pub fn $name(mut self, value: &$lt $ty) -> Self {
+            self.$name = Some(value);
+            self
+        }
+    };
+    ($name:ident, $ty:ty) => {
+        pub fn $name(mut self, value: $ty) -> Self {
+            self.$name = Some(value);
+            self
+        }
+    };
 }
