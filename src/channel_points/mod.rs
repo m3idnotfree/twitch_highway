@@ -14,7 +14,9 @@ pub use types::{
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
-        constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
+        constants::{
+            BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID, STATUS,
+        },
         BroadcasterId, RedemptionId, RewardId,
     },
     TwitchAPI,
@@ -313,32 +315,14 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> CreateCustomRewardBuilder<'a> {
         CreateCustomRewardBuilder::new(self, broadcaster_id, title, cost)
     }
-    fn delete_custom_reward(
-        &self,
-        broadcaster_id: &BroadcasterId,
-        reward_id: &RewardId,
-    ) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
-
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[CHANNEL_POINTS, CUSTOM_REWARDS]);
-        let mut query = url.query_pairs_mut();
-
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
-        query.append_pair(ID, reward_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::DeleteCustomReward,
-            url,
-            reqwest::Method::DELETE,
-            self.default_headers(),
-            None,
-            self.client.clone(),
-        )
-    }
+    simple_endpoint!(fn delete_custom_reward(
+        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
+        reward_id: &RewardId [key = ID]
+    ) -> NoContent;
+        endpoint: DeleteCustomReward,
+        method: DELETE,
+        path: [CHANNEL_POINTS, CUSTOM_REWARDS]
+    );
     fn get_custom_reward<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -359,35 +343,17 @@ impl ChannelPointsAPI for TwitchAPI {
     ) -> UpdateCustomRewardBuilder<'a> {
         UpdateCustomRewardBuilder::new(self, broadcaster_id, reward_id)
     }
-    fn update_redemption_status(
-        &self,
-        broadcaster_id: &BroadcasterId,
-        reward_id: &RewardId,
-        redemption_ids: &[RedemptionId],
-        status: RedemptionStatus,
-    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse> {
-        let mut url = self.build_url();
-
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS]);
-        let mut query = url.query_pairs_mut();
-
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
-        query.append_pair(REWARD_ID, reward_id);
-        query.extend_pairs(redemption_ids.iter().map(|id| (ID, id)));
-
-        drop(query);
-
-        let body = serde_json::json!({"status": status.as_str()}).to_string();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateRedemptionStatus,
-            url,
-            reqwest::Method::PATCH,
-            self.header_json(),
-            Some(body),
-            self.client.clone(),
-        )
-    }
+    simple_endpoint!(
+        fn update_redemption_status(
+            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
+            reward_id: &RewardId [key = REWARD_ID],
+            redemption_ids: &[RedemptionId] [key = ID, convert = extend],
+            status: RedemptionStatus [skip]
+        ) -> CustomRewardsRedemptionResponse;
+            endpoint: UpdateRedemptionStatus,
+            method: PATCH,
+            path: [CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS],
+            headers: [json],
+            body: {Some(serde_json::json!({STATUS: status.as_str()}).to_string())}
+    );
 }
