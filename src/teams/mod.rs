@@ -111,7 +111,7 @@ pub trait TeamsAPI {
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
-    ///     .get_teams_by_id(Id::from("1234"))
+    ///     .get_teams_by_id(&Id::from("1234"))
     ///     .json()
     ///     .await?;
     ///
