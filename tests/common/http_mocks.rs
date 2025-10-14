@@ -412,7 +412,7 @@ impl HttpMock {
             .await;
     }
 
-    pub async fn get_channel_editors(&self) {
+    pub async fn get_channel_editor(&self) {
         self.api_mock("GET", "/channels/editors")
             .and(query_param("broadcaster_id", "141981764"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
