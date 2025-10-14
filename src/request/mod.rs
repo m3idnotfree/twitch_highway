@@ -144,45 +144,6 @@ where
     }
 }
 
-#[cfg(any(
-    feature = "channel-points",
-    feature = "extensions",
-    feature = "polls",
-    feature = "predictions",
-    feature = "schedule",
-))]
-#[derive(Serialize, Deserialize)]
-pub struct RequestBody<Required, Optional> {
-    #[serde(flatten)]
-    required: Required,
-    #[serde(flatten, skip_serializing_if = "Option::is_none")]
-    opt: Option<Optional>,
-}
-
-#[cfg(any(
-    feature = "channel-points",
-    feature = "extensions",
-    feature = "polls",
-    feature = "predictions",
-    feature = "schedule",
-))]
-impl<Required, Optional> RequestBody<Required, Optional>
-where
-    Required: Serialize,
-    Optional: Serialize,
-{
-    pub fn new(required: Required, opts: Option<Optional>) -> Self {
-        Self {
-            required,
-            opt: opts,
-        }
-    }
-
-    pub fn into_json(&self) -> Option<String> {
-        Some(serde_json::to_string(self).unwrap())
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct APIError {
     #[serde(with = "http_serde::status_code")]

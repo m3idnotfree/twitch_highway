@@ -18,7 +18,8 @@ pub use types::{
 };
 
 use crate::{
-    request::{NoContent, RequestBody, TwitchAPIRequest},
+    extensions::types::SendExtensionPubSubMessageBody,
+    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             BITS, BROADCASTER_ID, CHAT, DELAY, EXTENSIONS, EXTENSION_ID, EXTENSION_VERSION, JWT,
@@ -634,21 +635,13 @@ impl ExtensionsAPI for TwitchAPI {
             path: [EXTENSIONS, PUBSUB],
             headers: [json],
             body: {
-                let required = if let Some(is_global) = is_global_broadcast {
-                    serde_json::json!({
-                        "target": targets,
-                        "message": message,
-                        BROADCASTER_ID: broadcaster_id,
-                        "is_global_broadcast": is_global
-                    })
-                } else {
-                    serde_json::json!({
-                        "target": targets,
-                        "message": message,
-                        BROADCASTER_ID: broadcaster_id,
-                    })
+                let body =  SendExtensionPubSubMessageBody{
+                    target:targets,
+                    message,
+                    broadcaster_id,
+                    is_global_broadcast,
                 };
-                RequestBody::new(required, None::<NoContent>).into_json()
+                serde_json::to_string(&body).ok()
             }
     );
     fn get_extension_live_channels<'a>(

@@ -174,6 +174,15 @@ impl BitsProductExtension {
     }
 }
 
+#[derive(Serialize)]
+pub(crate) struct SendExtensionPubSubMessageBody<'a> {
+    pub target: &'a [&'a str],
+    pub message: &'a str,
+    pub broadcaster_id: &'a BroadcasterId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_global_broadcast: Option<bool>,
+}
+
 #[cfg(test)]
 mod tests {
     use crate::extensions::{ConfigurationLocation, Segment, State, SubscriptionsSupportLevel};
