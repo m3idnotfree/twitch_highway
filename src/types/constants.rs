@@ -404,3 +404,5 @@ pub(crate) const LANGUAGE: &str = "language";
 pub(crate) const FROM_USER_ID: &str = "from_user_id";
 #[cfg(feature = "whisper")]
 pub(crate) const TO_USER_ID: &str = "to_user_id";
+#[cfg(feature = "whisper")]
+pub(crate) const WHISPERS: &str = "whispers";
