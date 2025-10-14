@@ -43,12 +43,12 @@ pub trait ChatAPI {
     /// # use twitch_highway::TwitchAPI;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
-    ///     types::{BroadcasterId, ModeratorId}
+    ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
-    ///     .get_chatters(&BroadcasterId::from("1234"), &ModeratorId::from("5678")
+    ///     .get_chatters(&BroadcasterId::from("1234"), &ModeratorId::from("5678"))
     ///     .first(5)
     ///     .after("eyJiI...")
     ///     .json()
@@ -161,7 +161,7 @@ pub trait ChatAPI {
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
-    ///     .get_emote_sets(["e1", "e2"])
+    ///     .get_emote_sets(&["e1", "e2"])
     ///     .json()
     ///     .await?;
     ///
@@ -444,7 +444,8 @@ pub trait ChatAPI {
     ///     .send_chat_announcement(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
-    ///         "message")
+    ///         "message"
+    ///     )
     ///     .color(AnnouncementColor::Blue)
     ///     .json()
     ///     .await?;
@@ -493,7 +494,7 @@ pub trait ChatAPI {
     ///     .send_a_shoutout(
     ///         &BroadcasterId::from("1234"),
     ///         &BroadcasterId::from("1234"),
-    ///         ModeratorId::from("5678")&
+    ///         &ModeratorId::from("5678")
     ///     )
     ///     .json()
     ///     .await?;
@@ -538,7 +539,6 @@ pub trait ChatAPI {
     /// };
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
-    /// let broadcaster_id = ;
     /// let response = api
     ///     .send_chat_message(
     ///         &BroadcasterId::from("1234"),
@@ -622,13 +622,12 @@ pub trait ChatAPI {
     /// # use twitch_highway::TwitchAPI;
     /// use twitch_highway::{
     ///     chat::{ChatAPI, ChatColor},
-    ///     types:UserId:
+    ///     types::UserId,
     /// };
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
-    /// let user_id = UserId::from("1234");
     /// let response = api
-    ///     .update_user_chat_color(&user_id, ChatColor::BlueViolet)
+    ///     .update_user_chat_color(&UserId::from("1234"), ChatColor::BlueViolet)
     ///     .json()
     ///     .await?;
     ///

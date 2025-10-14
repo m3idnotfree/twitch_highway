@@ -2,14 +2,12 @@ use chrono::{DateTime, Utc};
 
 use crate::{
     analytics::{AnalyticsType, ExtensionAnalyticsResponse, GameAnalyticsResponse},
-    request::TwitchAPIRequest,
     types::{
         constants::{
             AFTER, ENDED_AT, EXTENSIONS, EXTENSION_ID, FIRST, GAMES, GAME_ID, STARTED_AT, TYPE,
         },
         ExtensionId, GameId,
     },
-    TwitchAPI,
 };
 
 const ANALYTICS: &str = "analytics";
