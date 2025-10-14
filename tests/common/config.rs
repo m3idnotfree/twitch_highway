@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::time::Duration;
+use std::{process::Stdio, time::Duration};
 
 use tokio::{
     net::TcpStream,
@@ -90,7 +90,10 @@ impl CliConfig {
 
     pub fn command(self) -> Command {
         let mut command = Command::new(self.command);
-        command.args(self.args).kill_on_drop(self.kill_on_drop);
+        command
+            .args(self.args)
+            .stderr(Stdio::null())
+            .kill_on_drop(self.kill_on_drop);
         command
     }
 

@@ -76,6 +76,7 @@ impl Trigger {
         TriggerExecution {
             trigger: self.clone(),
             event: event.into(),
+            version: None,
         }
     }
 }
@@ -83,6 +84,14 @@ impl Trigger {
 pub struct TriggerExecution {
     trigger: Trigger,
     event: String,
+    version: Option<u8>,
+}
+
+impl TriggerExecution {
+    pub fn version(mut self, version: u8) -> Self {
+        self.version = Some(version);
+        self
+    }
 }
 
 impl IntoFuture for TriggerExecution {
@@ -118,7 +127,14 @@ impl IntoFuture for TriggerExecution {
                     child.add_args(["-s".to_string(), session.clone()]);
                 }
 
-                let mut child = child.spawn()?;
+                if let Some(version) = &self.version {
+                    child.add_args(["-v".to_string(), version.to_string()]);
+                }
+
+                let mut process = child.command();
+                println!("Command: {:?}", process);
+
+                let mut child = process.spawn()?;
 
                 child.wait().await?;
                 Ok(())
