@@ -1102,9 +1102,19 @@ macro_rules! opt_method {
             self
         }
     };
+    ($name:ident, $ty:ty [$($config:tt)*]) => {
+        opt_method!(@interal $name, $ty, $($config)*);
+    };
     ($name:ident, $ty:ty) => {
         pub fn $name(mut self, value: $ty) -> Self {
             self.$name = Some(value);
+            self
+        }
+    };
+
+    (@interal $name:ident, $ty:ty, into $(, $($config:tt)*)?) => {
+        pub fn $name(mut self, value: impl Into<$ty>) -> Self {
+            self.$name = Some(value.into());
             self
         }
     };
