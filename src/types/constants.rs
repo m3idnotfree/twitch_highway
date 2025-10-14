@@ -133,6 +133,11 @@ pub(crate) const TRANSACTIONS: &str = "transactions";
 #[cfg(feature = "bits")]
 pub(crate) const CHEERMOTES: &str = "cheermotes";
 
+#[cfg(feature = "ccls")]
+pub(crate) const LOCALE: &str = "locale";
+#[cfg(feature = "ccls")]
+pub(crate) const CONTENT_CLASSIFICATION_LABELS: &str = "content_classification_labels";
+
 #[cfg(feature = "channel-points")]
 pub(crate) const CHANNEL_POINTS: &str = "channel_points";
 #[cfg(feature = "channel-points")]
