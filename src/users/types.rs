@@ -180,74 +180,88 @@ impl From<BlockReason> for String {
     }
 }
 
-define_request!(
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    Panel {
-        req: {
-            active: bool,
-        },
-        opts: {
-            #[serde(skip_serializing_if = "Option::is_none")]
-            id: ExtensionId,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            version: String | into,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            name: String | into,
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Panel {
+    active: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    id: Option<ExtensionId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+}
+
+impl Panel {
+    pub fn new(active: bool) -> Self {
+        Self {
+            active,
+            id: None,
+            version: None,
+            name: None,
         }
     }
-);
 
-define_request!(
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    Overlay {
-        req: {
-            active: bool,
-        },
-        opts: {
-            #[serde(skip_serializing_if = "Option::is_none")]
-            id: ExtensionId,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            version: String | into,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            name: String | into,
+    opt_method!(id, ExtensionId);
+    opt_method!(version, String[into]);
+    opt_method!(name, String[into]);
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Overlay {
+    active: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    id: Option<ExtensionId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+}
+
+impl Overlay {
+    pub fn new(active: bool) -> Self {
+        Self {
+            active,
+            id: None,
+            version: None,
+            name: None,
         }
     }
-);
 
-define_request!(
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    Component {
-        req: {
-            active: bool
-        },
-        opts: {
-            #[serde(skip_serializing_if = "Option::is_none")]
-            id: ExtensionId,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            version: String | into,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            name: String | into,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            x: u64,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            y: u64
+    opt_method!(id, ExtensionId);
+    opt_method!(version, String[into]);
+    opt_method!(name, String[into]);
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Component {
+    active: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    id: Option<ExtensionId>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    version: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    x: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    y: Option<u64>,
+}
+
+impl Component {
+    pub fn new(active: bool) -> Self {
+        Self {
+            active,
+            id: None,
+            version: None,
+            name: None,
+            x: None,
+            y: None,
         }
     }
-);
 
-#[cfg(test)]
-mod tests {
-    use crate::{
-        types::ExtensionId,
-        users::{Component, Overlay, Panel, UserActiveExtensions},
-    };
-
-    #[test]
-    fn user_active_extensions() {
-        let panel = Panel::new(true).id(ExtensionId::from("")).version("");
-        let overlay = Overlay::new(true).id(ExtensionId::from("")).version("f");
-        let compomenet = Component::new(true);
-
-        // let user_active_extensions = UserActiveExtensions::new();
-    }
+    opt_method!(id, ExtensionId);
+    opt_method!(version, String[into]);
+    opt_method!(name, String[into]);
+    opt_method!(x, u64);
+    opt_method!(y, u64);
 }

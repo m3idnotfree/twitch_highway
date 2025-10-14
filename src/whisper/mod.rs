@@ -1,7 +1,3 @@
-mod request;
-
-use request::SendWhisperBody;
-
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
@@ -70,6 +66,8 @@ impl WhisperAPI for TwitchAPI {
             method: POST,
             path: [WHISPERS],
             headers: [json],
-            body: {SendWhisperBody::new(message).into_json()}
+            body: {
+                Some(serde_json::json!({"message":message}).to_string())
+            }
     );
 }

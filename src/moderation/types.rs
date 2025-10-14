@@ -139,15 +139,20 @@ pub struct WarnChatUser {
     pub reason: String,
 }
 
-define_request!(
-    #[derive(Debug, Clone, Serialize)]
-     CheckAutoMod {
-        req: {
-            msg_id: String | into,
-            msg_text: String | into,
+#[derive(Debug, Clone, Serialize)]
+pub struct CheckAutoMod {
+    msg_id: String,
+    msg_text: String,
+}
+
+impl CheckAutoMod {
+    pub fn new(msg_id: impl Into<String>, msg_text: impl Into<String>) -> Self {
+        Self {
+            msg_id: msg_id.into(),
+            msg_text: msg_text.into(),
         }
     }
-);
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum AutoModAction {

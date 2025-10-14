@@ -1,13 +1,10 @@
 mod builder;
-mod request;
 mod response;
 mod types;
 
 pub use builder::{EndPredictionBuilder, GetPredictionsBuilder};
 pub use response::PredictionsResponse;
 pub use types::{Prediction, PredictionStatus};
-
-use request::CreatePredictionRequest;
 
 use crate::{
     request::TwitchAPIRequest,
@@ -178,7 +175,16 @@ impl PredictionsAPI for TwitchAPI {
         method: POST,
         path: [PREDICTIONS],
         headers: [json],
-        body: {CreatePredictionRequest::new(broadcaster_id, title, outcomes, prediction_window).into_json()}
+        body: {
+            Some(
+                serde_json::json!({
+                    "broadcaster_id":broadcaster_id,
+                    "title":title,
+                    "outcomes":outcomes,
+                    "prediction_window":prediction_window
+                }).to_string()
+            )
+        }
     );
     fn end_prediction<'a>(
         &'a self,

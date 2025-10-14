@@ -1,6 +1,5 @@
 mod builder;
 mod jwt;
-mod request;
 mod response;
 mod types;
 
@@ -19,7 +18,6 @@ pub use types::{
 };
 
 use crate::{
-    extensions::request::{ExtensionChatMessageIntoRequestBody, RequiredConfiguration},
     request::{NoContent, RequestBody, TwitchAPIRequest},
     types::{
         constants::{
@@ -613,7 +611,16 @@ impl ExtensionsAPI for TwitchAPI {
             method: PUT,
             path: [EXTENSIONS, REQUIRED_CONFIGURATION],
             headers: [json],
-            body: {RequiredConfiguration::new(extension_id, extension_version, required_configuration).into_json()}
+            // body: {RequiredConfiguration::new(extension_id, extension_version, required_configuration).into_json()}
+            body: {
+            Some(
+            serde_json::json!({
+                EXTENSION_ID:extension_id,
+                EXTENSION_VERSION:extension_version,
+                REQUIRED_CONFIGURATION:required_configuration
+            }).to_string()
+        )
+    }
     );
     simple_endpoint!(
         fn send_extension_pubsub_message(
@@ -678,7 +685,16 @@ impl ExtensionsAPI for TwitchAPI {
         method: POST,
         path: [EXTENSIONS, CHAT],
         headers: [json],
-        body: {ExtensionChatMessageIntoRequestBody::new(text, extension_id, extension_version).into_json()}
+        // body: {ExtensionChatMessageIntoRequestBody::new(text, extension_id, extension_version).into_json()}
+        body: {
+            Some(
+                serde_json::json!({
+                    "text":text,
+                    EXTENSION_ID:extension_id,
+                    EXTENSION_VERSION:extension_version
+                }).to_string()
+            )
+        }
     );
     simple_endpoint!(
     fn get_extensions(
