@@ -115,6 +115,13 @@ pub(crate) const GAMES: &str = "games";
 #[cfg(any(feature = "conduits", feature = "eventsub"))]
 pub(crate) const EVENTSUB: &str = "eventsub";
 
+#[cfg(feature = "ads")]
+pub(crate) const COMMERCIAL: &str = "commercial";
+#[cfg(feature = "ads")]
+pub(crate) const ADS: &str = "ads";
+#[cfg(feature = "ads")]
+pub(crate) const SNOOZE: &str = "snooze";
+
 #[cfg(any(feature = "bits", feature = "videos"))]
 pub(crate) const PERIOD: &str = "period";
 #[cfg(feature = "bits")]
@@ -326,7 +333,7 @@ pub(crate) const POLLS: &str = "polls";
 #[cfg(feature = "predictions")]
 pub(crate) const PREDICTIONS: &str = "predictions";
 
-#[cfg(feature = "schedule")]
+#[cfg(any(feature = "ads", feature = "schedule"))]
 pub(crate) const SCHEDULE: &str = "schedule";
 #[cfg(any(feature = "schedule", feature = "extensions"))]
 pub(crate) const SEGMENT: &str = "segment";
