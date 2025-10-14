@@ -164,24 +164,41 @@ impl<'a> BanUserBuilder<'a> {
     opt_method!(reason, &'a str);
 
     pub fn build(self) -> TwitchAPIRequest<BanUsersResponse> {
-        let mut url = self.api.build_url();
+        let Self {
+            api,
+            broadcaster_id,
+            moderator_id,
+            user_id,
+            duration,
+            reason,
+        } = self;
+
+        let mut url = api.build_url();
         url.path_segments_mut().unwrap().extend(&[MODERATION, BANS]);
 
         let mut query = url.query_pairs_mut();
 
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-        query.append_pair(MODERATOR_ID, self.moderator_id);
+        query.append_pair(BROADCASTER_ID, broadcaster_id);
+        query.append_pair(MODERATOR_ID, moderator_id);
 
         drop(query);
 
-        let body = serde_json::to_string(&self).ok();
+        let body = serde_json::to_string(&BanUserRequestBody {
+            data: BanUserData {
+                user_id,
+                duration,
+                reason,
+            },
+        })
+        .ok();
+
         TwitchAPIRequest::new(
             crate::request::EndpointType::BanUsers,
             url,
             reqwest::Method::POST,
-            self.api.header_json(),
+            api.header_json(),
             body,
-            self.api.client.clone(),
+            api.client.clone(),
         )
     }
 
@@ -192,6 +209,20 @@ impl<'a> BanUserBuilder<'a> {
     pub async fn json(self) -> Result<BanUsersResponse, crate::Error> {
         self.build().json().await
     }
+}
+
+#[derive(Serialize)]
+struct BanUserRequestBody<'a> {
+    data: BanUserData<'a>,
+}
+
+#[derive(Serialize)]
+struct BanUserData<'a> {
+    user_id: &'a UserId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    duration: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reason: Option<&'a str>,
 }
 
 define_request_builder! {
@@ -296,7 +327,7 @@ define_request_builder! {
     GetVipsBuilder<'a> {
         req: {broadcaster_id: &'a BroadcasterId},
         opts: {
-            user_ids: &'a [UserId] [convert = extend],
+            user_ids: &'a [UserId] [key = USER_ID, convert = extend],
             first: u8 [key = FIRST, convert = to_string],
             after: &'a str [key = AFTER],
         }
