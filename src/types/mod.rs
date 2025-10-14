@@ -17,7 +17,7 @@ pub use new_types::{
     RewardId, SessionId, ShardId, StreamId, SubscriptionId, TransactionId, UnbanRequestId, UserId,
     VideoId, WhisperId,
 };
-pub use pagination::{Pagination, PaginationQuery};
+pub use pagination::Pagination;
 pub use title::Title;
 
 pub(crate) mod constants;
