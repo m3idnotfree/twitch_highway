@@ -1,21 +1,6 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-use crate::types::{BroadcasterId, ExtensionId};
-
-define_request!(
-    #[derive(Debug, Clone, Serialize)]
-    RequestConfigurationSegment<'a> {
-        opts: {
-            #[serde(skip_serializing_if = "Option::is_none")]
-            broadcaster_id: &'a BroadcasterId,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            content: &'a str,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            version: &'a str
-        };
-        into_json
-    }
-);
+use crate::types::ExtensionId;
 
 define_request!(
     #[derive(Debug, Clone, Serialize)]
@@ -38,19 +23,5 @@ define_request!(
             extension_version: &'a str
         };
         into_json
-    }
-);
-
-define_request!(
-    #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-    UpdateExtensoinBitsProductsRequest<'a> {
-        opts: {
-            #[serde(skip_serializing_if = "Option::is_none")]
-            expiration: &'a str,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            in_development: bool,
-            #[serde(skip_serializing_if = "Option::is_none")]
-            is_broadcast: bool,
-        }
     }
 );

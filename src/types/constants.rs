@@ -218,6 +218,27 @@ pub(crate) const SUBSCRIPTION_ID: &str = "subscription_id";
 #[cfg(feature = "raid")]
 pub(crate) const RAIDS: &str = "raids";
 
+#[cfg(feature = "extensions")]
+pub(crate) const CONFIGURATIONS: &str = "configurations";
+#[cfg(feature = "extensions")]
+pub(crate) const LIVE: &str = "live";
+#[cfg(feature = "extensions")]
+pub(crate) const REQUIRED_CONFIGURATION: &str = "required_configuration";
+#[cfg(feature = "extensions")]
+pub(crate) const PUBSUB: &str = "pubsub";
+#[cfg(feature = "extensions")]
+pub(crate) const JWT: &str = "jwt";
+#[cfg(feature = "extensions")]
+pub(crate) const SECRETS: &str = "secrets";
+#[cfg(feature = "extensions")]
+pub(crate) const DELAY: &str = "delay";
+#[cfg(feature = "extensions")]
+pub(crate) const EXTENSION_VERSION: &str = "extension_version";
+#[cfg(feature = "extensions")]
+pub(crate) const RELEASED: &str = "released";
+#[cfg(feature = "extensions")]
+pub(crate) const SHOULD_INCLUDE_ALL: &str = "should_include_all";
+
 #[cfg(any(feature = "games", feature = "teams"))]
 pub(crate) const NAME: &str = "name";
 #[cfg(feature = "games")]
@@ -307,7 +328,7 @@ pub(crate) const PREDICTIONS: &str = "predictions";
 
 #[cfg(feature = "schedule")]
 pub(crate) const SCHEDULE: &str = "schedule";
-#[cfg(feature = "schedule")]
+#[cfg(any(feature = "schedule", feature = "extensions"))]
 pub(crate) const SEGMENT: &str = "segment";
 #[cfg(feature = "schedule")]
 pub(crate) const ICALENDAR: &str = "icalendar";
