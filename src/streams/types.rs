@@ -1,7 +1,8 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+use url::Url;
 
-use crate::types::{Id, UserId};
+use crate::types::{GameId, MarkerId, UserId, VideoId};
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct StreamKey {
@@ -10,11 +11,11 @@ pub struct StreamKey {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Stream {
-    pub id: Id,
+    pub id: VideoId,
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
-    pub game_id: Option<String>,
+    pub game_id: Option<GameId>,
     pub game_name: Option<String>,
     #[serde(rename = "type")]
     pub kind: Option<String>,
@@ -31,17 +32,6 @@ pub struct Stream {
     pub is_mature: Option<bool>,
 }
 
-#[allow(non_snake_case)]
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Marker {
-    pub id: Id,
-    pub created_at: DateTime<FixedOffset>,
-    pub position_seconds: u64,
-    pub description: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub URL: Option<String>,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StreamMarker {
     pub user_id: UserId,
@@ -52,8 +42,19 @@ pub struct StreamMarker {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StreamVideos {
-    pub video_id: String,
+    pub video_id: VideoId,
     pub markers: Vec<Marker>,
+}
+
+#[allow(non_snake_case)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Marker {
+    pub id: MarkerId,
+    pub created_at: DateTime<FixedOffset>,
+    pub position_seconds: u64,
+    pub description: String,
+    #[serde(alias = "URL", skip_serializing_if = "Option::is_none")]
+    pub url: Option<Url>,
 }
 
 #[derive(Serialize)]
