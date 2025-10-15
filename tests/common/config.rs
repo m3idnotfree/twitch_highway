@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use std::{process::Stdio, time::Duration};
+use std::time::Duration;
 
 use tokio::{
     net::TcpStream,
@@ -31,7 +31,7 @@ impl CliConfig {
             args: vec!["mock-api".to_string(), "start".to_string()],
             kill_on_drop: true,
             url: "127.0.0.1:8080".to_string(),
-            delay: Duration::from_secs(5),
+            delay: Duration::from_secs(3),
         }
     }
 
@@ -45,7 +45,7 @@ impl CliConfig {
             ],
             kill_on_drop: true,
             url: "ws://127.0.0.1:8080/ws".to_string(),
-            delay: Duration::from_secs(5),
+            delay: Duration::from_secs(3),
         }
     }
 
@@ -90,10 +90,7 @@ impl CliConfig {
 
     pub fn command(self) -> Command {
         let mut command = Command::new(self.command);
-        command
-            .args(self.args)
-            .stderr(Stdio::null())
-            .kill_on_drop(self.kill_on_drop);
+        command.args(self.args).kill_on_drop(self.kill_on_drop);
         command
     }
 
@@ -106,7 +103,7 @@ impl CliConfig {
         let delay = self.delay;
 
         let command = self.spawn()?;
-        let _ = time::timeout(delay, TcpStream::connect(url)).await?;
+        let _timeout = time::timeout(delay, TcpStream::connect(url)).await?;
 
         Ok(command)
     }
