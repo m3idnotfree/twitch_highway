@@ -1,6 +1,7 @@
 use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 use serde::Serialize;
+use serde_with::{serde_as, DisplayFromStr};
 
 use crate::{
     request::{NoContent, TwitchAPIRequest},
@@ -10,7 +11,7 @@ use crate::{
             AFTER, BROADCASTER_ID, FIRST, ID, IS_VACATION_ENABLED, SCHEDULE, SEGMENT, SETTINGS,
             START_TIME, TIMEZONE, VACATION_END_TIME, VACATION_START_TIME,
         },
-        BroadcasterId, Id,
+        BroadcasterId, CategoryId, SegmentId,
     },
     TwitchAPI,
 };
@@ -20,19 +21,18 @@ define_request_builder! {
     GetChanelStreamScheduleBuilder<'a> {
         req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
         opts: {
-            start_time: &'a DateTime<Utc> [key = START_TIME, convert = rfc3339],
+            start_time: &'a DateTime<Utc> [key = START_TIME, convert = rfc3339_opt],
             // Not supported
             // utc_offset: &'a str,
-            ids: &'a [Id] [key = ID, convert = extend],
+            ids: &'a [&'a SegmentId] [key = ID, convert = extend],
             first: u8 [key = FIRST, convert = to_string],
             after: &'a str [key = AFTER]
 
         }
     } -> ScheduleResponse;
-            endpoint_type: GetChannelStreamSchedule,
-            method: GET,
-            path: [SCHEDULE],
-
+        endpoint_type: GetChannelStreamSchedule,
+        method: GET,
+        path: [SCHEDULE],
 }
 
 define_request_builder! {
@@ -40,9 +40,9 @@ define_request_builder! {
     UpdateChannelStreamScheduleBuilder<'a> {
         req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
         opts: {
-            vacation_start_time: &'a str [key = VACATION_START_TIME],
-            vacation_end_time: &'a str [key = VACATION_END_TIME],
-            timezone: &'a str [key = TIMEZONE],
+            vacation_start_time: &'a DateTime<Utc> [key = VACATION_START_TIME, convert = rfc3339_opt],
+            vacation_end_time: &'a DateTime<Utc> [key = VACATION_END_TIME, convert = rfc3339_opt],
+            timezone: Tz [key = TIMEZONE, convert = timezone],
             is_vacation_enabled: bool [key = IS_VACATION_ENABLED, convert = to_string]
         }
     } -> NoContent;
@@ -51,6 +51,7 @@ define_request_builder! {
     path: [SCHEDULE, SETTINGS],
 }
 
+#[serde_as]
 #[derive(Debug, Serialize)]
 pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
     #[serde(skip)]
@@ -59,9 +60,10 @@ pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
     broadcaster_id: &'a BroadcasterId,
     start_time: String,
     timezone: &'a str,
-    duration: &'a str,
+    #[serde_as(as = "DisplayFromStr")]
+    duration: u16,
     #[serde(skip_serializing_if = "Option::is_none")]
-    category_id: Option<&'a str>,
+    category_id: Option<&'a CategoryId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     title: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -74,7 +76,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
         broadcaster_id: &'a BroadcasterId,
         start_time: &'a DateTime<Utc>,
         timezone: Tz,
-        duration: &'a str,
+        duration: u16,
     ) -> Self {
         Self {
             api,
@@ -88,7 +90,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
         }
     }
 
-    opt_method!(category_id, &'a str);
+    opt_method!(category_id, &'a CategoryId);
     opt_method!(title, &'a str);
     opt_method!(is_recurring, bool);
 
@@ -126,6 +128,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
     }
 }
 
+#[serde_as]
 #[derive(Debug, Serialize)]
 pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
     #[serde(skip)]
@@ -133,13 +136,13 @@ pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
-    id: &'a Id,
+    id: &'a SegmentId,
     #[serde(skip_serializing_if = "Option::is_none")]
     start_time: Option<&'a str>,
+    #[serde_as(as = "Option<DisplayFromStr>")]
+    duration: Option<u16>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    duration: Option<&'a str>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    category_id: Option<&'a str>,
+    category_id: Option<&'a CategoryId>,
     #[serde(skip_serializing_if = "Option::is_none")]
     title: Option<&'a str>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -149,7 +152,7 @@ pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
 }
 
 impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
-    pub fn new(api: &'a TwitchAPI, broadcaster_id: &'a BroadcasterId, id: &'a Id) -> Self {
+    pub fn new(api: &'a TwitchAPI, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
         Self {
             api,
             broadcaster_id,
@@ -164,10 +167,10 @@ impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
     }
 
     opt_method!(start_time, &'a str);
-    opt_method!(duration, &'a str);
-    opt_method!(category_id, &'a str);
+    opt_method!(duration, u16);
+    opt_method!(category_id, &'a CategoryId);
     opt_method!(title, &'a str);
-    opt_method!(timezone, &'a str);
+    opt_method!(timezone, Tz[timezone]);
     opt_method!(is_canceled, bool);
 
     pub fn build(self) -> TwitchAPIRequest<ScheduleResponse> {
