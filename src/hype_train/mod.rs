@@ -26,7 +26,7 @@ pub trait HypeTrainAPI {
     ///
     /// Scheduled for removal on **December 4, 2025**.
     ///
-    /// Use [`get_hype_train_status`] instead.
+    /// Use [`get_hype_train_status`](HypeTrainAPI::get_hype_train_status) instead.
     ///
     /// See [announcement](https://discuss.dev.twitch.com/t/legacy-get-hype-train-events-api-and-eventsub-hype-train-v1-subscription-types-deprecation-and-withdrawal-timeline/64299)
     ///

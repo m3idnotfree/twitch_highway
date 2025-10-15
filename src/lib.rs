@@ -1,14 +1,123 @@
-//! # Twitch highway Library
-//! <https://dev.twitch.tv/docs/api/reference/>
+//! # twitch_highway
 //!
-//! **Important!** By default, no API endpoints are enabled.
-//! You must specify the features you need in Cargo.toml
+//! A Rust library for the Twitch Helix API with type safety and comprehensive EventSub support.
 //!
-//! Using traits as a resuable foundation, **TwitchAPI** organizes and implements endpoints separately.
+//! Official Twitch API Documentation: <https://dev.twitch.tv/docs/api/reference/>
 //!
-//! # Recommended Usage
+//! ## Getting Started
 //!
-//! This library is designed to work seamlessly with [`twitch_oauth_token`] for OAuth token management and authentication.
+//! **Important:** By default, no API endpoints are enabled. You must specify the features you need in `Cargo.toml`.
+//!
+//! ```toml
+//! [dependencies]
+//! twitch_highway = { version = "0.3", features = ["moderation", "chat"] }
+//! tokio = { version = "1", features = ["full"] }
+//! asknothingx2-util = { version = "0.1", features = ["oauth"] }
+//! ```
+//! ### Basic Usage
+//!
+//! ```rust
+//! # #[cfg(feature = "moderation")]
+//! # {
+//! use asknothingx2_util::oauth::{AccessToken, ClientId};
+//! use twitch_highway::{
+//!     moderation::ModerationAPI,
+//!     types::{BroadcasterId, ModeratorId, UserId},
+//!     TwitchAPI,
+//! };
+//!
+//! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+//! let api = TwitchAPI::new(
+//!     AccessToken::from("your_access_token"),
+//!     ClientId::from("your_client_id"),
+//! );
+//!
+//! let response = api
+//!     .ban_user(
+//!         &BroadcasterId::from("12345"),
+//!         &ModeratorId::from("67890"),
+//!         &UserId::from("54321"),
+//!     )
+//!     .duration(600) // Optional
+//!     .reason("no reason") // Optional: 10 minues
+//!     .json()
+//!     .await?;
+//!
+//! println!("User banned successfully");
+//! # Ok(())
+//! # }
+//! # }
+//! ```
+//!
+//! ## Error Handling
+//!
+//! ```rust
+//! # use twitch_highway::request::TwitchAPIRequest;
+//! # use serde::de::DeserializeOwned;
+//! # async fn example<T: DeserializeOwned>(api: TwitchAPIRequest<T>) {
+//! match api.json().await {
+//!     Ok(response) => {
+//!         // Process successful response
+//!     }
+//!     Err(e) => {
+//!         if e.is_request() {
+//!             // Network or connection error
+//!             eprintln!("Request failed: {}", e);
+//!         } else if e.is_api() {
+//!             // Twitch API returned an error (4xx, 5xx)
+//!             eprintln!("API error: {}", e);
+//!         } else if e.is_decode() {
+//!             // Failed to parse JSON response
+//!             eprintln!("JSON decode error: {}", e);
+//!         }
+//!     }
+//! }
+//! # }
+//! ```
+//!
+//! ## EventSub Integration
+//!
+//! Comprehensive support for both Webhook and WebSocket transports.
+//!
+//! ### Webhook Verification
+//!
+//! - HMAC-SHA256 signature verification
+//! - Framework integrations: axum, actix-web
+//! - Custom implementations via [`HeaderAccess`](crate::eventsub::webhook::HeaderAccess) trait
+//!
+//! #### Feature Flags
+//!
+//! - `webhook-verify`: Core verification only
+//! - `webhook-http`: Generic HTTP header support
+//! - `webhook-axum`: Axum framework support
+//! - `webhook-actix`: Actix-web framework support
+//! - `webhook`: All webhook features
+//!
+//! ### WebSocket Client
+//!
+//! - Automatic reconnection with exponential backoff
+//! - Keepalive message handling
+//! - Type-safe event routing (similar to axum)
+//! - Middleware support (logging, rate limiting)
+//!
+//! #### Feature Flags
+//!
+//! - `websocket-client`: Client with reconnection
+//! - `websocket-router`: Event router with handles
+//! - `websocket`:  All WebSocket features
+//!
+//! See the [`eventsub`] module documentation for more details.
+//!
+//! ## OAuth Token Management
+//!
+//! This library is designed to work with [`twitch_oauth_token`](https://docs.rs/twitch_oauth_token) for OAuth authentication:
+//!
+//! ```toml
+//! [dependencies]
+//! twitch_oauth_token = "2.0"
+//! ```
+//!
+//! ## API Endpoint Features
 //!
 //! # Features
 //! - [`ads`][crate::ads::AdsAPI]
@@ -17,7 +126,7 @@
 //! - [`channels`][crate::channels::ChannelsAPI]
 //! - [`channel-points`][crate::channel_points::ChannelPointsAPI]
 //! - [`charity`][crate::charity::CharityAPI]
-//! - [`Chat`][crate::chat::ChatAPI]
+//! - [`chat`][crate::chat::ChatAPI]
 //! - [`clips`][crate::clips::ClipsAPI]
 //! - [`ccls`][crate::ccls::CclsAPI]
 //! - [`conduits`][crate::conduits::ConduitsAPI]
@@ -40,32 +149,8 @@
 //! - [`users`][crate::users::UserAPI]
 //! - [`videos`][crate::videos::VideosAPI]
 //! - [`whisper`][crate::whisper::WhisperAPI]
-//! - Tags: deprecated
-//!
-//! ## Error Handling
-//!
-//! The library provides structured error handling
-//!
-//! ```rust
-//! # use twitch_highway::request::TwitchAPIRequest;
-//! # use serde::de::DeserializeOwned;
-//! # async fn run<T: DeserializeOwned>(api: TwitchAPIRequest<T>) {
-//! match api.json().await {
-//!     Ok(response) => { /* success */ }
-//!     Err(e) => {
-//!         if e.is_request() {
-//!             println!("Request error: {}", e);
-//!         } else if e.is_api() {
-//!             println!("API error: {}", e);
-//!         } else if e.is_decode() {
-//!             println!("JSON decode error: {}", e);
-//!         }
-//!     }
-//! }
-//! # }
-//! ```
 
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
 #[macro_use]
 mod macros;
@@ -85,9 +170,6 @@ use asknothingx2_util::{
 };
 use reqwest::{header::HeaderMap, Client};
 use url::Url;
-
-#[cfg(feature = "extensions")]
-use types::JWTToken;
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 
@@ -161,7 +243,6 @@ impl TwitchAPI {
         &self.client_id
     }
 
-    #[allow(dead_code)]
     pub(crate) fn default_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers)
@@ -199,7 +280,7 @@ impl TwitchAPI {
     }
 
     #[cfg(feature = "extensions")]
-    pub(crate) fn build_jwt_headers(&self, jwt: &JWTToken) -> HeaderMap {
+    pub(crate) fn build_jwt_headers(&self, jwt: &crate::types::JWTToken) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers).bearer_token(jwt.as_str());
         headers
@@ -269,5 +350,10 @@ pub mod videos;
 #[cfg(feature = "whisper")]
 pub mod whisper;
 
-#[cfg(any(feature = "eventsub", feature = "moderation"))]
+#[cfg(any(
+    feature = "analytics",
+    feature = "bits",
+    feature = "eventsub",
+    feature = "moderation"
+))]
 mod serde_helpers;
