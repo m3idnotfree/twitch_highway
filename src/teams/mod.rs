@@ -8,7 +8,7 @@ use crate::{
     request::TwitchAPIRequest,
     types::{
         constants::{BROADCASTER_ID, CHANNEL, ID, NAME, TEAMS},
-        BroadcasterId, Id,
+        BroadcasterId, TeamId,
     },
     TwitchAPI,
 };
@@ -106,12 +106,12 @@ pub trait TeamsAPI {
     /// # use twitch_highway::TwitchAPI;
     /// use twitch_highway::{
     ///     teams::TeamsAPI,
-    ///     types::Id,
+    ///     types::TeamId,
     /// };
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
-    ///     .get_teams_by_id(&Id::from("1234"))
+    ///     .get_teams_by_id(&TeamId::from("1234"))
     ///     .json()
     ///     .await?;
     ///
@@ -126,7 +126,7 @@ pub trait TeamsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams_by_id(&self, id: &Id) -> TwitchAPIRequest<TeamsResponse>;
+    fn get_teams_by_id(&self, id: &TeamId) -> TwitchAPIRequest<TeamsResponse>;
 }
 
 impl TeamsAPI for TwitchAPI {
@@ -148,7 +148,7 @@ impl TeamsAPI for TwitchAPI {
     );
     simple_endpoint!(
         fn get_teams_by_id(
-            id: &Id [key = ID]
+            id: &TeamId [key = ID]
         ) -> TeamsResponse;
             endpoint: GetTeams,
             method: GET,

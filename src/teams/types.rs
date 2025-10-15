@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, UserId};
+use crate::types::{BroadcasterId, TeamId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BroadcasterTeam {
@@ -16,7 +16,7 @@ pub struct BroadcasterTeam {
     pub thumbnail_url: String,
     pub team_name: String,
     pub team_display_name: String,
-    pub id: Id,
+    pub id: TeamId,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -30,7 +30,7 @@ pub struct Team {
     pub thumbnail_url: String,
     pub team_name: String,
     pub team_display_name: String,
-    pub id: Id,
+    pub id: TeamId,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
