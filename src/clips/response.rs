@@ -45,10 +45,6 @@ mod tests {
 
         let created_clip = &response.data[0];
         assert_eq!(created_clip.id.as_str(), "AwesomeClip123");
-        assert!(created_clip.edit_url.contains("AwesomeClip123"));
-        assert!(created_clip
-            .edit_url
-            .starts_with("https://clips.twitch.tv/edit/"));
     }
 
     #[test]

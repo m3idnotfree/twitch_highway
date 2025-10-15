@@ -50,6 +50,7 @@ pub use new_types::GameId;
     feature = "channels",
     feature = "charity",
     feature = "chat",
+    feature = "clips",
     feature = "entitlements",
     feature = "eventsub",
     feature = "guest-star",
@@ -121,7 +122,7 @@ pub use new_types::BlockedTermId;
 #[cfg(feature = "schedule")]
 pub use new_types::SegmentId;
 
-#[cfg(any(feature = "streams", feature = "videos"))]
+#[cfg(any(feature = "clips", feature = "streams", feature = "videos"))]
 pub use new_types::VideoId;
 
 #[cfg(feature = "streams")]
