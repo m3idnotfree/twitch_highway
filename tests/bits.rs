@@ -5,6 +5,8 @@ mod common;
 
 use anyhow::Result;
 use common::{mock_api_start, TwitchFixture};
+use std::time::Duration;
+use tokio::time::sleep;
 use twitch_highway::{
     bits::{BitsAPI, Period},
     types::{BroadcasterId, ExtensionId},
@@ -35,6 +37,8 @@ api_test!(extra
 #[tokio::test]
 async fn mock_api() -> Result<()> {
     let _cmd = mock_api_start().await?;
+
+    sleep(Duration::from_millis(500)).await;
 
     let api = TwitchFixture::user_access_token(|scope| {
         scope.bits_api();

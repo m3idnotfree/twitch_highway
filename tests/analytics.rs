@@ -20,12 +20,9 @@ api_test!(
             .ended_at(&"2018-03-01T00:00:00Z".parse().unwrap())
     }
 );
-// api_test!(extra
-//     get_game_analytics,
-//     get_game_analytics2,
-//     [
-//         None,
-//         None,
-//         Some(PaginationQuery::new().first(5))
-//     ]
-// );
+api_test!(build_extra
+    get_game_analytics,
+    get_game_analytics2 |api| {
+        api.get_game_analytics().first(5)
+    }
+);

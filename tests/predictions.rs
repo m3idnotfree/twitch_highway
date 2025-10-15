@@ -80,7 +80,7 @@ async fn mock_api_create_prediction(api: &TwitchFixture) -> Result<()> {
     Ok(())
 }
 async fn mock_api_end_prediction(api: &TwitchFixture) -> Result<()> {
-    let prediction_id = PredictionId::from(api.selected_id().to_string().clone());
+    let prediction_id = PredictionId::from(api.selected_broadcaster_id().to_string().clone());
     api.api
         .end_prediction(
             &api.selected_broadcaster_id(),

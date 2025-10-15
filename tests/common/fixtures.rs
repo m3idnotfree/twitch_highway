@@ -3,7 +3,7 @@
 use asknothingx2_util::api::preset;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 use twitch_highway::{
-    types::{BroadcasterId, Id, ModeratorId, UserId},
+    types::{BroadcasterId, UserId},
     TwitchAPI,
 };
 use twitch_oauth_token::{
@@ -114,12 +114,14 @@ impl TwitchFixture {
         UserId::from(self.selected_user.id.clone())
     }
 
-    pub fn selected_moderator_id(&self) -> ModeratorId {
-        ModeratorId::from(self.selected_user.id.clone())
-    }
-
-    pub fn selected_id(&self) -> Id {
-        Id::from(self.selected_user.id.clone())
+    #[cfg(any(
+        feature = "chat",
+        feature = "eventsub",
+        feature = "guest-star",
+        feature = "moderation"
+    ))]
+    pub fn selected_moderator_id(&self) -> twitch_highway::types::ModeratorId {
+        twitch_highway::types::ModeratorId::from(self.selected_user.id.clone())
     }
 }
 

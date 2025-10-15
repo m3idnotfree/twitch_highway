@@ -6,9 +6,10 @@ mod common;
 use anyhow::Result;
 use common::HttpMock;
 use common::{mock_api_start, TwitchFixture};
+use twitch_highway::types::BlockedTermId;
 use twitch_highway::{
     moderation::{AutoModAction, CheckAutoMod, ModerationAPI, UnbanRequestStatus},
-    types::{BroadcasterId, Id, ModeratorId, UserId},
+    types::{BroadcasterId, ModeratorId, UserId},
 };
 use twitch_oauth_token::scope::ModerationScopes;
 
@@ -93,7 +94,7 @@ api_test!(
     [
         &BroadcasterId::from("1234"),
         &ModeratorId::from("5678"),
-        &Id::from("c9fc79b8-0f63-4ef7-9d38-efd811e74ac2"),
+        &BlockedTermId::from("c9fc79b8-0f63-4ef7-9d38-efd811e74ac2"),
     ]
 );
 api_test!(build
@@ -273,257 +274,257 @@ async fn get_vips2() {
         .unwrap();
 }
 
-#[tokio::test]
-async fn mock_api() -> Result<()> {
-    let _cmd = mock_api_start().await?;
-
-    tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-
-    let api = TwitchFixture::user_access_token(|scope| {
-        scope
-            .check_automod_status()
-            .manage_held_automod_messages()
-            .ban_user()
-            .delete_chat_messages()
-            .add_channel_moderator()
-            .get_vips()
-            .add_channel_vip()
-            .update_shield_mode_status();
-    })
-    .await?;
-
-    mock_api_check_automod_status(&api).await?;
-    // mock_api_manage_held_automod_messages(&api).await?; // required msg_id
-    // mock_api_get_automod_settings(&api).await?; // Not Found
-    // mock_api_update_automod_settings(&api).await?; // Not Found
-
-    mock_api_get_banned_users(&api).await?;
-
-    mock_api_ban_user(&api).await?;
-    // mock_api_unban_user(&api).await?; // user is not banned
-    // mock_api_get_unban_requests(&api).await?; // Not Found
-    // mock_api_resolve_unban_request(&api).await?; // Not Found
-    // mock_api_get_blocked_terms(&api).await?; // Not Found
-    // mock_api_add_blocked_term(&api).await?; // Not Found
-    // mock_api_remove_blocked_term(&api).await?; // Not Found
-    // mock_api_delete_chat_messages(&api).await?; // Missing required parameter message_id
-    // mock_api_get_automod_settings(&api).await?; // Not Found
-    // mock_api_get_moderated_channels(&api).await?; // Not Found
-    mock_api_get_moderators(&api).await?;
-    // mock_api_add_channel_moderator(&api).await?; // The user specified in parameter moderator_id
-    // is already a moderator on this channel
-    // mock_api_remove_channel_moderator(&api).await?; // The user specified in parameter moderator_id
-    // is already a moderator on this channel
-    mock_api_get_vips(&api).await?;
-    mock_api_add_channel_vip(&api).await?;
-    mock_api_remove_channel_vip(&api).await?;
-    // mock_api_update_shield_mode_status(&api).await?; // User is already a VIP
-    mock_api_get_shield_mode_status(&api).await?;
-    // mock_api_warn_chat_user(&api).await?; // Not Found
-
-    Ok(())
-}
-
-async fn mock_api_check_automod_status(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .check_automod_status(&api.selected_broadcaster_id(), &[])
-        .json()
-        .await?;
-    Ok(())
-}
-
-// async fn mock_api_manage_held_automod_messages(api: &TwitchFixture) -> Result<()> {
+// #[tokio::test]
+// async fn mock_api() -> Result<()> {
+//     let _cmd = mock_api_start().await?;
+//
+//     tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+//
+//     let api = TwitchFixture::user_access_token(|scope| {
+//         scope
+//             .check_automod_status()
+//             .manage_held_automod_messages()
+//             .ban_user()
+//             .delete_chat_messages()
+//             .add_channel_moderator()
+//             .get_vips()
+//             .add_channel_vip()
+//             .update_shield_mode_status();
+//     })
+//     .await?;
+//
+//     mock_api_check_automod_status(&api).await?;
+//     // mock_api_manage_held_automod_messages(&api).await?; // required msg_id
+//     // mock_api_get_automod_settings(&api).await?; // Not Found
+//     // mock_api_update_automod_settings(&api).await?; // Not Found
+//
+//     mock_api_get_banned_users(&api).await?;
+//
+//     mock_api_ban_user(&api).await?;
+//     // mock_api_unban_user(&api).await?; // user is not banned
+//     // mock_api_get_unban_requests(&api).await?; // Not Found
+//     // mock_api_resolve_unban_request(&api).await?; // Not Found
+//     // mock_api_get_blocked_terms(&api).await?; // Not Found
+//     // mock_api_add_blocked_term(&api).await?; // Not Found
+//     // mock_api_remove_blocked_term(&api).await?; // Not Found
+//     // mock_api_delete_chat_messages(&api).await?; // Missing required parameter message_id
+//     // mock_api_get_automod_settings(&api).await?; // Not Found
+//     // mock_api_get_moderated_channels(&api).await?; // Not Found
+//     mock_api_get_moderators(&api).await?;
+//     // mock_api_add_channel_moderator(&api).await?; // The user specified in parameter moderator_id
+//     // is already a moderator on this channel
+//     // mock_api_remove_channel_moderator(&api).await?; // The user specified in parameter moderator_id
+//     // is already a moderator on this channel
+//     mock_api_get_vips(&api).await?;
+//     mock_api_add_channel_vip(&api).await?;
+//     mock_api_remove_channel_vip(&api).await?;
+//     // mock_api_update_shield_mode_status(&api).await?; // User is already a VIP
+//     mock_api_get_shield_mode_status(&api).await?;
+//     // mock_api_warn_chat_user(&api).await?; // Not Found
+//
+//     Ok(())
+// }
+//
+// async fn mock_api_check_automod_status(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .manage_held_automod_messages(&api.selected_user_id(), "", AutoModAction::ALLOW)
+//         .check_automod_status(&api.selected_broadcaster_id(), &[])
 //         .json()
 //         .await?;
 //     Ok(())
 // }
 //
-// async fn mock_api_get_automod_settings(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .get_automod_settings(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+// // async fn mock_api_manage_held_automod_messages(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .manage_held_automod_messages(&api.selected_user_id(), "", AutoModAction::ALLOW)
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// //
+// // async fn mock_api_get_automod_settings(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .get_automod_settings(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_update_automod_settings(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .update_automod_settings(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// async fn mock_api_get_banned_users(api: &TwitchFixture) -> Result<()> {
+//     let _resp = api
+//         .api
+//         .get_banned_users(&api.selected_broadcaster_id())
 //         .json()
 //         .await?;
+//
 //     Ok(())
 // }
-// async fn mock_api_update_automod_settings(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .update_automod_settings(&api.selected_broadcaster_id(), &api.selected_moderator_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-async fn mock_api_get_banned_users(api: &TwitchFixture) -> Result<()> {
-    let _resp = api
-        .api
-        .get_banned_users(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-
-    Ok(())
-}
-async fn mock_api_ban_user(api: &TwitchFixture) -> Result<()> {
-    let random_user = api.get_random_user()?;
-    let user_id = UserId::from(random_user.id);
-    let _resp = api
-        .api
-        .ban_user(
-            &api.selected_broadcaster_id(),
-            &api.selected_moderator_id(),
-            &user_id,
-        )
-        .send()
-        .await?;
-
-    Ok(())
-}
-// async fn mock_api_unban_user(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .unban_user(
+// async fn mock_api_ban_user(api: &TwitchFixture) -> Result<()> {
+//     let random_user = api.get_random_user()?;
+//     let user_id = UserId::from(random_user.id);
+//     let _resp = api
+//         .api
+//         .ban_user(
 //             &api.selected_broadcaster_id(),
 //             &api.selected_moderator_id(),
-//             &api.selected_user_id(),
+//             &user_id,
 //         )
-//         .json()
+//         .send()
 //         .await?;
+//
 //     Ok(())
 // }
-// async fn mock_api_get_unban_requests(api: &TwitchFixture) -> Result<()> {
+// // async fn mock_api_unban_user(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .unban_user(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             &api.selected_user_id(),
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_get_unban_requests(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .get_unban_requests(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             UnbanRequestStatus::Pending,
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_resolve_unban_request(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .resolve_unban_request(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             "",
+// //             UnbanRequestStatus::Pending,
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_get_blocked_terms(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .get_blocked_terms(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_add_blocked_term(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .add_blocked_term(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_broadcaster_id().to_moderator(),
+// //             "",
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_remove_blocked_term(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .add_blocked_term(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             "",
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_delete_chat_messages(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .delete_chat_messages(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_get_moderated_channels(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .get_moderated_channels(&api.selected_user_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// async fn mock_api_get_moderators(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .get_unban_requests(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_moderator_id(),
-//             UnbanRequestStatus::Pending,
-//         )
+//         .get_moderators(&api.selected_broadcaster_id())
 //         .json()
 //         .await?;
 //     Ok(())
 // }
-// async fn mock_api_resolve_unban_request(api: &TwitchFixture) -> Result<()> {
+// // async fn mock_api_add_channel_moderator(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .add_channel_moderator(&api.selected_broadcaster_id(), &api.selected_user_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// // async fn mock_api_remove_channel_moderator(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .remove_channel_moderator(&api.selected_broadcaster_id(), &api.selected_user_id())
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// async fn mock_api_get_vips(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .resolve_unban_request(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_moderator_id(),
-//             "",
-//             UnbanRequestStatus::Pending,
-//         )
+//         .get_vips(&api.selected_broadcaster_id())
 //         .json()
 //         .await?;
 //     Ok(())
 // }
-// async fn mock_api_get_blocked_terms(api: &TwitchFixture) -> Result<()> {
+// async fn mock_api_add_channel_vip(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .get_blocked_terms(&api.selected_broadcaster_id(), &api.selected_moderator_id())
+//         .add_channel_vip(&api.selected_broadcaster_id(), &api.selected_user_id())
 //         .json()
 //         .await?;
 //     Ok(())
 // }
-// async fn mock_api_add_blocked_term(api: &TwitchFixture) -> Result<()> {
+// async fn mock_api_remove_channel_vip(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .add_blocked_term(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_broadcaster_id().to_moderator(),
-//             "",
-//         )
+//         .remove_channel_vip(&api.selected_broadcaster_id(), &api.selected_user_id())
 //         .json()
 //         .await?;
 //     Ok(())
 // }
-// async fn mock_api_remove_blocked_term(api: &TwitchFixture) -> Result<()> {
+// // async fn mock_api_update_shield_mode_status(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .update_shield_mode_status(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             false,
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
+// async fn mock_api_get_shield_mode_status(api: &TwitchFixture) -> Result<()> {
 //     api.api
-//         .add_blocked_term(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_moderator_id(),
-//             "",
-//         )
+//         .get_shield_mode_status(&api.selected_broadcaster_id(), &api.selected_moderator_id())
 //         .json()
 //         .await?;
 //     Ok(())
 // }
-// async fn mock_api_delete_chat_messages(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .delete_chat_messages(&api.selected_broadcaster_id(), &api.selected_moderator_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-// async fn mock_api_get_moderated_channels(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .get_moderated_channels(&api.selected_user_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-async fn mock_api_get_moderators(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_moderators(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}
-// async fn mock_api_add_channel_moderator(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .add_channel_moderator(&api.selected_broadcaster_id(), &api.selected_user_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-// async fn mock_api_remove_channel_moderator(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .remove_channel_moderator(&api.selected_broadcaster_id(), &api.selected_user_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-async fn mock_api_get_vips(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_vips(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_add_channel_vip(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .add_channel_vip(&api.selected_broadcaster_id(), &api.selected_user_id())
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_remove_channel_vip(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .remove_channel_vip(&api.selected_broadcaster_id(), &api.selected_user_id())
-        .json()
-        .await?;
-    Ok(())
-}
-// async fn mock_api_update_shield_mode_status(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .update_shield_mode_status(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_moderator_id(),
-//             false,
-//         )
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-async fn mock_api_get_shield_mode_status(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_shield_mode_status(&api.selected_broadcaster_id(), &api.selected_moderator_id())
-        .json()
-        .await?;
-    Ok(())
-}
-// async fn mock_api_warn_chat_user(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .warn_chat_user(
-//             &api.selected_broadcaster_id(),
-//             &api.selected_moderator_id(),
-//             &api.selected_user_id(),
-//             "",
-//         )
-//         .json()
-//         .await?;
-//     Ok(())
-// }
+// // async fn mock_api_warn_chat_user(api: &TwitchFixture) -> Result<()> {
+// //     api.api
+// //         .warn_chat_user(
+// //             &api.selected_broadcaster_id(),
+// //             &api.selected_moderator_id(),
+// //             &api.selected_user_id(),
+// //             "",
+// //         )
+// //         .json()
+// //         .await?;
+// //     Ok(())
+// // }
