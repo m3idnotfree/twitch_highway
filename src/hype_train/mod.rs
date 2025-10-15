@@ -16,7 +16,19 @@ use crate::types::{
 use crate::{request::TwitchAPIRequest, TwitchAPI};
 
 pub trait HypeTrainAPI {
+    #[deprecated(
+        since = "0.2.1",
+        note = "Use get_hype_train_status instead. Removed by Twitch on Dec 4, 2025"
+    )]
     /// Gets information about the broadcaster’s current or most recent Hype Train event
+    ///
+    /// # **DEPRECATED**
+    ///
+    /// Scheduled for removal on **December 4, 2025**.
+    ///
+    /// Use [`get_hype_train_status`] instead.
+    ///
+    /// See [announcement](https://discuss.dev.twitch.com/t/legacy-get-hype-train-events-api-and-eventsub-hype-train-v1-subscription-types-deprecation-and-withdrawal-timeline/64299)
     ///
     /// # Arguments
     ///
