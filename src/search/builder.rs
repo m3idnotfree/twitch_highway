@@ -3,6 +3,8 @@ use crate::{
     types::constants::{AFTER, CATEGORIES, CHANNELS, FIRST, QUERY, SEARCH},
 };
 
+const LIVE_ONLY: &str = "live_only";
+
 define_request_builder! {
    #[derive(Debug)]
    SearchCategoriesBuilder<'a> {
@@ -20,9 +22,9 @@ define_request_builder! {
 define_request_builder! {
    #[derive(Debug)]
    SearchChannelsBuilder<'a> {
-       req: {query: &'a str [key =QUERY]},
+       req: {query: &'a str [key = QUERY]},
        opts: {
-           live_only: bool [convert = to_string],
+           live_only: bool [key = LIVE_ONLY, convert = to_string],
            first: u8 [key = FIRST, convert = to_string],
            after: &'a str [key = AFTER],
         }
