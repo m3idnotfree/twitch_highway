@@ -160,6 +160,39 @@ pub enum AutoModAction {
     DENY,
 }
 
+#[derive(Serialize)]
+pub(crate) struct CheckAutomodStatusBody<'a> {
+    pub data: &'a [CheckAutoMod],
+}
+
+#[derive(Serialize)]
+pub(crate) struct ManageHeldAutomodMessagesBody<'a> {
+    pub user_id: &'a UserId,
+    pub msg_id: &'a str,
+    pub action: AutoModAction,
+}
+
+#[derive(Serialize)]
+pub(crate) struct AddBlockedTermBody<'a> {
+    pub text: &'a str,
+}
+
+#[derive(Serialize)]
+pub(crate) struct UpdateShieldModeStatusBody {
+    pub is_active: bool,
+}
+
+#[derive(Serialize)]
+pub(crate) struct WarnChatUserBodyWrapper<'a> {
+    pub data: WarnChatUserBody<'a>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct WarnChatUserBody<'a> {
+    pub user_id: &'a UserId,
+    pub reason: &'a str,
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;

@@ -18,6 +18,11 @@ pub use types::{
     ModeratedChannel, Moderator, ShieldModeStatus, UnbanRequest, UnbanRequestStatus, WarnChatUser,
 };
 
+use types::{
+    AddBlockedTermBody, CheckAutomodStatusBody, ManageHeldAutomodMessagesBody,
+    UpdateShieldModeStatusBody, WarnChatUserBody, WarnChatUserBodyWrapper,
+};
+
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
@@ -1106,7 +1111,7 @@ impl ModerationAPI for TwitchAPI {
             method: POST,
             path: [MODERATION, ENFORCEMENTS, STATUS],
             headers: [json],
-            body: {Some(serde_json::json!({"data":data}).to_string())}
+            body: {serde_json::to_string(&CheckAutomodStatusBody {data}).ok()}
     );
     simple_endpoint!(
         fn manage_held_automod_messages(
@@ -1118,7 +1123,7 @@ impl ModerationAPI for TwitchAPI {
             method: POST,
             path: [MODERATION,AUTOMOD, MESSAGE],
             headers: [json],
-            body:{Some(serde_json::json!({"user_id":user_id,"msg_id":msg_id,"action":action}).to_string())}
+            body:{serde_json::to_string(&ManageHeldAutomodMessagesBody {user_id, msg_id, action}).ok()}
     );
     simple_endpoint!(
         fn get_automod_settings(
@@ -1200,7 +1205,7 @@ impl ModerationAPI for TwitchAPI {
             method: POST,
             path: [MODERATION, BLOCKED_TERMS],
             headers: [json],
-            body: {Some(serde_json::json!({"text":text}).to_string())}
+            body: {serde_json::to_string(&AddBlockedTermBody {text}).ok()}
     );
     simple_endpoint!(
         fn remove_blocked_term(
@@ -1277,7 +1282,7 @@ impl ModerationAPI for TwitchAPI {
             method: PUT,
             path: [MODERATION, SHIELD_MODE],
             headers: [json],
-            body: {Some(serde_json::json!({"is_active":is_active}).to_string())}
+            body: {serde_json::to_string(&UpdateShieldModeStatusBody {is_active}).ok()}
     );
     simple_endpoint!(
         fn get_shield_mode_status(
@@ -1293,14 +1298,15 @@ impl ModerationAPI for TwitchAPI {
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
             user_id: &UserId [skip],
-            reason: &str[skip],
+            reason: &str [skip],
         ) -> WarnChatUsersResponse;
             endpoint: WarnChatUser,
             method: POST,
             path: [MODERATION, WARNINGS],
             headers: [json],
-            body: {
-                Some(serde_json::json!({"data":{"user_id":user_id,"reason":reason}}).to_string())
+            body: {serde_json::to_string(&WarnChatUserBodyWrapper {
+                data: WarnChatUserBody {user_id, reason}
             }
+            ).ok()}
     );
 }

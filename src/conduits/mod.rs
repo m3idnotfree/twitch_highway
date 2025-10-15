@@ -11,6 +11,8 @@ pub use response::{
 };
 pub use types::{Conduit, ConduitShard, Transport};
 
+use types::{CreateConduitsBody, UpdateConduitsBody};
+
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
@@ -275,14 +277,14 @@ impl ConduitsAPI for TwitchAPI {
             .unwrap()
             .extend(&[EVENTSUB, CONDUITS]);
 
-        let body = serde_json::json!({"shard_count":shard_count}).to_string();
+        let body = serde_json::to_string(&CreateConduitsBody { shard_count }).ok();
 
         TwitchAPIRequest::new(
             crate::request::EndpointType::CreateConduits,
             url,
             reqwest::Method::POST,
             self.header_json(),
-            Some(body),
+            body,
             self.client.clone(),
         )
     }
@@ -297,14 +299,18 @@ impl ConduitsAPI for TwitchAPI {
             .unwrap()
             .extend(&[EVENTSUB, CONDUITS]);
 
-        let body = serde_json::json!({"id":conduit_id,"shard_count":shard_count}).to_string();
+        let body = serde_json::to_string(&UpdateConduitsBody {
+            conduit_id,
+            shard_count,
+        })
+        .ok();
 
         TwitchAPIRequest::new(
             crate::request::EndpointType::UpdateConduits,
             url,
             reqwest::Method::PATCH,
             self.header_json(),
-            Some(body),
+            body,
             self.client.clone(),
         )
     }

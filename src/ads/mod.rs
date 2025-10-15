@@ -4,6 +4,8 @@ mod types;
 pub use response::{AdScheduleResponse, SnoozeNextAdResponse, StartCommercialResponse};
 pub use types::{AdSchedule, SnoozeNextAd, StartCommercial};
 
+use types::StartCommercialBody;
+
 use crate::{
     request::TwitchAPIRequest,
     types::{
@@ -153,7 +155,7 @@ impl AdsAPI for TwitchAPI {
         method: POST,
         path: [CHANNELS, COMMERCIAL],
         headers: [json],
-        body: {Some(serde_json::json!({BROADCASTER_ID:broadcaster_id,"length":length}).to_string())}
+        body: {serde_json::to_string(&StartCommercialBody{broadcaster_id, length}).ok()}
     );
     simple_endpoint!(
     fn get_ad_schedule(
@@ -161,7 +163,7 @@ impl AdsAPI for TwitchAPI {
     ) -> AdScheduleResponse;
         endpoint: GetAdSchedule,
         method: GET,
-        path: [CHANNELS, "ads"],
+        path: [CHANNELS, ADS],
     );
     simple_endpoint!(
     fn snooze_next_ad(

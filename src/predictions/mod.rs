@@ -6,6 +6,8 @@ pub use builder::{EndPredictionBuilder, GetPredictionsBuilder};
 pub use response::PredictionsResponse;
 pub use types::{Prediction, PredictionStatus};
 
+use types::CreatePredictionBody;
+
 use crate::{
     request::TwitchAPIRequest,
     types::{constants::PREDICTIONS, BroadcasterId, PredictionId, Title},
@@ -176,14 +178,12 @@ impl PredictionsAPI for TwitchAPI {
         path: [PREDICTIONS],
         headers: [json],
         body: {
-            Some(
-                serde_json::json!({
-                    "broadcaster_id":broadcaster_id,
-                    "title":title,
-                    "outcomes":outcomes,
-                    "prediction_window":prediction_window
-                }).to_string()
-            )
+            serde_json::to_string(&CreatePredictionBody {
+                broadcaster_id,
+                title,
+                outcomes,
+                prediction_window,
+            }).ok()
         }
     );
     fn end_prediction<'a>(

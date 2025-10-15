@@ -55,3 +55,10 @@ pub struct StreamVideos {
     pub video_id: String,
     pub markers: Vec<Marker>,
 }
+
+#[derive(Serialize)]
+pub(crate) struct CreateStrseamMarkerBody<'a> {
+    pub user_id: &'a UserId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<&'a str>,
+}

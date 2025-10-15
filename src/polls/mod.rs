@@ -6,12 +6,11 @@ pub use builder::{CreatePollBuilder, GetPollsBuilder};
 pub use response::PollsResponse;
 pub use types::{EndPollStatus, Poll, PollStatus};
 
+use types::EndPollBody;
+
 use crate::{
     request::TwitchAPIRequest,
-    types::{
-        constants::{BROADCASTER_ID, ID, POLLS, STATUS},
-        BroadcasterId, PollId, Title,
-    },
+    types::{constants::POLLS, BroadcasterId, PollId, Title},
     TwitchAPI,
 };
 
@@ -179,19 +178,19 @@ impl PollsAPI for TwitchAPI {
 
         url.path_segments_mut().unwrap().extend(&[POLLS]);
 
-        let body = serde_json::json!({
-            BROADCASTER_ID:broadcaster_id,
-            ID:id,
-            STATUS:status
+        let body = serde_json::to_string(&EndPollBody {
+            broadcaster_id,
+            id,
+            status,
         })
-        .to_string();
+        .ok();
 
         TwitchAPIRequest::new(
             crate::request::EndpointType::EndPoll,
             url,
             reqwest::Method::PATCH,
             self.header_json(),
-            Some(body),
+            body,
             self.client.clone(),
         )
     }

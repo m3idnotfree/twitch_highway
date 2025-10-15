@@ -1,3 +1,5 @@
+mod types;
+
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
@@ -6,6 +8,8 @@ use crate::{
     },
     TwitchAPI,
 };
+
+use types::WhisperBody;
 
 pub trait WhisperAPI {
     /// Sends a whisper message to the specified user
@@ -67,7 +71,7 @@ impl WhisperAPI for TwitchAPI {
             path: [WHISPERS],
             headers: [json],
             body: {
-                Some(serde_json::json!({"message":message}).to_string())
+                serde_json::to_string(&WhisperBody {message}).ok()
             }
     );
 }

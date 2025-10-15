@@ -10,10 +10,12 @@ pub use response::{
 };
 pub use types::{Marker, Stream, StreamKey, StreamMarker, StreamVideos};
 
+use types::CreateStrseamMarkerBody;
+
 use crate::{
     request::TwitchAPIRequest,
     types::{
-        constants::{BROADCASTER_ID, DESCRIPTION, KEY, MARKERS, STREAMS, USER_ID},
+        constants::{BROADCASTER_ID, KEY, MARKERS, STREAMS},
         BroadcasterId, UserId, VideoId,
     },
     TwitchAPI,
@@ -296,18 +298,18 @@ impl StreamsAPI for TwitchAPI {
 
         url.path_segments_mut().unwrap().extend(&[STREAMS, MARKERS]);
 
-        let body = if let Some(description) = description {
-            serde_json::json!({USER_ID:user_id,DESCRIPTION:description}).to_string()
-        } else {
-            serde_json::json!({USER_ID:user_id}).to_string()
-        };
+        let body = serde_json::to_string(&CreateStrseamMarkerBody {
+            user_id,
+            description,
+        })
+        .ok();
 
         TwitchAPIRequest::new(
             crate::request::EndpointType::CreateStreamMarker,
             url,
             reqwest::Method::POST,
             self.header_json(),
-            Some(body),
+            body,
             self.client.clone(),
         )
     }

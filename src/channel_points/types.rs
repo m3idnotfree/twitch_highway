@@ -102,6 +102,11 @@ impl AsRef<str> for Sort {
     }
 }
 
+#[derive(Serialize)]
+pub(crate) struct UpdateRedemptionStatusBody {
+    pub status: RedemptionStatus,
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;

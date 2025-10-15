@@ -17,8 +17,9 @@ pub use types::{
     VideoOverlay, Views,
 };
 
+use types::{SendExtensionPubSubMessageBody, SetExtensionRequiredConfigurationBody};
+
 use crate::{
-    extensions::types::SendExtensionPubSubMessageBody,
     request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
@@ -612,16 +613,13 @@ impl ExtensionsAPI for TwitchAPI {
             method: PUT,
             path: [EXTENSIONS, REQUIRED_CONFIGURATION],
             headers: [json],
-            // body: {RequiredConfiguration::new(extension_id, extension_version, required_configuration).into_json()}
             body: {
-            Some(
-            serde_json::json!({
-                EXTENSION_ID:extension_id,
-                EXTENSION_VERSION:extension_version,
-                REQUIRED_CONFIGURATION:required_configuration
-            }).to_string()
-        )
-    }
+                serde_json::to_string(&SetExtensionRequiredConfigurationBody {
+                    extension_id,
+                    extension_version,
+                    required_configuration
+                }).ok()
+        }
     );
     simple_endpoint!(
         fn send_extension_pubsub_message(

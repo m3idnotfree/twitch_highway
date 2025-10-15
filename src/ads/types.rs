@@ -2,6 +2,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_with::{serde_as, DisplayFromStr};
 
+use crate::types::BroadcasterId;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StartCommercial {
     pub length: u64,
@@ -30,4 +32,10 @@ pub struct SnoozeNextAd {
     pub snooze_count: u64,
     pub snooze_refresh_at: DateTime<FixedOffset>,
     pub next_ad_at: DateTime<FixedOffset>,
+}
+
+#[derive(Serialize)]
+pub(crate) struct StartCommercialBody<'a> {
+    pub broadcaster_id: &'a BroadcasterId,
+    pub length: u64,
 }

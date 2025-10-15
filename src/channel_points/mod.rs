@@ -11,12 +11,12 @@ pub use types::{
     CustomReward, CustomRewardsRedemption, MaxPerStreamSetting, RedemptionStatus, Sort,
 };
 
+use types::UpdateRedemptionStatusBody;
+
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
-        constants::{
-            BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID, STATUS,
-        },
+        constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
         BroadcasterId, RedemptionId, RewardId,
     },
     TwitchAPI,
@@ -354,6 +354,8 @@ impl ChannelPointsAPI for TwitchAPI {
             method: PATCH,
             path: [CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS],
             headers: [json],
-            body: {Some(serde_json::json!({STATUS: status.as_str()}).to_string())}
+            body: {
+                serde_json::to_string(&UpdateRedemptionStatusBody {status}).ok()
+            }
     );
 }

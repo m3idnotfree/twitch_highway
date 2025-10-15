@@ -4,7 +4,7 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use crate::types::{BroadcasterId, Cost, Id};
+use crate::types::{BroadcasterId, Cost, ExtensionId, Id};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -172,6 +172,13 @@ impl BitsProductExtension {
     pub fn into_json(&self) -> Option<String> {
         Some(serde_json::to_string(self).unwrap())
     }
+}
+
+#[derive(Serialize)]
+pub(crate) struct SetExtensionRequiredConfigurationBody<'a> {
+    pub extension_id: &'a ExtensionId,
+    pub extension_version: &'a str,
+    pub required_configuration: &'a str,
 }
 
 #[derive(Serialize)]

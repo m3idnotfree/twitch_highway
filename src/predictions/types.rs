@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Outcome, PredictionId};
+use crate::types::{BroadcasterId, Outcome, PredictionId, Title};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Prediction {
@@ -42,6 +42,14 @@ impl AsRef<str> for PredictionStatus {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
+}
+
+#[derive(Serialize)]
+pub(crate) struct CreatePredictionBody<'a> {
+    pub broadcaster_id: &'a BroadcasterId,
+    pub title: &'a str,
+    pub outcomes: &'a [Title],
+    pub prediction_window: u64,
 }
 
 #[cfg(test)]

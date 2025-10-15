@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Choice, Id};
+use crate::types::{BroadcasterId, Choice, Id, PollId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Poll {
@@ -35,6 +35,13 @@ pub enum PollStatus {
     ARCHIVED,
     MODERATED,
     INVALID,
+}
+
+#[derive(Serialize)]
+pub(crate) struct EndPollBody<'a> {
+    pub broadcaster_id: &'a BroadcasterId,
+    pub id: &'a PollId,
+    pub status: EndPollStatus,
 }
 
 #[cfg(test)]

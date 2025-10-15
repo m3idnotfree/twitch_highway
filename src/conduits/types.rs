@@ -30,3 +30,15 @@ pub enum Transport {
         disconnected_at: Option<DateTime<FixedOffset>>,
     },
 }
+
+#[derive(Serialize)]
+pub(crate) struct CreateConduitsBody {
+    pub shard_count: u64,
+}
+
+#[derive(Serialize)]
+pub(crate) struct UpdateConduitsBody<'a> {
+    #[serde(rename = "id")]
+    pub conduit_id: &'a ConduitId,
+    pub shard_count: u64,
+}
