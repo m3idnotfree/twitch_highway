@@ -1,11 +1,11 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Choice, Id, PollId};
+use crate::types::{BroadcasterId, Choice, PollId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Poll {
-    pub id: Id,
+    pub id: PollId,
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_name: String,
     pub broadcaster_login: String,
