@@ -152,7 +152,7 @@ pub trait ScheduleAPI {
     ///
     /// # Returns
     ///
-    /// Returns a [`CreateChanelStreamScheduleSegmentBuilder`]
+    /// Returns a [`CreateChannelStreamScheduleSegmentBuilder`]
     ///
     /// # Example
     ///
