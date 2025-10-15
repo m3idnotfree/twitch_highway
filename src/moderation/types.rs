@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     serde_helpers::deserialize_optional_datetime,
-    types::{BroadcasterId, Id, ModeratorId, UserId},
+    types::{BlockedTermId, BroadcasterId, ModeratorId, UnbanRequestId, UserId},
 };
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -15,7 +15,7 @@ pub struct AutoModStatus {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AutoModSetting {
     pub broadcaster_id: BroadcasterId,
-    pub moderator_id: String,
+    pub moderator_id: ModeratorId,
     pub overall_level: Option<u64>,
     pub disability: u64,
     pub aggression: u64,
@@ -80,7 +80,7 @@ impl AsRef<str> for UnbanRequestStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UnbanRequest {
-    pub id: Id,
+    pub id: UnbanRequestId,
     pub broadcaster_name: String,
     pub broadcaster_login: String,
     pub broadcaster_id: BroadcasterId,
@@ -101,7 +101,7 @@ pub struct UnbanRequest {
 pub struct BlockedTerm {
     pub broadcaster_id: BroadcasterId,
     pub moderator_id: ModeratorId,
-    pub id: Id,
+    pub id: BlockedTermId,
     pub text: String,
     pub created_at: String,
     pub updated_at: String,

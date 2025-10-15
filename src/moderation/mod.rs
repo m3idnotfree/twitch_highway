@@ -31,7 +31,7 @@ use crate::{
             MODERATION, MODERATORS, MODERATOR_ID, SETTINGS, SHIELD_MODE, STATUS, USER_ID, VIPS,
             WARNINGS,
         },
-        BroadcasterId, Id, ModeratorId, UserId,
+        BlockedTermId, BroadcasterId, ModeratorId, UserId,
     },
     TwitchAPI,
 };
@@ -577,7 +577,7 @@ pub trait ModerationAPI {
     /// # use twitch_highway::TwitchAPI;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId, Id},
+    ///     types::{BroadcasterId, BlockedTermId, ModeratorId},
     /// };
     ///
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
@@ -585,7 +585,7 @@ pub trait ModerationAPI {
     ///     .remove_blocked_term(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
-    ///         &Id::from("5678"),
+    ///         &BlockedTermId::from("5678"),
     ///     )
     ///     .json()
     ///     .await?;
@@ -605,7 +605,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-        id: &Id,
+        id: &BlockedTermId,
     ) -> TwitchAPIRequest<NoContent>;
 
     /// Removes a single chat message or all chat messages from the broadcaster’s chat room
@@ -1211,7 +1211,7 @@ impl ModerationAPI for TwitchAPI {
         fn remove_blocked_term(
             broadcaster_id: &BroadcasterId,
             moderator_id: &ModeratorId,
-            id: &Id,
+            id: &BlockedTermId,
         ) -> NoContent;
             endpoint: RemoveBlockedTerm,
             method: DELETE,
