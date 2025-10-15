@@ -2,7 +2,7 @@ use crate::{
     games::GamesResponse,
     types::{
         constants::{AFTER, BEFORE, FIRST, GAMES, ID, IGDB_ID, NAME, TOP},
-        Id,
+        GameId,
     },
 };
 
@@ -21,7 +21,7 @@ define_request_builder! {
 define_request_builder! {
     #[derive(Debug)]
     GetGamesBuilder<'a> {
-        ids: &'a [Id] [key = ID, convert = extend],
+        ids: &'a [GameId] [key = ID, convert = extend],
         names: &'a [&'a str] [key = NAME, convert = extend],
         igdb_ids: &'a [&'a str] [key = IGDB_ID, convert = extend],
     } -> GamesResponse;

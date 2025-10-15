@@ -40,6 +40,7 @@ pub use new_types::ExtensionId;
     feature = "clips",
     feature = "entitlements",
     feature = "extensions",
+    feature = "games",
     feature = "streams",
     feature = "videos",
 ))]
