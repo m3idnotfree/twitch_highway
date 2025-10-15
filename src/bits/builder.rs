@@ -19,7 +19,7 @@ define_request_builder! {
         /// min 1, max 100, default 10
         count: u8 [key = COUNT, convert = to_string],
         period: Period [key = PERIOD, convert = as_ref],
-        started_at: &'a DateTime<Utc>[key = STARTED_AT, convert = rfc3339_opt],
+        started_at: &'a DateTime<Utc> [key = STARTED_AT, convert = rfc3339_opt],
         user_id: &'a UserId [key = USER_ID]
     } -> BitsLeaderboardResponse;
         endpoint_type: GetBitsLeaderboard,

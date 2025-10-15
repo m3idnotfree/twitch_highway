@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Cost, Id, UserId};
+use crate::types::{BroadcasterId, Cost, TransactionId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BitsLeaderboard {
@@ -14,7 +14,7 @@ pub struct BitsLeaderboard {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionTransaction {
-    pub id: Id,
+    pub id: TransactionId,
     pub timestamp: String,
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
