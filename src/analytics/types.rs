@@ -1,12 +1,13 @@
-#![allow(non_snake_case)]
 use serde::{Deserialize, Serialize};
+use url::Url;
 
 use crate::types::{DateRange, ExtensionId, GameId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ExtensionAnalytic {
     pub extension_id: ExtensionId,
-    pub URL: String,
+    #[serde(rename = "URL")]
+    pub url: Url,
     #[serde(rename = "type")]
     pub kind: String,
     pub date_range: DateRange,
@@ -15,7 +16,8 @@ pub struct ExtensionAnalytic {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameAnalytic {
     pub game_id: GameId,
-    pub URL: String,
+    #[serde(rename = "URL")]
+    pub url: Url,
     #[serde(rename = "type")]
     pub kind: String,
     pub date_range: DateRange,
@@ -23,7 +25,7 @@ pub struct GameAnalytic {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize)]
 pub enum AnalyticsType {
-    #[serde(rename(serialize = "overview_v2"))]
+    #[serde(rename = "overview_v2")]
     OverviewV2,
 }
 

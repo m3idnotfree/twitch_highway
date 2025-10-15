@@ -152,6 +152,9 @@ pub(crate) const SUBSCRIPTIONS: &str = "subscriptions";
 ))]
 pub(crate) const TYPE: &str = "type";
 
+#[cfg(feature = "analytics")]
+pub(crate) const ANALYTICS: &str = "analytics";
+
 #[cfg(any(feature = "bits", feature = "extensions"))]
 pub(crate) const BITS: &str = "bits";
 
