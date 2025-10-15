@@ -4,21 +4,20 @@
 mod common;
 
 use twitch_highway::{
-    eventsub::{Condition, CreateEventSubRequest, EventSubAPI, SubscriptionType, Transport},
+    eventsub::{EventSubAPI, SubscriptionType},
     types::{ConduitId, SessionId, SubscriptionId, UserId},
 };
 use url::Url;
 
-api_test!(
-    create_eventsub,
-    [CreateEventSubRequest::new(
-        SubscriptionType::UserUpdate,
-        Condition::new().user_id(UserId::from("1234")),
-        Transport::webhook(
+api_test!(build
+    create_eventsub |api| {
+        api.webhook_subscription(
+            SubscriptionType::UserUpdate,
             Url::parse("https://this-is-a-callback.com").unwrap(),
-            "s3cre7".to_string()
+            "s3cre7",
         )
-    )]
+        .user_id(UserId::from("1234"))
+    }
 );
 api_test!(
     delete_eventsub,
@@ -26,56 +25,146 @@ api_test!(
         "26b1c993-bfcf-44d9-b876-379dacafe75a"
     )]
 );
-api_test!(get_eventsub, [None, None]);
-
-api_test!(extra
-    create_eventsub,
-    create_eventsub2,
-    [CreateEventSubRequest::new(
-        SubscriptionType::UserUpdate,
-        Condition::new().user_id(UserId::from("1234")),
-        Transport::websocket(
-            SessionId::from("AQoQexAWVYKSTIu4ec_2VAxyuhAB")
-        )
-    )]
+api_test!(build
+    get_eventsub |api| {
+        api.get_eventsub()
+    }
 );
-api_test!(extra
+
+api_test!(build_extra
     create_eventsub,
-    create_eventsub3,
-    [CreateEventSubRequest::new(
-        SubscriptionType::UserUpdate,
-        Condition::new().user_id(UserId::from("1234")),
-        Transport::conduit(
-            ConduitId::from("bfcfc993-26b1-b876-44d9-afe75a379dac")
+    create_eventsub2 |api| {
+        api.websocket_subscription(
+            SubscriptionType::UserUpdate,
+            SessionId::from("AQoQexAWVYKSTIu4ec_2VAxyuhAB"),
         )
-    )]
+        .user_id(UserId::from("1234"))
+    }
+);
+api_test!(build_extra
+    create_eventsub,
+    create_eventsub3 |api| {
+        api.conduit_subscription(
+            SubscriptionType::UserUpdate,
+            ConduitId::from("bfcfc993-26b1-b876-44d9-afe75a379dac"),
+        )
+        .user_id(UserId::from("1234"))
+    }
 );
 
 #[cfg(test)]
-#[cfg(feature = "webhook")]
+#[cfg(all(feature = "eventsub", feature = "webhook"))]
 mod webhook {
-    use std::sync::Arc;
-
-    use axum::{
-        self,
-        body::Body,
-        body::Bytes,
-        extract::State,
-        http::{header::HeaderMap, StatusCode},
-        response::Response,
-        routing::post,
-        Router,
+    use std::{
+        sync::{
+            atomic::{AtomicUsize, Ordering},
+            Arc,
+        },
+        time::Duration,
     };
+
     use tokio::{
         net::TcpListener,
         sync::{oneshot, Mutex},
+        time::sleep,
     };
-    use twitch_highway::eventsub::webhook::{
-        generate_secret, get_message_type, verify_event_message, Challenge, MessageType,
-        Notification, Revoke, VerificationError,
-    };
+    use twitch_highway::eventsub::webhook::generate_secret;
 
-    use crate::common::trigger_webhook_event;
+    use crate::common::{axum_server, trigger_webhook_event};
+
+    #[tokio::test]
+    async fn webhook_trigger() {
+        let secret = generate_secret();
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+
+        let event_count = Arc::new(AtomicUsize::new(0));
+        let event_count_clone = event_count.clone();
+
+        let received_events = Arc::new(Mutex::new(Vec::new()));
+        let received_events_clone = received_events.clone();
+
+        let (shutdown_tx, shutdown_rx) = oneshot::channel();
+        let (verify_tx, verify_rx) = oneshot::channel();
+
+        tokio::spawn(axum_server(
+            secret.clone(),
+            listener,
+            shutdown_rx,
+            verify_tx,
+            event_count_clone,
+            received_events_clone,
+        ));
+
+        let forward_address = format!("http://{}/eventsub", addr);
+        let trigger =
+            trigger_webhook_event(&forward_address, &secret).with_output_file("trigger_output.log");
+
+        let events = vec![
+            "add-moderator",
+            "add-redemption",
+            "add-reward",
+            "ban",
+            "channel-gift",
+            "charity-donate",
+            "charity-start",
+            "charity-progress",
+            // "charity-end",
+            "cheer",
+            // "drop",
+            "gift",
+            "goal-begin",
+            "goal-end",
+            "goal-progress",
+            "grant",
+            "hype-train-begin",
+            "hype-train-end",
+            "hype-train-progress",
+            "poll-begin",
+            "poll-end",
+            "poll-progress",
+            "prediction-begin",
+            "prediction-end",
+            "prediction-lock",
+            "prediction-progress",
+            "raid",
+            "remove-moderator",
+            "remove-reward",
+            "revoke",
+            // "stream-change",
+            "streamdown",
+            "streamup",
+            "subscribe-message",
+            "subscribe",
+            "transaction",
+            "unban",
+            "unsubscribe",
+            "update-redemption",
+            "update-reward",
+            "user-update",
+        ];
+
+        let expected_count = events.len();
+
+        for event in &events {
+            trigger.event(*event).await.unwrap();
+        }
+
+        sleep(Duration::from_secs(2)).await;
+
+        let verify_result = verify_rx.await.unwrap();
+        assert!(verify_result, "Event signature verification failed");
+
+        let actual_count = event_count.load(Ordering::SeqCst);
+
+        assert_eq!(
+            actual_count, expected_count,
+            "Expected {} events, but received {}",
+            expected_count, actual_count
+        );
+
+        let _ = shutdown_tx.send(());
+    }
 
     #[tokio::test]
     async fn webhook_success_verify() {
@@ -83,21 +172,29 @@ mod webhook {
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
 
+        let event_count = Arc::new(AtomicUsize::new(0));
+        let event_count_clone = event_count.clone();
+
+        let received_events = Arc::new(Mutex::new(Vec::new()));
+        let received_events_clone = received_events.clone();
+
         let (shutdown_tx, shutdown_rx) = oneshot::channel();
-        let (result_tx, result_rx) = oneshot::channel();
+        let (verify_tx, verify_rx) = oneshot::channel();
 
         tokio::spawn(axum_server(
             secret.clone(),
             listener,
             shutdown_rx,
-            result_tx,
+            verify_tx,
+            event_count_clone,
+            received_events_clone,
         ));
 
         let forward_address = format!("http://{}/eventsub", addr);
         let trigger = trigger_webhook_event(&forward_address, &secret);
         trigger.event("subscribe").await.unwrap();
 
-        let verify_result = result_rx.await.unwrap();
+        let verify_result = verify_rx.await.unwrap();
         assert!(verify_result);
 
         let _ = shutdown_tx.send(());
@@ -109,148 +206,43 @@ mod webhook {
         let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
         let addr = listener.local_addr().unwrap();
 
+        let event_count = Arc::new(AtomicUsize::new(0));
+        let event_count_clone = event_count.clone();
+
+        let received_events = Arc::new(Mutex::new(Vec::new()));
+        let received_events_clone = received_events.clone();
+
         let (shutdown_tx, shutdown_rx) = oneshot::channel();
-        let (result_tx, result_rx) = oneshot::channel();
+        let (verify_tx, verify_rx) = oneshot::channel();
 
         tokio::spawn(axum_server(
             secret.clone(),
             listener,
             shutdown_rx,
-            result_tx,
+            verify_tx,
+            event_count_clone,
+            received_events_clone,
         ));
 
         let forward_address = format!("http://{}/eventsub", addr);
         let trigger = trigger_webhook_event(&forward_address, "must_failure");
         trigger.event("subscribe").await.unwrap();
 
-        let verify_result = result_rx.await.unwrap();
+        let verify_result = verify_rx.await.unwrap();
         assert!(!verify_result);
 
         let _ = shutdown_tx.send(());
     }
-
-    #[tokio::test]
-    async fn verify_message() {
-        let secret = generate_secret();
-        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
-        let addr = listener.local_addr().unwrap();
-
-        let (shutdown_tx, shutdown_rx) = oneshot::channel();
-        let (result_tx, result_rx) = oneshot::channel();
-
-        tokio::spawn(axum_server(
-            secret.clone(),
-            listener,
-            shutdown_rx,
-            result_tx,
-        ));
-
-        let forward_address = format!("http://{}/eventsub", addr);
-        let trigger = trigger_webhook_event(&forward_address, &secret).with_verify();
-        trigger.event("subscribe").await.unwrap();
-
-        let verify_result = result_rx.await.unwrap();
-        assert!(verify_result);
-
-        let _ = shutdown_tx.send(());
-    }
-
-    async fn axum_server(
-        secret: String,
-        listener: TcpListener,
-        shutdown_rx: oneshot::Receiver<()>,
-        result_tx: oneshot::Sender<bool>,
-    ) {
-        let state = AppState {
-            secret,
-            result_tx: Arc::new(Mutex::new(Some(result_tx))),
-        };
-
-        let app = Router::new()
-            .route("/eventsub", post(handler))
-            .with_state(state);
-
-        axum::serve(listener, app)
-            .with_graceful_shutdown(async {
-                shutdown_rx.await.ok();
-            })
-            .await
-            .unwrap()
-    }
-
-    async fn handler(
-        State(state): State<AppState>,
-        headers: HeaderMap,
-        body: Bytes,
-    ) -> Result<Response, VerificationError> {
-        let verify = verify_event_message(&headers, &body, &state.secret).is_ok();
-        let is_valid = verify;
-
-        if let Some(tx) = state.result_tx.lock().await.take() {
-            let _ = tx.send(is_valid);
-        }
-
-        if let Ok(message_type) = get_message_type(&headers) {
-            match message_type {
-                MessageType::Verification => {
-                    let challenge: Challenge = serde_json::from_slice(&body).unwrap();
-
-                    Ok(Response::builder()
-                        .status(StatusCode::OK)
-                        .header("Content-Type", "text/plain")
-                        .body(Body::from(challenge.challenge))
-                        .unwrap())
-                }
-                MessageType::Notification => {
-                    let _notification: Notification<serde_json::Value> =
-                        serde_json::from_slice(&body).unwrap();
-
-                    Ok(Response::builder()
-                        .status(StatusCode::NO_CONTENT)
-                        .body(Body::empty())
-                        .unwrap())
-                }
-                MessageType::Revocation => {
-                    let _revocation: Revoke = serde_json::from_slice(&body).unwrap();
-
-                    Ok(Response::builder()
-                        .status(StatusCode::NO_CONTENT)
-                        .body(Body::empty())
-                        .unwrap())
-                }
-            }
-        } else {
-            Ok(Response::builder()
-                .status(StatusCode::FORBIDDEN)
-                .body(Body::empty())
-                .unwrap())
-        }
-    }
-
-    #[derive(Clone)]
-    struct AppState {
-        secret: String,
-        result_tx: Arc<Mutex<Option<oneshot::Sender<bool>>>>,
-    }
 }
+
 #[cfg(test)]
 #[cfg(feature = "websocket")]
 mod websocket {
-    use std::{sync::Arc, time::Duration};
+    use std::time::Duration;
 
-    use tokio::sync::{oneshot, Mutex};
-    use twitch_highway::{
-        eventsub::websocket::{
-            self,
-            extract::{Session, State as WsState},
-            layer::TraceLayer,
-            routes::{channel_ban, welcome},
-            Router as WsRouter,
-        },
-        types::SessionId,
-    };
+    use tokio::{sync::oneshot, time::sleep};
 
-    use crate::common::{trigger_websocket_event, CliConfig};
+    use crate::common::{trigger_websocket_event, websocket, CliConfig};
 
     #[tokio::test]
     async fn websocket() {
@@ -260,41 +252,15 @@ mod websocket {
             .unwrap();
 
         let (session_tx, session_rx) = oneshot::channel();
-        let state = WsAppState {
-            session_tx: Arc::new(Mutex::new(Some(session_tx))),
-        };
-        let app = WsRouter::new()
-            .route(welcome(ws_handler))
-            .route(channel_ban(channel_ban_handler))
-            .layer(TraceLayer::new())
-            .with_state(state);
+        tokio::spawn(async move { websocket::run(session_tx).await.unwrap() });
 
-        tokio::spawn(async move {
-            websocket::client("ws://127.0.0.1:8080/ws", app)
-                .await
-                .unwrap()
-        });
-
-        tokio::time::sleep(Duration::from_secs(2)).await;
+        sleep(Duration::from_secs(2)).await;
 
         let session_id = session_rx.await.unwrap();
 
-        let trigger = trigger_websocket_event(&session_id);
+        let trigger =
+            trigger_websocket_event(&session_id).with_output_file("websocket_trigger.log");
 
         trigger.event("channel.ban").await.unwrap();
-
-        tokio::time::sleep(Duration::from_secs(2)).await;
     }
-
-    #[derive(Clone)]
-    struct WsAppState {
-        session_tx: Arc<Mutex<Option<oneshot::Sender<SessionId>>>>,
-    }
-    async fn ws_handler(Session(s): Session, WsState(state): WsState<WsAppState>) {
-        if let Some(tx) = state.session_tx.lock().await.take() {
-            let _ = tx.send(s.id);
-        }
-    }
-
-    async fn channel_ban_handler() {}
 }

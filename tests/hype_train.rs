@@ -5,18 +5,14 @@ mod common;
 
 use anyhow::Result;
 use common::{mock_api_start, TwitchFixture};
-use twitch_highway::{
-    hype_train::HypeTrainAPI,
-    types::{BroadcasterId, PaginationQuery},
-};
+use twitch_highway::{hype_train::HypeTrainAPI, types::BroadcasterId};
 use twitch_oauth_token::scope::HypeTrainScopes;
 
-api_test!(
-    get_hype_train_events,
-    [
-        &BroadcasterId::from("270954519"),
-        Some(PaginationQuery::new().first(1))
-    ]
+api_test!(build
+    get_hype_train_events |api| {
+        api.get_hype_train_events(&BroadcasterId::from("270954519"))
+            .first(1)
+    }
 );
 api_test!(get_hype_train_status, [&BroadcasterId::from("123")]);
 
@@ -37,7 +33,7 @@ async fn mock_api() -> Result<()> {
 
 async fn mock_api_get_hype_train_events(api: &TwitchFixture) -> Result<()> {
     api.api
-        .get_hype_train_events(&api.selected_broadcaster_id(), None)
+        .get_hype_train_events(&api.selected_broadcaster_id())
         .json()
         .await?;
 

@@ -11,9 +11,10 @@ use twitch_highway::{
 };
 use twitch_oauth_token::scope::SubscriptionScopes;
 
-api_test!(
-    get_broadcaster_subscriptions,
-    [&BroadcasterId::from("141981764"), None, None]
+api_test!(build
+    get_broadcaster_subscriptions |api| {
+        api.get_broadcaster_subscriptions(&BroadcasterId::from("141981764"))
+    }
 );
 api_test!(
     check_user_subscription,
@@ -40,7 +41,7 @@ async fn mock_api() -> Result<()> {
 
 async fn mock_api_get_broadcaster_subscriptions(api: &TwitchFixture) -> Result<()> {
     api.api
-        .get_broadcaster_subscriptions(&api.selected_broadcaster_id(), None, None)
+        .get_broadcaster_subscriptions(&api.selected_broadcaster_id())
         .json()
         .await?;
 

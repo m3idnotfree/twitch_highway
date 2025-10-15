@@ -11,8 +11,10 @@ use twitch_oauth_token::scope::CharityScopes;
 api_test!(get_charity_campaign, [&BroadcasterId::from("123456")]);
 
 api_test!(
-    get_charity_campaign_donations,
-    [&BroadcasterId::from("123456"), None]
+    build
+    get_charity_campaign_donations |api| {
+        api.get_charity_campaign_donations(&BroadcasterId::from("123456"))
+    }
 );
 
 #[tokio::test]
@@ -40,7 +42,7 @@ async fn mock_api_get_charity_campaign(api: &TwitchFixture) -> Result<()> {
 
 async fn mock_api_get_charity_campaign_donations(api: &TwitchFixture) -> Result<()> {
     api.api
-        .get_charity_campaign_donations(&api.selected_broadcaster_id(), None)
+        .get_charity_campaign_donations(&api.selected_broadcaster_id())
         .json()
         .await?;
 
