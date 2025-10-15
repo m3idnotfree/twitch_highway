@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Amount, BroadcasterId, Id, UserId};
+use crate::types::{Amount, BroadcasterId, CampaignId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaign {
-    pub id: Id,
+    pub id: CampaignId,
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_login: String,
     pub broadcaster_name: String,
@@ -18,8 +18,8 @@ pub struct CharityCampaign {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CharityCampaignDonation {
-    pub id: Id,
-    pub campaign_id: String,
+    pub id: String,
+    pub campaign_id: CampaignId,
     pub user_id: UserId,
     pub user_login: String,
     pub user_name: String,
@@ -28,11 +28,9 @@ pub struct CharityCampaignDonation {
 
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
-
     use crate::{
         charity::CharityCampaignDonation,
-        types::{Amount, Id, UserId},
+        types::{Amount, CampaignId, UserId},
     };
 
     #[test]
@@ -45,8 +43,8 @@ mod tests {
 
         for (user_id, user_login, user_name) in users {
             let donation = CharityCampaignDonation {
-                id: Id::from("donation123"),
-                campaign_id: "campaign123".to_string(),
+                id: "donation123".to_string(),
+                campaign_id: CampaignId::from("campaign123"),
                 user_id: UserId::from(user_id),
                 user_login: user_login.to_string(),
                 user_name: user_name.to_string(),

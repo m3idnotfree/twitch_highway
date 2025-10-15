@@ -26,7 +26,10 @@ pub struct CharityCampaignDonationResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::charity::{CharityCampaignDonationResponse, CharityCampaignResponse};
+    use crate::{
+        charity::{CharityCampaignDonationResponse, CharityCampaignResponse},
+        types::CampaignId,
+    };
 
     #[test]
     fn charity_campaign_response_deserialization() {
@@ -121,7 +124,7 @@ mod tests {
 
         let first_donation = &response.data[0];
         assert_eq!(first_donation.id.as_str(), "donation123");
-        assert_eq!(first_donation.campaign_id, "campaign123");
+        assert_eq!(first_donation.campaign_id, CampaignId::from("campaign123"));
         assert_eq!(first_donation.user_id.as_str(), "user123");
         assert_eq!(first_donation.user_login, "generoususer");
         assert_eq!(first_donation.user_name, "GenerousUser");
