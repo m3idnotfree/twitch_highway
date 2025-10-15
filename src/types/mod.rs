@@ -73,6 +73,9 @@ pub use new_types::RedemptionId;
 #[cfg(any(feature = "charity", feature = "eventsub"))]
 pub use new_types::CampaignId;
 
+#[cfg(any(feature = "chat", feature = "eventsub"))]
+pub use new_types::EmoteId;
+
 #[cfg(any(
     feature = "chat",
     feature = "eventsub",
@@ -104,7 +107,7 @@ pub use new_types::HypeTrainId;
 
 #[cfg(feature = "eventsub")]
 pub use new_types::{
-    EmoteId, ExtensionClientId, MessageId, OrganizationId, StreamId, SubscriptionId, WhisperId,
+    ExtensionClientId, MessageId, OrganizationId, StreamId, SubscriptionId, WhisperId,
 };
 
 #[cfg(any(feature = "eventsub", feature = "goals"))]

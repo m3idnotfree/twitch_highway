@@ -1,12 +1,12 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, Images, ModeratorId, UserId};
+use crate::types::{BroadcasterId, EmoteId, Images, ModeratorId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename = "emote")]
 pub struct Emote {
-    pub id: Id,
+    pub id: EmoteId,
     pub name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub images: Option<Images>,
@@ -143,7 +143,7 @@ pub enum Scale {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Version {
-    pub id: Id,
+    pub id: String,
     pub image_url_1x: String,
     pub image_url_2x: String,
     pub image_url_4x: String,
