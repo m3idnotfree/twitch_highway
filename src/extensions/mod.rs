@@ -1,5 +1,4 @@
 mod builder;
-mod jwt;
 mod response;
 mod types;
 

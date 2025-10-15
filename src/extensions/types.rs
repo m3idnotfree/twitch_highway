@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use url::Url;
 
-use crate::types::{BroadcasterId, Cost, ExtensionId, Id};
+use crate::types::{BroadcasterId, Cost, ExtensionId, GameId};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
@@ -35,7 +35,7 @@ pub struct ConfigurationSegment {
     pub segment: Segment,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub broadcaster_id: Option<BroadcasterId>,
-    pub content: Value,
+    pub content: String,
     pub version: String,
 }
 
@@ -44,7 +44,7 @@ pub struct LiveChannel {
     pub broadcaster_id: BroadcasterId,
     pub broadcaster_name: String,
     pub game_name: String,
-    pub game_id: String,
+    pub game_id: GameId,
     pub title: String,
 }
 
@@ -70,13 +70,13 @@ pub struct Extension {
     pub description: String,
     pub eula_tos_url: String,
     pub has_chat_support: bool,
-    pub icon_url: String,
+    pub icon_url: Url,
     pub icon_urls: HashMap<String, String>,
-    pub id: Id,
+    pub id: ExtensionId,
     pub name: String,
     pub privacy_policy_url: String,
     pub request_identity_link: bool,
-    pub screenshot_urls: Vec<String>,
+    pub screenshot_urls: Vec<Url>,
     pub state: State,
     pub subscriptions_support_level: SubscriptionsSupportLevel,
     pub summary: String,
@@ -126,25 +126,25 @@ pub struct Views {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Mobile {
-    pub viewer_url: String,
+    pub viewer_url: Url,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Panel {
-    pub viewer_url: String,
+    pub viewer_url: Url,
     pub height: u64,
     pub can_link_external_content: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct VideoOverlay {
-    pub viewer_url: String,
+    pub viewer_url: Url,
     pub can_link_external_content: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Component {
-    pub viewer_url: String,
+    pub viewer_url: Url,
     pub aspect_width: u64,
     pub aspect_height: u64,
     pub aspect_ratio_x: u64,

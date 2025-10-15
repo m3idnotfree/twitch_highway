@@ -39,6 +39,7 @@ pub use new_types::ExtensionId;
     feature = "channels",
     feature = "clips",
     feature = "entitlements",
+    feature = "extensions",
     feature = "streams",
     feature = "videos",
 ))]
@@ -140,6 +141,7 @@ pub use amount::Amount;
 
 #[cfg(any(
     feature = "eventsub",
+    feature = "extensions",
     feature = "games",
     feature = "schedule",
     feature = "search"
