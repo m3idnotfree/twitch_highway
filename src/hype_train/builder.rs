@@ -1,7 +1,7 @@
 use crate::{
     hype_train::HypeTrainResponse,
     types::{
-        constants::{AFTER, EVENTS, FIRST, HYPE_TRAIN},
+        constants::{AFTER, BROADCASTER_ID, EVENTS, FIRST, HYPE_TRAIN},
         BroadcasterId,
     },
 };
@@ -9,7 +9,7 @@ use crate::{
 define_request_builder! {
     #[derive(Debug)]
     GetHypeTrainEventsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId},
+        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
         opts: {
             first: u8 [key = FIRST, convert = to_string],
             after: &'a str [key = AFTER],

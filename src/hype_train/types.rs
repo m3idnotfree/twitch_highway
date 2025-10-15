@@ -1,11 +1,11 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, Id, TopContribution};
+use crate::types::{BroadcasterId, HypeTrainId, TopContribution, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HypeTrain {
-    pub id: Id,
+    pub id: String,
     pub event_type: String,
     pub event_timestamp: DateTime<FixedOffset>,
     pub version: String,
@@ -18,7 +18,7 @@ pub struct HypeTrainEvent {
     pub cooldown_end_time: DateTime<FixedOffset>,
     pub expires_at: DateTime<FixedOffset>,
     pub goal: u64,
-    pub id: Id,
+    pub id: HypeTrainId,
     pub last_contribution: HypeTrainContribution,
     pub level: u64,
     pub started_at: DateTime<FixedOffset>,
@@ -31,7 +31,7 @@ pub struct HypeTrainContribution {
     pub total: u64,
     #[serde(rename = "type")]
     pub kind: String,
-    pub user: String,
+    pub user: UserId,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -43,7 +43,7 @@ pub struct HypeTrainStatus {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Current {
-    pub id: String,
+    pub id: HypeTrainId,
     pub broadcaster_user_id: BroadcasterId,
     pub broadcaster_user_login: String,
     pub broadcaster_user_name: String,
