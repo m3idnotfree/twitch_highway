@@ -6,8 +6,10 @@ use crate::types::BroadcasterId;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StartCommercial {
-    pub length: u64,
+    /// seconds
+    pub length: u8,
     pub message: String,
+    /// seconds
     pub retry_after: u64,
 }
 
@@ -37,5 +39,5 @@ pub struct SnoozeNextAd {
 #[derive(Serialize)]
 pub(crate) struct StartCommercialBody<'a> {
     pub broadcaster_id: &'a BroadcasterId,
-    pub length: u64,
+    pub length: u8,
 }

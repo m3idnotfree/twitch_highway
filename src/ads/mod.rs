@@ -20,7 +20,7 @@ pub trait AdsAPI {
     ///
     /// # Arguments
     /// * `broadcaster_id` - The ID of the partner or affiliate broadcaster.
-    /// * `length` - The length of the commercial to run, maximum 180.
+    /// * `length` - The length of the commercial to run, in seconds maximum 180.
     ///
     /// # Returns
     ///
@@ -56,7 +56,7 @@ pub trait AdsAPI {
     fn start_commercial(
         &self,
         broadcaster_id: &BroadcasterId,
-        length: u64,
+        length: u8,
     ) -> TwitchAPIRequest<StartCommercialResponse>;
 
     /// Gets the broadcaster's ad schedule and details about scheduled ads
@@ -149,7 +149,7 @@ impl AdsAPI for TwitchAPI {
     simple_endpoint!(
     fn start_commercial(
         broadcaster_id: &BroadcasterId [skip],
-        length: u64 [skip],
+        length: u8 [skip],
     ) -> StartCommercialResponse;
         endpoint: StartCommercial,
         method: POST,
