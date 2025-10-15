@@ -1,22 +1,20 @@
 use serde::{Deserialize, Serialize};
 
-use crate::types::Id;
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Ccl {
-    pub id: Id,
+    pub id: String,
     pub description: String,
     pub name: String,
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{ccls::types::Ccl, types::Id};
+    use crate::ccls::types::Ccl;
 
     #[test]
     fn ccls_type_structure() {
         let ccls = Ccl {
-            id: Id::from("TestLabel"),
+            id: "TestLabel".to_string(),
             description: "Test description for content classification".to_string(),
             name: "Test Label".to_string(),
         };
