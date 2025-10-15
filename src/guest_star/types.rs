@@ -1,7 +1,7 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{Id, UserId};
+use crate::types::{SessionId, UserId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarSetting {
@@ -38,20 +38,9 @@ impl AsRef<str> for GroupLayout {
     }
 }
 
-impl From<GroupLayout> for String {
-    fn from(value: GroupLayout) -> Self {
-        match value {
-            layout @ GroupLayout::TILED_LAYOUT => layout.as_str().to_string(),
-            layout @ GroupLayout::SCREENSHARE_LAYOUT => layout.as_str().to_string(),
-            layout @ GroupLayout::HORIZONTAL_LAYOUT => layout.as_str().to_string(),
-            layout @ GroupLayout::VERTICAL_LAYOUT => layout.as_str().to_string(),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GustStarSession {
-    pub id: Id,
+    pub id: SessionId,
     pub guests: Vec<Guest>,
 }
 
@@ -110,9 +99,6 @@ mod tests {
         for (layout, expected_str) in layouts {
             assert_eq!(layout.as_str(), expected_str);
             assert_eq!(layout.as_ref(), expected_str);
-
-            let layout_string: String = layout.into();
-            assert_eq!(layout_string, expected_str);
 
             let serialized = serde_json::to_string(&layout).unwrap();
             assert_eq!(serialized, format!("\"{}\"", expected_str));
