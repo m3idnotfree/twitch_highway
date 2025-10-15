@@ -1,16 +1,14 @@
 use serde::Serialize;
 
 use crate::{
-    conduits::UpdateConduitShardsResponse,
+    conduits::{GetConduitShardsResponse, UpdateConduitShardsResponse},
     request::TwitchAPIRequest,
     types::{
         constants::{AFTER, CONDUITS, CONDUIT_ID, EVENTSUB, SHARDS, STATUS},
-        ConduitId, SessionId, ShardId,
+        ConduitId, SessionId, ShardId, Status,
     },
     TwitchAPI,
 };
-
-use crate::{conduits::GetConduitShardsResponse, types::Status};
 
 define_request_builder! {
     #[derive(Debug)]

@@ -207,6 +207,7 @@ mod pagination;
     feature = "charity",
     feature = "chat",
     feature = "clips",
+    feature = "conduits",
     feature = "entitlements",
     feature = "eventsub",
     feature = "games",

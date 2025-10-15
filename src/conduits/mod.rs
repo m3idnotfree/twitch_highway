@@ -6,8 +6,7 @@ pub use builder::{
     GetConduitShardsBuilder, ShardUpdate, TransportConfig, UpdateConduitShardsBuilder,
 };
 pub use response::{
-    ConduitResponse, GetConduitShardsResponse, Pagination, UpdateConduitShardsResponse,
-    UpdateShardError,
+    ConduitResponse, GetConduitShardsResponse, UpdateConduitShardsResponse, UpdateShardError,
 };
 pub use types::{Conduit, ConduitShard, Transport};
 
