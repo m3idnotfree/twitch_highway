@@ -47,10 +47,10 @@ videos = []
 whisper = []
 full = ["ads", "analytics", "bits", "ccls", "channel-points", "channels", "charity", "chat", "clips", "conduits", "entitlements", "extensions", "eventsub", "games", "goals", "guest-star", "hype-train", "moderation", "polls", "predictions", "raid", "schedule", "search", "streams", "subscriptions", "teams", "users", "videos", "whisper"]
 
-webhook = ["webhook-actix", "webhook-axum", "webhook-http", "webhook-verify"]
-webhook-actix = ["actix-http"]
+webhook = ["webhook-actix", "webhook-axum"]
+webhook-actix = ["actix-http", "webhook-verify"]
 webhook-axum = ["axum-core", "webhook-http"]
-webhook-http = ["http"]
+webhook-http = ["http", "webhook-verify"]
 webhook-verify = ["hex", "hmac", "rand", "sha2", "subtle"]
 
 websocket = ["websocket-router", "websocket-client"]
@@ -100,6 +100,7 @@ chrono-tz = { version = "0.10.4", optional = true }
 serde_with = { version = "3.15.0", optional = true }
 
 [dev-dependencies]
+actix-web = "4.11.0"
 anyhow = "1.0.100"
 axum = { version = "0.8.6", features = ["ws"] }
 dotenv = "0.15.0"
