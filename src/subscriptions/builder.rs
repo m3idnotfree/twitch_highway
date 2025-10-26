@@ -17,7 +17,7 @@ define_request_builder! {
             before: &'a str [key = BEFORE]
     }
     } -> BroadcasterSubscriptionResponse;
-        endpoint_type: GetBroadcasterSubscriptions,
+        endpoint: GetBroadcasterSubscriptions,
         method: GET,
         path: [SUBSCRIPTIONS],
 }

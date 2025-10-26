@@ -13,7 +13,7 @@ define_request_builder! {
         after: &'a str [key = AFTER],
         before: &'a str [key = BEFORE]
     } -> GamesResponse;
-    endpoint_type: GetTopGames,
+    endpoint: GetTopGames,
     method: GET,
     path: [GAMES, TOP],
 }
@@ -25,7 +25,7 @@ define_request_builder! {
         names: &'a [&'a str] [key = NAME, convert = extend],
         igdb_ids: &'a [&'a str] [key = IGDB_ID, convert = extend],
     } -> GamesResponse;
-    endpoint_type: GetGames,
+    endpoint: GetGames,
     method: GET,
     path: [GAMES],
 }

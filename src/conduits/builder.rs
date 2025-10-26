@@ -19,7 +19,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
     }
     } -> GetConduitShardsResponse;
-    endpoint_type: GetConduitShards,
+    endpoint: GetConduitShards,
     method: GET,
     path: [EVENTSUB, CONDUITS, SHARDS],
 }

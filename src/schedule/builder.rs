@@ -30,7 +30,7 @@ define_request_builder! {
 
         }
     } -> ScheduleResponse;
-        endpoint_type: GetChannelStreamSchedule,
+        endpoint: GetChannelStreamSchedule,
         method: GET,
         path: [SCHEDULE],
 }
@@ -46,7 +46,7 @@ define_request_builder! {
             is_vacation_enabled: bool [key = IS_VACATION_ENABLED, convert = to_string]
         }
     } -> NoContent;
-    endpoint_type: UpdateChannelStreamSchedule,
+    endpoint: UpdateChannelStreamSchedule,
     method: PATCH,
     path: [SCHEDULE, SETTINGS],
 }

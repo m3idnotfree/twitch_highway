@@ -15,7 +15,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> CharityCampaignDonationResponse;
-            endpoint_type: GetCharityCampaignDonations,
+            endpoint: GetCharityCampaignDonations,
             method: GET,
             path: [CHARITY, DONATIONS],
 }

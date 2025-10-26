@@ -19,7 +19,7 @@ define_request_builder! {
         req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
         opts: {has_delay: bool [key = HAS_DELAY, convert = to_string]}
     } -> CreateClipsResponse;
-    endpoint_type: CreateClip,
+    endpoint: CreateClip,
     method: POST,
     path: [CLIPS],
 

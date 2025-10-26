@@ -14,7 +14,7 @@ define_request_builder! {
            after: &'a str [key = AFTER],
         }
     } -> CategoriesResponse;
-    endpoint_type: SearchCategories,
+    endpoint: SearchCategories,
     method: GET,
     path: [SEARCH, CATEGORIES],
 }
@@ -29,7 +29,7 @@ define_request_builder! {
            after: &'a str [key = AFTER],
         }
     } -> ChannelsResponse;
-    endpoint_type: SearchChannels,
+    endpoint: SearchChannels,
     method: GET,
     path: [SEARCH, CHANNELS],
 }

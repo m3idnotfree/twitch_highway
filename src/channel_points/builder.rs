@@ -161,7 +161,7 @@ define_request_builder! {
             only_manageable_rewards: bool [key = ONLY_MANAGEABLE_REWARDS, convert = to_string],
         }
     } -> CustomRewardsResponse;
-    endpoint_type: GetCustomReward,
+    endpoint: GetCustomReward,
     method: GET,
     path: [CHANNEL_POINTS, CUSTOM_REWARDS],
 }
@@ -181,7 +181,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> CustomRewardsRedemptionResponse;
-    endpoint_type: GetCustomRewardRedemption,
+    endpoint: GetCustomRewardRedemption,
     method: GET,
     path: [CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS],
 }

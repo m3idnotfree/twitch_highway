@@ -20,7 +20,7 @@ define_request_builder! {
         ids: &'a [UserId] [key = ID, convert = extend],
         logins: &'a [&'a str] [key = LOGIN, convert = extend]
     } -> UsersInfoResponse;
-    endpoint_type: GetUsers,
+    endpoint: GetUsers,
     method: GET,
     path: [USERS],
 }
@@ -34,7 +34,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> BlockUserListResponse;
-    endpoint_type: GetUserBlockList,
+    endpoint: GetUserBlockList,
     method: GET,
     path: [USERS, BLOCKS],
 }
@@ -48,7 +48,7 @@ define_request_builder! {
             reason: BlockReason [key = REASON, convert = as_ref]
         }
     } -> NoContent;
-    endpoint_type: BlockUser,
+    endpoint: BlockUser,
     method: PUT,
     path: [USERS, BLOCKS],
 
@@ -59,7 +59,7 @@ define_request_builder! {
     GetUserActiveExtensionsBuilder<'a> {
         user_id: &'a UserId [key = USER_ID]
     } -> UserActiveExtensionsResponse;
-    endpoint_type: GetUserActiveExtensions,
+    endpoint: GetUserActiveExtensions,
     method: GET,
     path: [USERS, EXTENSIONS],
 }

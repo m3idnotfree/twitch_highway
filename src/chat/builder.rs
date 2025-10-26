@@ -28,7 +28,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> ChattersResponse;
-    endpoint_type: GetChatters,
+    endpoint: GetChatters,
     method: GET,
     path: [CHAT, CHATTERS],
 }
@@ -39,7 +39,7 @@ define_request_builder! {
         req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
         opts: {moderator_id: &'a ModeratorId [key = MODERATOR_ID]}
     } -> ChatSettingResponse;
-    endpoint_type: GetChatSettings,
+    endpoint: GetChatSettings,
     method: GET,
     path: [CHAT, SETTINGS],
 
@@ -54,7 +54,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> EmotesResponse;
-    endpoint_type: GetUserEmotes,
+    endpoint: GetUserEmotes,
     method: GET,
     path: [CHAT, EMOTES, USER],
 }

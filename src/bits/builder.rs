@@ -22,7 +22,7 @@ define_request_builder! {
         started_at: &'a DateTime<Utc> [key = STARTED_AT, convert = rfc3339_opt],
         user_id: &'a UserId [key = USER_ID]
     } -> BitsLeaderboardResponse;
-        endpoint_type: GetBitsLeaderboard,
+        endpoint: GetBitsLeaderboard,
         method: GET,
         path: [BITS, LEADERBOARD],
 }
@@ -36,7 +36,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> ExtensionTransactionsResponse;
-        endpoint_type: GetExtensionTransactions,
+        endpoint: GetExtensionTransactions,
         method: GET,
         path: [EXTENSIONS, TRANSACTIONS],
 

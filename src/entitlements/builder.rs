@@ -20,7 +20,7 @@ define_request_builder! {
         first: u8 [key = FIRST, convert = to_string],
         after: &'a str [key = AFTER]
     } -> DropsEntitlementsResponse;
-            endpoint_type: GetDropsEntitlements,
+            endpoint: GetDropsEntitlements,
             method: GET,
             path: [ENTITLEMENTS, DROPS],
 }

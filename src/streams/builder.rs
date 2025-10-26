@@ -24,7 +24,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
 
     } -> StreamsResponse;
-    endpoint_type: GetStreams,
+    endpoint: GetStreams,
     method: GET,
     path: [STREAMS],
 }
@@ -53,7 +53,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> StreamsResponse;
-    endpoint_type: GetFollowedStreams,
+    endpoint: GetFollowedStreams,
     method: GET,
     path: [STREAMS, FOLLOWED],
 }

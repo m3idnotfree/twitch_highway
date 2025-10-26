@@ -25,7 +25,7 @@ define_request_builder! {
             regenerate_browser_sources: bool [key = REGENERATE_BROWSER_SOURCES, convert = to_string],
         }
     } -> NoContent;
-    endpoint_type: UpdateChannelGuestStarSettings,
+    endpoint: UpdateChannelGuestStarSettings,
     method: PUT,
     path: [GUEST_STAR, CHANNEL_SETTINGS],
 }
@@ -43,7 +43,7 @@ define_request_builder! {
             destination_slot_id: &'a str [key = DESTINATION_SLOT_ID]
         }
     } -> NoContent;
-    endpoint_type: UpdateGuestStarSlot,
+    endpoint: UpdateGuestStarSlot,
     method: PATCH,
     path: [GUEST_STAR, SLOT],
 }
@@ -60,7 +60,7 @@ define_request_builder! {
         },
         opts: {should_reinvite_guest: &'a str [key = SHOULD_REINVITE_GUEST]}
     } -> NoContent;
-    endpoint_type: DeleteGuestStarSlot,
+    endpoint: DeleteGuestStarSlot,
     method: DELETE,
     path: [GUEST_STAR, SLOT],
 }
@@ -81,7 +81,7 @@ define_request_builder! {
             volume: u64 [key = VOLUME, convert = to_string]
         }
     } -> NoContent;
-    endpoint_type: UpdateGuestStarSlotSettings,
+    endpoint: UpdateGuestStarSlotSettings,
     method: PATCH,
     path: [GUEST_STAR, SLOT_SETTINGS],
 }

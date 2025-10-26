@@ -44,7 +44,7 @@ macro_rules! define_request_builder {
             $([$($opt_config:tt)*])?
         ),* $(,)?
         } -> $return:ty;
-        endpoint_type: $endpoint:ident,
+        endpoint: $endpoint:ident,
         method: $method:ident,
         path: [$($path:expr),* $(,)?]
         $(, header: [$($header_config:tt)*] )?
@@ -64,7 +64,7 @@ macro_rules! define_request_builder {
                 $opt_f: $opt_t
                 $([$($opt_config)*])?
             ),*},
-            endpoint_type: $endpoint,
+            endpoint: $endpoint,
             method: $method,
             path: [$($path),*],
             header: [$($($header_config:tt)*)?],
@@ -80,7 +80,7 @@ macro_rules! define_request_builder {
             $([$($opt_config:tt)*])?
         ),* $(,)?
         } -> $return:ty;
-        endpoint_type: $endpoint:ident,
+        endpoint: $endpoint:ident,
         method: $method:ident,
         path: [$($path:expr),* $(,)?]
         $(, header: [$($header_config:tt)*] )?
@@ -100,7 +100,7 @@ macro_rules! define_request_builder {
                 $opt_f: $opt_t
                 $([$($opt_config)*])?
             ),*},
-            endpoint_type: $endpoint,
+            endpoint: $endpoint,
             method: $method,
             path: [$($path),*]
             header: [$($($header_config:tt)*)?],
@@ -123,7 +123,7 @@ macro_rules! define_request_builder {
                 $([$($opt_config:tt)*])?
             ),* $(,)?})? $(,)?
         } -> $return:ty;
-        endpoint_type: $endpoint:ident,
+        endpoint: $endpoint:ident,
         method: $method:ident,
         path: [$($path:expr),* $(,)?]
         $(, header: [$($header_config:tt)*] )?
@@ -147,7 +147,7 @@ macro_rules! define_request_builder {
                 $opt_f: $opt_t
                 $([$($opt_config)*])?
             ),*)?},
-            endpoint_type: $endpoint,
+            endpoint: $endpoint,
             method: $method,
             path: [$($path),*],
             header: [$($($header_config)*)?],
@@ -170,7 +170,7 @@ macro_rules! define_request_builder {
     //             $([$($opt_config:tt)*])?
     //         ),* $(,)?})? $(,)?
     //     } -> $return:ty;
-    //     endpoint_type: $endpoint:ident,
+    //     endpoint: $endpoint:ident,
     //     method: $method:ident,
     //     path: [$($path:expr),* $(,)?]
     //     $(, header: [$($header_config:tt)*] )?
@@ -194,7 +194,7 @@ macro_rules! define_request_builder {
     //             $opt_f: $opt_t
     //             $([$($opt_config)*])?
     //         ),*)?},
-    //         endpoint_type: $endpoint,
+    //         endpoint: $endpoint,
     //         method: $method,
     //         path: [$($path),*]
     //         header: [$($($header_config:tt)*)?],
@@ -220,7 +220,7 @@ macro_rules! define_request_builder {
             $opt_f:ident: $opt_t:ty
             $([$($opt_config:tt)*])?
         ),+)?},
-        endpoint_type: $endpoint:ident,
+        endpoint: $endpoint:ident,
         method: $method:ident,
         path: [$($($path:expr),+ $(,)?)?],
         header: [$($($header_config:tt)+)?],

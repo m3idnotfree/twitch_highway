@@ -18,7 +18,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> PollsResponse;
-    endpoint_type: GetPolls,
+    endpoint: GetPolls,
     method: GET,
     path: [POLLS],
 }

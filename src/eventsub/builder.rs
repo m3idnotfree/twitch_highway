@@ -24,7 +24,7 @@ define_request_builder! {
         subscription_id: &'a SubscriptionId [key = SUBSCRIPTION_ID],
         after: &'a str [key = AFTER],
     } -> EventSubscriptionsResponse;
-    endpoint_type: GetEventSub,
+    endpoint: GetEventSub,
     method: GET,
     path: [EVENTSUB, SUBSCRIPTIONS],
 

@@ -122,7 +122,7 @@ define_request_builder! {
             before: &'a str[key = BEFORE],
         }
     } -> GetBannedUsersResponse;
-    endpoint_type: GetBannedUsers,
+    endpoint: GetBannedUsers,
     method: GET,
     path: [MODERATION, BANNED],
 }
@@ -239,7 +239,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> UnbanRequestResponse;
-    endpoint_type: GetUnbanRequests,
+    endpoint: GetUnbanRequests,
     method: GET,
     path: [MODERATION, UNBAN_REQUESTS],
 }
@@ -257,7 +257,7 @@ define_request_builder! {
             resolution_text: &'a str,
         }
     } -> UnbanRequestResponse;
-    endpoint_type: ResolveUnbanRequests,
+    endpoint: ResolveUnbanRequests,
     method: PATCH,
     path: [MODERATION, "unban_requests"],
 }
@@ -274,7 +274,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> BlockedTermsResponse;
-    endpoint_type: GetBlockedTerms,
+    endpoint: GetBlockedTerms,
     method: GET,
     path: [MODERATION, BLOCKED_TERMS],
 }
@@ -288,7 +288,7 @@ define_request_builder! {
         },
         opts: {message_id: &'a str}
     } -> NoContent;
-    endpoint_type: DeleteChatMessages,
+    endpoint: DeleteChatMessages,
     method: DELETE,
     path: [MODERATION, CHAT],
 }
@@ -302,7 +302,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
     }
     } -> ModeratedChannelResponse;
-        endpoint_type: GetModeratedChannels,
+        endpoint: GetModeratedChannels,
         method: GET,
         path: [MODERATION, CHANNELS],
 }
@@ -317,7 +317,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> ModeratorsResponse;
-    endpoint_type: GetModerators,
+    endpoint: GetModerators,
     method: GET,
     path: [MODERATION, MODERATORS],
 }
@@ -332,7 +332,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> ModeratorsResponse;
-            endpoint_type: GetVIPs,
+            endpoint: GetVIPs,
             method: GET,
             path: [CHANNELS, VIPS],
 }

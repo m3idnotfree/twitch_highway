@@ -23,7 +23,7 @@ GetExtensionConfigurationSegmentBuilder<'a> {
     },
     opts: {broadcaster_id: &'a BroadcasterId}
 } -> ConfigurationSegmentResponse;
-    endpoint_type: GetExtensionConfigurationSegment,
+    endpoint: GetExtensionConfigurationSegment,
     method: GET,
     path: [EXTENSIONS, CONFIGURATIONS],
     header: [jwt, jwt_token]
@@ -97,7 +97,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> ExtensionLiveChannelsRespnose;
-    endpoint_type: GetExtensionLiveChannels,
+    endpoint: GetExtensionLiveChannels,
     method: GET,
     path: [EXTENSIONS, LIVE],
 }

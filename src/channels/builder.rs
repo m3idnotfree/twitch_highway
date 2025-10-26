@@ -121,7 +121,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> FollowerdChannelsResponse;
-    endpoint_type: GetFollowedChannels,
+    endpoint: GetFollowedChannels,
     method: GET,
     path: [CHANNELS, FOLLOWED],
 }
@@ -136,7 +136,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> ChannelFollowersResponse;
-    endpoint_type: GetChannelFollowers,
+    endpoint: GetChannelFollowers,
     method: GET,
     path: [CHANNELS, FOLLOWERS],
 }

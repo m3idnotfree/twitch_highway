@@ -20,7 +20,7 @@ define_request_builder! {
             after: &'a str [key = AFTER]
         }
     } -> PredictionsResponse;
-    endpoint_type: GetPredictions,
+    endpoint: GetPredictions,
     method: GET,
     path: [PREDICTIONS],
 }

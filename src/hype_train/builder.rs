@@ -15,7 +15,7 @@ define_request_builder! {
             after: &'a str [key = AFTER],
         }
     } -> HypeTrainResponse;
-    endpoint_type: GetHypeTrainEvents,
+    endpoint: GetHypeTrainEvents,
     method: GET,
     path: [HYPE_TRAIN, EVENTS],
 }

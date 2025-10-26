@@ -21,7 +21,7 @@ define_request_builder! {
         first: u8 [key = FIRST, convert = to_string],
         after: &'a str [key = AFTER]
     } -> ExtensionAnalyticsResponse;
-    endpoint_type: GetExtensionAnalytics,
+    endpoint: GetExtensionAnalytics,
     method: GET,
     path: [ANALYTICS, EXTENSIONS],
 }
@@ -36,7 +36,7 @@ define_request_builder! {
         first: u8 [key = FIRST, convert = to_string],
         after: &'a str [key = AFTER]
     } -> GameAnalyticsResponse;
-    endpoint_type: GetGameAnalytics,
+    endpoint: GetGameAnalytics,
     method: GET,
     path: [ANALYTICS, GAMES],
 }
