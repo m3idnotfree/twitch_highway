@@ -269,6 +269,12 @@ pub(crate) const CLIPS: &str = "clips";
 pub(crate) const IS_FEATURED: &str = "is_featured";
 #[cfg(feature = "clips")]
 pub(crate) const HAS_DELAY: &str = "has_delay";
+#[cfg(feature = "clips")]
+pub(crate) const DOWNLOADS: &str = "downloads";
+#[cfg(feature = "clips")]
+pub(crate) const EDITOR_ID: &str = "editor_id";
+#[cfg(feature = "clips")]
+pub(crate) const CLIP_ID: &str = "clip_id";
 
 #[cfg(feature = "conduits")]
 pub(crate) const CONDUITS: &str = "conduits";

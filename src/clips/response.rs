@@ -2,7 +2,7 @@ use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    clips::{Clip, CreateClip},
+    clips::{Clip, ClipDownload, CreateClip},
     types::Pagination,
 };
 
@@ -22,11 +22,16 @@ pub struct ClipsInfoResponse {
     pub pagination: Option<Pagination>,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+pub struct ClipsDownloadResponse {
+    pub data: Vec<ClipDownload>,
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;
 
-    use crate::clips::{ClipsInfoResponse, CreateClipsResponse};
+    use crate::clips::{ClipsDownloadResponse, ClipsInfoResponse, CreateClipsResponse};
 
     #[test]
     fn create_clips_response_deserialization() {
@@ -163,5 +168,26 @@ mod tests {
         let response: ClipsInfoResponse = serde_json::from_value(json_data).unwrap();
         assert_eq!(response.data.len(), 1);
         assert!(response.pagination.is_none());
+    }
+
+    #[test]
+    fn clip_download_deserialization() {
+        let json_data = serde_json::json!({
+            "data": [
+                {
+                    "clip_id": "InexpensiveDistinctFoxChefFrank",
+                    "landscape_download_url": "https://production.assets.clips.twitchcdn.net/yFZG...",
+                    "portrait_download_url": null
+                },
+                {
+                    "clip_id": "SpinelessCloudyLeopardMcaT",
+                    "landscape_download_url": "https://production.assets.clips.twitchcdn.net/542j...",
+                    "portrait_download_url": null
+                }
+            ]
+        });
+
+        let response: ClipsDownloadResponse = serde_json::from_value(json_data).unwrap();
+        assert_eq!(response.data.len(), 2);
     }
 }

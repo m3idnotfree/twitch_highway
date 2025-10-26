@@ -31,3 +31,10 @@ pub struct Clip {
     pub vod_offset: Option<u64>,
     pub is_featured: bool,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClipDownload {
+    pub clip_id: ClipId,
+    pub landscape_download_url: Option<Url>,
+    pub portrait_download_url: Option<Url>,
+}

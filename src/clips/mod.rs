@@ -3,11 +3,15 @@ mod response;
 mod types;
 
 pub use builder::{CreateClipBuilder, GetClipsBuilder};
-pub use response::{ClipsInfoResponse, CreateClipsResponse};
-pub use types::{Clip, CreateClip};
+pub use response::{ClipsDownloadResponse, ClipsInfoResponse, CreateClipsResponse};
+pub use types::{Clip, ClipDownload, CreateClip};
 
 use crate::{
-    types::{BroadcasterId, ClipId, GameId},
+    request::TwitchAPIRequest,
+    types::{
+        constants::{BROADCASTER_ID, CLIPS, CLIP_ID, DOWNLOADS, EDITOR_ID},
+        BroadcasterId, ClipId, GameId, UserId,
+    },
     TwitchAPI,
 };
 
@@ -185,6 +189,55 @@ pub trait ClipsAPI {
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
     fn get_clips_by_ids<'a>(&'a self, ids: &'a [ClipId]) -> GetClipsBuilder<'a>;
+
+    /// Provides URLs to download the video file(s) for the specified clips
+    ///
+    /// # Arguments
+    ///
+    /// * `editor_id` - The User ID of the editor for the channel you want to download a clip for.
+    /// * `broadcaster_id` - The ID of the broadcaster you want to download clips for.
+    /// * `clip_ids` - The ID that identifies the clip you want to download. Include this parameter for each clip you want to download. (max 10)
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`ClipsDownloadResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     clips::ClipsAPI,
+    ///     types::{BroadcasterId, ClipId, UserId},
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_clips_download(
+    ///         &UserId::from("1234"),
+    ///         &BroadcasterId::from("5678"),
+    ///         &[ClipId::from("1234"), ClipId::from("5678")]
+    ///     )
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// `editor:manage:clips or channel:manage:clips`
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference#get-clips-download>
+    fn get_clips_download(
+        &self,
+        editor_id: &UserId,
+        broadcaster_id: &BroadcasterId,
+        clip_ids: &[ClipId],
+    ) -> TwitchAPIRequest<ClipsDownloadResponse>;
 }
 
 impl ClipsAPI for TwitchAPI {
@@ -203,4 +256,14 @@ impl ClipsAPI for TwitchAPI {
     fn get_clips_by_ids<'a>(&'a self, ids: &'a [ClipId]) -> GetClipsBuilder<'a> {
         GetClipsBuilder::by_ids(self, ids)
     }
+    simple_endpoint!(
+    fn get_clips_download(
+        editor_id: &UserId [key = EDITOR_ID],
+        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
+        clip_ids: &[ClipId] [key = CLIP_ID, convert = extend],
+    ) -> ClipsDownloadResponse;
+        endpoint: GetClipsDownload,
+        method: GET,
+        path: [CLIPS,DOWNLOADS]
+    );
 }

@@ -9,7 +9,7 @@ use std::time::Duration;
 use tokio::time::sleep;
 use twitch_highway::{
     clips::ClipsAPI,
-    types::{BroadcasterId, ClipId},
+    types::{BroadcasterId, ClipId, UserId},
 };
 use twitch_oauth_token::scope::ClipScopes;
 
@@ -23,6 +23,18 @@ api_test!(build
         api.get_clips_by_ids(&[ClipId::from("AwkwardHelplessSalamanderSwiftRage")])
     }
 );
+api_test!(
+    get_clips_download,
+    [
+        &UserId::from("141981764"),
+        &BroadcasterId::from("141981764"),
+        &[
+            ClipId::from("InexpensiveDistinctFoxChefFrank"),
+            ClipId::from("SpinelessCloudyLeopardMcaT")
+        ]
+    ]
+);
+
 api_test!(build_extra
     get_clips,
     get_clips2 |api| {

@@ -1485,6 +1485,30 @@ impl HttpMock {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn get_clips_download(&self) {
+        self.api_mock("GET", "/clips/downloads")
+            .and(query_param("broadcaster_id", "141981764"))
+            .and(query_param("editor_id", "141981764"))
+            .and(query_param("clip_id", "InexpensiveDistinctFoxChefFrank"))
+            .and(query_param("clip_id", "SpinelessCloudyLeopardMcaT"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+              "data": [
+                {
+                  "clip_id": "InexpensiveDistinctFoxChefFrank",
+                  "landscape_download_url": "https://production.assets.clips.twitchcdn.net/yFZG...",
+                  "portrait_download_url": null
+                },
+                {
+                  "clip_id": "SpinelessCloudyLeopardMcaT",
+                  "landscape_download_url": "https://production.assets.clips.twitchcdn.net/542j...",
+                  "portrait_download_url": null
+                }
+              ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[cfg(feature = "conduits")]

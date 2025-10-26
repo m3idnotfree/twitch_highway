@@ -46,6 +46,7 @@ pub enum EndpointType {
     // Clips
     CreateClip,
     GetClips,
+    GetClipsDownload,
     // Conduits
     GetConduits,
     CreateConduits,
@@ -224,6 +225,7 @@ impl EndpointType {
             // Clips
             Self::CreateClip => TokenType::User,
             Self::GetClips => TokenType::Any,
+            Self::GetClipsDownload => TokenType::Any,
             // Conduits
             Self::GetConduits => TokenType::App,
             Self::CreateConduits => TokenType::App,

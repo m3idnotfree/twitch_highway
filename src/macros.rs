@@ -505,6 +505,7 @@ macro_rules! define_request_builder {
     feature = "ccls",
     feature = "channel-points",
     feature = "charity",
+    feature = "clips",
     feature = "extensions",
     feature = "goals",
     feature = "guest-star",
