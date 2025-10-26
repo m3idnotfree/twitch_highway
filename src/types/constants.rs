@@ -453,6 +453,8 @@ pub(crate) const LOGIN: &str = "login";
 pub(crate) const LIST: &str = "list";
 #[cfg(feature = "users")]
 pub(crate) const DESCRIPTION: &str = "description";
+#[cfg(feature = "users")]
+pub(crate) const AUTHORIZATION: &str = "authorization";
 
 #[cfg(feature = "videos")]
 pub(crate) const VIDEOS: &str = "videos";

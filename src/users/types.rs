@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use asknothingx2_util::serde::serialize_none_as_empty_string;
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
+use twitch_oauth_token::Scope;
 
 use crate::types::{ExtensionId, UserId};
 
@@ -264,4 +265,12 @@ impl Component {
     opt_method!(name, String[into]);
     opt_method!(x, u64);
     opt_method!(y, u64);
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserAuthorization {
+    pub user_id: UserId,
+    pub user_name: String,
+    pub user_login: String,
+    pub scopes: Vec<Scope>,
 }

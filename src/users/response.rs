@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::{BlockUser, User, UserActiveExtensions, UserExtension};
+use super::{BlockUser, User, UserActiveExtensions, UserAuthorization, UserExtension};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UsersInfoResponse {
@@ -25,4 +25,9 @@ pub struct UserExtensionsResponse {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserActiveExtensionsResponse {
     pub data: UserActiveExtensions,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetAuthorizationByUserResponse {
+    pub data: Vec<UserAuthorization>,
 }

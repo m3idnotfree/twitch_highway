@@ -64,6 +64,11 @@ api_test!(build
     }
 );
 
+api_test!(
+    get_authorization_by_user,
+    [&[UserId::from("41981764"), UserId::from("197886470")]]
+);
+
 #[tokio::test]
 async fn mock_api() -> Result<()> {
     let _cmd = mock_api_start().await?;

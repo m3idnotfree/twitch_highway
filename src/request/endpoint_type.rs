@@ -169,6 +169,7 @@ pub enum EndpointType {
     GetUserExtensions,
     GetUserActiveExtensions,
     UpdateUserExtensions,
+    GetAuthorizationByUser,
     // Videos
     GetVideos,
     DeleteVideos,
@@ -351,6 +352,7 @@ impl EndpointType {
             Self::GetUserExtensions => TokenType::User,
             Self::GetUserActiveExtensions => TokenType::Any,
             Self::UpdateUserExtensions => TokenType::User,
+            Self::GetAuthorizationByUser => TokenType::App,
             // Videos
             Self::GetVideos => TokenType::Any,
             Self::DeleteVideos => TokenType::User,

@@ -7,18 +7,20 @@ pub use builder::{
     UpdateUserExtensionsBuilder,
 };
 pub use response::{
-    BlockUserListResponse, UpdateUsersResponse, UserActiveExtensionsResponse,
-    UserExtensionsResponse, UsersInfoResponse,
+    BlockUserListResponse, GetAuthorizationByUserResponse, UpdateUsersResponse,
+    UserActiveExtensionsResponse, UserExtensionsResponse, UsersInfoResponse,
 };
 pub use types::{
     BlockReason, BlockSourceContext, BlockUser, BroadcasterType, Component, ExtensionType, Overlay,
-    Panel, User, UserActiveExtensions, UserExtension, UserType,
+    Panel, User, UserActiveExtensions, UserAuthorization, UserExtension, UserType,
 };
 
 use crate::{
     request::{NoContent, TwitchAPIRequest},
     types::{
-        constants::{BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USERS},
+        constants::{
+            AUTHORIZATION, BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USERS, USER_ID,
+        },
         BroadcasterId, UserId,
     },
     TwitchAPI,
@@ -307,6 +309,43 @@ pub trait UserAPI {
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
     fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a>;
+
+    /// Gets the authorization scopes that the specified user(s) have granted the application
+    ///
+    /// # Returns
+    ///
+    /// Returns a [`GetAuthorizationByUserResponse`]
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use twitch_highway::TwitchAPI;
+    /// use twitch_highway::{
+    ///     types::UserId,
+    ///     users::UserAPI,
+    /// };
+    ///
+    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// let response = api
+    ///     .get_authorization_by_user(&[UserId::from("1234"), UserId::from("5678")])
+    ///     .json()
+    ///     .await?;
+    ///
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Required Scope
+    ///
+    /// No scope required
+    ///
+    /// API Reference
+    ///
+    /// <https://dev.twitch.tv/docs/api/reference/#get-authorization-by-user>
+    fn get_authorization_by_user(
+        &self,
+        user_ids: &[UserId],
+    ) -> TwitchAPIRequest<GetAuthorizationByUserResponse>;
 }
 
 impl UserAPI for TwitchAPI {
@@ -384,4 +423,12 @@ impl UserAPI for TwitchAPI {
     fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a> {
         UpdateUserExtensionsBuilder::new(self)
     }
+    simple_endpoint!(
+    fn get_authorization_by_user(
+        user_ids: &[UserId] [key = USER_ID, convert = extend]
+    ) -> GetAuthorizationByUserResponse;
+        endpoint: GetAuthorizationByUser,
+        method: GET,
+        path: [AUTHORIZATION, USERS],
+    );
 }

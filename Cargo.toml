@@ -42,7 +42,7 @@ search = []
 streams = []
 subscriptions = []
 teams = []
-users = []
+users = ["twitch_oauth_token"]
 videos = []
 whisper = []
 full = ["ads", "analytics", "bits", "ccls", "channel-points", "channels", "charity", "chat", "clips", "conduits", "entitlements", "extensions", "eventsub", "games", "goals", "guest-star", "hype-train", "moderation", "polls", "predictions", "raid", "schedule", "search", "streams", "subscriptions", "teams", "users", "videos", "whisper"]
@@ -98,6 +98,7 @@ tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"]
 chrono-tz = { version = "0.10.4", optional = true }
 
 serde_with = { version = "3.15.1", optional = true }
+twitch_oauth_token = { version = "2.0.8", optional = true }
 
 [dev-dependencies]
 actix-web = "4.11.0"

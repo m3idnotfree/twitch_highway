@@ -516,6 +516,7 @@ macro_rules! define_request_builder {
     feature = "schedule",
     feature = "subscriptions",
     feature = "teams",
+    feature = "users",
     feature = "whisper",
 ))]
 macro_rules! simple_endpoint {

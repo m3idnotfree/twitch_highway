@@ -4552,6 +4552,34 @@ impl HttpMock {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn get_authorization_by_user(&self) {
+        self.api_mock("GET", "/authorization/users")
+            .and(query_param("user_id", "41981764"))
+            .and(query_param("user_id", "197886470"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+              "data": [
+                {
+                  "user_id": "141981764",
+                  "user_name": "TwitchDev",
+                  "user_login": "twitchdev",
+                  "scopes": [
+                    "bits:read",
+                    "channel:bot",
+                    "channel:manage:predictions"
+                  ]
+                },
+                {
+                  "user_id": "197886470",
+                  "user_name": "TwitchRivals",
+                  "user_login": "twitchrivals",
+                  "scopes": []
+                }
+              ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[cfg(feature = "videos")]
