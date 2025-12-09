@@ -9,6 +9,7 @@
     feature = "extensions",
     feature = "goals",
     feature = "guest-star",
+    feature = "hype-train",
     feature = "moderation",
     feature = "polls",
     feature = "predictions",
