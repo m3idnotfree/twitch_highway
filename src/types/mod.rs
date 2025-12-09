@@ -190,6 +190,7 @@ pub use outcome::{Outcome, OutocmeColor};
     feature = "charity",
     feature = "chat",
     feature = "clips",
+    feature = "conduits",
     feature = "entitlements",
     feature = "eventsub",
     feature = "games",
