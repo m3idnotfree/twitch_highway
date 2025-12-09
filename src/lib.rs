@@ -243,6 +243,7 @@ impl TwitchAPI {
         &self.client_id
     }
 
+    #[allow(unused)]
     pub(crate) fn default_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers)

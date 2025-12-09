@@ -21,6 +21,7 @@ pub use response::{
 pub use subscription::Subscription;
 pub use subscription_types::SubscriptionType;
 
+#[allow(unused_imports)]
 pub(crate) use resolve_subscription_type;
 use url::Url;
 
