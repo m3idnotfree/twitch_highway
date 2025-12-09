@@ -65,6 +65,7 @@ pub use new_types::GameId;
     feature = "teams",
     feature = "users",
     feature = "videos",
+    feature = "whisper",
 ))]
 pub use new_types::UserId;
 
