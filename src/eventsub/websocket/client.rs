@@ -186,11 +186,12 @@ where
         });
 
         let mut current_url = url;
+        let mut signal_closed = pin!(shutdown_tx.closed().fuse());
 
         loop {
             let (mut write, read) = tokio::select! {
                 conn = try_accept(&current_url, &config) => conn?,
-                _ = shutdown_tx.closed() => {
+                _ = &mut signal_closed => {
                     trace!("shutdown signal received, stopping connection");
                     return Ok(());
                 }
@@ -205,7 +206,6 @@ where
 
             let recv_task = handle_connection(&mut write, read, &mut svc);
 
-            let mut signal_closed = pin!(shutdown_tx.closed().fuse());
             tokio::select! {
                 result = recv_task => {
                     match result? {
@@ -223,6 +223,7 @@ where
                 }
                 _ = &mut signal_closed => {
                         trace!("shutdown signal received");
+                        let _ = write.close().await;
                         return Ok(())
                 }
             }
