@@ -3,13 +3,10 @@
 #[macro_use]
 mod common;
 
-use anyhow::Result;
-use common::{mock_api_start, TwitchFixture};
 use twitch_highway::{
     channels::{ChannelsAPI, ContentClassificationLabel, ContentClassificationLabelsID},
     types::{BroadcasterId, GameId, UserId},
 };
-use twitch_oauth_token::scope::ChannelScopes;
 
 api_test!(get_channel_info, [&[BroadcasterId::from("141981764")]]);
 
@@ -67,58 +64,3 @@ api_test!(build_extra
             .user_id(&UserId::from("654321"))
     }
 );
-
-#[tokio::test]
-async fn mock_api() -> Result<()> {
-    let _cmd = mock_api_start().await?;
-
-    let api = TwitchFixture::user_access_token(|scope| {
-        scope.channel_api();
-    })
-    .await?;
-
-    mock_api_get_channel_info(&api).await?;
-    mock_api_modify_channel_info(&api).await?;
-    mock_api_get_channel_editors(&api).await?;
-    mock_api_get_followed_channels(&api).await?;
-    mock_api_get_channel_followers(&api).await?;
-
-    Ok(())
-}
-
-async fn mock_api_get_channel_info(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_channel_info(&[api.selected_broadcaster_id()])
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_modify_channel_info(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .modify_channel_info(&api.selected_broadcaster_id())
-        .broadcaster_language("en")
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_get_channel_editors(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_channel_editor(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_get_followed_channels(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_followed_channels(&api.selected_user_id())
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_get_channel_followers(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_channel_followers(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}

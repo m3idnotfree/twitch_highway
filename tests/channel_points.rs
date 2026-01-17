@@ -3,13 +3,10 @@
 #[macro_use]
 mod common;
 
-use anyhow::Result;
-use common::{mock_api_start, TwitchFixture};
 use twitch_highway::{
-    channel_points::{ChannelPointsAPI, CustomReward, RedemptionStatus},
+    channel_points::{ChannelPointsAPI, RedemptionStatus},
     types::{BroadcasterId, RedemptionId, RewardId},
 };
-use twitch_oauth_token::scope::ChannelPointScopes;
 
 api_test!(build
     create_custom_rewards |api| {
@@ -93,120 +90,3 @@ api_test!(build_extra
         .title("game analysis 2v2")
     }
 );
-
-#[tokio::test]
-async fn mock_api() -> Result<()> {
-    let _cmd = mock_api_start().await?;
-
-    let api = TwitchFixture::user_access_token_with_partner(|scope| {
-        scope.channel_points_api();
-    })
-    .await?;
-
-    let _reward = mock_api_get_custom_reward(&api).await?;
-
-    let create = mock_api_create_custom_rewards(&api, "twitch_highway").await?;
-
-    mock_api_delete_custom_reward(&api, &create.id).await?;
-    // mock_api_update_custom_reward(
-    //     &api,
-    //     &reward.id,
-    //     UpdateCustomRewardRequest::new().title("hello"),
-    // )
-    // .await?;
-
-    Ok(())
-}
-
-async fn mock_api_create_custom_rewards(api: &TwitchFixture, title: &str) -> Result<CustomReward> {
-    let resp = api
-        .api
-        .create_custom_rewards(&api.selected_broadcaster_id(), title, 6)
-        .json()
-        .await?;
-
-    assert!(resp.data.is_some());
-    let data = resp.data.unwrap();
-    assert!(!data.is_empty());
-    let first = data.first().cloned().unwrap();
-    Ok(first)
-}
-
-async fn mock_api_delete_custom_reward(
-    api: &TwitchFixture,
-    custom_reward_id: &RewardId,
-) -> Result<()> {
-    api.api
-        .delete_custom_reward(&api.selected_broadcaster_id(), custom_reward_id)
-        .send()
-        .await?;
-
-    Ok(())
-}
-async fn mock_api_get_custom_reward(api: &TwitchFixture) -> Result<CustomReward> {
-    let resp = api
-        .api
-        .get_custom_reward(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-
-    assert!(resp.data.is_some());
-    let data = resp.data.unwrap();
-    assert!(!data.is_empty());
-    let first = data.first().cloned().unwrap();
-
-    Ok(first)
-}
-// async fn mock_api_get_custom_reward_redemption(
-//     api: &TwitchFixture,
-//     custom_reward_id: &RewardId,
-// ) -> Result<Vec<CustomRewardsRedemption>> {
-//     let resp = api
-//         .api
-//         .get_custom_reward_redemption(&api.selected_broadcaster_id(), custom_reward_id)
-//         .status(RedemptionStatus::FULFILLED)
-//         .json()
-//         .await?;
-//
-//     assert!(!resp.data.is_empty());
-//
-//     Ok(resp.data)
-// }
-// async fn mock_api_update_custom_reward(
-//     api: &TwitchFixture,
-//     custom_reward_id: &RewardId,
-// ) -> Result<()> {
-//     let resp = api
-//         .api
-//         .update_custom_reward(&api.selected_broadcaster_id(), custom_reward_id)
-//         .json()
-//         .await?;
-//
-//     assert!(resp.data.is_some());
-//     let data = resp.data.unwrap();
-//     assert!(!data.is_empty());
-//
-//     Ok(())
-// }
-//
-// async fn mock_api_update_redemption_status(
-//     api: &TwitchFixture,
-//     custom_reward_id: &RewardId,
-//     redemption_id: &RedemptionId,
-//     status: RedemptionStatus,
-// ) -> Result<()> {
-//     let resp = api
-//         .api
-//         .update_redemption_status(
-//             &api.selected_broadcaster_id(),
-//             custom_reward_id,
-//             std::slice::from_ref(redemption_id),
-//             status,
-//         )
-//         .json()
-//         .await?;
-//
-//     assert!(!resp.data.is_empty());
-//
-//     Ok(())
-// }

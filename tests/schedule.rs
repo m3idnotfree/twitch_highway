@@ -3,15 +3,11 @@
 #[macro_use]
 mod common;
 
-use anyhow::Result;
-use chrono::Utc;
 use chrono_tz::America::New_York;
-use common::{mock_api_start, TwitchFixture};
 use twitch_highway::{
     schedule::ScheduleAPI,
     types::{BroadcasterId, CategoryId, SegmentId},
 };
-use twitch_oauth_token::scope::ScheduleScopes;
 
 api_test!(build
     get_channel_stream_schedule |api| {
@@ -56,78 +52,3 @@ api_test!(
         delete_channel_stream_schedule_segment,
         [&BroadcasterId::from("141981764"), &SegmentId::from("eyJzZWdtZW50SUQiOiI4Y2EwN2E2NC0xYTZkLTRjYWItYWE5Ni0xNjIyYzNjYWUzZDkiLCJpc29ZZWFyIjoyMDIxLCJpc29XZWVrIjoyMX0=")]
     );
-
-// #[tokio::test]
-// async fn mock_api() -> Result<()> {
-//     let _cmd = mock_api_start().await?;
-//
-//     let api = TwitchFixture::user_access_token(|scope| {
-//         scope.schedule_api();
-//     })
-//     .await?;
-//
-//     // mock_api_get_channel_stream_schedule(&api).await?;
-//     mock_api_get_channel_icalendar(&api).await?;
-//     mock_api_update_channel_stream_schedule(&api).await?;
-//     mock_api_create_channel_stream_schedule_segment(&api).await?;
-//
-//     // mock_api_update_channel_stream_schedule_segment(&api).await?;
-//
-//     mock_api_delete_channel_stream_schedule_segment(&api).await?;
-//     // mock_api_get_channel_stream_schedule(&api).await?;
-//     // mock_api_get_channel_stream_schedule(&api).await?;
-//
-//     Ok(())
-// }
-//
-// // async fn mock_api_get_channel_stream_schedule(api: &TwitchFixture) -> Result<()> {
-// //     api.api
-// //         .get_channel_stream_schedule(&api.selected_broadcaster_id(), None::<Utc>, None)
-// //         .json()
-// //         .await?;
-// //     Ok(())
-// // }
-// async fn mock_api_get_channel_icalendar(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .get_channel_icalendar(&api.selected_broadcaster_id())
-//         .text()
-//         .await?;
-//     Ok(())
-// }
-// async fn mock_api_update_channel_stream_schedule(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .update_channel_stream_schedule(&api.selected_broadcaster_id())
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-// async fn mock_api_create_channel_stream_schedule_segment(api: &TwitchFixture) -> Result<()> {
-//     let time = Utc::now();
-//
-//     api.api
-//         .create_channel_stream_schedule_segment(&api.selected_broadcaster_id(), &time, New_York, 0)
-//         .json()
-//         .await?;
-//     Ok(())
-// }
-// // async fn mock_api_update_channel_stream_schedule_segment(api: &TwitchFixture) -> Result<()> {
-// //     api.api
-// //         .update_channel_stream_schedule_segment(
-// //             &api.selected_broadcaster_id(),
-// //             &api.selected_id(),
-// //             None,
-// //         )
-// //         .json()
-// //         .await?;
-// //     Ok(())
-// // }
-// async fn mock_api_delete_channel_stream_schedule_segment(api: &TwitchFixture) -> Result<()> {
-//     api.api
-//         .delete_channel_stream_schedule_segment(
-//             &api.selected_broadcaster_id(),
-//             &SegmentId::from(api.selected_broadcaster_id().to_string()),
-//         )
-//         .json()
-//         .await?;
-//     Ok(())
-// }

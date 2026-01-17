@@ -3,13 +3,10 @@
 #[macro_use]
 mod common;
 
-use anyhow::Result;
-use common::{mock_api_start, TwitchFixture};
 use twitch_highway::{
     types::{BroadcasterId, ExtensionId, UserId},
     users::{Component, Overlay, Panel, UserAPI},
 };
-use twitch_oauth_token::scope::UserScopes;
 
 api_test!(build
     get_users |api| {
@@ -68,62 +65,3 @@ api_test!(
     get_authorization_by_user,
     [&[UserId::from("41981764"), UserId::from("197886470")]]
 );
-
-#[tokio::test]
-async fn mock_api() -> Result<()> {
-    let _cmd = mock_api_start().await?;
-
-    let api = TwitchFixture::user_access_token(|scope| {
-        scope.users_api();
-    })
-    .await?;
-
-    mock_api_get_users(&api).await?;
-    mock_api_update_user(&api).await?;
-    mock_api_get_user_block_list(&api).await?;
-    mock_api_block_user(&api).await?;
-    mock_api_unblock_user(&api).await?;
-
-    // mock_api_get_user_extensions(&api).await?;
-    // mock_api_get_user_active_extensions(&api).await?;
-
-    Ok(())
-}
-
-async fn mock_api_get_users(api: &TwitchFixture) -> Result<()> {
-    api.api.get_users().json().await?;
-    Ok(())
-}
-async fn mock_api_update_user(api: &TwitchFixture) -> Result<()> {
-    api.api.update_user("ffs").json().await?;
-    Ok(())
-}
-async fn mock_api_get_user_block_list(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_user_block_list(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_block_user(api: &TwitchFixture) -> Result<()> {
-    let random_user = api.get_random_user()?;
-    let user_id = UserId::from(random_user.id);
-    api.api.block_user(&user_id).json().await?;
-    Ok(())
-}
-async fn mock_api_unblock_user(api: &TwitchFixture) -> Result<()> {
-    api.api.unblock_user(&api.selected_user_id()).json().await?;
-    Ok(())
-}
-// async fn mock_api_get_user_extensions(api: &TwitchFixture) -> Result<()> {
-//     api.api.get_user_extensions().json().await?;
-//     Ok(())
-// }
-// async fn mock_api_get_user_active_extensions(api: &TwitchFixture) -> Result<()> {
-//     api.api.get_user_active_extensions(None).json().await?;
-//     Ok(())
-// }
-// async fn mock_api_update_user_extensions(api: &TwitchFixture) -> Result<()> {
-//     api.api.get_user_active_extensions(None).json().await?;
-//     Ok(())
-// }

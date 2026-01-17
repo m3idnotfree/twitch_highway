@@ -14,6 +14,29 @@ categories = ["api-bindings", "web-programming"]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[[test]]
+name = "twitch-cli"
+path = "tests/twitch_cli.rs"
+required-features = [
+  "bits",
+  "ccls",
+  "channel-points",
+  "channels",
+  "charity",
+  "chat",
+  "clips",
+  "goals",
+  "polls",
+  "predictions",
+  "raid",
+  "search",
+  "subscriptions",
+  "teams",
+  "users",
+  "videos",
+  "whisper"
+]
+
 [dependencies]
 # webhook - HeaderAccess trait implementation
 actix-http = { version = "3.11.2", optional = true }

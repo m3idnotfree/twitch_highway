@@ -3,13 +3,10 @@
 #[macro_use]
 mod common;
 
-use anyhow::Result;
-use common::{mock_api_start, TwitchFixture};
 use twitch_highway::{
     predictions::{PredictionStatus, PredictionsAPI},
     types::{BroadcasterId, PredictionId, Title},
 };
-use twitch_oauth_token::scope::PredictionScopes;
 
 api_test!(build
     get_predictions | api | {
@@ -39,55 +36,3 @@ api_test!(build
         .winning_outcome_id("73085848-a94d-4040-9d21-2cb7a89374b7")
     }
 );
-
-#[tokio::test]
-async fn mock_api() -> Result<()> {
-    let _cmd = mock_api_start().await?;
-
-    let api = TwitchFixture::user_access_token(|scope| {
-        scope.predictions_api();
-    })
-    .await?;
-
-    mock_api_get_predictions(&api).await?;
-    mock_api_create_prediction(&api).await?;
-    mock_api_end_prediction(&api).await?;
-
-    Ok(())
-}
-
-async fn mock_api_get_predictions(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_predictions(&api.selected_broadcaster_id())
-        .json()
-        .await?;
-    Ok(())
-}
-
-async fn mock_api_create_prediction(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .create_prediction(
-            &api.selected_broadcaster_id(),
-            "Any leeks in the stream?",
-            &[
-                Title::new("Yes, give it time."),
-                Title::new("Definitely not."),
-            ],
-            120,
-        )
-        .json()
-        .await?;
-    Ok(())
-}
-async fn mock_api_end_prediction(api: &TwitchFixture) -> Result<()> {
-    let prediction_id = PredictionId::from(api.selected_broadcaster_id().to_string().clone());
-    api.api
-        .end_prediction(
-            &api.selected_broadcaster_id(),
-            &prediction_id,
-            PredictionStatus::CANCELED,
-        )
-        .json()
-        .await?;
-    Ok(())
-}
