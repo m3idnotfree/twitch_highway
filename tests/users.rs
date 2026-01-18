@@ -8,31 +8,25 @@ use twitch_highway::{
     users::{Component, Overlay, Panel, UserAPI},
 };
 
-api_test!(build
-    get_users |api| {
-        api.get_users().ids(&[UserId::from("141981764")])
-    }
+api_test!(
+    update_user["BaldAngel"],
+    unblock_user[&UserId::from("198704263")],
+    get_user_extensions[],
+    get_authorization_by_user[&[UserId::from("41981764"), UserId::from("197886470")]]
 );
-api_test!(update_user, ["BaldAngel"]);
-api_test!(build
-    get_user_block_list |api| {
-        api.get_user_block_list(&BroadcasterId::from("141981764"))
-    }
+
+api_test!(get_users | api | { api.get_users().ids(&[UserId::from("141981764")]) });
+
+api_test!(
+    get_user_block_list | api | { api.get_user_block_list(&BroadcasterId::from("141981764")) }
 );
-api_test!(build
-    block_user |api| {
-        api.block_user(&UserId::from("198704263"))
-    }
-);
-api_test!(unblock_user, [&UserId::from("198704263")]);
-api_test!(get_user_extensions, []);
-api_test!(build
-    get_user_active_extensions |api| {
-        api.get_user_active_extensions()
-    }
-);
-api_test!(build
-    update_user_extensions |api| {
+
+api_test!(block_user | api | { api.block_user(&UserId::from("198704263")) });
+
+api_test!(get_user_active_extensions | api | { api.get_user_active_extensions() });
+
+api_test!(
+    update_user_extensions | api | {
         api.update_user_extensions()
             .add_panel(
                 Panel::new(true)
@@ -59,9 +53,4 @@ api_test!(build
             )
             .add_component(Component::new(false))
     }
-);
-
-api_test!(
-    get_authorization_by_user,
-    [&[UserId::from("41981764"), UserId::from("197886470")]]
 );

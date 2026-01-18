@@ -8,14 +8,15 @@ use twitch_highway::{
     types::{BroadcasterId, PollId, Title},
 };
 
-api_test!(build
-    get_polls |api| {
+api_test!(
+    get_polls | api | {
         api.get_polls(&BroadcasterId::from("141981764"))
             .ids(&[PollId::from("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a")])
     }
 );
-api_test!(build
-    create_poll |api| {
+
+api_test!(
+    create_poll | api | {
         api.create_poll(
             &BroadcasterId::from("141981764"),
             "Heads or Tails?",
@@ -26,8 +27,9 @@ api_test!(build
         .channel_points_per_vote(100)
     }
 );
+
 api_test!(
-    end_poll,
+    end_poll
     [
         &BroadcasterId::from("141981764"),
         &PollId::from("ed961efd-8a3f-4cf5-a9d0-e616c590cd2a"),

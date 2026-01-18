@@ -8,8 +8,7 @@ use twitch_highway::{
     types::{BroadcasterId, TeamId},
 };
 
-api_test!(get_channel_teams, [&BroadcasterId::from("96909659")]);
-api_test!(extra
-    get_teams_by_id,
-    get_teams, [&TeamId::from("6358")]
+api_test!(
+    get_channel_teams[&BroadcasterId::from("96909659")],
+    get_teams_by_id as get_teams[&TeamId::from("6358")]
 );

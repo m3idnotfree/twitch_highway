@@ -8,15 +8,12 @@ use twitch_highway::{
     types::{BroadcasterId, UserId},
 };
 
-api_test!(build
-    get_broadcaster_subscriptions |api| {
+api_test!(
+    get_broadcaster_subscriptions | api | {
         api.get_broadcaster_subscriptions(&BroadcasterId::from("141981764"))
     }
 );
+
 api_test!(
-    check_user_subscription,
-    [
-        &BroadcasterId::from("149747285"),
-        &UserId::from("141981764")
-    ]
+    check_user_subscription [&BroadcasterId::from("149747285"), &UserId::from("141981764")]
 );

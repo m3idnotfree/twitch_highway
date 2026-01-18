@@ -5,4 +5,4 @@ mod common;
 
 use twitch_highway::ccls::CclsAPI;
 
-api_test!(get_content_classification_labels, [None]);
+api_test!(get_content_classification_labels[None]);

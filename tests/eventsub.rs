@@ -9,8 +9,8 @@ use twitch_highway::{
 };
 use url::Url;
 
-api_test!(build
-    create_eventsub |api| {
+api_test!(
+    create_eventsub | api | {
         api.webhook_subscription(
             SubscriptionType::UserUpdate,
             Url::parse("https://this-is-a-callback.com").unwrap(),
@@ -19,21 +19,13 @@ api_test!(build
         .user_id(UserId::from("1234"))
     }
 );
-api_test!(
-    delete_eventsub,
-    [&SubscriptionId::from(
-        "26b1c993-bfcf-44d9-b876-379dacafe75a"
-    )]
-);
-api_test!(build
-    get_eventsub |api| {
-        api.get_eventsub()
-    }
-);
 
-api_test!(build_extra
-    create_eventsub,
-    create_eventsub2 |api| {
+api_test!(delete_eventsub[&SubscriptionId::from("26b1c993-bfcf-44d9-b876-379dacafe75a")]);
+
+api_test!(get_eventsub | api | { api.get_eventsub() });
+
+api_test!(
+    create_eventsub as create_eventsub2 | api | {
         api.websocket_subscription(
             SubscriptionType::UserUpdate,
             SessionId::from("AQoQexAWVYKSTIu4ec_2VAxyuhAB"),
@@ -41,9 +33,9 @@ api_test!(build_extra
         .user_id(UserId::from("1234"))
     }
 );
-api_test!(build_extra
-    create_eventsub,
-    create_eventsub3 |api| {
+
+api_test!(
+    create_eventsub as create_eventsub3 | api | {
         api.conduit_subscription(
             SubscriptionType::UserUpdate,
             ConduitId::from("bfcfc993-26b1-b876-44d9-afe75a379dac"),

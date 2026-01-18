@@ -8,15 +8,16 @@ use twitch_highway::{
     types::{EntitlementId, GameId, UserId},
 };
 
-api_test!(build
-    get_drops_entitlements |api|{
+api_test!(
+    get_drops_entitlements | api | {
         api.get_drops_entitlements()
             .user_id(&UserId::from("25009227"))
             .game_id(&GameId::from("33214"))
     }
 );
-api_test!(build
-    update_drops_entitlements |api| {
+
+api_test!(
+    update_drops_entitlements | api | {
         api.update_drops_entitlements()
             .entitlement_ids(&[
                 EntitlementId::from("fb78259e-fb81-4d1b-8333-34a06ffc24c0"),

@@ -8,18 +8,16 @@ use twitch_highway::{
     types::{BroadcasterId, ClipId, UserId},
 };
 
-api_test!(build
-    create_clip |api| {
-        api.create_clip(&BroadcasterId::from("44322889"))
-    }
-);
-api_test!(build
-    get_clips |api| {
+api_test!(create_clip | api | { api.create_clip(&BroadcasterId::from("44322889")) });
+
+api_test!(
+    get_clips | api | {
         api.get_clips_by_ids(&[ClipId::from("AwkwardHelplessSalamanderSwiftRage")])
     }
 );
+
 api_test!(
-    get_clips_download,
+    get_clips_download
     [
         &UserId::from("141981764"),
         &BroadcasterId::from("141981764"),
@@ -30,9 +28,8 @@ api_test!(
     ]
 );
 
-api_test!(build_extra
-    get_clips,
-    get_clips2 |api| {
+api_test!(
+    get_clips as get_clips2 | api | {
         api.get_clips_by_broadcaster_id(&BroadcasterId::from("1234"))
             .first(5)
     }

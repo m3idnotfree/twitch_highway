@@ -13,44 +13,27 @@ use twitch_highway::{
 };
 use twitch_oauth_token::scope::StreamScopes;
 
-api_test!(get_stream_key, [&BroadcasterId::from("141981764")]);
-api_test!(build
-    get_streams |api| {
-        api.get_streams()
-    }
-);
-api_test!(build
-    get_followed_streams |api| {
-        api.get_followed_streams(&UserId::from("141981764"))
-    }
-);
 api_test!(
-    create_stream_marker,
-    [&UserId::from("123"), Some("hello, this is a marker!")]
+    get_stream_key[&BroadcasterId::from("141981764")],
+    create_stream_marker[&UserId::from("123"), Some("hello, this is a marker!")]
 );
-api_test!(build
-    get_stream_markers |api| {
+
+api_test!(get_streams | api | { api.get_streams() });
+
+api_test!(get_followed_streams | api | { api.get_followed_streams(&UserId::from("141981764")) });
+
+api_test!(
+    get_stream_markers | api | {
         api.get_stream_markers_by_user_id(&UserId::from("123"))
             .first(5)
     }
 );
 
-#[tokio::test]
-pub(crate) async fn get_streams_2() {
-    let suite = HttpMock::new().await;
-
-    suite.get_streams_2().await;
-
-    let _ = suite
-        .execute(|api| {
-            api.get_streams()
-                .user_logins(&["cohhcarnage", "lana_lux"])
-                .build()
-        })
-        .json()
-        .await
-        .unwrap();
-}
+api_test!(
+    get_streams as get_streams_2 | api | {
+        api.get_streams().user_logins(&["cohhcarnage", "lana_lux"])
+    }
+);
 
 // #[tokio::test]
 // async fn mock_api() -> Result<()> {

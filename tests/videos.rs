@@ -5,12 +5,6 @@ mod common;
 
 use twitch_highway::{types::VideoId, videos::VideosAPI};
 
-api_test!(build
-    get_videos |api| {
-        api.get_videos_by_ids(&[VideoId::from("335921245")])
-    }
-);
-api_test!(
-    delete_videos,
-    [&[VideoId::from("1234"), VideoId::from("9876")],]
-);
+api_test!(get_videos | api | { api.get_videos_by_ids(&[VideoId::from("335921245")]) });
+
+api_test!(delete_videos[&[VideoId::from("1234"), VideoId::from("9876")],]);
