@@ -287,6 +287,7 @@ impl TwitchAPI {
         headers
     }
 
+    #[allow(unused)]
     pub(crate) fn build_url(&self) -> Url {
         self.url.clone()
     }
