@@ -1,0 +1,91 @@
+[changelog]
+body = """
+{% if version %}\
+    {% if previous.version %}\
+        ## [{{ version | trim_start_matches(pat="v") }}]($REPO/compare/{{ previous.version }}..{{ version }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+    {% else %}\
+        ## [{{ version | trim_start_matches(pat="v") }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+    {% endif %}\
+{% else %}\
+    ## [unreleased]
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits %}
+        - {% if commit.scope %}**({{ commit.scope }})** {% endif %}\
+            {% if commit.breaking %}[**breaking**] {% endif %}\
+            {{ commit.message | upper_first }}([{{ commit.id | truncate(length=7, end="") }}]($REPO/commit/{{ commit.id }}))\
+    {% endfor %}
+{% endfor %}
+"""
+trim = true
+render_always = true
+postprocessors = [
+  { pattern = '\$REPO', replace = "https://github.com/m3idnotfree/twitch_highway" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+require_conventional = false
+split_commits = false
+commit_preprocessors = [
+  { pattern = "^first commint", replace = "chore: first commit" },
+  { pattern = "^release 0.0.2", replace = "chore(release): 0.0.2" },
+  { pattern = '^feat\(types\): implement version-aware subscription type deserialization\nmacro', replace = "feat(types): implement version-aware subscription type deserialization macro" },
+  { pattern = '^feat\(moderation\) implement Twitch Moderation API endpoints', replace = "feat(moderation): implement Twitch Moderation API endpoints" },
+  { pattern = '^\s*refactor\(request\): reorganize requ module', replace = "refactor(request): reorganize request module" },
+  { pattern = '^test\(raid\) add mock_server test', replace = "test(raid): add mock_server test" },
+  { pattern = '^delete\(eventsub\):', replace = "refactor!: remove eventsub module" },
+  { pattern = '^refactor\(base\): merged QueryParams into UrlBuilder, removed\nIntoQueryPairs trait', replace = "refactor(base): merged QueryParams into UrlBuilder, removed IntoQueryPairs trait" },
+  { pattern = '^refactor\(request\): upgrade asknothing-util and replace EmptyBody with\nNoContent', replace = "refactor(request): upgrade asknothing-util and replace EmptyBody with NoContent" },
+  { pattern = '^refactor\(error\): replace asknothingx2-util errors with direct reqwest\nerrors', replace = "refactor(error): replace asknothingx2-util errors with direct reqwest errors" },
+  { pattern = '^refactor\(ads\): migrate to twitch_api_trait macro and add full test\ncoverage', replace = "refactor(ads): migrate to twitch_api_trait macro and add full test coverage" },
+  { pattern = '^refactor\(analytics\): migrate to twitch_api_trait macro and add full test\ncoverage', replace = "refactor(analytics): migrate to twitch_api_trait macro and add full test coverage" },
+  { pattern = '^feat\(tests\): add macro-enforced test coverage and standardize test\nnaming', replace = "feat(tests): add macro-enforced test coverage and standardize test naming" },
+  { pattern = '^refactor\(macros\): rename twitch_api_trait to endpoints and simplify\nsyntax', replace = "refactor(macros): rename twitch_api_trait to endpoints and simplify syntax" },
+  { pattern = '^refactor\(macros\): simplify endpoints macro syntax and migrate all\nmodules', replace = "refactor(macros): simplify endpoints macro syntax and migrate all modules" },
+  { pattern = '^refactor\(eventsub\): remove EventSubData and TransportMethod from public\nAPI', replace = "refactor(eventsub): remove EventSubData and TransportMethod from public API" },
+  { pattern = '^feat\(eventsub\): implement Service<\(\)> for Router to enable MakeService\npattern', replace = "feat(eventsub): implement Service<()> for Router to enable MakeService pattern" },
+  { pattern = '^refactor\(macros\): remove compile-time test enforcement from endpoints\nmacro', replace = "refactor(macros): remove compile-time test enforcement from endpoints macro" },
+  { pattern = '^refactor\(eventsub\): consolidate all channel events under channels/\ndirectory', replace = "refactor(eventsub): consolidate all channel events under channels/ directory" },
+  { pattern = '^chore\(deps\): update url to 2.5.8 with serde feature and other\ndependencies', replace = "chore(deps): update url to 2.5.8 with serde feature and other dependencies" },
+  { pattern = "^Update: lib.rs", replace = "refactor!: remove moderation and utils modules" },
+  { pattern = "rename\\(channel_points\\): rename flag '-'\\(dash\\) instead of '_'\\(under dash\\)", replace = "refactor(channel_points)!: rename flag '-'(dash) instead of '_'(under dash)" },
+  { pattern = "^deprecate\\(hype-train\\): mark get_hype_train_events as deprecated", replace = "docs(hype-train): mark get_hype_train_events as deprecated" },
+  { pattern = "^(?i)chore: (?i)release ", replace = "chore(release): " },
+  { pattern = '^dosc(\([^)]+\))?:\s*', replace = "docs$1: " },
+  { pattern = '^refacter(\([^)]+\))?:\s*', replace = "refactor$1:" },
+  { pattern = '^pref(\([^)]+\))?:\s*', replace = "perf$1: " },
+  { pattern = '^rerefactor(\([^)]+\))?:\s*', replace = "refactor$1:" },
+  # { pattern = '^chore\(\):\s*$', replace = "chore: delete .DS_Store" },
+  # { pattern = '^refactor\(base\):', replace = "refactor(base): add feature-gated" },
+  # { pattern = '^feat\(types\):\s*$', replace = "feat(types): add feature-gated constants and refactor type system" },
+]
+protect_breaking_commits = false
+commit_parsers = [
+  { message = "^chore\\(release\\): ", skip = true },
+  { message = "^(?i)feat", group = "<!-- 00 -->Features" },
+  { message = "^(?i)fix", group = "<!-- 01 -->Bug Fixes" },
+  { message = "^doc", group = "<!-- 03 -->Documentation" },
+  { message = "^perf", group = "<!-- 04 -->Performance" },
+  { message = "^refactor", group = "<!-- 02 -->Refactor" },
+  { message = "^style", group = "<!-- 05 -->Styling" },
+  { message = "^(?i)test", group = "<!-- 06 -->Testing" },
+  { message = "^chore\\(release\\): prepare for", skip = true },
+  { message = "^chore\\(deps.*\\)", skip = true },
+  { message = "^chore\\(pr\\)", skip = true },
+  { message = "^chore\\(pull\\)", skip = true },
+  { message = "^(?i)chore|^ci", group = "<!-- 07 -->Miscellaneous" },
+  { body = ".*security", group = "<!-- 08 -->Security" },
+  { message = "^revert", group = "<!-- 09 -->Revert" },
+  { message = ".*", group = "<!-- 99 -->Other" },
+]
+filter_commits = false
+fail_on_unmatched_commit = false
+link_parsers = []
+use_branch_tags = false
+topo_order = false
+topo_order_commits = true
+sort_commits = "oldest"
+recurse_submodules = false
