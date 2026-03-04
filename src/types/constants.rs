@@ -457,7 +457,7 @@ pub(crate) const DESCRIPTION: &str = "description";
 #[cfg(feature = "users")]
 pub(crate) const AUTHORIZATION: &str = "authorization";
 
-#[cfg(feature = "videos")]
+#[cfg(any(feature = "clips", feature = "videos"))]
 pub(crate) const VIDEOS: &str = "videos";
 #[cfg(any(feature = "streams", feature = "videos"))]
 pub(crate) const LANGUAGE: &str = "language";

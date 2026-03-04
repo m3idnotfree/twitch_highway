@@ -9,7 +9,7 @@ pub use types::{Clip, ClipDownload, CreateClip};
 use crate::{
     request::TwitchAPIRequest,
     types::{
-        constants::{BROADCASTER_ID, CLIPS, CLIP_ID, DOWNLOADS, EDITOR_ID},
+        constants::{BROADCASTER_ID, CLIPS, CLIP_ID, DOWNLOADS, EDITOR_ID, VIDEOS},
         BroadcasterId, ClipId, GameId, UserId,
     },
     TwitchAPI,
@@ -238,6 +238,16 @@ pub trait ClipsAPI {
         broadcaster_id: &BroadcasterId,
         clip_ids: &[ClipId],
     ) -> TwitchAPIRequest<ClipsDownloadResponse>;
+
+    fn create_clip_from_vod(
+        &self,
+        editor_id: &UserId,
+        broadcaster_id: &BroadcasterId,
+        vod_id: &str,
+        vod_offset: u64,
+        title: &str,
+        duration: Option<f64>,
+    ) -> TwitchAPIRequest<CreateClipsResponse>;
 }
 
 impl ClipsAPI for TwitchAPI {
@@ -266,4 +276,37 @@ impl ClipsAPI for TwitchAPI {
         method: GET,
         path: [CLIPS,DOWNLOADS]
     );
+    fn create_clip_from_vod(
+        &self,
+        editor_id: &UserId,
+        broadcaster_id: &BroadcasterId,
+        vod_id: &str,
+        vod_offset: u64,
+        title: &str,
+        duration: Option<f64>,
+    ) -> TwitchAPIRequest<CreateClipsResponse> {
+        let mut url = self.build_url();
+        url.path_segments_mut().unwrap().extend(&[VIDEOS, CLIPS]);
+
+        url.query_pairs_mut()
+            .append_pair(EDITOR_ID, editor_id)
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair("vod_id", vod_id)
+            .append_pair("vod_offset", &vod_offset.to_string())
+            .append_pair("title", title);
+
+        if let Some(duration) = duration {
+            url.query_pairs_mut()
+                .append_pair("duration", &format!("{:.1}", duration));
+        }
+
+        TwitchAPIRequest::new(
+            crate::request::EndpointType::CreateClipFromVod,
+            url,
+            reqwest::Method::POST,
+            self.default_headers(),
+            None,
+            self.client.clone(),
+        )
+    }
 }

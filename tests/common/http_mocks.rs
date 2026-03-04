@@ -1507,6 +1507,23 @@ impl HttpMock {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn create_clip_from_vod(&self) {
+        self.api_mock("POST", "/videos/clips")
+            .and(query_param("broadcaster_id", "141981764"))
+            .and(query_param("editor_id", "12826"))
+            .and(query_param("vod_id", "2277656159"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+              "data": [
+                {
+                    "id": "FiveWordsForClipSlug",
+                    "edit_url": "https://www.twitch.tv/twitchdev/clip/FiveWordsForClipSlug"
+                }
+              ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 #[cfg(feature = "conduits")]

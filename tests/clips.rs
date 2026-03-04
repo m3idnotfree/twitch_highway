@@ -34,3 +34,15 @@ api_test!(
             .first(5)
     }
 );
+
+api_test!(
+    create_clip_from_vod
+    [
+        &UserId::from("12826"),
+        &BroadcasterId::from("141981764"),
+        "2277656159",
+        8,
+        "title",
+        None
+    ]
+);

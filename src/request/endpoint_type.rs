@@ -45,6 +45,7 @@ pub enum EndpointType {
     UpdateUserChatColor,
     // Clips
     CreateClip,
+    CreateClipFromVod,
     GetClips,
     GetClipsDownload,
     // Conduits
@@ -225,6 +226,7 @@ impl EndpointType {
             Self::UpdateUserChatColor => TokenType::User,
             // Clips
             Self::CreateClip => TokenType::User,
+            Self::CreateClipFromVod => TokenType::Any,
             Self::GetClips => TokenType::Any,
             Self::GetClipsDownload => TokenType::Any,
             // Conduits
