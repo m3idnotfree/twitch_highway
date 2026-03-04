@@ -2,7 +2,7 @@ pub trait HeaderAccess {
     fn get_header(&self, name: &str) -> Option<&str>;
 }
 
-#[cfg(feature = "webhook-http")]
+#[cfg(feature = "webhook-axum")]
 impl HeaderAccess for http::HeaderMap {
     fn get_header(&self, name: &str) -> Option<&str> {
         self.get(name)?.to_str().ok()

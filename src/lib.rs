@@ -99,9 +99,7 @@
 //!
 //! #### Feature Flags
 //!
-//! - `websocket-client`: Client with reconnection
-//! - `websocket-router`: Event router with handles
-//! - `websocket`:  All WebSocket features
+//! - `websocket`:  WebSocket clietn with reconnection and event routing
 //!
 //! See the [`eventsub`] module documentation for more details.
 //!

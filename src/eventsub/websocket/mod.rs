@@ -3,11 +3,6 @@
 //! This module provides a WebSocket client for receiving Twitch EventSub notifications in real-time,
 //! along with a router for handling different event types. The design is similar to axum's routing pattern.
 //!
-//! # Features
-//!
-//! - `websocket-client`: WebSocket client with automatic reconnection
-//! - `websocket-router`: Event router with handler support and middleware layers
-//!
 //! # Quick Start
 //!
 //! ```toml
@@ -116,10 +111,10 @@
 //! - Reconnection requests from the server
 //! - Connection failures with exponential backoff
 
-#[cfg(feature = "websocket-router")]
+#[cfg(feature = "websocket")]
 mod router;
 
-#[cfg(feature = "websocket-client")]
+#[cfg(feature = "websocket")]
 mod client;
 
 mod common;
@@ -127,10 +122,10 @@ mod messages;
 mod scanner;
 mod types;
 
-#[cfg(feature = "websocket-client")]
+#[cfg(feature = "websocket")]
 pub use client::{client, Client, Config, Error, WithGracefulShutdown};
 
-#[cfg(feature = "websocket-router")]
+#[cfg(feature = "websocket")]
 pub use router::{extract, layer, routes, Router};
 
 pub use common::{IntoResponse, Request, Response};

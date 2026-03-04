@@ -2,8 +2,6 @@
 //!
 //! # Features
 //!
-//! - `webhook-verify`: Core verification functionality with HMAC-SHA256
-//! - `webhook-http`: [`HeaderAccess`] implementation for `http::HeaderMap`
 //! - `webhook-axum`: [`HeaderAccess`] implementation for axum via `axum-core`, `IntoResponse` for [`VerificationError`]
 //! - `webhook-actix`: [`HeaderAccess`] implementation for actix-web via `actix-http`
 //!

@@ -132,13 +132,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error> {
 
 ### EventSub Features
 
-- **`webhook`**: All webhook features (verification, framework integrations)
-- **`webhook-verify`**: Core signature verification
 - **`webhook-axum`**: Axum framework integration
 - **`webhook-actix`**: Actix-web framework integration
 - **`websocket`**: WebSocket client with routing
-- **`websocket-client`**: WebSocket client only
-- **`websocket-router`**: Event router with middleware
 
 ## Twitch API Coverage
 

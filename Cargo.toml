@@ -69,19 +69,15 @@ twitch_oauth_token = { version = "4.0.1", features = ["oneshot", "test"] }
 wiremock = "0.6.5"
 
 [features]
-webhook = ["webhook-actix", "webhook-axum"]
-webhook-actix = ["actix-http", "webhook-verify"]
-webhook-axum = ["axum-core", "webhook-http"]
-webhook-http = ["http", "webhook-verify"]
-webhook-verify = ["hex", "hmac", "rand", "sha2", "subtle"]
-websocket = ["websocket-client", "websocket-router"]
-websocket-client = [
+webhook-actix = ["actix-http", "hex", "hmac", "rand", "sha2", "subtle"]
+webhook-axum = ["axum-core", "hex", "hmac", "http", "rand", "sha2", "subtle"]
+websocket = [
   "dep:tower",
   "futures-util",
+  "pin-project-lite",
   "thiserror",
   "tokio",
   "tokio-tungstenite",
-  "tracing"
+  "tracing",
 ]
-websocket-router = ["dep:tower", "futures-util", "pin-project-lite", "tracing"]
 whisper = []
