@@ -11,9 +11,7 @@ pub struct MockStreams {
 }
 
 pub async fn get_stream_data() -> Result<MockStreams, MockDataError> {
-    let client = preset::testing("twitch-hyghway-test/1.0")
-        .build_client()
-        .unwrap();
+    let client = preset::testing("twitch-hyghway-test/1.0").build().unwrap();
     client
         .get("http://localhost:8080/units/streams")
         .send()

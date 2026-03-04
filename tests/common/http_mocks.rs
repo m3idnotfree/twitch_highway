@@ -29,9 +29,7 @@ impl HttpMock {
         let api = TwitchAPI::with_client(
             AccessToken::from("2gbdx6oar67tqtcmt49t3wpcgycthx"),
             ClientId::from("wbmytr93xzw8zbg0p1izqyzzc5mbiz"),
-            preset::testing("twitch-highway-test/1.0")
-                .build_client()
-                .unwrap(),
+            preset::testing("twitch-highway-test/1.0").build().unwrap(),
         )
         .set_url(url_parsed);
 

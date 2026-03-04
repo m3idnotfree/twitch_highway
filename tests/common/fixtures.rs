@@ -74,14 +74,12 @@ impl TwitchFixture {
         )
         .with_test();
 
-        let app_token = oauth.app_access_token().await?.app_token().await?;
+        let app_token = oauth.app_access_token().await?;
 
         let api = TwitchAPI::with_client(
             app_token.access_token.clone(),
             selected_client.ID.clone(),
-            preset::testing("twitch-highway-test/1.0")
-                .build_client()
-                .unwrap(),
+            preset::testing("twitch-highway-test/1.0").build().unwrap(),
         );
 
         Ok(Self {
@@ -165,17 +163,15 @@ where
         TwitchOauth::from_credentials(selected_client.ID.clone(), selected_client.Secret.clone())
             .with_test();
 
-    let mut user_token_request = oauth.user_access_token(&selected_user.id);
+    let mut user_token_request = oauth.exchange_code(&selected_user.id);
     scope_fn(&mut user_token_request.scopes_mut());
 
-    let user_token = user_token_request.send().await?.user_token().await?;
+    let user_token = user_token_request.send().await?;
 
     let api = TwitchAPI::with_client(
         user_token.access_token.clone(),
         selected_client.ID.clone(),
-        preset::testing("twitch-highway-test/1.0")
-            .build_client()
-            .unwrap(),
+        preset::testing("twitch-highway-test/1.0").build().unwrap(),
     )
     .set_url(Url::parse("http://localhost:8080/mock").unwrap());
 

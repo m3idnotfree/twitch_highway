@@ -19,7 +19,7 @@ A Rust library for the Twitch API with compile-time safety and comprehensive res
 # Add the endpoints you need: "chat", "users", etc.
 twitch_highway = { version = "0.3", features = ["moderation"] }
 tokio = { version = "1", features = ["full"] }
-asknothingx2-util = { version = "0.1", features = ["oauth"] }
+asknothingx2-util = { version = "0.4", features = ["oauth"] }
 # or
 # twitch_oauth_token = { version = "2" }
 ```

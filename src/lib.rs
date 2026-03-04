@@ -189,9 +189,7 @@ impl TwitchAPI {
             access_token,
             client_id,
             url: BASE_URL.clone(),
-            client: preset::rest_api("twitch-highway/1.0")
-                .build_client()
-                .unwrap(),
+            client: preset::rest_api("twitch-highway/1.0").build().unwrap(),
         }
     }
 
@@ -209,9 +207,7 @@ impl TwitchAPI {
             access_token,
             client_id,
             url,
-            client: preset::rest_api("twitch-highway/1.0")
-                .build_client()
-                .unwrap(),
+            client: preset::rest_api("twitch-highway/1.0").build().unwrap(),
         }
     }
 
