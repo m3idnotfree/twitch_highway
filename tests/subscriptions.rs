@@ -1,5 +1,3 @@
-#![cfg(feature = "subscriptions")]
-
 #[macro_use]
 mod common;
 

@@ -17,25 +17,6 @@ rustdoc-args = ["--cfg", "docsrs"]
 [[test]]
 name = "twitch-cli"
 path = "tests/twitch_cli.rs"
-required-features = [
-  "bits",
-  "ccls",
-  "channel-points",
-  "channels",
-  "charity",
-  "chat",
-  "clips",
-  "goals",
-  "polls",
-  "predictions",
-  "raid",
-  "search",
-  "subscriptions",
-  "teams",
-  "users",
-  "videos",
-  "whisper"
-]
 
 [dependencies]
 # webhook - HeaderAccess trait implementation
@@ -44,8 +25,7 @@ asknothingx2-util = { version = "0.4.1", features = ["api", "oauth", "serde"] }
 # webhook - IntoResponse for WebhookError
 axum-core = { version = "0.5.6", default-features = false, optional = true }
 chrono = { version = "0.4.44", features = ["serde"] }
-# schedule
-chrono-tz = { version = "0.10.4", optional = true }
+chrono-tz = "0.10.4"
 # websocket
 futures-util = { version = "0.3.32", optional = true }
 # webhook - signature verification
@@ -60,7 +40,7 @@ rand = { version = "0.10.0", optional = true }
 reqwest = "0.13.2"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
-serde_with = { version = "3.17.0", optional = true }
+serde_with = "3.17.0"
 sha2 = { version = "0.10.9", optional = true }
 subtle = { version = "2.6.1", optional = true }
 thiserror = { version = "2.0.18", optional = true }
@@ -74,7 +54,7 @@ tokio = { version = "1.50.0", features = [
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"], optional = true }
 tower = { version = "0.5.3", features = ["limit", "util"], optional = true }
 tracing = { version = "0.1.44", optional = true }
-twitch_oauth_token = { version = "4.0.1", optional = true }
+twitch_oauth_token = "4.0.1"
 url = { version = "2.5.8", features = ["serde"] }
 
 [dev-dependencies]
@@ -85,71 +65,10 @@ pin-project-lite = "0.2.17"
 rand = "0.10.0"
 thiserror = "2.0.18"
 tokio = { version = "1.50.0", features = ["full"] }
-twitch_highway = { path = ".", features = ["streams"] }
 twitch_oauth_token = { version = "4.0.1", features = ["oneshot", "test"] }
 wiremock = "0.6.5"
 
 [features]
-default = []
-ads = ["serde_with"]
-analytics = []
-bits = []
-ccls = []
-channel-points = []
-channels = []
-charity = []
-chat = []
-clips = []
-conduits = []
-entitlements = []
-eventsub = []
-extensions = []
-full = [
-  "ads",
-  "analytics",
-  "bits",
-  "ccls",
-  "channel-points",
-  "channels",
-  "charity",
-  "chat",
-  "clips",
-  "conduits",
-  "entitlements",
-  "eventsub",
-  "extensions",
-  "games",
-  "goals",
-  "guest-star",
-  "hype-train",
-  "moderation",
-  "polls",
-  "predictions",
-  "raid",
-  "schedule",
-  "search",
-  "streams",
-  "subscriptions",
-  "teams",
-  "users",
-  "videos",
-  "whisper"
-]
-games = []
-goals = []
-guest-star = []
-hype-train = []
-moderation = []
-polls = []
-predictions = []
-raid = []
-schedule = ["chrono-tz", "serde_with"]
-search = []
-streams = []
-subscriptions = []
-teams = []
-users = ["twitch_oauth_token"]
-videos = []
 webhook = ["webhook-actix", "webhook-axum"]
 webhook-actix = ["actix-http", "webhook-verify"]
 webhook-axum = ["axum-core", "webhook-http"]

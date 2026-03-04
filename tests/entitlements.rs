@@ -1,5 +1,3 @@
-#![cfg(feature = "entitlements")]
-
 #[macro_use]
 mod common;
 

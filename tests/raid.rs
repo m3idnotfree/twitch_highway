@@ -1,5 +1,3 @@
-#![cfg(feature = "raid")]
-
 #[macro_use]
 mod common;
 

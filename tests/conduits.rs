@@ -1,5 +1,3 @@
-#![cfg(feature = "conduits")]
-
 #[macro_use]
 mod common;
 

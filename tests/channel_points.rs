@@ -1,5 +1,3 @@
-#![cfg(feature = "channel-points")]
-
 #[macro_use]
 mod common;
 

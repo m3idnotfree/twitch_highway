@@ -61,7 +61,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "ads")]
 impl HttpMock {
     pub async fn start_commercial(&self) {
         self.api_mock("POST", "/channels/commercial")
@@ -113,7 +112,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "analytics")]
 impl HttpMock {
     pub async fn get_extension_analytics(&self) {
         self.api_mock("GET", "/analytics/extensions")
@@ -176,7 +174,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "bits")]
 impl HttpMock {
     pub async fn get_bits_leaderboard(&self) {
         self.api_mock("GET", "/bits/leaderboard")
@@ -355,7 +352,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "channels")]
 impl HttpMock {
     pub async fn get_channel_info(&self) {
         self.api_mock("GET", "/channels")
@@ -498,7 +494,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "channel-points")]
 impl HttpMock {
     pub async fn create_custom_rewards(&self) {
         self.api_mock("POST", "/channel_points/custom_rewards")
@@ -889,7 +884,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "charity")]
 impl HttpMock {
     pub async fn get_charity_campaign(&self) {
         self.api_mock("GET", "/charity/campaigns")
@@ -961,7 +955,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "chat")]
 impl HttpMock {
     pub async fn get_chatters(&self) {
         self.api_mock("GET", "/chat/chatters")
@@ -1405,7 +1398,6 @@ impl HttpMock {
     // }
 }
 
-#[cfg(feature = "clips")]
 impl HttpMock {
     pub async fn create_clip(&self) {
         self.api_mock("POST", "/clips")
@@ -1526,7 +1518,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "conduits")]
 impl HttpMock {
     pub async fn get_conduits(&self) {
         self.api_mock("GET", "/eventsub/conduits")
@@ -1712,7 +1703,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "ccls")]
 impl HttpMock {
     pub async fn get_content_classification_labels(&self) {
         self.api_mock("GET", "/content_classification_labels")
@@ -1760,7 +1750,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "entitlements")]
 impl HttpMock {
     pub async fn get_drops_entitlements(&self) {
         self.api_mock("GET", "/entitlements/drops")
@@ -1843,7 +1832,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "extensions")]
 impl HttpMock {
     pub async fn get_extension_configuration_segment(&self) {
         self.basic_mock("GET", "/extensions/configurations")
@@ -2228,7 +2216,7 @@ impl HttpMock {
             .await;
     }
 }
-#[cfg(feature = "eventsub")]
+
 impl HttpMock {
     pub async fn create_eventsub(&self) {
         self.api_mock("POST", "/eventsub/subscriptions")
@@ -2402,7 +2390,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "games")]
 impl HttpMock {
     pub async fn get_top_games(&self) {
         self.api_mock("GET", "/games/top")
@@ -2439,7 +2426,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "goals")]
 impl HttpMock {
     pub async fn get_creator_goals(&self) {
         self.api_mock("GET", "/goals")
@@ -2464,7 +2450,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "guest-star")]
 impl HttpMock {
     pub async fn get_channel_guest_star_settings(&self) {
         self.api_mock("GET", "/guest_star/channel_settings")
@@ -2744,7 +2729,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "hype-train")]
 impl HttpMock {
     pub async fn get_hype_train_events(&self) {
         self.api_mock("GET", "/hypetrain/events")
@@ -2854,7 +2838,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "moderation")]
 impl HttpMock {
     pub async fn check_automod_status(&self) {
         self.api_mock("POST", "/moderation/enforcements/status")
@@ -3445,7 +3428,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "polls")]
 impl HttpMock {
     pub async fn get_polls(&self) {
         self.api_mock("GET", "/polls")
@@ -3592,7 +3574,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "predictions")]
 impl HttpMock {
     pub async fn get_predictions(&self) {
         self.api_mock("GET", "/predictions")
@@ -3742,7 +3723,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "raid")]
 impl HttpMock {
     pub async fn start_raid(&self) {
         self.api_mock("POST", "/raids")
@@ -3769,7 +3749,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "schedule")]
 impl HttpMock {
     pub async fn get_channel_stream_schedule(&self) {
         self.api_mock("GET", "/schedule")
@@ -3926,7 +3905,6 @@ END:VCALENDAR%
     }
 }
 
-#[cfg(feature = "search")]
 impl HttpMock {
     pub async fn search_categories(&self) {
         self.api_mock("GET", "/search/categories")
@@ -4008,7 +3986,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "streams")]
 impl HttpMock {
     pub async fn get_stream_key(&self) {
         self.api_mock("GET", "/streams/key")
@@ -4168,7 +4145,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "subscriptions")]
 impl HttpMock {
     pub async fn get_broadcaster_subscriptions(&self) {
         self.api_mock("GET", "/subscriptions")
@@ -4220,7 +4196,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "teams")]
 impl HttpMock {
     pub async fn get_channel_teams(&self) {
         self.api_mock("GET", "/teams/channel")
@@ -4282,7 +4257,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "users")]
 impl HttpMock {
     pub async fn get_users(&self) {
         self.api_mock("GET", "/users")
@@ -4597,7 +4571,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "videos")]
 impl HttpMock {
     pub async fn get_videos(&self) {
         self.api_mock("GET", "/videos")
@@ -4646,7 +4619,6 @@ impl HttpMock {
     }
 }
 
-#[cfg(feature = "whisper")]
 impl HttpMock {
     pub async fn send_whisper(&self) {
         self.api_mock("POST", "/whispers")

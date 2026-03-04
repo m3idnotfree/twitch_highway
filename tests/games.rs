@@ -1,5 +1,3 @@
-#![cfg(feature = "games")]
-
 #[macro_use]
 mod common;
 

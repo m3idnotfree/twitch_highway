@@ -1,5 +1,3 @@
-#![cfg(feature = "analytics")]
-
 #[macro_use]
 mod common;
 

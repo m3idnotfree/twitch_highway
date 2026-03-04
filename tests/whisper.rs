@@ -1,5 +1,3 @@
-#![cfg(feature = "whisper")]
-
 #[macro_use]
 mod common;
 

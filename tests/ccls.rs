@@ -1,5 +1,3 @@
-#![cfg(feature = "ccls")]
-
 #[macro_use]
 mod common;
 

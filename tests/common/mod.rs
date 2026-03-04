@@ -4,12 +4,12 @@
 #[macro_use]
 mod macros;
 
-#[cfg(all(feature = "eventsub", feature = "webhook"))]
+#[cfg(feature = "webhook")]
 mod axum_server;
-#[cfg(all(feature = "eventsub", feature = "webhook"))]
+#[cfg(feature = "webhook")]
 pub use axum_server::axum_server;
 
-#[cfg(all(feature = "eventsub", feature = "websocket"))]
+#[cfg(feature = "websocket")]
 pub mod websocket;
 
 mod config;

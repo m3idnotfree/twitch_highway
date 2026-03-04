@@ -1,5 +1,3 @@
-#![cfg(feature = "eventsub")]
-
 #[macro_use]
 mod common;
 
@@ -45,7 +43,7 @@ api_test!(
 );
 
 #[cfg(test)]
-#[cfg(all(feature = "eventsub", feature = "webhook"))]
+#[cfg(feature = "webhook")]
 mod webhook {
     use std::{
         sync::{

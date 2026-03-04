@@ -1,5 +1,3 @@
-#![cfg(feature = "charity")]
-
 #[macro_use]
 mod common;
 

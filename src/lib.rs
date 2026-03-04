@@ -10,15 +10,13 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_highway = { version = "0.3", features = ["moderation", "chat"] }
+//! twitch_highway = "0.3"
 //! tokio = { version = "1", features = ["full"] }
-//! asknothingx2-util = { version = "0.1", features = ["oauth"] }
+//! asknothingx2-util = { version = "0.4", features = ["oauth"] }
 //! ```
 //! ### Basic Usage
 //!
 //! ```rust
-//! # #[cfg(feature = "moderation")]
-//! # {
 //! use asknothingx2_util::oauth::{AccessToken, ClientId};
 //! use twitch_highway::{
 //!     moderation::ModerationAPI,
@@ -45,7 +43,6 @@
 //!
 //! println!("User banned successfully");
 //! # Ok(())
-//! # }
 //! # }
 //! ```
 //!
@@ -117,38 +114,6 @@
 //! twitch_oauth_token = "2.0"
 //! ```
 //!
-//! ## API Endpoint Features
-//!
-//! # Features
-//! - [`ads`][crate::ads::AdsAPI]
-//! - [`analytics`][crate::analytics::AnalyticsAPI]
-//! - [`bits`][crate::bits::BitsAPI]
-//! - [`channels`][crate::channels::ChannelsAPI]
-//! - [`channel-points`][crate::channel_points::ChannelPointsAPI]
-//! - [`charity`][crate::charity::CharityAPI]
-//! - [`chat`][crate::chat::ChatAPI]
-//! - [`clips`][crate::clips::ClipsAPI]
-//! - [`ccls`][crate::ccls::CclsAPI]
-//! - [`conduits`][crate::conduits::ConduitsAPI]
-//! - [`entitlements`][crate::entitlements::EntitlementsAPI]
-//! - [`extensions`][crate::extensions::ExtensionsAPI]
-//! - [`eventsub`][crate::eventsub::EventSubAPI]
-//! - [`games`][crate::games::GamesAPI]
-//! - [`goals`][crate::goals::GoalsAPI]
-//! - [`guest-star`][crate::guest_star::GuestStarAPI]
-//! - [`hype-train`][crate::hype_train::HypeTrainAPI]
-//! - [`moderation`][crate::moderation::ModerationAPI]
-//! - [`polls`][crate::polls::PollsAPI]
-//! - [`predictions`][crate::predictions::PredictionsAPI]
-//! - [`raid`][crate::raid::RaidAPI]
-//! - [`schedule`][crate::schedule::ScheduleAPI]
-//! - [`search`][crate::search::SearchAPI]
-//! - [`streams`][crate::streams::StreamsAPI]
-//! - [`subscriptions`][crate::subscriptions::SubscriptionsAPI]
-//! - [`teams`][crate::teams::TeamsAPI]
-//! - [`users`][crate::users::UserAPI]
-//! - [`videos`][crate::videos::VideosAPI]
-//! - [`whisper`][crate::whisper::WhisperAPI]
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
@@ -249,23 +214,6 @@ impl TwitchAPI {
         headers
     }
 
-    #[cfg(any(
-        feature = "ads",
-        feature = "channel-points",
-        feature = "channels",
-        feature = "chat",
-        feature = "conduits",
-        feature = "extensions",
-        feature = "entitlements",
-        feature = "eventsub",
-        feature = "moderation",
-        feature = "polls",
-        feature = "predictions",
-        feature = "schedule",
-        feature = "streams",
-        feature = "users",
-        feature = "whisper",
-    ))]
     pub(crate) fn header_json(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers)
@@ -276,7 +224,6 @@ impl TwitchAPI {
         headers
     }
 
-    #[cfg(feature = "extensions")]
     pub(crate) fn build_jwt_headers(&self, jwt: &crate::types::JWTToken) -> HeaderMap {
         let mut headers = HeaderMap::new();
         HeaderMut::new(&mut headers).bearer_token(jwt.as_str());
@@ -289,69 +236,34 @@ impl TwitchAPI {
     }
 }
 
-#[cfg(feature = "ads")]
 pub mod ads;
-#[cfg(feature = "analytics")]
 pub mod analytics;
-#[cfg(feature = "bits")]
 pub mod bits;
-#[cfg(feature = "ccls")]
 pub mod ccls;
-#[cfg(feature = "channel-points")]
 pub mod channel_points;
-#[cfg(feature = "channels")]
 pub mod channels;
-#[cfg(feature = "charity")]
 pub mod charity;
-#[cfg(feature = "chat")]
 pub mod chat;
-#[cfg(feature = "clips")]
 pub mod clips;
-#[cfg(feature = "conduits")]
 pub mod conduits;
-#[cfg(feature = "entitlements")]
 pub mod entitlements;
-#[cfg(feature = "eventsub")]
 pub mod eventsub;
-#[cfg(feature = "extensions")]
 pub mod extensions;
-#[cfg(feature = "games")]
 pub mod games;
-#[cfg(feature = "goals")]
 pub mod goals;
-#[cfg(feature = "guest-star")]
 pub mod guest_star;
-#[cfg(feature = "hype-train")]
 pub mod hype_train;
-#[cfg(feature = "moderation")]
 pub mod moderation;
-#[cfg(feature = "polls")]
 pub mod polls;
-#[cfg(feature = "predictions")]
 pub mod predictions;
-#[cfg(feature = "raid")]
 pub mod raid;
-#[cfg(feature = "schedule")]
 pub mod schedule;
-#[cfg(feature = "search")]
 pub mod search;
-#[cfg(feature = "streams")]
 pub mod streams;
-#[cfg(feature = "subscriptions")]
 pub mod subscriptions;
-#[cfg(feature = "teams")]
 pub mod teams;
-#[cfg(feature = "users")]
 pub mod users;
-#[cfg(feature = "videos")]
 pub mod videos;
-#[cfg(feature = "whisper")]
 pub mod whisper;
 
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "eventsub",
-    feature = "moderation"
-))]
 mod serde_helpers;

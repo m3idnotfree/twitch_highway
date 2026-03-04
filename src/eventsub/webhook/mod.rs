@@ -16,7 +16,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_highway = { version = "0.2", features = ["eventsub", "webhook-axum"] }
+//! twitch_highway = { version = "0.3", features = ["webhook-axum"] }
 //! ```
 //!
 //! ```rust
@@ -118,7 +118,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_highway = { version = "0.2", features = ["eventsub", "webhook-actix"] }
+//! twitch_highway = { version = "0.2", features = ["webhook-actix"] }
 //! ```
 //!
 //! ```rust,no_run

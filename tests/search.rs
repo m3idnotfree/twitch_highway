@@ -1,5 +1,3 @@
-#![cfg(feature = "search")]
-
 #[macro_use]
 mod common;
 

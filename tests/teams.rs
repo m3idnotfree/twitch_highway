@@ -1,5 +1,3 @@
-#![cfg(feature = "teams")]
-
 #[macro_use]
 mod common;
 

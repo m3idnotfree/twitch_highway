@@ -1,5 +1,3 @@
-#![cfg(feature = "users")]
-
 #[macro_use]
 mod common;
 

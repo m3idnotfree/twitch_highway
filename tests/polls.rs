@@ -1,5 +1,3 @@
-#![cfg(feature = "polls")]
-
 #[macro_use]
 mod common;
 

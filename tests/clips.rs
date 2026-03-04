@@ -1,5 +1,3 @@
-#![cfg(feature = "clips")]
-
 #[macro_use]
 mod common;
 

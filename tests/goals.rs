@@ -1,5 +1,3 @@
-#![cfg(feature = "goals")]
-
 #[macro_use]
 mod common;
 

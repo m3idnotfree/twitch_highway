@@ -12,7 +12,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_highway = { version = "0.2", features = ["eventsub", "websocket"] }
+//! twitch_highway = { version = "0.3", features = ["websocket"] }
 //! tokio = { version = "1", features = ["full"] }
 //! ```
 //!

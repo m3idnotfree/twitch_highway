@@ -112,12 +112,6 @@ impl TwitchFixture {
         UserId::from(self.selected_user.id.clone())
     }
 
-    #[cfg(any(
-        feature = "chat",
-        feature = "eventsub",
-        feature = "guest-star",
-        feature = "moderation"
-    ))]
     pub fn selected_moderator_id(&self) -> twitch_highway::types::ModeratorId {
         twitch_highway::types::ModeratorId::from(self.selected_user.id.clone())
     }

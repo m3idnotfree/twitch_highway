@@ -16,8 +16,7 @@ A Rust library for the Twitch API with compile-time safety and comprehensive res
 
 ```toml
 [dependencies]
-# Add the endpoints you need: "chat", "users", etc.
-twitch_highway = { version = "0.3", features = ["moderation"] }
+twitch_highway = "0.3"
 tokio = { version = "1", features = ["full"] }
 asknothingx2-util = { version = "0.4", features = ["oauth"] }
 # or
@@ -77,7 +76,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.3", features = ["eventsub", "webhook-axum"] }
+twitch_highway = { version = "0.3", features = ["webhook-axum"] }
 axum = "0.8"
 ```
 
@@ -108,7 +107,7 @@ let app = Router::new().route("/webhook", post(webhook_handler));
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.3", features = ["eventsub", "websocket"] }
+twitch_highway = { version = "0.3", features = ["websocket"] }
 ```
 
 ```rust
@@ -130,41 +129,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error> {
 }
 
 ```
-
-## Feature Flags
-
-Enable only the API modules you need:
-
-- ads
-- analytics
-- bits
-- ccls
-- channel-points
-- channels
-- charity
-- chat
-- clips
-- conduits
-- entitlements
-- extensions
-- eventsub
-- games
-- goals
-- guest-star
-- hype-train
-- moderation
-- polls
-- predictions
-- raid
-- schedule
-- search
-- streams
-- subscriptions
-- teams
-- users
-- videos
-- whisper
-- full
 
 ### EventSub Features
 

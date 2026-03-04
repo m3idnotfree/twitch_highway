@@ -1,5 +1,3 @@
-#![cfg(feature = "extensions")]
-
 #[macro_use]
 mod common;
 

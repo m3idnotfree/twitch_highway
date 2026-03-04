@@ -1,5 +1,3 @@
-#![cfg(feature = "predictions")]
-
 #[macro_use]
 mod common;
 

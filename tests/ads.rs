@@ -1,5 +1,3 @@
-#![cfg(feature = "ads")]
-
 #[macro_use]
 mod common;
 

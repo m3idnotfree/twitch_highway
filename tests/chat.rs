@@ -1,5 +1,3 @@
-#![cfg(feature = "chat")]
-
 #[macro_use]
 mod common;
 

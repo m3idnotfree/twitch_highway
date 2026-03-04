@@ -11,30 +11,6 @@
 ///  - `build() -> TwitchAPIRequest<ResponseType>`
 ///  - `send()` -> Result<Response>`
 ///  - `json() -> Result<ResponseType>`
-#[cfg(any(
-    feature = "analytics",
-    feature = "bits",
-    feature = "channel-points",
-    feature = "channels",
-    feature = "charity",
-    feature = "chat",
-    feature = "clips",
-    feature = "conduits",
-    feature = "entitlements",
-    feature = "eventsub",
-    feature = "extensions",
-    feature = "games",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "polls",
-    feature = "predictions",
-    feature = "schedule",
-    feature = "search",
-    feature = "streams",
-    feature = "subscriptions",
-    feature = "users",
-))]
 macro_rules! define_request_builder {
     (
         $(#[$meta:meta])*
@@ -503,25 +479,6 @@ macro_rules! define_request_builder {
 ///     - as_ref
 ///     - to_string
 ///     - extend
-#[cfg(any(
-    feature = "ads",
-    feature = "ccls",
-    feature = "channel-points",
-    feature = "charity",
-    feature = "clips",
-    feature = "extensions",
-    feature = "goals",
-    feature = "guest-star",
-    feature = "hype-train",
-    feature = "moderation",
-    feature = "predictions",
-    feature = "raid",
-    feature = "schedule",
-    feature = "subscriptions",
-    feature = "teams",
-    feature = "users",
-    feature = "whisper",
-))]
 macro_rules! simple_endpoint {
     (
         fn $name:ident(
@@ -621,12 +578,6 @@ macro_rules! simple_endpoint {
     };
 }
 
-#[cfg(any(
-    feature = "extensions",
-    feature = "moderation",
-    feature = "schedule",
-    feature = "users"
-))]
 macro_rules! opt_method {
     ($name:ident, &$lt:lifetime $ty:ty) => {
         pub fn $name(mut self, value: &$lt $ty) -> Self {

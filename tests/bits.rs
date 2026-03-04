@@ -1,5 +1,3 @@
-#![cfg(feature = "bits")]
-
 #[macro_use]
 mod common;
 

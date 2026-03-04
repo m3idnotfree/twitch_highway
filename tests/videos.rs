@@ -1,5 +1,3 @@
-#![cfg(feature = "videos")]
-
 #[macro_use]
 mod common;
 

@@ -1,5 +1,3 @@
-#![cfg(feature = "schedule")]
-
 #[macro_use]
 mod common;
 

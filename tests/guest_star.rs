@@ -1,5 +1,3 @@
-#![cfg(feature = "guest-star")]
-
 #[macro_use]
 mod common;
 

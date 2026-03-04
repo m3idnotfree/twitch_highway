@@ -1,5 +1,3 @@
-#![cfg(feature = "hype-train")]
-
 #[macro_use]
 mod common;
 
