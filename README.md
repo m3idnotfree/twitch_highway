@@ -176,6 +176,10 @@ Enable only the API modules you need:
 - **`websocket-client`**: WebSocket client only
 - **`websocket-router`**: Event router with middleware
 
+## Twitch API Coverage
+
+Synced to Twitch changelog: 2025-10-30 - [Twitch change log](https://dev.twitch.tv/docs/change-log)
+
 ## License
 
 Licensed under either of
