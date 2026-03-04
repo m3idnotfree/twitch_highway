@@ -38,7 +38,8 @@ pub trait ClipsAPI {
     /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_clip(&BroadcasterId::from("1234"))
-    ///     .has_delay(true)
+    ///     .title("title")
+    ///     .duration(5.3)
     ///     .json()
     ///     .await?;
     ///

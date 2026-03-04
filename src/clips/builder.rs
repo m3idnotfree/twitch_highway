@@ -5,8 +5,7 @@ use crate::{
     request::TwitchAPIRequest,
     types::{
         constants::{
-            AFTER, BROADCASTER_ID, CLIPS, ENDED_AT, FIRST, GAME_ID, HAS_DELAY, ID, IS_FEATURED,
-            STARTED_AT,
+            AFTER, BROADCASTER_ID, CLIPS, ENDED_AT, FIRST, GAME_ID, ID, IS_FEATURED, STARTED_AT,
         },
         BroadcasterId, ClipId, GameId,
     },
@@ -17,7 +16,10 @@ define_request_builder! {
     #[derive(Debug)]
     CreateClipBuilder<'a> {
         req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {has_delay: bool [key = HAS_DELAY, convert = to_string]}
+        opts: {
+            title: &'a str,
+            duration: f64 [convert = precision1]
+        }
     } -> CreateClipsResponse;
     endpoint: CreateClip,
     method: POST,

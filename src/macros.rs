@@ -478,6 +478,9 @@ macro_rules! define_request_builder {
     (@convert $url:expr, $key:expr, $value:expr, timezone) => {
         $url.append_pair($key, $value.name());
     };
+    (@convert $url:expr, $key:expr, $value:expr, precision1) => {
+        $url.append_pair($key, &format!("{:.1}", $value));
+    };
 
     (@headers $self:ident, json) => {
         $self.api.header_json()
@@ -612,6 +615,9 @@ macro_rules! simple_endpoint {
     };
     (@convert $query:expr, $key:expr, $value:expr, extend_as_ref) => {
         $query.extend_pairs($value.iter().map(|item| ($key, item.as_ref())))
+    };
+    (@convert $query:expr, $key:expr, $value:expr, precision1) => {
+        $query.append_pair($key, &format!("{:.1}", $value))
     };
 }
 
