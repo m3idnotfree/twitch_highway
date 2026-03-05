@@ -138,7 +138,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error> {
 
 ## Twitch API Coverage
 
-Synced to Twitch changelog: 2025-10-30 - [Twitch change log](https://dev.twitch.tv/docs/change-log)
+Synced to Twitch changelog: 2026‑02‑05 - [Twitch change log](https://dev.twitch.tv/docs/change-log)
 
 ## License
 

@@ -16,19 +16,15 @@ use crate::types::{
 use crate::{request::TwitchAPIRequest, TwitchAPI};
 
 pub trait HypeTrainAPI {
-    #[deprecated(
-        since = "0.2.1",
-        note = "Use get_hype_train_status instead. Removed by Twitch on Dec 4, 2025"
-    )]
-    /// Gets information about the broadcaster’s current or most recent Hype Train event
+    /// # **REMOVED**
     ///
-    /// # **DEPRECATED**
-    ///
-    /// Scheduled for removal on **December 4, 2025**.
+    /// This endpoint war  **removed by Twitch on 2026-02-05**.
     ///
     /// Use [`get_hype_train_status`](HypeTrainAPI::get_hype_train_status) instead.
     ///
     /// See [announcement](https://discuss.dev.twitch.com/t/legacy-get-hype-train-events-api-and-eventsub-hype-train-v1-subscription-types-deprecation-and-withdrawal-timeline/64299)
+    ///
+    /// Gets information about the broadcaster’s current or most recent Hype Train event
     ///
     /// # Arguments
     ///
@@ -64,6 +60,10 @@ pub trait HypeTrainAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-hype-train-events>
+    #[deprecated(
+        since = "0.3.3",
+        note = "Use get_hype_train_status instead. Removed by Twitch on Dec 4, 2025"
+    )]
     fn get_hype_train_events<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
