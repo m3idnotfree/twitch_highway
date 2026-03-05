@@ -1,6 +1,6 @@
 [package]
 name = "twitch_highway"
-version = "0.4.0"
+version = "0.4.1"
 authors = ["m3id"]
 edition = "2021"
 description = "Twitch API"
@@ -80,4 +80,3 @@ websocket = [
   "tokio-tungstenite",
   "tracing",
 ]
-whisper = []

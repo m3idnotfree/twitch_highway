@@ -1,3 +1,9 @@
+## [0.4.1](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.0..v0.4.1) - 2026-03-05
+
+### Bug Fixes
+
+- Correct remaining cfg feature gates([3032cba](https://github.com/m3idnotfree/twitch_highway/commit/3032cba8805b2e33cf0d3e5fbe102e2d09a2cc03))
+
 ## [0.4.0](https://github.com/m3idnotfree/twitch_highway/compare/v0.3.3..v0.4.0) - 2026-03-05
 
 ### Features
