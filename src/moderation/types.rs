@@ -160,6 +160,32 @@ pub enum AutoModAction {
     DENY,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SuspiciousStatus {
+    ActiveMonitoring,
+    Restricted,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum SuspiciousType {
+    ManuallyAdded,
+    DetectedBanEvader,
+    DetectedSusChatter,
+    BannedInSharedChannel,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SuspiciousUser {
+    pub user_id: UserId,
+    pub broadcaster_id: BroadcasterId,
+    pub moderator_id: ModeratorId,
+    pub updated_at: String,
+    pub status: SuspiciousStatus,
+    pub types: Vec<SuspiciousType>,
+}
+
 #[derive(Serialize)]
 pub(crate) struct CheckAutomodStatusBody<'a> {
     pub data: &'a [CheckAutoMod],
@@ -191,6 +217,12 @@ pub(crate) struct WarnChatUserBodyWrapper<'a> {
 pub(crate) struct WarnChatUserBody<'a> {
     pub user_id: &'a UserId,
     pub reason: &'a str,
+}
+
+#[derive(Serialize)]
+pub(crate) struct SuspiciousBody<'a> {
+    pub user_id: &'a UserId,
+    pub status: SuspiciousStatus,
 }
 
 #[cfg(test)]

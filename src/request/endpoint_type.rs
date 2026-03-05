@@ -123,6 +123,7 @@ pub enum EndpointType {
     UpdateShieldModeStatus,
     GetShieldModeStatus,
     WarnChatUser,
+    AddSuspiciousStatusToChatUser,
 
     // Polls
     GetPolls,
@@ -307,6 +308,7 @@ impl EndpointType {
             Self::UpdateShieldModeStatus => TokenType::User,
             Self::GetShieldModeStatus => TokenType::User,
             Self::WarnChatUser => TokenType::User,
+            Self::AddSuspiciousStatusToChatUser => TokenType::Any,
 
             // Polls
             Self::GetPolls => TokenType::User,

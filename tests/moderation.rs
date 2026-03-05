@@ -4,7 +4,9 @@ mod common;
 use common::HttpMock;
 use twitch_highway::types::BlockedTermId;
 use twitch_highway::{
-    moderation::{AutoModAction, CheckAutoMod, ModerationAPI, UnbanRequestStatus},
+    moderation::{
+        AutoModAction, CheckAutoMod, ModerationAPI, SuspiciousStatus, UnbanRequestStatus,
+    },
     types::{BroadcasterId, ModeratorId, UserId},
 };
 
@@ -153,4 +155,13 @@ api_test!(
         api.get_vips(&BroadcasterId::from("123"))
             .user_ids(&[UserId::from("456"), UserId::from("678")])
     }
+);
+
+api_test!(
+    add_suspicious_status_to_chat_user [
+        &BroadcasterId::from("141981764"),
+        &ModeratorId::from("12826"),
+        &UserId::from("9876"),
+        SuspiciousStatus::Restricted
+    ]
 );

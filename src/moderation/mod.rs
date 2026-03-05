@@ -11,15 +11,16 @@ pub use builder::{
 pub use response::{
     AutoModSettingsResponse, BanUsersResponse, BlockedTermsResponse, CheckAutoModStatusResponse,
     GetBannedUsersResponse, ModeratedChannelResponse, ModeratorsResponse, ShieldModeStatusResponse,
-    UnbanRequestResponse, WarnChatUsersResponse,
+    SuspiciousResponse, UnbanRequestResponse, WarnChatUsersResponse,
 };
 pub use types::{
     AutoModAction, AutoModSetting, AutoModStatus, BanUser, BannedUser, BlockedTerm, CheckAutoMod,
-    ModeratedChannel, Moderator, ShieldModeStatus, UnbanRequest, UnbanRequestStatus, WarnChatUser,
+    ModeratedChannel, Moderator, ShieldModeStatus, SuspiciousStatus, SuspiciousType,
+    SuspiciousUser, UnbanRequest, UnbanRequestStatus, WarnChatUser,
 };
 
 use types::{
-    AddBlockedTermBody, CheckAutomodStatusBody, ManageHeldAutomodMessagesBody,
+    AddBlockedTermBody, CheckAutomodStatusBody, ManageHeldAutomodMessagesBody, SuspiciousBody,
     UpdateShieldModeStatusBody, WarnChatUserBody, WarnChatUserBodyWrapper,
 };
 
@@ -1099,6 +1100,14 @@ pub trait ModerationAPI {
         user_id: &UserId,
         reason: &str,
     ) -> TwitchAPIRequest<WarnChatUsersResponse>;
+
+    fn add_suspicious_status_to_chat_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+        status: SuspiciousStatus,
+    ) -> TwitchAPIRequest<SuspiciousResponse>;
 }
 
 impl ModerationAPI for TwitchAPI {
@@ -1308,5 +1317,21 @@ impl ModerationAPI for TwitchAPI {
                 data: WarnChatUserBody {user_id, reason}
             }
             ).ok()}
+    );
+    simple_endpoint!(
+        fn add_suspicious_status_to_chat_user(
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
+            user_id: &UserId [skip],
+            status: SuspiciousStatus [skip],
+        ) -> SuspiciousResponse;
+            endpoint: AddSuspiciousStatusToChatUser,
+            method: POST,
+            path: [MODERATION, "suspicious_users"],
+            headers: [json],
+            body: {serde_json::to_string(&SuspiciousBody {
+                    user_id,
+                    status
+                }).ok()}
     );
 }

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     moderation::{
         AutoModSetting, AutoModStatus, BanUser, BannedUser, BlockedTerm, ModeratedChannel,
-        Moderator, ShieldModeStatus, UnbanRequest, WarnChatUser,
+        Moderator, ShieldModeStatus, SuspiciousUser, UnbanRequest, WarnChatUser,
     },
     types::Pagination,
 };
@@ -95,6 +95,11 @@ pub struct ShieldModeStatusResponse {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WarnChatUsersResponse {
     pub data: Vec<WarnChatUser>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SuspiciousResponse {
+    pub data: Vec<SuspiciousUser>,
 }
 
 #[cfg(test)]
