@@ -5,12 +5,6 @@
 //!
 //! # Quick Start
 //!
-//! ```toml
-//! [dependencies]
-//! twitch_highway = { version = "0.3", features = ["websocket"] }
-//! tokio = { version = "1", features = ["full"] }
-//! ```
-//!
 //! ```rust,no_run
 //! use std::sync::Arc;
 //!

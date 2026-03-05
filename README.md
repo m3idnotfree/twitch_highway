@@ -16,11 +16,11 @@ A Rust library for the Twitch API with compile-time safety and comprehensive res
 
 ```toml
 [dependencies]
-twitch_highway = "0.3"
+twitch_highway = "0.4"
 tokio = { version = "1", features = ["full"] }
 asknothingx2-util = { version = "0.4", features = ["oauth"] }
 # or
-# twitch_oauth_token = { version = "2" }
+# twitch_oauth_token = { version = "4" }
 ```
 
 ```rust
@@ -76,7 +76,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.3", features = ["webhook-axum"] }
+twitch_highway = { version = "0.4", features = ["webhook-axum"] }
 axum = "0.8"
 ```
 
@@ -107,7 +107,7 @@ let app = Router::new().route("/webhook", post(webhook_handler));
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.3", features = ["websocket"] }
+twitch_highway = { version = "0.4", features = ["websocket"] }
 ```
 
 ```rust

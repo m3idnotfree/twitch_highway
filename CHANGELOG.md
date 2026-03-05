@@ -1,3 +1,27 @@
+## [0.4.0](https://github.com/m3idnotfree/twitch_highway/compare/v0.3.3..v0.4.0) - 2026-03-05
+
+### Features
+
+- **(clips)** Add create clip from vod endpoint([56ca299](https://github.com/m3idnotfree/twitch_highway/commit/56ca29972aa6b8fe1b7a6339e6251ad2ae32b628))
+- **(clips)** [**breaking**] Update Create Clip to match Twitch API 2025-12-19([26f9610](https://github.com/m3idnotfree/twitch_highway/commit/26f96101543a95a4e1b5a6ea0ae657ae028f1c1d))
+- **(moderation)** Add `add suspicious status to chat user` endpoint([d61111c](https://github.com/m3idnotfree/twitch_highway/commit/d61111c73f9e2ca2428fab59380fbb5af7aac585))
+- **(moderation)** Add `remove suspicious status from chat user` endpoint([fd26bec](https://github.com/m3idnotfree/twitch_highway/commit/fd26bec18ee90465b6dd29f3f38062af60878703))
+
+### Refactor
+
+- [**breaking**] Remove per-endpoint feature flags([6fd1b41](https://github.com/m3idnotfree/twitch_highway/commit/6fd1b4171636410ef7a0eb30c8a07071c5bf4f91))
+- [**breaking**] Simplify webhook and websocket features([4100207](https://github.com/m3idnotfree/twitch_highway/commit/410020786e5df2bcbe85fad39e1a3cc97feb53f8))
+
+### Documentation
+
+- Add twitch api coverage section([23595c2](https://github.com/m3idnotfree/twitch_highway/commit/23595c25b83548de866eb065c05fb743a6dedb48))
+- Update twitch api coverage to 2026-02-05([6561d5f](https://github.com/m3idnotfree/twitch_highway/commit/6561d5fd57e17477b2948876694948c9440f8cf4))
+
+### Miscellaneous
+
+- Add CHANGELOG.md and cliff.toml([e5b78e8](https://github.com/m3idnotfree/twitch_highway/commit/e5b78e86f77e7f00701c8cd7f4c12d99a4894554))
+- Update dependencies and migrate([5e9c8c2](https://github.com/m3idnotfree/twitch_highway/commit/5e9c8c2819433dc53c0e4021ff2b55701a9d2311))
+
 ## [0.3.3](https://github.com/m3idnotfree/twitch_highway/compare/v0.3.2..v0.3.3) - 2026-01-19
 
 ### Features

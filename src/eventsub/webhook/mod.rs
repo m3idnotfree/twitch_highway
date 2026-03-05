@@ -12,11 +12,6 @@
 //!
 //! ## Axum Example
 //!
-//! ```toml
-//! [dependencies]
-//! twitch_highway = { version = "0.3", features = ["webhook-axum"] }
-//! ```
-//!
 //! ```rust
 //! use std::sync::Arc;
 //!
@@ -113,11 +108,6 @@
 //! ```
 //!
 //! ## Actix-web Example
-//!
-//! ```toml
-//! [dependencies]
-//! twitch_highway = { version = "0.2", features = ["webhook-actix"] }
-//! ```
 //!
 //! ```rust,no_run
 //! use actix_web::{http::header, mime, post, web, HttpRequest, HttpResponse};

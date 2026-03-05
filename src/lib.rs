@@ -10,7 +10,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_highway = "0.3"
+//! twitch_highway = "0.4"
 //! tokio = { version = "1", features = ["full"] }
 //! asknothingx2-util = { version = "0.4", features = ["oauth"] }
 //! ```
@@ -109,7 +109,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! twitch_oauth_token = "2.0"
+//! twitch_oauth_token = "4"
 //! ```
 //!
 
