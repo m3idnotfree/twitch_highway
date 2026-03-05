@@ -1108,6 +1108,13 @@ pub trait ModerationAPI {
         user_id: &UserId,
         status: SuspiciousStatus,
     ) -> TwitchAPIRequest<SuspiciousResponse>;
+
+    fn remove_suspicious_status_from_chat_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+    ) -> TwitchAPIRequest<SuspiciousResponse>;
 }
 
 impl ModerationAPI for TwitchAPI {
@@ -1333,5 +1340,15 @@ impl ModerationAPI for TwitchAPI {
                     user_id,
                     status
                 }).ok()}
+    );
+    simple_endpoint!(
+        fn remove_suspicious_status_from_chat_user(
+            broadcaster_id: &BroadcasterId,
+            moderator_id: &ModeratorId,
+            user_id: &UserId,
+        ) -> SuspiciousResponse;
+            endpoint: RemoveSuspiciousStatusFromChatUser,
+            method: DELETE,
+            path: [MODERATION, "suspicious_users"]
     );
 }

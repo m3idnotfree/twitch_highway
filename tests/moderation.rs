@@ -165,3 +165,11 @@ api_test!(
         SuspiciousStatus::Restricted
     ]
 );
+
+api_test!(
+    remove_suspicious_status_from_chat_user [
+        &BroadcasterId::from("141981764"),
+        &ModeratorId::from("12826"),
+        &UserId::from("9876"),
+    ]
+);

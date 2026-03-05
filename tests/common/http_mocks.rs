@@ -3453,6 +3453,29 @@ impl HttpMock {
             .mount(&self.server)
             .await;
     }
+
+    pub async fn remove_suspicious_status_from_chat_user(&self) {
+        self.api_mock("DELETE", "/moderation/suspicious_users")
+            .and(query_param("broadcaster_id", "141981764"))
+            .and(query_param("moderator_id", "12826"))
+            .and(query_param("user_id", "9876"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "data": [
+                    {
+                        "user_id": "9876",
+                        "broadcaster_id": "141981764",
+                        "moderator_id": "12826",
+                        "updated_at": "2025-12-01T23:08:18+00:00",
+                        "status": "RESTRICTED",
+                        "types": [
+                            "MANUALLY_ADDED"
+                        ]
+                    }
+                ]
+            })))
+            .mount(&self.server)
+            .await;
+    }
 }
 
 impl HttpMock {
