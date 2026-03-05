@@ -1,6 +1,6 @@
-#[cfg(any(feature = "webhook-actix",feature = "webhook-axum"))]
+#[cfg(any(feature = "webhook-actix", feature = "webhook-axum"))]
 pub mod webhook;
-#[cfg(any(feature = "webhook-actix",feature = "webhook-axum"))]
+#[cfg(feature = "websocket")]
 pub mod websocket;
 
 pub mod events;
