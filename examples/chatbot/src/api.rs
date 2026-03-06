@@ -10,8 +10,7 @@ use tokio::{net::TcpListener, sync::broadcast};
 use tracing::{error, info, instrument, warn};
 use twitch_highway::{TwitchAPI, chat::ChatAPI};
 use twitch_oauth_token::{
-    AccessToken, AuthorizationCode, OAuthCallbackQuery, UserToken, ValidateToken,
-    scope::ChatbotScopes,
+    AccessToken, AuthCallback, AuthorizationCode, TokenInfo, UserToken, scope::ChatbotScopes,
 };
 
 use crate::{AppState, SharedUserInfo, UserInfo, UserOAuthClient};
@@ -66,7 +65,7 @@ async fn installed_login(State(client): State<UserOAuthClient>) -> Redirect {
 
 #[instrument(name = "auth.callback", skip(callback, state))]
 async fn auth_callback(
-    Query(callback): Query<OAuthCallbackQuery>,
+    Query(callback): Query<AuthCallback>,
     State(state): State<AppState>,
 ) -> String {
     let user_token = match exchange_token(&state.oauth_client, callback.code, callback.state).await
@@ -96,7 +95,8 @@ async fn auth_callback(
         action = "complete",
         username = %username,
         user_id = %user_id,
-        "Authentication completed"
+        eventsub_start_url = format!("http://localhost:{}/api/eventsub/start", state.port),
+        "Authentication completed. Use /api/eventsub/start to start the EventSub client."
     );
 
     "Authentication successful. Use /api/eventsub/start to start the EventSub client.".to_string()
@@ -107,35 +107,21 @@ async fn exchange_token(
     code: AuthorizationCode,
     state: String,
 ) -> Result<UserToken, String> {
-    client
-        .user_access_token(code, state)
-        .await
-        .map_err(|e| {
-            error!(
-                component = "auth",
-                action = "exchange_token",
-                error = %e,
-                "Token exchange failed"
-            );
-            format!("Authentication failed: {:#}", e)
-        })?
-        .user_token()
-        .await
-        .map_err(|e| {
-            error!(
-                component = "auth",
-                action = "parse_user_token",
-                error = %e,
-                "Failed to parse user token response"
-            );
-            format!("Authentication failed: {:#}", e)
-        })
+    client.exchange_code(code, state).await.map_err(|e| {
+        error!(
+            component = "auth",
+            action = "exchange_token",
+            error = %e,
+            "Token exchange failed"
+        );
+        format!("Authentication failed: {:#}", e)
+    })
 }
 
 async fn validate_token(
     client: &UserOAuthClient,
     access_token: &AccessToken,
-) -> Result<ValidateToken, String> {
+) -> Result<TokenInfo, String> {
     client
         .validate_access_token(access_token)
         .await
@@ -145,17 +131,6 @@ async fn validate_token(
                 action = "validate_token",
                 error = %e,
                 "Token validation API call failed"
-            );
-            format!("Authentication failed: {:#}", e)
-        })?
-        .validate_token()
-        .await
-        .map_err(|e| {
-            error!(
-                component = "auth",
-                action = "parse_validation_response",
-                error = %e,
-                "Failed to parse token validation response"
             );
             format!("Authentication failed: {:#}", e)
         })

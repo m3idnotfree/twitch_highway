@@ -48,6 +48,7 @@ async fn main() -> Result<()> {
         config.init_oauth_client()?,
         eventsub_start_tx,
         eventsub_end_tx,
+        config.port,
     );
 
     let shutdown_task = {
@@ -105,10 +106,11 @@ pub struct Config {
 
 impl Config {
     pub fn init_oauth_client(&self) -> Result<TwitchOauth<UserAuth>> {
-        let oauth =
+        let mut oauth =
             TwitchOauth::from_credentials(self.client_id.clone(), self.client_secret.clone())
-                .set_redirect_uri(RedirectUrl::from_str(&self.redirect_uri)?)
-                .set_csrf_config(CsrfConfig::new(0, 180));
+                .with_redirect_uri(RedirectUrl::from_str(&self.redirect_uri)?);
+
+        oauth.set_csrf_config(CsrfConfig::new(0, 180));
 
         Ok(oauth)
     }
@@ -160,6 +162,7 @@ pub struct AppState {
     pub session_id: SharedSessionId,
     pub event_start_tx: watch::Sender<bool>,
     pub event_end_tx: watch::Sender<bool>,
+    pub port: u16,
 }
 
 impl AppState {
@@ -167,6 +170,7 @@ impl AppState {
         oauth_client: UserOAuthClient,
         event_start_tx: watch::Sender<bool>,
         event_end_tx: watch::Sender<bool>,
+        port: u16,
     ) -> Self {
         Self {
             oauth_client,
@@ -174,6 +178,7 @@ impl AppState {
             session_id: Arc::new(RwLock::new(None)),
             event_start_tx,
             event_end_tx,
+            port,
         }
     }
 
