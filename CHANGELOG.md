@@ -1,3 +1,9 @@
+## [0.4.2](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.1..v0.4.2) - 2026-03-06
+
+### Bug Fixes
+
+- **(examples)** Update chatbot example for twitch_oauth_token 4.x([de5dddd](https://github.com/m3idnotfree/twitch_highway/commit/de5dddd4e3fda2fc8d3f0b648b0b89495d346cc4))
+
 ## [0.4.1](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.0..v0.4.1) - 2026-03-05
 
 ### Bug Fixes
