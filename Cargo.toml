@@ -54,7 +54,7 @@ tokio = { version = "1.50.0", features = [
 tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"], optional = true }
 tower = { version = "0.5.3", features = ["limit", "util"], optional = true }
 tracing = { version = "0.1.44", optional = true }
-twitch_oauth_token = "4.0.1"
+twitch_oauth_token = "4.1.0"
 url = { version = "2.5.8", features = ["serde"] }
 
 [dev-dependencies]
