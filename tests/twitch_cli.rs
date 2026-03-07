@@ -25,11 +25,6 @@ use twitch_highway::{
     videos::VideosAPI,
     whisper::WhisperAPI,
 };
-use twitch_oauth_token::scope::{
-    BitScopes, CCLScopes, ChannelPointScopes, ChannelScopes, CharityScopes, ChatScopes, ClipScopes,
-    GoalScopes, PollScopes, PredictionScopes, RaidScopes, SearchScopes, SubscriptionScopes,
-    TeamScopes, UserScopes, VideoScopes, WhisperScopes,
-};
 
 #[tokio::test]
 #[ignore]

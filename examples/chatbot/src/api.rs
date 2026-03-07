@@ -9,9 +9,7 @@ use serde::Deserialize;
 use tokio::{net::TcpListener, sync::broadcast};
 use tracing::{error, info, instrument, warn};
 use twitch_highway::{TwitchAPI, chat::ChatAPI};
-use twitch_oauth_token::{
-    AccessToken, AuthCallback, AuthorizationCode, TokenInfo, UserToken, scope::ChatbotScopes,
-};
+use twitch_oauth_token::{AccessToken, AuthCallback, AuthorizationCode, TokenInfo, UserToken};
 
 use crate::{AppState, SharedUserInfo, UserInfo, UserOAuthClient};
 

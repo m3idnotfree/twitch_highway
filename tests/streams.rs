@@ -10,7 +10,6 @@ use twitch_highway::{
     streams::StreamsAPI,
     types::{BroadcasterId, UserId},
 };
-use twitch_oauth_token::scope::StreamScopes;
 
 api_test!(
     get_stream_key[&BroadcasterId::from("141981764")],

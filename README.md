@@ -18,7 +18,7 @@ A Rust library for the Twitch API with compile-time safety and comprehensive res
 [dependencies]
 twitch_highway = "0.4"
 tokio = { version = "1", features = ["full"] }
-asknothingx2-util = { version = "0.4", features = ["oauth"] }
+asknothingx2-util = { version = "0.5", features = ["oauth"] }
 # or
 # twitch_oauth_token = { version = "4" }
 ```
