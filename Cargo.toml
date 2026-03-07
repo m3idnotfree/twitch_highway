@@ -1,6 +1,6 @@
 [package]
 name = "twitch_highway"
-version = "0.4.2"
+version = "0.4.3"
 authors = ["m3id"]
 edition = "2021"
 description = "Twitch API"
