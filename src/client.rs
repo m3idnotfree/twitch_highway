@@ -5,6 +5,7 @@ use asknothingx2_util::{
     oauth::{AccessToken, ClientId},
 };
 use reqwest::header::HeaderMap;
+use serde::de::DeserializeOwned;
 use url::Url;
 
 use crate::{error, Error};
@@ -104,5 +105,44 @@ impl Client {
     #[allow(unused)]
     pub(crate) fn http_client(&self) -> &reqwest::Client {
         &self.client
+    }
+
+    pub(crate) async fn json<T: DeserializeOwned>(
+        &self,
+        req: reqwest::RequestBuilder,
+    ) -> Result<T, Error> {
+        self.execute(req)
+            .await?
+            .json()
+            .await
+            .map_err(error::decode_error)
+    }
+
+    pub(crate) async fn text(&self, req: reqwest::RequestBuilder) -> Result<String, Error> {
+        self.execute(req)
+            .await?
+            .text()
+            .await
+            .map_err(error::decode_error)
+    }
+
+    pub(crate) async fn no_content(&self, req: reqwest::RequestBuilder) -> Result<(), Error> {
+        self.execute(req).await?;
+        Ok(())
+    }
+
+    pub(crate) async fn execute(
+        &self,
+        req: reqwest::RequestBuilder,
+    ) -> Result<reqwest::Response, Error> {
+        let resp = req.send().await.map_err(Error::from)?;
+        if resp.status().is_success() {
+            Ok(resp)
+        } else {
+            let status = resp.status();
+            let v = resp.bytes().await?;
+            let body = String::from_utf8_lossy(&v);
+            Err(error::api_error(format!("HTTP {status}: {body}")))
+        }
     }
 }
