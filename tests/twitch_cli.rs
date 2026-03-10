@@ -718,10 +718,7 @@ async fn mock_api_unblock_user(api: &TwitchFixture) -> Result<()> {
 // }
 
 pub async fn mock_api_get_videos(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .get_videos_by_user_id(&api.selected_user_id())
-        .json()
-        .await?;
+    api.api.get_videos(&api.selected_user_id()).send().await?;
     Ok(())
 }
 

@@ -1,8 +1,32 @@
 #[macro_use]
 mod common;
 
+use common::HttpMock;
 use twitch_highway::{types::VideoId, videos::VideosAPI};
 
-api_test!(get_videos | api | { api.get_videos_by_ids(&[VideoId::from("335921245")]) });
+#[tokio::test]
+async fn get_videos() {
+    let suite = HttpMock::new().await;
+    suite.get_videos().await;
 
-api_test!(delete_videos[&[VideoId::from("1234"), VideoId::from("9876")],]);
+    let result = suite
+        .api()
+        .get_videos(&[VideoId::from("335921245")])
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn delete_videos() {
+    let suite = HttpMock::new().await;
+    suite.delete_videos().await;
+
+    let result = suite
+        .api()
+        .delete_videos(&[VideoId::from("1234"), VideoId::from("9876")])
+        .await;
+
+    assert!(result.is_ok());
+}

@@ -1,5 +1,4 @@
 use crate::{
-    request::TwitchAPIRequest,
     types::{
         constants::{
             AFTER, BEFORE, FIRST, GAME_ID, ID, LANGUAGE, PERIOD, SORT, TYPE, USER_ID, VIDEOS,
@@ -7,19 +6,66 @@ use crate::{
         GameId, UserId, VideoId,
     },
     videos::{Period, Sort, Type, VideosResponse},
-    Client,
+    Client, Error,
 };
 
 #[derive(Debug)]
 pub enum VideoSelect<'a> {
-    Ids(&'a [VideoId]),
     User(&'a UserId),
     Game(&'a GameId),
+    Ids(&'a [VideoId]),
+}
+
+impl<'a> From<&'a UserId> for VideoSelect<'a> {
+    fn from(value: &'a UserId) -> Self {
+        Self::User(value)
+    }
+}
+
+impl<'a> From<&'a GameId> for VideoSelect<'a> {
+    fn from(value: &'a GameId) -> Self {
+        Self::Game(value)
+    }
+}
+
+impl<'a> From<&'a Vec<VideoId>> for VideoSelect<'a> {
+    fn from(value: &'a Vec<VideoId>) -> Self {
+        Self::Ids(value)
+    }
+}
+
+impl<'a> From<&'a [VideoId]> for VideoSelect<'a> {
+    fn from(value: &'a [VideoId]) -> Self {
+        Self::Ids(value)
+    }
+}
+
+impl<'a, const N: usize> From<&'a [VideoId; N]> for VideoSelect<'a> {
+    fn from(value: &'a [VideoId; N]) -> Self {
+        Self::Ids(value)
+    }
+}
+
+impl<'a> VideoSelect<'a> {
+    pub(crate) fn append_to_query(&self, url: &mut url::Url) {
+        match self {
+            Self::User(id) => {
+                url.query_pairs_mut().append_pair(USER_ID, id);
+            }
+            Self::Game(id) => {
+                url.query_pairs_mut().append_pair(GAME_ID, id);
+            }
+            Self::Ids(ids) => {
+                url.query_pairs_mut()
+                    .extend_pairs(ids.iter().map(|id| (ID, id)));
+            }
+        }
+    }
 }
 
 #[derive(Debug)]
 pub struct GetVideosBuilder<'a> {
-    api: &'a Client,
+    client: &'a Client,
     select: VideoSelect<'a>,
     language: Option<&'a str>,
     period: Option<Period>,
@@ -31,36 +77,10 @@ pub struct GetVideosBuilder<'a> {
 }
 
 impl<'a> GetVideosBuilder<'a> {
-    pub fn game_id(api: &'a Client, game_id: &'a GameId) -> Self {
+    pub(crate) fn new(client: &'a Client, select: impl Into<VideoSelect<'a>>) -> Self {
         Self {
-            api,
-            select: VideoSelect::Game(game_id),
-            language: None,
-            period: None,
-            sort: None,
-            kind: None,
-            first: None,
-            after: None,
-            before: None,
-        }
-    }
-    pub fn user_id(api: &'a Client, user_id: &'a UserId) -> Self {
-        Self {
-            api,
-            select: VideoSelect::User(user_id),
-            language: None,
-            period: None,
-            sort: None,
-            kind: None,
-            first: None,
-            after: None,
-            before: None,
-        }
-    }
-    pub fn ids(api: &'a Client, ids: &'a [VideoId]) -> Self {
-        Self {
-            api,
-            select: VideoSelect::Ids(ids),
+            client,
+            select: select.into(),
             language: None,
             period: None,
             sort: None,
@@ -75,87 +95,63 @@ impl<'a> GetVideosBuilder<'a> {
         self.period = Some(value);
         self
     }
+
     pub fn sort(mut self, value: Sort) -> Self {
         self.sort = Some(value);
         self
     }
+
     pub fn kind(mut self, value: Type) -> Self {
         self.kind = Some(value);
         self
     }
+
     pub fn first(mut self, value: &'a str) -> Self {
         self.first = Some(value);
         self
     }
+
     pub fn after(mut self, value: &'a str) -> Self {
         self.after = Some(value);
         self
     }
+
     pub fn before(mut self, value: &'a str) -> Self {
         self.before = Some(value);
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<VideosResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<VideosResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[VIDEOS]);
+        url.path_segments_mut().unwrap().push(VIDEOS);
 
-        let mut query = url.query_pairs_mut();
-
-        match self.select {
-            VideoSelect::User(id) => {
-                query.append_pair(USER_ID, id);
-            }
-            VideoSelect::Game(id) => {
-                query.append_pair(GAME_ID, id);
-            }
-            VideoSelect::Ids(ids) => {
-                query.extend_pairs(ids.iter().map(|id| (ID, id)));
-            }
-        }
+        self.select.append_to_query(&mut url);
 
         if let Some(value) = self.language {
-            query.append_pair(LANGUAGE, value);
+            url.query_pairs_mut().append_pair(LANGUAGE, value);
         }
         if let Some(value) = self.period {
-            query.append_pair(PERIOD, value.as_ref());
+            url.query_pairs_mut().append_pair(PERIOD, value.as_ref());
         }
         if let Some(value) = self.sort {
-            query.append_pair(SORT, value.as_ref());
+            url.query_pairs_mut().append_pair(SORT, value.as_ref());
         }
         if let Some(value) = self.kind {
-            query.append_pair(TYPE, value.as_ref());
+            url.query_pairs_mut().append_pair(TYPE, value.as_ref());
         }
 
         if let Some(value) = self.first {
-            query.append_pair(FIRST, value.as_ref());
+            url.query_pairs_mut().append_pair(FIRST, value.as_ref());
         }
 
         if let Some(value) = self.before {
-            query.append_pair(BEFORE, value.as_ref());
+            url.query_pairs_mut().append_pair(BEFORE, value.as_ref());
         }
         if let Some(value) = self.after {
-            query.append_pair(AFTER, value.as_ref());
+            url.query_pairs_mut().append_pair(AFTER, value.as_ref());
         }
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetVideos,
-            url,
-            reqwest::Method::GET,
-            self.api.default_headers(),
-            None,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<VideosResponse, crate::Error> {
-        self.build().json().await
+        self.client.json(self.client.http_client().get(url)).await
     }
 }
