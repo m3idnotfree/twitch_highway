@@ -10,7 +10,7 @@ use crate::{
         constants::{BROADCASTER_ID, CHANNEL, ID, NAME, TEAMS},
         BroadcasterId, TeamId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait TeamsAPI {
@@ -27,13 +27,13 @@ pub trait TeamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     teams::TeamsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_teams(&BroadcasterId::from("1234"))
     ///     .json()
@@ -68,10 +68,10 @@ pub trait TeamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::teams::TeamsAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_teams_by_name("name")
     ///     .json()
@@ -103,13 +103,13 @@ pub trait TeamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     teams::TeamsAPI,
     ///     types::TeamId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_teams_by_id(&TeamId::from("1234"))
     ///     .json()
@@ -129,7 +129,7 @@ pub trait TeamsAPI {
     fn get_teams_by_id(&self, id: &TeamId) -> TwitchAPIRequest<TeamsResponse>;
 }
 
-impl TeamsAPI for TwitchAPI {
+impl TeamsAPI for Client {
     simple_endpoint!(
         fn get_channel_teams(
             broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],

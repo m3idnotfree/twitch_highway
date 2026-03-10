@@ -4,7 +4,7 @@ use asknothingx2_util::api::preset;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 use twitch_highway::{
     types::{BroadcasterId, UserId},
-    TwitchAPI,
+    Client as C,
 };
 use twitch_oauth_token::{
     scope::ScopesMut,
@@ -20,7 +20,7 @@ use crate::common::{get_stream_data, mock_data::MockDataError};
 
 #[derive(Debug)]
 pub struct TwitchFixture {
-    pub api: TwitchAPI,
+    pub api: C,
     pub mock_api: MockApiUnits,
     pub clients: Vec<Client>,
     pub users: Vec<User>,
@@ -76,10 +76,10 @@ impl TwitchFixture {
 
         let app_token = oauth.app_access_token().await?;
 
-        let api = TwitchAPI::with_client(
+        let api = C::with_client_builder(
             app_token.access_token.clone(),
             selected_client.ID.clone(),
-            preset::testing("twitch-highway-test/1.0").build().unwrap(),
+            reqwest::ClientBuilder::new(),
         );
 
         Ok(Self {
@@ -162,12 +162,12 @@ where
 
     let user_token = user_token_request.send().await?;
 
-    let api = TwitchAPI::with_client(
+    let api = C::with_client_builder(
         user_token.access_token.clone(),
         selected_client.ID.clone(),
-        preset::testing("twitch-highway-test/1.0").build().unwrap(),
+        reqwest::ClientBuilder::new(),
     )
-    .set_url(Url::parse("http://localhost:8080/mock").unwrap());
+    .with_url(Url::parse("http://localhost:8080/mock").unwrap());
 
     Ok(TwitchFixture {
         api,

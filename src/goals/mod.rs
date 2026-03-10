@@ -10,7 +10,7 @@ use crate::{
         constants::{BROADCASTER_ID, GOALS},
         BroadcasterId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait GoalsAPI {
@@ -27,13 +27,13 @@ pub trait GoalsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     goals::GoalsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_creator_goals(&BroadcasterId::from("1234"))
     ///     .json()
@@ -53,7 +53,7 @@ pub trait GoalsAPI {
     fn get_creator_goals(&self, broadcaster_id: &BroadcasterId) -> TwitchAPIRequest<GoalsResponse>;
 }
 
-impl GoalsAPI for TwitchAPI {
+impl GoalsAPI for Client {
     simple_endpoint!(
         fn get_creator_goals(
             broadcaster_id: &BroadcasterId [key = BROADCASTER_ID]

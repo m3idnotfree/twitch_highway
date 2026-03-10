@@ -7,7 +7,7 @@ use crate::{
         constants::{AFTER, DROPS, ENTITLEMENTS, FIRST, GAME_ID, ID, USER_ID},
         EntitlementId, GameId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -28,13 +28,13 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct UpdateDropsEntitlementsBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     entitlement_ids: Option<&'a [EntitlementId]>,
     fulfillment_status: Option<FulfillmentStatus>,
 }
 
 impl<'a> UpdateDropsEntitlementsBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI) -> Self {
+    pub fn new(api: &'a Client) -> Self {
         Self {
             api,
             entitlement_ids: None,
@@ -52,7 +52,7 @@ impl<'a> UpdateDropsEntitlementsBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<UpdateDropEntitlementsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -66,7 +66,7 @@ impl<'a> UpdateDropsEntitlementsBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

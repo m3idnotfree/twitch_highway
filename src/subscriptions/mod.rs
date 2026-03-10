@@ -12,7 +12,7 @@ use crate::types::{
 };
 
 use crate::request::TwitchAPIRequest;
-use crate::TwitchAPI;
+use crate::Client;
 
 pub trait SubscriptionsAPI {
     /// Gets a list of users that subscribe to the specified broadcaster
@@ -28,13 +28,13 @@ pub trait SubscriptionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     subscriptions::SubscriptionsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_broadcaster_subscriptions(&BroadcasterId::from("1234"))
     ///     .json()
@@ -70,13 +70,13 @@ pub trait SubscriptionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     subscriptions::SubscriptionsAPI,
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .check_user_subscription(
     ///         &BroadcasterId::from("1234"),
@@ -103,7 +103,7 @@ pub trait SubscriptionsAPI {
     ) -> TwitchAPIRequest<UserSubscriptionResponse>;
 }
 
-impl SubscriptionsAPI for TwitchAPI {
+impl SubscriptionsAPI for Client {
     fn get_broadcaster_subscriptions<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

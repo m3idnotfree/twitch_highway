@@ -31,14 +31,13 @@ use asknothingx2_util::oauth::{AccessToken, ClientId};
 use twitch_highway::{
     moderation::ModerationAPI,
     types::{BroadcasterId, ModeratorId, UserId},
-    TwitchAPI,
 };
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let api = TwitchAPI::new(
-        AccessToken::from("access_token".to_string()),
-        ClientId::from("client_id".to_string()),
+    let api = twitch_highway::Client::new(
+        AccessToken::from("access_token"),
+        ClientId::from("client_id"),
     );
 
     let broadcaster_id = BroadcasterId::from("broadcaster_id");

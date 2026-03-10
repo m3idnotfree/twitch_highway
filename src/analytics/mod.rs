@@ -6,7 +6,7 @@ pub use builder::{GetExtensionBuilder, GetGameAnalyticsBuilder};
 pub use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 pub use types::{AnalyticsType, ExtensionAnalytic, GameAnalytic};
 
-use crate::TwitchAPI;
+use crate::Client;
 
 pub trait AnalyticsAPI {
     /// Gets an analytics report for one or more extensions
@@ -17,13 +17,13 @@ pub trait AnalyticsAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     analytics::{AnalyticsAPI, AnalyticsType},
     ///     types::ExtensionId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let extension_id = ExtensionId::from("72189");
     /// let response = api
     ///     .get_extension_analytics()
@@ -56,13 +56,13 @@ pub trait AnalyticsAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     analytics::{AnalyticsAPI, AnalyticsType},
     ///     types::GameId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let game_id = GameId::from("72189");
     /// let response = api
     ///     .get_game_analytics()
@@ -88,7 +88,7 @@ pub trait AnalyticsAPI {
     fn get_game_analytics<'a>(&'a self) -> GetGameAnalyticsBuilder<'a>;
 }
 
-impl AnalyticsAPI for TwitchAPI {
+impl AnalyticsAPI for Client {
     fn get_extension_analytics<'a>(&'a self) -> GetExtensionBuilder<'a> {
         GetExtensionBuilder::new(self)
     }

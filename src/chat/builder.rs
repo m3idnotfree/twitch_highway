@@ -13,7 +13,7 @@ use crate::{
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -62,7 +62,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct UpdateChatSettingsBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -90,7 +90,7 @@ pub struct UpdateChatSettingsBuilder<'a> {
 
 impl<'a> UpdateChatSettingsBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> Self {
@@ -147,7 +147,7 @@ impl<'a> UpdateChatSettingsBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<ChatSettingResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, SETTINGS]);
 
@@ -166,7 +166,7 @@ impl<'a> UpdateChatSettingsBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -182,7 +182,7 @@ impl<'a> UpdateChatSettingsBuilder<'a> {
 #[derive(Debug, Serialize)]
 pub struct SendChatAnnouncementBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -195,7 +195,7 @@ pub struct SendChatAnnouncementBuilder<'a> {
 
 impl<'a> SendChatAnnouncementBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         message: &'a str,
@@ -215,7 +215,7 @@ impl<'a> SendChatAnnouncementBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -236,7 +236,7 @@ impl<'a> SendChatAnnouncementBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -252,7 +252,7 @@ impl<'a> SendChatAnnouncementBuilder<'a> {
 #[derive(Debug, Serialize)]
 pub struct SendChatMessageBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
 
     broadcaster_id: &'a BroadcasterId,
     sender_id: &'a UserId,
@@ -265,7 +265,7 @@ pub struct SendChatMessageBuilder<'a> {
 
 impl<'a> SendChatMessageBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
 
         broadcaster_id: &'a BroadcasterId,
         sender_id: &'a UserId,
@@ -289,7 +289,7 @@ impl<'a> SendChatMessageBuilder<'a> {
         self
     }
     pub fn build(self) -> TwitchAPIRequest<SendChatMessageResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, MESSAGES]);
 
@@ -301,7 +301,7 @@ impl<'a> SendChatMessageBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

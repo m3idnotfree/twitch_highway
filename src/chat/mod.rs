@@ -27,7 +27,7 @@ use crate::{
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ChatAPI {
@@ -40,13 +40,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_chatters(&BroadcasterId::from("1234"), &ModeratorId::from("5678"))
     ///     .first(5)
@@ -84,13 +84,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_emotes(&BroadcasterId::from("1234"))
     ///     .json()
@@ -121,10 +121,10 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_global_emotes()
     ///     .json()
@@ -156,10 +156,10 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_emote_sets(&["e1", "e2"])
     ///     .json()
@@ -191,13 +191,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_chat_badges(&BroadcasterId::from("1234"))
     ///     .json()
@@ -228,10 +228,10 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_global_chat_badges()
     ///     .json()
@@ -263,13 +263,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_chat_settings(&BroadcasterId::from("1234"))
     ///     .moderator_id(&ModeratorId::from("5678"))
@@ -305,13 +305,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_shared_chat_session(&BroadcasterId::from("1234"))
     ///     .json()
@@ -346,13 +346,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_user_emotes(&UserId::from("5678"))
     ///     .broadcaster_id(&BroadcasterId::from("1234"))
@@ -387,13 +387,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_chat_settings(
     ///         &BroadcasterId::from("1234"),
@@ -433,13 +433,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::{ChatAPI, AnnouncementColor},
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_chat_announcement(
     ///         &BroadcasterId::from("1234"),
@@ -483,13 +483,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_a_shoutout(
     ///         &BroadcasterId::from("1234"),
@@ -532,13 +532,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_chat_message(
     ///         &BroadcasterId::from("1234"),
@@ -580,13 +580,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::ChatAPI,
     ///     types::UserId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_user_chat_color(&[UserId::from("1234")])
     ///     .json()
@@ -619,13 +619,13 @@ pub trait ChatAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     chat::{ChatAPI, ChatColor},
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_user_chat_color(&UserId::from("1234"), ChatColor::BlueViolet)
     ///     .json()
@@ -649,7 +649,7 @@ pub trait ChatAPI {
     ) -> TwitchAPIRequest<NoContent>;
 }
 
-impl ChatAPI for TwitchAPI {
+impl ChatAPI for Client {
     fn get_chatters<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -661,7 +661,7 @@ impl ChatAPI for TwitchAPI {
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> TwitchAPIRequest<EmotesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, EMOTES]);
         let mut query = url.query_pairs_mut();
@@ -676,11 +676,11 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_global_emotes(&self) -> TwitchAPIRequest<EmotesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -692,11 +692,11 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -714,7 +714,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
@@ -722,7 +722,7 @@ impl ChatAPI for TwitchAPI {
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> TwitchAPIRequest<BadgesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, BADGES]);
 
@@ -738,11 +738,11 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_global_chat_badges(&self) -> TwitchAPIRequest<BadgesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -754,7 +754,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_chat_settings<'a>(
@@ -767,7 +767,7 @@ impl ChatAPI for TwitchAPI {
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> TwitchAPIRequest<SharedChatSessionResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -785,7 +785,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a> {
@@ -812,7 +812,7 @@ impl ChatAPI for TwitchAPI {
         to_broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
     ) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, SHOUTOUTS]);
 
@@ -830,7 +830,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::POST,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn send_chat_message<'a>(
@@ -842,7 +842,7 @@ impl ChatAPI for TwitchAPI {
         SendChatMessageBuilder::new(self, broadcaster_id, sender_id, message)
     }
     fn get_user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
 
@@ -858,7 +858,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn update_user_chat_color(
@@ -866,7 +866,7 @@ impl ChatAPI for TwitchAPI {
         user_id: &UserId,
         color: ChatColor,
     ) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
 
@@ -883,7 +883,7 @@ impl ChatAPI for TwitchAPI {
             reqwest::Method::PUT,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
 }

@@ -8,7 +8,7 @@ use crate::{
         },
         GameId, UserId, VideoId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -66,7 +66,7 @@ pub enum StreamMarkerSelect<'a> {
 
 #[derive(Debug)]
 pub struct GetStermaMarkersBuilder<'a> {
-    api: &'a TwitchAPI,
+    api: &'a Client,
     select: StreamMarkerSelect<'a>,
     first: Option<u8>,
     before: Option<&'a str>,
@@ -74,7 +74,7 @@ pub struct GetStermaMarkersBuilder<'a> {
 }
 
 impl<'a> GetStermaMarkersBuilder<'a> {
-    pub fn user_id(api: &'a TwitchAPI, user_id: &'a UserId) -> Self {
+    pub fn user_id(api: &'a Client, user_id: &'a UserId) -> Self {
         Self {
             api,
             select: StreamMarkerSelect::User(user_id),
@@ -84,7 +84,7 @@ impl<'a> GetStermaMarkersBuilder<'a> {
         }
     }
 
-    pub fn video_id(api: &'a TwitchAPI, video_id: &'a VideoId) -> Self {
+    pub fn video_id(api: &'a Client, video_id: &'a VideoId) -> Self {
         Self {
             api,
             select: StreamMarkerSelect::Video(video_id),
@@ -108,7 +108,7 @@ impl<'a> GetStermaMarkersBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<GetStreamMarkersResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[STREAMS, MARKERS]);
 
@@ -142,7 +142,7 @@ impl<'a> GetStermaMarkersBuilder<'a> {
             reqwest::Method::GET,
             self.api.default_headers(),
             None,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

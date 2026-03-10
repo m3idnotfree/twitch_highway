@@ -9,7 +9,7 @@ pub use types::{MutedSegment, Period, Sort, Type, Video};
 use crate::{
     request::TwitchAPIRequest,
     types::{constants::ID, GameId, UserId, VideoId},
-    TwitchAPI,
+    Client,
 };
 
 const VIDEOS: &str = "videos";
@@ -27,13 +27,13 @@ pub trait VideosAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::VideoId,
     ///     videos::{VideosAPI, Period, Sort, Type},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let videos = api
     ///     .get_videos_by_ids(&[VideoId::from("85784")])
     ///     .period(Period::Week)
@@ -67,13 +67,13 @@ pub trait VideosAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     videos::{VideosAPI, Period, Sort, Type},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let videos = api
     ///     .get_videos_by_user_id(&UserId::from("85784"))
     ///     .period(Period::Week)
@@ -107,13 +107,13 @@ pub trait VideosAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::GameId,
     ///     videos::{VideosAPI, Period, Sort, Type},
     /// };
     ///
-    /// # async  fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async  fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let videos = api
     ///     .get_videos_by_game_id(&GameId::from("85784"))
     ///     .period(Period::Week)
@@ -147,13 +147,13 @@ pub trait VideosAPI {
     ///
     /// # Example
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway:: {
     ///     types::VideoId,
     ///     videos::VideosAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .delete_videos(&[VideoId::from("4867"), VideoId::from("9137")])
     ///     .json()
@@ -173,7 +173,7 @@ pub trait VideosAPI {
     fn delete_videos(&self, ids: &[VideoId]) -> TwitchAPIRequest<DeleteVideosResponse>;
 }
 
-impl VideosAPI for TwitchAPI {
+impl VideosAPI for Client {
     fn get_videos_by_ids<'a>(&'a self, ids: &'a [VideoId]) -> GetVideosBuilder<'a> {
         GetVideosBuilder::ids(self, ids)
     }
@@ -184,7 +184,7 @@ impl VideosAPI for TwitchAPI {
         GetVideosBuilder::game_id(self, game_id)
     }
     fn delete_videos(&self, ids: &[VideoId]) -> TwitchAPIRequest<DeleteVideosResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[VIDEOS]);
 
@@ -200,7 +200,7 @@ impl VideosAPI for TwitchAPI {
             reqwest::Method::DELETE,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
 }

@@ -5,7 +5,7 @@ use crate::{
     request::TwitchAPIRequest,
     types::constants::{AFTER, BROADCASTER_ID, FIRST, ID, POLLS},
     types::{BroadcasterId, PollId, Title},
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -26,7 +26,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct CreatePollBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     title: &'a str,
     choices: &'a [Title],
@@ -41,7 +41,7 @@ pub struct CreatePollBuilder<'a> {
 
 impl<'a> CreatePollBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         title: &'a str,
         choices: &'a [Title],
@@ -68,7 +68,7 @@ impl<'a> CreatePollBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<PollsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[POLLS]);
 
@@ -80,7 +80,7 @@ impl<'a> CreatePollBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

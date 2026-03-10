@@ -23,7 +23,7 @@ use crate::{
         },
         BroadcasterId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait UserAPI {
@@ -36,13 +36,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_users()
     ///     .ids(&[UserId::from("1234")])
@@ -75,10 +75,10 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::users::UserAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api.update_user("description").json().await?;
     ///
     /// # Ok(())
@@ -107,13 +107,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::BroadcasterId,
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_user_block_list(&BroadcasterId::from("1234"))
     ///     .json()
@@ -148,13 +148,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     users::{BlockReason, BlockSourceContext, UserAPI},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .block_user(&UserId::from("1234"))
     ///     .source_context(BlockSourceContext::Chat)
@@ -188,13 +188,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api.unblock_user(&UserId::from("1234")).json().await?;
     ///
     /// # Ok(())
@@ -219,10 +219,10 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::users::UserAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api.get_user_extensions().json().await?;
     ///
     /// # Ok(())
@@ -248,13 +248,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_user_active_extensions()
     ///     .user_id(&UserId::from("1234"))
@@ -285,10 +285,10 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::users::{Component, Overlay, Panel, UserAPI};
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_user_extensions()
     ///     .add_panel(Panel::new(true))
@@ -319,13 +319,13 @@ pub trait UserAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_authorization_by_user(&[UserId::from("1234"), UserId::from("5678")])
     ///     .json()
@@ -348,12 +348,12 @@ pub trait UserAPI {
     ) -> TwitchAPIRequest<GetAuthorizationByUserResponse>;
 }
 
-impl UserAPI for TwitchAPI {
+impl UserAPI for Client {
     fn get_users<'a>(&'a self) -> GetUsersBuilder<'a> {
         GetUsersBuilder::new(self)
     }
     fn update_user(&self, description: &str) -> TwitchAPIRequest<UpdateUsersResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[USERS]);
 
@@ -369,7 +369,7 @@ impl UserAPI for TwitchAPI {
             reqwest::Method::PUT,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_user_block_list<'a>(
@@ -382,7 +382,7 @@ impl UserAPI for TwitchAPI {
         BlockUserBuilder::new(self, target_user_id)
     }
     fn unblock_user(&self, target_user_id: &UserId) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[USERS, BLOCKS]);
 
@@ -398,11 +398,11 @@ impl UserAPI for TwitchAPI {
             reqwest::Method::DELETE,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -414,7 +414,7 @@ impl UserAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a> {

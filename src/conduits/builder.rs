@@ -7,7 +7,7 @@ use crate::{
         constants::{AFTER, CONDUITS, CONDUIT_ID, EVENTSUB, SHARDS, STATUS},
         ConduitId, SessionId, ShardId, Status,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -27,13 +27,13 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct UpdateConduitShardsBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     conduit_id: ConduitId,
     shards: Vec<ShardUpdate>,
 }
 
 impl<'a> UpdateConduitShardsBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI, conduit_id: ConduitId) -> Self {
+    pub fn new(api: &'a Client, conduit_id: ConduitId) -> Self {
         Self {
             api,
             conduit_id,
@@ -58,7 +58,7 @@ impl<'a> UpdateConduitShardsBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<UpdateConduitShardsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -72,7 +72,7 @@ impl<'a> UpdateConduitShardsBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

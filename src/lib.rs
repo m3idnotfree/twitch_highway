@@ -21,11 +21,10 @@
 //! use twitch_highway::{
 //!     moderation::ModerationAPI,
 //!     types::{BroadcasterId, ModeratorId, UserId},
-//!     TwitchAPI,
 //! };
 //!
 //! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-//! let api = TwitchAPI::new(
+//! let api = twitch_highway::Client::new(
 //!     AccessToken::from("your_access_token"),
 //!     ClientId::from("your_client_id"),
 //! );
@@ -121,118 +120,11 @@ mod macros;
 pub mod request;
 pub mod types;
 
+mod client;
 mod error;
 
+pub use client::Client;
 pub use error::Error;
-
-use std::sync::LazyLock;
-
-use asknothingx2_util::{
-    api::{preset, HeaderMut},
-    oauth::{AccessToken, ClientId},
-};
-use reqwest::{header::HeaderMap, Client};
-use url::Url;
-
-const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
-
-static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BASE).unwrap());
-
-#[derive(Debug, Clone)]
-pub struct TwitchAPI {
-    access_token: AccessToken,
-    client_id: ClientId,
-    url: Url,
-    client: Client,
-}
-
-impl TwitchAPI {
-    pub fn new(access_token: AccessToken, client_id: ClientId) -> Self {
-        Self {
-            access_token,
-            client_id,
-            url: BASE_URL.clone(),
-            client: preset::rest_api("twitch-highway/1.0").build().unwrap(),
-        }
-    }
-
-    pub fn with_client(access_token: AccessToken, client_id: ClientId, client: Client) -> Self {
-        Self {
-            access_token,
-            client_id,
-            url: BASE_URL.clone(),
-            client,
-        }
-    }
-
-    pub fn with_url(access_token: AccessToken, client_id: ClientId, url: Url) -> Self {
-        Self {
-            access_token,
-            client_id,
-            url,
-            client: preset::rest_api("twitch-highway/1.0").build().unwrap(),
-        }
-    }
-
-    pub fn set_access_token(mut self, access_token: AccessToken) -> Self {
-        self.access_token = access_token;
-        self
-    }
-
-    pub fn set_client_id(mut self, client_id: ClientId) -> Self {
-        self.client_id = client_id;
-        self
-    }
-
-    pub fn set_url(mut self, url: Url) -> Self {
-        self.url = url;
-        self
-    }
-
-    pub fn set_client(mut self, client: Client) -> Self {
-        self.client = client;
-        self
-    }
-
-    pub fn access_token(&self) -> &AccessToken {
-        &self.access_token
-    }
-
-    pub fn client_id(&self) -> &ClientId {
-        &self.client_id
-    }
-
-    #[allow(unused)]
-    pub(crate) fn default_headers(&self) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers)
-            .bearer_token(self.access_token.secret())
-            .client_id(&self.client_id)
-            .unwrap();
-        headers
-    }
-
-    pub(crate) fn header_json(&self) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers)
-            .bearer_token(self.access_token.secret())
-            .client_id(&self.client_id)
-            .unwrap()
-            .content_type_json();
-        headers
-    }
-
-    pub(crate) fn build_jwt_headers(&self, jwt: &crate::types::JWTToken) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers).bearer_token(jwt.as_str());
-        headers
-    }
-
-    #[allow(unused)]
-    pub(crate) fn build_url(&self) -> Url {
-        self.url.clone()
-    }
-}
 
 pub mod ads;
 pub mod analytics;

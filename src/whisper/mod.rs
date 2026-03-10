@@ -6,7 +6,7 @@ use crate::{
         constants::{FROM_USER_ID, TO_USER_ID, WHISPERS},
         UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 use types::WhisperBody;
@@ -25,13 +25,13 @@ pub trait WhisperAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     types::UserId,
     ///     whisper::WhisperAPI
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_whisper(
     ///         &UserId::from("8456"),
@@ -59,7 +59,7 @@ pub trait WhisperAPI {
     ) -> TwitchAPIRequest<NoContent>;
 }
 
-impl WhisperAPI for TwitchAPI {
+impl WhisperAPI for Client {
     simple_endpoint!(
         fn send_whisper(
             from_user_id: &UserId [key = FROM_USER_ID],

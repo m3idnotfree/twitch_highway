@@ -13,7 +13,7 @@ use crate::{
         },
         BroadcasterId, CategoryId, SegmentId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -55,7 +55,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     start_time: String,
@@ -72,7 +72,7 @@ pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
 
 impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         start_time: &'a DateTime<Utc>,
         timezone: Tz,
@@ -95,7 +95,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
     opt_method!(is_recurring, bool);
 
     pub fn build(self) -> TwitchAPIRequest<ScheduleResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -115,7 +115,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -132,7 +132,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
 #[derive(Debug, Serialize)]
 pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -152,7 +152,7 @@ pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
 }
 
 impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
-    pub fn new(api: &'a TwitchAPI, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
+    pub fn new(api: &'a Client, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
         Self {
             api,
             broadcaster_id,
@@ -174,7 +174,7 @@ impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
     opt_method!(is_canceled, bool);
 
     pub fn build(self) -> TwitchAPIRequest<ScheduleResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -195,7 +195,7 @@ impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

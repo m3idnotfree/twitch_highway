@@ -6,7 +6,7 @@ pub use builder::{GetDropsEntitlementsBuilder, UpdateDropsEntitlementsBuilder};
 pub use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 pub use types::{DropEntitlement, DropEntitlementStatus, FulfillmentStatus, UpdateDropEntitlement};
 
-use crate::TwitchAPI;
+use crate::Client;
 
 pub trait EntitlementsAPI {
     /// Gets an organization’s list of entitlements that have been granted to a game, a user, or both
@@ -18,13 +18,13 @@ pub trait EntitlementsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     entitlements::{EntitlementsAPI, FulfillmentStatus},
     ///     types::{EntitlementId, UserId, GameId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_drops_entitlements()
     ///     .ids(&[EntitlementId::from("1234")])
@@ -58,13 +58,13 @@ pub trait EntitlementsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     entitlements::{EntitlementsAPI, FulfillmentStatus},
     ///     types::EntitlementId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_drops_entitlements()
     ///     .entitlement_ids(&[EntitlementId::from("1234")])
@@ -86,7 +86,7 @@ pub trait EntitlementsAPI {
     fn update_drops_entitlements<'a>(&'a self) -> UpdateDropsEntitlementsBuilder<'a>;
 }
 
-impl EntitlementsAPI for TwitchAPI {
+impl EntitlementsAPI for Client {
     fn get_drops_entitlements<'a>(&'a self) -> GetDropsEntitlementsBuilder<'a> {
         GetDropsEntitlementsBuilder::new(self)
     }

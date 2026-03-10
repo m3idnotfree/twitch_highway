@@ -18,7 +18,7 @@ use crate::{
         constants::{BROADCASTER_ID, CHANNELS, EDITORS},
         BroadcasterId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ChannelsAPI {
@@ -35,13 +35,13 @@ pub trait ChannelsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channels::ChannelsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_info(&[BroadcasterId::from("1234")])
     ///     .json()
@@ -72,13 +72,13 @@ pub trait ChannelsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channels::{ChannelsAPI, ContentClassificationLabel, ContentClassificationLabelsID},
     ///     types::{BroadcasterId, GameId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .modify_channel_info(&BroadcasterId::from("1234"))
     ///     .broadcaster_language("")
@@ -120,13 +120,13 @@ pub trait ChannelsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channels::ChannelsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_editor(&BroadcasterId::from("1234"))
     ///     .json()
@@ -157,13 +157,13 @@ pub trait ChannelsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channels::ChannelsAPI,
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_followed_channels(&UserId::from("1234"))
     ///     .broadcaster_id(&BroadcasterId::from("5678"))
@@ -194,13 +194,13 @@ pub trait ChannelsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channels::ChannelsAPI,
     ///     types::{BroadcasterId,UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_followers(&BroadcasterId::from("1234"))
     ///     .user_id(&UserId::from("5678"))
@@ -226,12 +226,12 @@ pub trait ChannelsAPI {
     ) -> GetChannelFollowersRequest<'a>;
 }
 
-impl ChannelsAPI for TwitchAPI {
+impl ChannelsAPI for Client {
     fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
     ) -> TwitchAPIRequest<ChannelInfoResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHANNELS]);
         let mut query = url.query_pairs_mut();
@@ -246,7 +246,7 @@ impl ChannelsAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn modify_channel_info<'a>(
@@ -259,7 +259,7 @@ impl ChannelsAPI for TwitchAPI {
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> TwitchAPIRequest<ChannelEditorsResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -276,7 +276,7 @@ impl ChannelsAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_followed_channels<'a>(&'a self, user_id: &'a UserId) -> GetFollowedChannels<'a> {

@@ -18,7 +18,7 @@ use crate::{
         constants::{CONDUITS, EVENTSUB, ID},
         ConduitId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ConduitsAPI {
@@ -31,10 +31,10 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::conduits::ConduitsAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_conduits()
     ///     .json()
@@ -66,10 +66,10 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::conduits::ConduitsAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_conduits(5)
     ///     .json()
@@ -102,13 +102,13 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     conduits::ConduitsAPI,
     ///     types::ConduitId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let conduit_id = ConduitId::from("1234");
     /// let response = api
     ///     .update_conduits(&conduit_id, 5)
@@ -145,13 +145,13 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     conduits::ConduitsAPI,
     ///     types::ConduitId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .delete_conduits(&ConduitId::from("1234"))
     ///     .json()
@@ -183,13 +183,13 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     conduits::ConduitsAPI,
     ///     types::{ConduitId, Status},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_conduit_shards(&ConduitId::from("1234"))
     ///     .status(Status::Enabled)
@@ -223,13 +223,13 @@ pub trait ConduitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     conduits::ConduitsAPI,
     ///     types::{ConduitId, SessionId, ShardId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_conduit_shards(ConduitId::from("1234"))
     ///     .webhook(ShardId::from("1234"), "callback", "secret")
@@ -252,9 +252,9 @@ pub trait ConduitsAPI {
         -> UpdateConduitShardsBuilder<'a>;
 }
 
-impl ConduitsAPI for TwitchAPI {
+impl ConduitsAPI for Client {
     fn get_conduits(&self) -> TwitchAPIRequest<ConduitResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -266,11 +266,11 @@ impl ConduitsAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn create_conduits(&self, shard_count: u64) -> TwitchAPIRequest<ConduitResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -284,7 +284,7 @@ impl ConduitsAPI for TwitchAPI {
             reqwest::Method::POST,
             self.header_json(),
             body,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn update_conduits(
@@ -292,7 +292,7 @@ impl ConduitsAPI for TwitchAPI {
         conduit_id: &ConduitId,
         shard_count: u64,
     ) -> TwitchAPIRequest<ConduitResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -310,11 +310,11 @@ impl ConduitsAPI for TwitchAPI {
             reqwest::Method::PATCH,
             self.header_json(),
             body,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn delete_conduits(&self, conduit_id: &ConduitId) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -332,7 +332,7 @@ impl ConduitsAPI for TwitchAPI {
             reqwest::Method::DELETE,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShardsBuilder<'a> {

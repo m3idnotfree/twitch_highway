@@ -8,7 +8,7 @@ use axum::{
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::broadcast};
 use tracing::{error, info, instrument, warn};
-use twitch_highway::{TwitchAPI, chat::ChatAPI};
+use twitch_highway::{Client, chat::ChatAPI};
 use twitch_oauth_token::{AccessToken, AuthCallback, AuthorizationCode, TokenInfo, UserToken};
 
 use crate::{AppState, SharedUserInfo, UserInfo, UserOAuthClient};
@@ -150,7 +150,7 @@ async fn send_chat_message(
         return "Not authenticated".to_string();
     };
 
-    let api = TwitchAPI::new(user.token.access_token.clone(), user.client_id.clone());
+    let api = Client::new(user.token.access_token.clone(), user.client_id.clone());
     match api
         .send_chat_message(
             &user.user_id.to_broadcaster_id(),

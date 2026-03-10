@@ -21,7 +21,7 @@ use crate::{
         },
         BroadcasterId, ModeratorId, SessionId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait GuestStarAPI {
@@ -39,13 +39,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_guest_star_settings(
     ///         &BroadcasterId::from("1234"),
@@ -84,13 +84,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let response = api
     ///     .update_channel_guest_star_settings(&broadcaster_id)
@@ -127,13 +127,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_guest_star_session(
     ///         &BroadcasterId::from("1234"),
@@ -172,13 +172,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_guest_star_session(&BroadcasterId::from("1234"))
     ///     .json()
@@ -214,13 +214,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, SessionId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .end_guest_star_session(&BroadcasterId::from("1234"), &SessionId::from("5678"))
     ///     .json()
@@ -258,13 +258,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_guest_star_invites(
     ///         &BroadcasterId::from("1234"),
@@ -308,13 +308,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -359,13 +359,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -411,13 +411,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -469,13 +469,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -525,13 +525,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -583,13 +583,13 @@ pub trait GuestStarAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     guest_star::GuestStarAPI,
     ///     types::{BroadcasterId, ModeratorId, SessionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -623,7 +623,7 @@ pub trait GuestStarAPI {
     ) -> UpdateGuestStarSlotSettingsBuilder<'a>;
 }
 
-impl GuestStarAPI for TwitchAPI {
+impl GuestStarAPI for Client {
     simple_endpoint!(
     fn get_channel_guest_star_settings(
         broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],

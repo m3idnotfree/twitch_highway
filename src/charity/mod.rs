@@ -9,7 +9,7 @@ pub use types::{CharityCampaign, CharityCampaignDonation};
 use crate::{
     request::TwitchAPIRequest,
     types::{constants::CHARITY, BroadcasterId},
-    TwitchAPI,
+    Client,
 };
 
 pub trait CharityAPI {
@@ -26,13 +26,13 @@ pub trait CharityAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     charity::CharityAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_charity_campaign(&BroadcasterId::from("1234"))
     ///     .json()
@@ -67,13 +67,13 @@ pub trait CharityAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     charity::CharityAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_charity_campaign_donations(&BroadcasterId::from("1234"))
     ///     .json()
@@ -96,7 +96,7 @@ pub trait CharityAPI {
     ) -> GetCharityCampaignDonationBuilder<'a>;
 }
 
-impl CharityAPI for TwitchAPI {
+impl CharityAPI for Client {
     simple_endpoint!(
         fn get_charity_campaign(
             broadcaster_id: &BroadcasterId,

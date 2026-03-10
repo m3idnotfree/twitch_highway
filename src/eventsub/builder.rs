@@ -12,7 +12,7 @@ use crate::{
         BroadcasterId, CampaignId, CategoryId, ConduitId, ExtensionClientId, ModeratorId,
         OrganizationId, RewardId, SessionId, Status, SubscriptionId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -33,7 +33,7 @@ define_request_builder! {
 #[derive(Debug, Clone, Serialize)]
 pub struct CreateEventSubBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(rename = "type")]
     kind: SubscriptionType,
     version: String,
@@ -42,12 +42,7 @@ pub struct CreateEventSubBuilder<'a> {
 }
 
 impl<'a> CreateEventSubBuilder<'a> {
-    pub fn webhook(
-        api: &'a TwitchAPI,
-        kind: SubscriptionType,
-        callback: Url,
-        secret: String,
-    ) -> Self {
+    pub fn webhook(api: &'a Client, kind: SubscriptionType, callback: Url, secret: String) -> Self {
         let version = kind.version().to_string();
         Self {
             api,
@@ -58,7 +53,7 @@ impl<'a> CreateEventSubBuilder<'a> {
         }
     }
 
-    pub fn websocket(api: &'a TwitchAPI, kind: SubscriptionType, session_id: SessionId) -> Self {
+    pub fn websocket(api: &'a Client, kind: SubscriptionType, session_id: SessionId) -> Self {
         let version = kind.version().to_string();
         Self {
             api,
@@ -69,7 +64,7 @@ impl<'a> CreateEventSubBuilder<'a> {
         }
     }
 
-    pub fn conduit(api: &'a TwitchAPI, kind: SubscriptionType, conduit_id: ConduitId) -> Self {
+    pub fn conduit(api: &'a Client, kind: SubscriptionType, conduit_id: ConduitId) -> Self {
         let version = kind.version().to_string();
         Self {
             api,
@@ -134,7 +129,7 @@ impl<'a> CreateEventSubBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<CreateEventSubscriptionsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -148,7 +143,7 @@ impl<'a> CreateEventSubBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

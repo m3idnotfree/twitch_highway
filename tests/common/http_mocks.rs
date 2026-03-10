@@ -12,11 +12,11 @@ use wiremock::{
     Mock, MockBuilder, MockServer, ResponseTemplate,
 };
 
-use twitch_highway::{request::TwitchAPIRequest, TwitchAPI};
+use twitch_highway::{request::TwitchAPIRequest, Client};
 
 #[derive(Debug)]
 pub struct HttpMock {
-    api: TwitchAPI,
+    api: Client,
     pub server: MockServer,
 }
 
@@ -26,12 +26,12 @@ impl HttpMock {
         let mut url_parsed = Url::parse(&mock_server.uri()).unwrap();
         url_parsed.set_path("/helix");
 
-        let api = TwitchAPI::with_client(
+        let api = Client::with_client_builder(
             AccessToken::from("2gbdx6oar67tqtcmt49t3wpcgycthx"),
             ClientId::from("wbmytr93xzw8zbg0p1izqyzzc5mbiz"),
-            preset::testing("twitch-highway-test/1.0").build().unwrap(),
+            reqwest::ClientBuilder::new(),
         )
-        .set_url(url_parsed);
+        .with_url(url_parsed);
 
         HttpMock {
             api,
@@ -54,10 +54,14 @@ impl HttpMock {
 
     pub fn execute<F, T>(&self, f: F) -> TwitchAPIRequest<T>
     where
-        F: FnOnce(&TwitchAPI) -> TwitchAPIRequest<T>,
+        F: FnOnce(&Client) -> TwitchAPIRequest<T>,
         T: DeserializeOwned,
     {
         f(&self.api)
+    }
+
+    pub fn api(&self) -> &Client {
+        &self.api
     }
 }
 

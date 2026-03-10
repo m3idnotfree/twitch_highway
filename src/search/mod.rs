@@ -6,7 +6,7 @@ pub use builder::{SearchCategoriesBuilder, SearchChannelsBuilder};
 pub use response::{CategoriesResponse, ChannelsResponse};
 pub use types::Channel;
 
-use crate::TwitchAPI;
+use crate::Client;
 
 pub trait SearchAPI {
     /// Gets the games or categories that match the specified query
@@ -22,10 +22,10 @@ pub trait SearchAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::search::SearchAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .search_categories("%23archery")
     ///     .json()
@@ -57,10 +57,10 @@ pub trait SearchAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::search::SearchAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .search_channels("%20death")
     ///     .json()
@@ -80,7 +80,7 @@ pub trait SearchAPI {
     fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a>;
 }
 
-impl SearchAPI for TwitchAPI {
+impl SearchAPI for Client {
     fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a> {
         SearchCategoriesBuilder::new(self, query)
     }

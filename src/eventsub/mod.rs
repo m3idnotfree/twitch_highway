@@ -31,7 +31,7 @@ use crate::{
         constants::{EVENTSUB, ID, SUBSCRIPTIONS},
         ConduitId, SessionId, SubscriptionId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait EventSubAPI {
@@ -50,14 +50,14 @@ pub trait EventSubAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     eventsub::{EventSubAPI, SubscriptionType},
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     /// use url::Url;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .webhook_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -101,13 +101,13 @@ pub trait EventSubAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     eventsub::{EventSubAPI, SubscriptionType},
     ///     types::{BroadcasterId, ModeratorId, SessionId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .websocket_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -149,13 +149,13 @@ pub trait EventSubAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     eventsub::{EventSubAPI, SubscriptionType},
     ///     types::{BroadcasterId, ConduitId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .conduit_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -196,13 +196,13 @@ pub trait EventSubAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     eventsub::EventSubAPI,
     ///     types::SubscriptionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let subscription_id = SubscriptionId::from("1234");
     /// let response = api
     ///     .delete_eventsub(&subscription_id)
@@ -231,10 +231,10 @@ pub trait EventSubAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::eventsub::EventSubAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_eventsub()
     ///     .json()
@@ -254,7 +254,7 @@ pub trait EventSubAPI {
     fn get_eventsub<'a>(&'a self) -> GetEventSubBuilder<'a>;
 }
 
-impl EventSubAPI for TwitchAPI {
+impl EventSubAPI for Client {
     fn webhook_subscription<'a>(
         &'a self,
         kind: SubscriptionType,
@@ -278,7 +278,7 @@ impl EventSubAPI for TwitchAPI {
         CreateEventSubBuilder::conduit(self, kind, conduit_id)
     }
     fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -296,7 +296,7 @@ impl EventSubAPI for TwitchAPI {
             reqwest::Method::DELETE,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_eventsub<'a>(&'a self) -> GetEventSubBuilder<'a> {

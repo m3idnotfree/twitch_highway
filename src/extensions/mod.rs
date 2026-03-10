@@ -27,7 +27,7 @@ use crate::{
         },
         BroadcasterId, Cost, ExtensionId, JWTToken,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ExtensionsAPI {
@@ -48,13 +48,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::{ExtensionsAPI, Segment},
     ///     types::{ExtensionId, JWTToken},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extension_configuration_segment(
     ///         JWTToken::from("1234"),
@@ -96,13 +96,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::{ExtensionsAPI, Segment},
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .set_extension_configuration_segment(
     ///         &ExtensionId::from("1234"),
@@ -144,13 +144,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::{BroadcasterId, ExtensionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .set_extension_required_configuration(
     ///         &BroadcasterId::from("1234"),
@@ -196,13 +196,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_extension_pubsub_message(
     ///         &["target"],
@@ -246,13 +246,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extension_live_channels(&ExtensionId::from("5678"))
     ///     .json()
@@ -287,13 +287,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extension_secrets(&ExtensionId::from("1234"))
     ///     .json()
@@ -329,13 +329,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::ExtensionId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_extension_secret(&ExtensionId::from("1234"), None)
     ///     .json()
@@ -374,13 +374,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::{BroadcasterId, ExtensionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .send_extension_chat_message(
     ///         &BroadcasterId::from("1234"),
@@ -424,13 +424,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extensions(&ExtensionId::from("1234"), None)
     ///     .json()
@@ -467,13 +467,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_released_extensions(&ExtensionId::from("1234"), None)
     ///     .json()
@@ -509,10 +509,10 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::extensions::ExtensionsAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extension_bits_products(None)
     ///     .json()
@@ -550,13 +550,13 @@ pub trait ExtensionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     extensions::ExtensionsAPI,
     ///     types::{Cost, CostType}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_extension_bits_product(
     ///         "sku",
@@ -585,7 +585,7 @@ pub trait ExtensionsAPI {
     ) -> UpdateExtensionBitsProductBuilder<'a>;
 }
 
-impl ExtensionsAPI for TwitchAPI {
+impl ExtensionsAPI for Client {
     fn get_extension_configuration_segment<'a>(
         &'a self,
         jwt_token: JWTToken,

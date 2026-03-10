@@ -12,7 +12,7 @@ use crate::{
         constants::{BROADCASTER_ID, CLIPS, CLIP_ID, DOWNLOADS, EDITOR_ID, VIDEOS},
         BroadcasterId, ClipId, GameId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ClipsAPI {
@@ -29,13 +29,13 @@ pub trait ClipsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     clips::ClipsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_clip(&BroadcasterId::from("1234"))
     ///     .title("title")
@@ -69,14 +69,14 @@ pub trait ClipsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use std::str::FromStr;
     /// use twitch_highway::{
     ///     clips::ClipsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_clips_by_broadcaster_id(&BroadcasterId::from("1234"))
     ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
@@ -116,14 +116,14 @@ pub trait ClipsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use std::str::FromStr;
     /// use twitch_highway::{
     ///     clips::ClipsAPI,
     ///     types::GameId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_clips_by_game_id(&GameId::from("1234"))
     ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
@@ -160,14 +160,14 @@ pub trait ClipsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use std::str::FromStr;
     /// use twitch_highway::{
     ///     clips::ClipsAPI,
     ///     types::ClipId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_clips_by_ids(&[ClipId::from("1234"), ClipId::from("5678")])
     ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
@@ -206,13 +206,13 @@ pub trait ClipsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     clips::ClipsAPI,
     ///     types::{BroadcasterId, ClipId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_clips_download(
     ///         &UserId::from("1234"),
@@ -251,7 +251,7 @@ pub trait ClipsAPI {
     ) -> TwitchAPIRequest<CreateClipsResponse>;
 }
 
-impl ClipsAPI for TwitchAPI {
+impl ClipsAPI for Client {
     fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClipBuilder<'a> {
         CreateClipBuilder::new(self, broadcaster_id)
     }
@@ -286,7 +286,7 @@ impl ClipsAPI for TwitchAPI {
         title: &str,
         duration: Option<f64>,
     ) -> TwitchAPIRequest<CreateClipsResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
         url.path_segments_mut().unwrap().extend(&[VIDEOS, CLIPS]);
 
         url.query_pairs_mut()
@@ -307,7 +307,7 @@ impl ClipsAPI for TwitchAPI {
             reqwest::Method::POST,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
 }

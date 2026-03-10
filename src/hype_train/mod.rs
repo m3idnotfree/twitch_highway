@@ -13,7 +13,7 @@ use crate::types::{
     constants::{HYPE_TRAIN, STATUS},
     BroadcasterId,
 };
-use crate::{request::TwitchAPIRequest, TwitchAPI};
+use crate::{request::TwitchAPIRequest, Client};
 
 pub trait HypeTrainAPI {
     /// # **REMOVED**
@@ -37,13 +37,13 @@ pub trait HypeTrainAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     hype_train::HypeTrainAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_hype_train_events(&BroadcasterId::from("1234"))
     ///     .json()
@@ -82,13 +82,13 @@ pub trait HypeTrainAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     hype_train::HypeTrainAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_hype_train_status(&BroadcasterId::from("1234"))
     ///     .json()
@@ -111,7 +111,7 @@ pub trait HypeTrainAPI {
     ) -> TwitchAPIRequest<HypeTrainStatusResponse>;
 }
 
-impl HypeTrainAPI for TwitchAPI {
+impl HypeTrainAPI for Client {
     fn get_hype_train_events<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

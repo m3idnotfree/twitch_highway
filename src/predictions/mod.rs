@@ -11,7 +11,7 @@ use types::CreatePredictionBody;
 use crate::{
     request::TwitchAPIRequest,
     types::{constants::PREDICTIONS, BroadcasterId, PredictionId, Title},
-    TwitchAPI,
+    Client,
 };
 
 pub trait PredictionsAPI {
@@ -28,13 +28,13 @@ pub trait PredictionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     predictions::PredictionsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_predictions(&BroadcasterId::from("1234"))
     ///     .json()
@@ -73,13 +73,13 @@ pub trait PredictionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     predictions::{PredictionsAPI},
     ///     types::{BroadcasterId,Title}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_prediction(
     ///         &BroadcasterId::from("1234"),
@@ -124,13 +124,13 @@ pub trait PredictionsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     predictions::{PredictionsAPI, PredictionStatus},
     ///     types::{BroadcasterId, PredictionId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .end_prediction(
     ///         &BroadcasterId::from("1234"),
@@ -159,7 +159,7 @@ pub trait PredictionsAPI {
     ) -> EndPredictionBuilder<'a>;
 }
 
-impl PredictionsAPI for TwitchAPI {
+impl PredictionsAPI for Client {
     fn get_predictions<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

@@ -10,7 +10,7 @@ use crate::{
         constants::{AFTER, BITS, CONFIGURATIONS, EXTENSIONS, EXTENSION_ID, FIRST, LIVE, SEGMENT},
         BroadcasterId, Cost, ExtensionId, JWTToken,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -32,7 +32,7 @@ GetExtensionConfigurationSegmentBuilder<'a> {
 #[derive(Debug, Serialize)]
 pub struct SetExtensionConfigurationSegmentBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     extension_id: &'a ExtensionId,
     segment: Segment,
 
@@ -45,7 +45,7 @@ pub struct SetExtensionConfigurationSegmentBuilder<'a> {
 }
 
 impl<'a> SetExtensionConfigurationSegmentBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI, extension_id: &'a ExtensionId, segment: Segment) -> Self {
+    pub fn new(api: &'a Client, extension_id: &'a ExtensionId, segment: Segment) -> Self {
         Self {
             api,
             extension_id,
@@ -61,7 +61,7 @@ impl<'a> SetExtensionConfigurationSegmentBuilder<'a> {
     opt_method!(version, &'a str);
 
     pub fn build(self) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -75,7 +75,7 @@ impl<'a> SetExtensionConfigurationSegmentBuilder<'a> {
             reqwest::Method::PUT,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -105,7 +105,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct UpdateExtensionBitsProductBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
 
     sku: &'a str,
     cost: Cost,
@@ -120,7 +120,7 @@ pub struct UpdateExtensionBitsProductBuilder<'a> {
 }
 
 impl<'a> UpdateExtensionBitsProductBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI, sku: &'a str, cost: Cost, display_name: &'a str) -> Self {
+    pub fn new(api: &'a Client, sku: &'a str, cost: Cost, display_name: &'a str) -> Self {
         Self {
             api,
             sku,
@@ -136,7 +136,7 @@ impl<'a> UpdateExtensionBitsProductBuilder<'a> {
     opt_method!(is_broadcast, bool);
 
     pub fn build(self) -> TwitchAPIRequest<ExtensionsBitsProductsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
         url.path_segments_mut().unwrap().extend(&[BITS, EXTENSIONS]);
 
         let body = serde_json::to_string(&self).ok();
@@ -147,7 +147,7 @@ impl<'a> UpdateExtensionBitsProductBuilder<'a> {
             reqwest::Method::PUT,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

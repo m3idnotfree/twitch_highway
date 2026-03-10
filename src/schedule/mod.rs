@@ -18,7 +18,7 @@ use crate::{
         constants::{BROADCASTER_ID, ICALENDAR, ID, SCHEDULE, SEGMENT},
         BroadcasterId, SegmentId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ScheduleAPI {
@@ -35,13 +35,13 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_stream_schedule(&BroadcasterId::from("1234"))
     ///     .json()
@@ -75,13 +75,13 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_channel_icalendar(&BroadcasterId::from("1234"))
     ///     .json()
@@ -113,13 +113,13 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_channel_stream_schedule(&BroadcasterId::from("1234"))
     ///     .json()
@@ -157,7 +157,7 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::BroadcasterId,
@@ -165,7 +165,7 @@ pub trait ScheduleAPI {
     /// use chrono::{DateTime, Utc};
     /// use chrono_tz::America::New_York;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
@@ -210,13 +210,13 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::{BroadcasterId, SegmentId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
@@ -256,13 +256,13 @@ pub trait ScheduleAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     schedule::ScheduleAPI,
     ///     types::{BroadcasterId, SegmentId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .delete_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
@@ -289,7 +289,7 @@ pub trait ScheduleAPI {
     ) -> TwitchAPIRequest<NoContent>;
 }
 
-impl ScheduleAPI for TwitchAPI {
+impl ScheduleAPI for Client {
     fn get_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

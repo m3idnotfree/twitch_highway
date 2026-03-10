@@ -11,7 +11,7 @@ use crate::{
         BlockReason, BlockSourceContext, BlockUserListResponse, Component, Overlay, Panel,
         UserActiveExtensions, UserActiveExtensionsResponse, UsersInfoResponse,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -66,12 +66,12 @@ define_request_builder! {
 
 #[derive(Debug)]
 pub struct UpdateUserExtensionsBuilder<'a> {
-    api: &'a TwitchAPI,
+    api: &'a Client,
     data: UserActiveExtensions,
 }
 
 impl<'a> UpdateUserExtensionsBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI) -> Self {
+    pub fn new(api: &'a Client) -> Self {
         Self {
             api,
             data: UserActiveExtensions::new(),
@@ -99,7 +99,7 @@ impl<'a> UpdateUserExtensionsBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<UserActiveExtensionsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -113,7 +113,7 @@ impl<'a> UpdateUserExtensionsBuilder<'a> {
             reqwest::Method::PUT,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

@@ -34,7 +34,7 @@ use crate::{
         },
         BlockedTermId, BroadcasterId, ModeratorId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ModerationAPI {
@@ -52,13 +52,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::{CheckAutoMod, ModerationAPI},
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .check_automod_status(
     ///         &BroadcasterId::from("1234"),
@@ -99,13 +99,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::{AutoModAction, ModerationAPI},
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .manage_held_automod_messages(
     ///         &UserId::from("1234"),
@@ -147,13 +147,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_automod_settings(
     ///         &BroadcasterId::from("1234"),
@@ -193,13 +193,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_automod_settings(
     ///         &BroadcasterId::from("1234"),
@@ -238,13 +238,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_banned_users(&BroadcasterId::from("1234"))
     ///     .json()
@@ -280,13 +280,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .ban_user(
     ///         &BroadcasterId::from("1234"),
@@ -330,13 +330,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .unban_user(
     ///         &BroadcasterId::from("1234"),
@@ -379,13 +379,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::{ModerationAPI, UnbanRequestStatus},
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_unban_requests(
     ///         &BroadcasterId::from("1234"),
@@ -429,13 +429,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::{ModerationAPI, UnbanRequestStatus},
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .resolve_unban_request(
     ///         &BroadcasterId::from("1234"),
@@ -479,13 +479,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_blocked_terms(
     ///         &BroadcasterId::from("1234"),
@@ -526,13 +526,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .add_blocked_term(
     ///         &BroadcasterId::from("1234"),
@@ -575,13 +575,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, BlockedTermId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .remove_blocked_term(
     ///         &BroadcasterId::from("1234"),
@@ -623,13 +623,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .delete_chat_messages(
     ///         &BroadcasterId::from("1234"),
@@ -668,13 +668,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_moderated_channels(&UserId::from("1234"))
     ///     .json()
@@ -707,13 +707,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_moderators(&BroadcasterId::from("1234"))
     ///     .json()
@@ -746,13 +746,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .add_channel_moderator(
     ///         &BroadcasterId::from("1234"),
@@ -792,13 +792,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .remove_channel_moderator(
     ///         &BroadcasterId::from("1234"),
@@ -837,13 +837,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_vips(&BroadcasterId::from("1234"))
     ///     .json()
@@ -876,13 +876,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .add_channel_vip(
     ///         &BroadcasterId::from("1234"),
@@ -922,13 +922,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .remove_channel_vip(
     ///         &BroadcasterId::from("1234"),
@@ -969,13 +969,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_shield_mode_status(
     ///         &BroadcasterId::from("1234"),
@@ -1017,13 +1017,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::ModerationAPI,
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_shield_mode_status(
     ///         &BroadcasterId::from("1234"),
@@ -1065,13 +1065,13 @@ pub trait ModerationAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     moderation::{ModerationAPI},
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .warn_chat_user(
     ///         &BroadcasterId::from("1234"),
@@ -1117,7 +1117,7 @@ pub trait ModerationAPI {
     ) -> TwitchAPIRequest<SuspiciousResponse>;
 }
 
-impl ModerationAPI for TwitchAPI {
+impl ModerationAPI for Client {
     simple_endpoint!(
         fn check_automod_status(
             broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],

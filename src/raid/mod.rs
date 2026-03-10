@@ -10,7 +10,7 @@ use crate::{
         constants::{BROADCASTER_ID, FROM_BROADCASTER_ID, RAIDS, TO_BROADCASTER_ID},
         BroadcasterId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait RaidAPI {
@@ -28,13 +28,13 @@ pub trait RaidAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     raid::RaidAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let from_broadcaster_id = BroadcasterId::from("1234");
     /// let to_broadcaster_id = BroadcasterId::from("5678");
     /// let response = api
@@ -72,13 +72,13 @@ pub trait RaidAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     raid::RaidAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .cancel_raid(&BroadcasterId::from("1234"))
     ///     .json()
@@ -98,7 +98,7 @@ pub trait RaidAPI {
     fn cancel_raid(&self, broadcaster_id: &BroadcasterId) -> TwitchAPIRequest<NoContent>;
 }
 
-impl RaidAPI for TwitchAPI {
+impl RaidAPI for Client {
     simple_endpoint!(
         fn start_raid(
             from_broadcaster_id: &BroadcasterId [key = FROM_BROADCASTER_ID],

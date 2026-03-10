@@ -7,13 +7,13 @@ use crate::{
         constants::{AFTER, BROADCASTER_ID, CHANNELS, FIRST, FOLLOWED, FOLLOWERS, USER_ID},
         BroadcasterId, GameId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 #[derive(Debug, Serialize)]
 pub struct ModifyChannelInfoBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
 
@@ -34,7 +34,7 @@ pub struct ModifyChannelInfoBuilder<'a> {
 }
 
 impl<'a> ModifyChannelInfoBuilder<'a> {
-    pub fn new(api: &'a TwitchAPI, broadcaster_id: &'a BroadcasterId) -> Self {
+    pub fn new(api: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             api,
             broadcaster_id,
@@ -80,7 +80,7 @@ impl<'a> ModifyChannelInfoBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CHANNELS]);
 
@@ -98,7 +98,7 @@ impl<'a> ModifyChannelInfoBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

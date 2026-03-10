@@ -207,7 +207,7 @@ macro_rules! define_request_builder {
         pub struct $name
        $( <$($lt)?, $($($gen $(: $bound)*),+)?>)?
         {
-            api: $($(&$lt)?)? $crate::TwitchAPI,
+            api: $($(&$lt)?)? $crate::Client,
             $($(
                 $(#[$req_m])*
                 $req_f: $req_t,
@@ -219,7 +219,7 @@ macro_rules! define_request_builder {
 
         impl$(<$($lt)?, $($($gen $(: $bound)*),+)?>)? $name$(<$($lt)?, $($($gen),+)?>)? {
             pub fn new(
-                api: $($(&$lt)?)? $crate::TwitchAPI,
+                api: $($(&$lt)?)? $crate::Client,
 
             $($(
                 $req_f: define_request_builder!(@param_type $req_t $([$($req_config)*])?)),
@@ -239,7 +239,7 @@ macro_rules! define_request_builder {
             )+)?
 
             pub fn build(self) -> $crate::request::TwitchAPIRequest<$return> {
-                let mut url = self.api.build_url();
+                let mut url = self.api.base_url();
                 let headers = define_request_builder!(@headers self, $($($header_config)*)?);
                 let body = define_request_builder!(@body $($body)?);
 
@@ -263,7 +263,7 @@ macro_rules! define_request_builder {
                     reqwest::Method::$method,
                     headers,
                     body,
-                    self.api.client.clone(),
+                    self.api.http_client().clone(),
                 )
             }
 
@@ -492,7 +492,7 @@ macro_rules! simple_endpoint {
         $(,)?
 ) => {
     fn $name(&self, $($param: $type),*) -> $crate::request::TwitchAPIRequest<$return> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
         url.path_segments_mut().unwrap().extend(&[$($path)*]);
 
         {
@@ -512,7 +512,7 @@ macro_rules! simple_endpoint {
             reqwest::Method::$method,
             headers,
             body,
-            self.client.clone()
+            self.http_client().clone()
         )
     }
     };

@@ -2,7 +2,7 @@ use anyhow::Result;
 use tokio::sync::{broadcast, watch};
 use tracing::{error, info, instrument, warn};
 use twitch_highway::{
-    TwitchAPI,
+    Client,
     eventsub::{
         EventSubAPI, SubscriptionType,
         events::chat::ChannelChatMessage,
@@ -167,7 +167,7 @@ async fn on_welcome(Session(session): Session, State(state): State<AppState>) {
         return;
     };
 
-    let api = TwitchAPI::new(
+    let api = Client::new(
         user_info.token.access_token.clone(),
         user_info.client_id.clone(),
     );

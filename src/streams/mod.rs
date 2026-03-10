@@ -18,7 +18,7 @@ use crate::{
         constants::{BROADCASTER_ID, KEY, MARKERS, STREAMS},
         BroadcasterId, UserId, VideoId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait StreamsAPI {
@@ -35,13 +35,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_stream_key(&BroadcasterId::from("1234"))
     ///     .json()
@@ -69,13 +69,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     // types::{}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_streams()
     ///     .json()
@@ -107,13 +107,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let user_id = UserId::from("1234");
     /// let response = api
     ///     .get_followed_streams(&user_id)
@@ -147,13 +147,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_stream_marker(&UserId::from("1234"), None)
     ///     .json()
@@ -189,13 +189,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_stream_markers_by_user_id(&UserId::from("1234"))
     ///     .json()
@@ -230,13 +230,13 @@ pub trait StreamsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     streams::StreamsAPI,
     ///     types::VideoId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_stream_markers_by_video_id(&VideoId::from("1234"))
     ///     .json()
@@ -259,12 +259,12 @@ pub trait StreamsAPI {
     ) -> GetStermaMarkersBuilder<'a>;
 }
 
-impl StreamsAPI for TwitchAPI {
+impl StreamsAPI for Client {
     fn get_stream_key(
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> TwitchAPIRequest<StreamKeyResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[STREAMS, KEY]);
 
@@ -280,7 +280,7 @@ impl StreamsAPI for TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_streams<'a>(&'a self) -> GetStreamsBuilder<'a> {
@@ -294,7 +294,7 @@ impl StreamsAPI for TwitchAPI {
         user_id: &UserId,
         description: Option<&str>,
     ) -> TwitchAPIRequest<CreateStreamMarkerResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[STREAMS, MARKERS]);
 
@@ -310,7 +310,7 @@ impl StreamsAPI for TwitchAPI {
             reqwest::Method::POST,
             self.header_json(),
             body,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
     fn get_stream_markers_by_user_id<'a>(

@@ -7,7 +7,7 @@ use crate::{
         GameId, UserId, VideoId,
     },
     videos::{Period, Sort, Type, VideosResponse},
-    TwitchAPI,
+    Client,
 };
 
 #[derive(Debug)]
@@ -19,7 +19,7 @@ pub enum VideoSelect<'a> {
 
 #[derive(Debug)]
 pub struct GetVideosBuilder<'a> {
-    api: &'a TwitchAPI,
+    api: &'a Client,
     select: VideoSelect<'a>,
     language: Option<&'a str>,
     period: Option<Period>,
@@ -31,7 +31,7 @@ pub struct GetVideosBuilder<'a> {
 }
 
 impl<'a> GetVideosBuilder<'a> {
-    pub fn game_id(api: &'a TwitchAPI, game_id: &'a GameId) -> Self {
+    pub fn game_id(api: &'a Client, game_id: &'a GameId) -> Self {
         Self {
             api,
             select: VideoSelect::Game(game_id),
@@ -44,7 +44,7 @@ impl<'a> GetVideosBuilder<'a> {
             before: None,
         }
     }
-    pub fn user_id(api: &'a TwitchAPI, user_id: &'a UserId) -> Self {
+    pub fn user_id(api: &'a Client, user_id: &'a UserId) -> Self {
         Self {
             api,
             select: VideoSelect::User(user_id),
@@ -57,7 +57,7 @@ impl<'a> GetVideosBuilder<'a> {
             before: None,
         }
     }
-    pub fn ids(api: &'a TwitchAPI, ids: &'a [VideoId]) -> Self {
+    pub fn ids(api: &'a Client, ids: &'a [VideoId]) -> Self {
         Self {
             api,
             select: VideoSelect::Ids(ids),
@@ -97,7 +97,7 @@ impl<'a> GetVideosBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<VideosResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[VIDEOS]);
 
@@ -147,7 +147,7 @@ impl<'a> GetVideosBuilder<'a> {
             reqwest::Method::GET,
             self.api.default_headers(),
             None,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

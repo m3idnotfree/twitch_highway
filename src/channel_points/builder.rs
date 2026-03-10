@@ -10,7 +10,7 @@ use crate::{
         SORT, STATUS,
     },
     types::{BroadcasterId, RedemptionId, RewardId},
-    TwitchAPI,
+    Client,
 };
 
 const ONLY_MANAGEABLE_REWARDS: &str = "only_manageable_rewards";
@@ -18,7 +18,7 @@ const ONLY_MANAGEABLE_REWARDS: &str = "only_manageable_rewards";
 #[derive(Debug, Serialize)]
 pub struct CreateCustomRewardBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
 
@@ -50,7 +50,7 @@ pub struct CreateCustomRewardBuilder<'a> {
 
 impl<'a> CreateCustomRewardBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         title: &'a str,
         cost: u64,
@@ -119,7 +119,7 @@ impl<'a> CreateCustomRewardBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<CustomRewardsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -139,7 +139,7 @@ impl<'a> CreateCustomRewardBuilder<'a> {
             reqwest::Method::POST,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -189,7 +189,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct UpdateCustomRewardBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -227,7 +227,7 @@ pub struct UpdateCustomRewardBuilder<'a> {
 
 impl<'a> UpdateCustomRewardBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
     ) -> Self {
@@ -309,7 +309,7 @@ impl<'a> UpdateCustomRewardBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<CustomRewardsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -330,7 +330,7 @@ impl<'a> UpdateCustomRewardBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

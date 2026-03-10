@@ -13,13 +13,13 @@ use crate::{
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    TwitchAPI,
+    Client,
 };
 
 #[derive(Debug, Serialize)]
 pub struct UpdateAutomodSettingsBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -47,7 +47,7 @@ pub struct UpdateAutomodSettingsBuilder<'a> {
 
 impl<'a> UpdateAutomodSettingsBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> Self {
@@ -77,7 +77,7 @@ impl<'a> UpdateAutomodSettingsBuilder<'a> {
     opt_method!(swearing, u64);
 
     pub fn build(self) -> TwitchAPIRequest<AutoModSettingsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut()
             .unwrap()
@@ -98,7 +98,7 @@ impl<'a> UpdateAutomodSettingsBuilder<'a> {
             reqwest::Method::PUT,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 
@@ -130,7 +130,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct BanUserBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -145,7 +145,7 @@ pub struct BanUserBuilder<'a> {
 
 impl<'a> BanUserBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         user_id: &'a UserId,
@@ -173,7 +173,7 @@ impl<'a> BanUserBuilder<'a> {
             reason,
         } = self;
 
-        let mut url = api.build_url();
+        let mut url = api.base_url();
         url.path_segments_mut().unwrap().extend(&[MODERATION, BANS]);
 
         let mut query = url.query_pairs_mut();
@@ -198,7 +198,7 @@ impl<'a> BanUserBuilder<'a> {
             reqwest::Method::POST,
             api.header_json(),
             body,
-            api.client.clone(),
+            api.http_client().clone(),
         )
     }
 

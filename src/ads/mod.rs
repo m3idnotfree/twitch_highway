@@ -12,7 +12,7 @@ use crate::{
         constants::{ADS, BROADCASTER_ID, CHANNELS, COMMERCIAL, SCHEDULE, SNOOZE},
         BroadcasterId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait AdsAPI {
@@ -29,13 +29,13 @@ pub trait AdsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     ads::AdsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let response = api
     ///     .start_commercial(&broadcaster_id, 60)
@@ -73,13 +73,13 @@ pub trait AdsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     ads::AdsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let response = api
     ///     .get_ad_schedule(&broadcaster_id)
@@ -115,13 +115,13 @@ pub trait AdsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     ads::AdsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let response = api
     ///     .snooze_next_ad(&broadcaster_id)
@@ -145,7 +145,7 @@ pub trait AdsAPI {
     ) -> TwitchAPIRequest<SnoozeNextAdResponse>;
 }
 
-impl AdsAPI for TwitchAPI {
+impl AdsAPI for Client {
     simple_endpoint!(
     fn start_commercial(
         broadcaster_id: &BroadcasterId [skip],

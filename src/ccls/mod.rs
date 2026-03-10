@@ -9,7 +9,7 @@ pub use types::Ccl;
 use crate::{
     request::TwitchAPIRequest,
     types::constants::{CONTENT_CLASSIFICATION_LABELS, LOCALE},
-    TwitchAPI,
+    Client,
 };
 
 pub trait CclsAPI {
@@ -26,10 +26,10 @@ pub trait CclsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::ccls::{CclLocale, CclsAPI};
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_content_classification_labels(Some(CclLocale::deDE))
     ///     .json()
@@ -52,7 +52,7 @@ pub trait CclsAPI {
     ) -> TwitchAPIRequest<CclsResponse>;
 }
 
-impl CclsAPI for TwitchAPI {
+impl CclsAPI for Client {
     simple_endpoint!(
     fn get_content_classification_labels(
         locale: Option<CclLocale> [opt, key = LOCALE, convert = as_ref],

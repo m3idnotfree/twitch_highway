@@ -7,7 +7,7 @@ use crate::{
         constants::{AFTER, BROADCASTER_ID, FIRST, ID, PREDICTIONS},
         BroadcasterId, PredictionId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -28,7 +28,7 @@ define_request_builder! {
 #[derive(Debug, Serialize)]
 pub struct EndPredictionBuilder<'a> {
     #[serde(skip)]
-    api: &'a TwitchAPI,
+    api: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     id: &'a PredictionId,
     status: PredictionStatus,
@@ -38,7 +38,7 @@ pub struct EndPredictionBuilder<'a> {
 
 impl<'a> EndPredictionBuilder<'a> {
     pub fn new(
-        api: &'a TwitchAPI,
+        api: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         id: &'a PredictionId,
         status: PredictionStatus,
@@ -58,7 +58,7 @@ impl<'a> EndPredictionBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<PredictionsResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[PREDICTIONS]);
 
@@ -70,7 +70,7 @@ impl<'a> EndPredictionBuilder<'a> {
             reqwest::Method::PATCH,
             self.api.header_json(),
             body,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

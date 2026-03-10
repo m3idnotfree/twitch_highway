@@ -9,7 +9,7 @@ use crate::{
         },
         BroadcasterId, ClipId, GameId,
     },
-    TwitchAPI,
+    Client,
 };
 
 define_request_builder! {
@@ -36,7 +36,7 @@ pub enum ClipsQuery<'a> {
 
 #[derive(Debug)]
 pub struct GetClipsBuilder<'a> {
-    api: &'a TwitchAPI,
+    api: &'a Client,
     query: ClipsQuery<'a>,
     started_at: Option<&'a DateTime<Utc>>,
     ended_at: Option<&'a DateTime<Utc>>,
@@ -46,7 +46,7 @@ pub struct GetClipsBuilder<'a> {
 }
 
 impl<'a> GetClipsBuilder<'a> {
-    pub fn by_broadcaster_id(api: &'a TwitchAPI, broadcaster_id: &'a BroadcasterId) -> Self {
+    pub fn by_broadcaster_id(api: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             api,
             query: ClipsQuery::Broadcaster(broadcaster_id),
@@ -58,7 +58,7 @@ impl<'a> GetClipsBuilder<'a> {
         }
     }
 
-    pub fn by_game_id(api: &'a TwitchAPI, game_id: &'a GameId) -> Self {
+    pub fn by_game_id(api: &'a Client, game_id: &'a GameId) -> Self {
         Self {
             api,
             query: ClipsQuery::Game(game_id),
@@ -70,7 +70,7 @@ impl<'a> GetClipsBuilder<'a> {
         }
     }
 
-    pub fn by_ids(api: &'a TwitchAPI, ids: &'a [ClipId]) -> Self {
+    pub fn by_ids(api: &'a Client, ids: &'a [ClipId]) -> Self {
         Self {
             api,
             query: ClipsQuery::Ids(ids),
@@ -104,7 +104,7 @@ impl<'a> GetClipsBuilder<'a> {
     }
 
     pub fn build(self) -> TwitchAPIRequest<ClipsInfoResponse> {
-        let mut url = self.api.build_url();
+        let mut url = self.api.base_url();
 
         url.path_segments_mut().unwrap().extend(&[CLIPS]);
 
@@ -156,7 +156,7 @@ impl<'a> GetClipsBuilder<'a> {
             reqwest::Method::GET,
             self.api.default_headers(),
             None,
-            self.api.client.clone(),
+            self.api.http_client().clone(),
         )
     }
 

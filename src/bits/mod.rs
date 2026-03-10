@@ -27,13 +27,13 @@ pub trait BitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     bits::{BitsAPI, Period},
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_bits_leaderboard()
     ///     .count(50)
@@ -69,13 +69,13 @@ pub trait BitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     bits::BitsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_cheermotes(Some(&BroadcasterId::from("1234")))
     ///     .json()
@@ -106,13 +106,13 @@ pub trait BitsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     bits::BitsAPI,
     ///     types::{ExtensionId, TransactionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_extension_transactions(&ExtensionId::from("1234"))
     ///     .ids(&[TransactionId::from("5678"), TransactionId::from("6789")])
@@ -138,7 +138,7 @@ pub trait BitsAPI {
     ) -> GetExtensionTransactionsBuilder<'a>;
 }
 
-impl BitsAPI for crate::TwitchAPI {
+impl BitsAPI for crate::Client {
     fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a> {
         BitsLeaderboardRequest::new(self)
     }
@@ -146,7 +146,7 @@ impl BitsAPI for crate::TwitchAPI {
         &self,
         broadcaster_id: Option<&BroadcasterId>,
     ) -> TwitchAPIRequest<CheermotesResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend([BITS, CHEERMOTES]);
 
@@ -164,7 +164,7 @@ impl BitsAPI for crate::TwitchAPI {
             reqwest::Method::GET,
             self.default_headers(),
             None,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
 

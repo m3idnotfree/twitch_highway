@@ -4,7 +4,7 @@ mod response;
 pub use builder::{GetGamesBuilder, GetTopGamesBuilder};
 pub use response::GamesResponse;
 
-use crate::TwitchAPI;
+use crate::Client;
 
 pub trait GamesAPI {
     /// Gets information about all broadcasts on Twitch
@@ -16,10 +16,10 @@ pub trait GamesAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::games::GamesAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_top_games()
     ///     .json()
@@ -47,10 +47,10 @@ pub trait GamesAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::games::GamesAPI;
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_games()
     ///     .json()
@@ -70,7 +70,7 @@ pub trait GamesAPI {
     fn get_games<'a>(&'a self) -> GetGamesBuilder<'a>;
 }
 
-impl GamesAPI for TwitchAPI {
+impl GamesAPI for Client {
     fn get_top_games<'a>(&'a self) -> GetTopGamesBuilder<'a> {
         GetTopGamesBuilder::new(self)
     }

@@ -11,7 +11,7 @@ use types::EndPollBody;
 use crate::{
     request::TwitchAPIRequest,
     types::{constants::POLLS, BroadcasterId, PollId, Title},
-    TwitchAPI,
+    Client,
 };
 
 pub trait PollsAPI {
@@ -28,13 +28,13 @@ pub trait PollsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     polls::PollsAPI,
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_polls(&BroadcasterId::from("1234"))
     ///     .json()
@@ -69,13 +69,13 @@ pub trait PollsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     polls::PollsAPI,
     ///     types::{BroadcasterId, Title}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_poll(
     ///         &BroadcasterId::from("1234"),
@@ -120,13 +120,13 @@ pub trait PollsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     polls::{EndPollStatus, PollsAPI},
     ///     types::{BroadcasterId, PollId},
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .end_poll(
     ///         &BroadcasterId::from("1234"),
@@ -155,7 +155,7 @@ pub trait PollsAPI {
     ) -> TwitchAPIRequest<PollsResponse>;
 }
 
-impl PollsAPI for TwitchAPI {
+impl PollsAPI for Client {
     fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPollsBuilder<'a> {
         GetPollsBuilder::new(self, broadcaster_id)
     }
@@ -174,7 +174,7 @@ impl PollsAPI for TwitchAPI {
         id: &PollId,
         status: EndPollStatus,
     ) -> TwitchAPIRequest<PollsResponse> {
-        let mut url = self.build_url();
+        let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend(&[POLLS]);
 
@@ -191,7 +191,7 @@ impl PollsAPI for TwitchAPI {
             reqwest::Method::PATCH,
             self.header_json(),
             body,
-            self.client.clone(),
+            self.http_client().clone(),
         )
     }
 }

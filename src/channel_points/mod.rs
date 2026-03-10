@@ -19,7 +19,7 @@ use crate::{
         constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
         BroadcasterId, RedemptionId, RewardId,
     },
-    TwitchAPI,
+    Client,
 };
 
 pub trait ChannelPointsAPI {
@@ -32,13 +32,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::ChannelPointsAPI,
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .create_custom_rewards(&BroadcasterId::from("1234"), "title", 64)
     ///     .prompt("prompt")
@@ -87,13 +87,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::ChannelPointsAPI,
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .delete_custom_reward(
     ///         &BroadcasterId::from("1234"),
@@ -127,13 +127,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::ChannelPointsAPI,
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_custom_reward(&BroadcasterId::from("1234"))
     ///     .custom_reward_ids(&[RewardId::from("5678")])
@@ -166,13 +166,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::{ChannelPointsAPI, RedemptionStatus, Sort},
     ///     types::{BroadcasterId, RewardId, RedemptionId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .get_custom_reward_redemption(
     ///         &BroadcasterId::from("1234"),
@@ -211,13 +211,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::ChannelPointsAPI,
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_custom_reward(
     ///         &BroadcasterId::from("1234"),
@@ -271,13 +271,13 @@ pub trait ChannelPointsAPI {
     /// # Example
     ///
     /// ```rust
-    /// # use twitch_highway::TwitchAPI;
+    /// # use twitch_highway::Client;
     /// use twitch_highway::{
     ///     channel_points::{ChannelPointsAPI, RedemptionStatus},
     ///     types::{BroadcasterId, RedemptionId, RewardId}
     /// };
     ///
-    /// # async fn example(api: TwitchAPI) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
     /// let response = api
     ///     .update_redemption_status(&BroadcasterId::from("1234"),
     ///         &RewardId::from("5678"),
@@ -306,7 +306,7 @@ pub trait ChannelPointsAPI {
     ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse>;
 }
 
-impl ChannelPointsAPI for TwitchAPI {
+impl ChannelPointsAPI for Client {
     fn create_custom_rewards<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
