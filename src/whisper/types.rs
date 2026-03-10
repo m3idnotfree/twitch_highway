@@ -1,6 +1,6 @@
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
-pub(crate) struct WhisperBody<'a> {
+#[derive(Serialize)]
+pub struct WhisperBody<'a> {
     pub message: &'a str,
 }

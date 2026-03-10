@@ -1,12 +1,13 @@
 mod types;
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{FROM_USER_ID, TO_USER_ID, WHISPERS},
         UserId,
     },
-    Client,
+    Client, Error,
 };
 
 use types::WhisperBody;
@@ -17,12 +18,9 @@ pub trait WhisperAPI {
     ///
     /// * `from_user_id` - this user must have a verified phone number.
     /// * `to_user_id` - user to receive the whisper.
+    /// * `message`
     ///
-    /// # Return
-    ///
-    /// Return a [`NoContent`]
-    ///
-    /// # Example
+    /// # Examples
     ///
     /// ```rust
     /// # use twitch_highway::Client;
@@ -31,14 +29,13 @@ pub trait WhisperAPI {
     ///     whisper::WhisperAPI
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_whisper(
     ///         &UserId::from("8456"),
     ///         &UserId::from("2574"),
     ///         "message"
     ///     )
-    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -56,22 +53,25 @@ pub trait WhisperAPI {
         from_user_id: &UserId,
         to_user_id: &UserId,
         message: &str,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 }
 
 impl WhisperAPI for Client {
-    simple_endpoint!(
-        fn send_whisper(
-            from_user_id: &UserId [key = FROM_USER_ID],
-            to_user_id: &UserId [key = TO_USER_ID],
-            message: &str [skip],
-        ) -> NoContent;
-            endpoint: SendWhisper,
-            method: POST,
-            path: [WHISPERS],
-            headers: [json],
-            body: {
-                serde_json::to_string(&WhisperBody {message}).ok()
-            }
-    );
+    async fn send_whisper(
+        &self,
+        from_user_id: &UserId,
+        to_user_id: &UserId,
+        message: &str,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(WHISPERS);
+
+        url.query_pairs_mut()
+            .append_pair(FROM_USER_ID, from_user_id)
+            .append_pair(TO_USER_ID, to_user_id);
+
+        let req = self.http_client().post(url).json(&WhisperBody { message });
+        self.no_content(req).await
+    }
 }

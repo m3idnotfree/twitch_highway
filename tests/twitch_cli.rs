@@ -735,10 +735,7 @@ async fn mock_api_send_whisper(api: &TwitchFixture) -> Result<()> {
     let moderation = UserId::from(api.selected_user.id.clone());
 
     let user = UserId::from(random_user.id);
-    api.api
-        .send_whisper(&moderation, &user, "hello")
-        .send()
-        .await?;
+    api.api.send_whisper(&moderation, &user, "hello").await?;
 
     Ok(())
 }
