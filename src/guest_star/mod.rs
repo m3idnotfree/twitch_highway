@@ -12,8 +12,9 @@ pub use types::{
     GustStarSetting,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             BROADCASTER_ID, CHANNEL_SETTINGS, GUEST_ID, GUEST_STAR, INVITES, MODERATOR_ID, SESSION,
@@ -21,7 +22,7 @@ use crate::{
         },
         BroadcasterId, ModeratorId, SessionId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait GuestStarAPI {
@@ -45,13 +46,12 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_guest_star_settings(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -69,7 +69,7 @@ pub trait GuestStarAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<GuestStarSettingsResponse>;
+    ) -> impl Future<Output = Result<GuestStarSettingsResponse, Error>> + Send;
 
     /// Mutates the channel settings for configuration of the Guest Star feature for a particular host
     ///
@@ -90,11 +90,11 @@ pub trait GuestStarAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let response = api
     ///     .update_channel_guest_star_settings(&broadcaster_id)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -133,13 +133,12 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_guest_star_session(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -157,7 +156,7 @@ pub trait GuestStarAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<GustStarSessionResponse>;
+    ) -> impl Future<Output = Result<GustStarSessionResponse, Error>> + Send;
 
     /// Programmatically creates a Guest Star session on behalf of the broadcaster
     ///
@@ -178,10 +177,9 @@ pub trait GuestStarAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_guest_star_session(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -198,7 +196,7 @@ pub trait GuestStarAPI {
     fn create_guest_star_session(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<GustStarSessionResponse>;
+    ) -> impl Future<Output = Result<GustStarSessionResponse, Error>> + Send;
 
     /// Programmatically ends a Guest Star session on behalf of the broadcaster
     ///
@@ -220,10 +218,9 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, SessionId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .end_guest_star_session(&BroadcasterId::from("1234"), &SessionId::from("5678"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -241,7 +238,7 @@ pub trait GuestStarAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         session_id: &SessionId,
-    ) -> TwitchAPIRequest<GustStarSessionResponse>;
+    ) -> impl Future<Output = Result<GustStarSessionResponse, Error>> + Send;
 
     /// Provides the caller with a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
     ///
@@ -264,14 +261,13 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_guest_star_invites(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         &SessionId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -290,7 +286,7 @@ pub trait GuestStarAPI {
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         session_id: &SessionId,
-    ) -> TwitchAPIRequest<GustStarInvitesResponse>;
+    ) -> impl Future<Output = Result<GustStarInvitesResponse, Error>> + Send;
 
     /// Sends an invite to a specified guest on behalf of the broadcaster for a Guest Star session in progress
     ///
@@ -301,10 +297,6 @@ pub trait GuestStarAPI {
     /// * `session_id` - The session ID for the invite to be sent on behalf of the broadcaster.
     /// * `guest_id` - Twitch User ID for the guest to invite to the Guest Star session.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -314,14 +306,13 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
     /// let user_id = UserId::from("8428");
     /// let response = api
     ///     .send_guest_star_invite(&broadcaster_id, &moderator_id, &session_id, &user_id)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -341,7 +332,7 @@ pub trait GuestStarAPI {
         moderator_id: &ModeratorId,
         session_id: &SessionId,
         guest_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Revokes a previously sent invite for a Guest Star session
     ///
@@ -352,10 +343,6 @@ pub trait GuestStarAPI {
     /// * `session_id` - The ID of the session for the invite to be revoked on behalf of the broadcaster.
     /// * `guest_id` - Twitch User ID for the guest to revoke the Guest Star session invite from.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -365,14 +352,13 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
     /// let user_id = UserId::from("8428");
     /// let response = api
     ///     .delete_guest_star_invite(&broadcaster_id, &moderator_id, &session_id, &user_id)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -392,7 +378,7 @@ pub trait GuestStarAPI {
         moderator_id: &ModeratorId,
         session_id: &SessionId,
         guest_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Allows a previously invited user to be assigned a slot within the active Guest Star session, once that guest has indicated they are ready to join
     ///
@@ -404,10 +390,6 @@ pub trait GuestStarAPI {
     /// * `guest_id` - The Twitch User ID corresponding to the guest to assign a slot in the session.
     /// * `slot_id` - The slot assignment to give to the user.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -417,20 +399,19 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
     /// let user_id = UserId::from("8428");
     /// let response = api
     ///     .assign_guest_star_slot(
-    ///     &broadcaster_id,
-    ///     &moderator_id,
-    ///     &session_id,
-    ///     &user_id,
-    ///     "slot_id"
+    ///         &broadcaster_id,
+    ///         &moderator_id,
+    ///         &session_id,
+    ///         &user_id,
+    ///         "slot_id"
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -451,7 +432,7 @@ pub trait GuestStarAPI {
         session_id: &SessionId,
         guest_id: &UserId,
         slot_id: &str,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Allows a user to update the assigned slot for a particular user within the active Guest Star session
     ///
@@ -462,10 +443,6 @@ pub trait GuestStarAPI {
     /// * `session_id` - The ID of the Guest Star session in which to update slot settings.
     /// * `source_slot_id` - The slot assignment previously assigned to a user.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -475,7 +452,7 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -486,7 +463,7 @@ pub trait GuestStarAPI {
     ///     &session_id,
     ///     "source_slot_id",
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -518,10 +495,6 @@ pub trait GuestStarAPI {
     /// * `guest_id` - The Twitch User ID corresponding to the guest to remove from the session.
     /// * `slot_id` - The slot ID representing the slot assignment to remove from the session.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -531,7 +504,7 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -544,7 +517,7 @@ pub trait GuestStarAPI {
     ///     &user_id,
     ///     "slot_id",
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -576,10 +549,6 @@ pub trait GuestStarAPI {
     /// * `session_id` - The ID of the Guest Star session in which to update a slot’s settings.
     /// * `slot_id` - The slot assignment that has previously been assigned to a user.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -589,7 +558,7 @@ pub trait GuestStarAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let broadcaster_id = BroadcasterId::from("1234");
     /// let moderator_id = ModeratorId::from("5678");
     /// let session_id = SessionId::from("5678");
@@ -600,7 +569,7 @@ pub trait GuestStarAPI {
     ///     &session_id,
     ///     "slot_id",
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -624,91 +593,170 @@ pub trait GuestStarAPI {
 }
 
 impl GuestStarAPI for Client {
-    simple_endpoint!(
-    fn get_channel_guest_star_settings(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-    ) -> GuestStarSettingsResponse;
-        endpoint: GetChannelGuestStarSettings,
-        method: GET,
-        path: [GUEST_STAR, CHANNEL_SETTINGS],
-    );
+    async fn get_channel_guest_star_settings(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> Result<GuestStarSettingsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, CHANNEL_SETTINGS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
     fn update_channel_guest_star_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> UpdateChannelGuestStarSettingsBuilder<'a> {
         UpdateChannelGuestStarSettingsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-    fn get_guest_star_session(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-    ) -> GustStarSessionResponse;
-        endpoint: GetGuestStarSession,
-        method: GET,
-        path: [GUEST_STAR, SESSION],
-    );
-    simple_endpoint!(
-    fn create_guest_star_session(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-    ) -> GustStarSessionResponse;
-        endpoint: CreateGuestStarSession,
-        method: POST,
-        path: [GUEST_STAR, SESSION],
-    );
-    simple_endpoint!(
-    fn end_guest_star_session(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        session_id: &SessionId [key = SESSION_ID],
-    ) -> GustStarSessionResponse;
-        endpoint: EndGuestStarSession,
-        method: DELETE,
-        path: [GUEST_STAR, SESSION],
-    );
-    simple_endpoint!(
-    fn get_guest_star_invites(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-        session_id: &SessionId [key = SESSION_ID],
-    ) -> GustStarInvitesResponse;
-        endpoint: GetGuestStarInvites,
-        method: GET,
-        path: [GUEST_STAR, INVITES],
-    );
-    simple_endpoint!(
-    fn send_guest_star_invite(
-        broadcaster_id: &BroadcasterId [key =  BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-        session_id: &SessionId [key = SESSION_ID],
-        guest_id: &UserId [key = GUEST_ID],
-    ) -> NoContent;
-        endpoint: SendGuestStarInvite,
-        method: POST,
-        path: [GUEST_STAR, INVITES],
-    );
-    simple_endpoint!(
-    fn delete_guest_star_invite(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-        session_id: &SessionId [key = SESSION_ID],
-        guest_id: &UserId [key = GUEST_ID],
-    ) -> NoContent;
-        endpoint: DeleteGuestStarInvite,
-        method: DELETE,
-        path: [GUEST_STAR, INVITES],
-    );
-    simple_endpoint!(
-    fn assign_guest_star_slot(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        moderator_id: &ModeratorId [key = MODERATOR_ID],
-        session_id: &SessionId [key = SESSION_ID],
-        guest_id: &UserId [key = GUEST_ID],
-        slot_id: &str [key = SLOT_ID],
-    ) -> NoContent;
-        endpoint: AssignGuestStarSlot,
-        method: POST,
-        path: [GUEST_STAR, SLOT],
-    );
+
+    async fn get_guest_star_session(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> Result<GustStarSessionResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, SESSION]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn create_guest_star_session(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> Result<GustStarSessionResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, SESSION]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.json(self.http_client().post(url)).await
+    }
+
+    async fn end_guest_star_session(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        session_id: &SessionId,
+    ) -> Result<GustStarSessionResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, SESSION]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(SESSION_ID, session_id);
+
+        self.json(self.http_client().delete(url)).await
+    }
+
+    async fn get_guest_star_invites(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        session_id: &SessionId,
+    ) -> Result<GustStarInvitesResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, INVITES]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(SESSION_ID, session_id);
+
+        let req = self.http_client().get(url);
+        self.json(req).await
+    }
+
+    async fn send_guest_star_invite(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        session_id: &SessionId,
+        guest_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, INVITES]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(SESSION_ID, session_id)
+            .append_pair(GUEST_ID, guest_id);
+
+        self.no_content(self.http_client().post(url)).await
+    }
+
+    async fn delete_guest_star_invite(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        session_id: &SessionId,
+        guest_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([GUEST_STAR, INVITES]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(SESSION_ID, session_id)
+            .append_pair(GUEST_ID, guest_id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
+
+    async fn assign_guest_star_slot(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        session_id: &SessionId,
+        guest_id: &UserId,
+        slot_id: &str,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([GUEST_STAR, SLOT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(SESSION_ID, session_id)
+            .append_pair(GUEST_ID, guest_id)
+            .append_pair(SLOT_ID, slot_id);
+
+        self.no_content(self.http_client().post(url)).await
+    }
+
     fn update_guest_star_slot<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -724,6 +772,7 @@ impl GuestStarAPI for Client {
             source_slot_id,
         )
     }
+
     fn delete_guest_star_slot<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -741,6 +790,7 @@ impl GuestStarAPI for Client {
             slot_id,
         )
     }
+
     fn update_guest_star_slot_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
