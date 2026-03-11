@@ -522,8 +522,8 @@ async fn mock_api_create_clip(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_clips(api: &TwitchFixture) -> Result<()> {
     let _resp = api
         .api
-        .get_clips_by_broadcaster_id(&api.selected_broadcaster_id())
-        .json()
+        .get_clips(&api.selected_broadcaster_id())
+        .send()
         .await?;
 
     Ok(())
