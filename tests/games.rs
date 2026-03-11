@@ -1,8 +1,30 @@
 #[macro_use]
 mod common;
 
+use common::HttpMock;
 use twitch_highway::{games::GamesAPI, types::GameId};
 
-api_test!(get_top_games | api | { api.get_top_games() });
+#[tokio::test]
+async fn get_top_games() {
+    let suite = HttpMock::new().await;
+    suite.get_top_games().await;
 
-api_test!(get_games | api | { api.get_games().ids(&[GameId::from("33214")]) });
+    let result = suite.api().get_top_games().send().await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_games() {
+    let suite = HttpMock::new().await;
+    suite.get_games().await;
+
+    let result = suite
+        .api()
+        .get_games()
+        .ids(&[GameId::from("33214")])
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}

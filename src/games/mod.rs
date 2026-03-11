@@ -19,10 +19,10 @@ pub trait GamesAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::games::GamesAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_top_games()
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -50,10 +50,10 @@ pub trait GamesAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::games::GamesAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_games()
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -74,6 +74,7 @@ impl GamesAPI for Client {
     fn get_top_games<'a>(&'a self) -> GetTopGamesBuilder<'a> {
         GetTopGamesBuilder::new(self)
     }
+
     fn get_games<'a>(&'a self) -> GetGamesBuilder<'a> {
         GetGamesBuilder::new(self)
     }

@@ -19,6 +19,10 @@ name = "twitch-cli"
 path = "tests/twitch_cli.rs"
 
 [[test]]
+name = "games"
+path = "tests/games.rs"
+
+[[test]]
 name = "goals"
 path = "tests/goals.rs"
 
