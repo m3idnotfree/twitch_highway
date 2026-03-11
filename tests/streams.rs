@@ -8,30 +8,88 @@ use anyhow::Result;
 use common::{mock_api_start, HttpMock, TwitchFixture};
 use twitch_highway::{
     streams::StreamsAPI,
-    types::{BroadcasterId, UserId},
+    types::{BroadcasterId, UserId, VideoId},
 };
 
-api_test!(
-    get_stream_key[&BroadcasterId::from("141981764")],
-    create_stream_marker[&UserId::from("123"), Some("hello, this is a marker!")]
-);
+#[tokio::test]
+async fn get_stream_key() {
+    let suite = HttpMock::new().await;
+    suite.get_stream_key().await;
 
-api_test!(get_streams | api | { api.get_streams() });
+    let result = suite
+        .api()
+        .get_stream_key(&BroadcasterId::from("141981764"))
+        .await;
 
-api_test!(get_followed_streams | api | { api.get_followed_streams(&UserId::from("141981764")) });
+    assert!(result.is_ok());
+}
 
-api_test!(
-    get_stream_markers | api | {
-        api.get_stream_markers_by_user_id(&UserId::from("123"))
-            .first(5)
-    }
-);
+#[tokio::test]
+async fn create_stream_marker() {
+    let suite = HttpMock::new().await;
+    suite.create_stream_marker().await;
 
-api_test!(
-    get_streams as get_streams_2 | api | {
-        api.get_streams().user_logins(&["cohhcarnage", "lana_lux"])
-    }
-);
+    let result = suite
+        .api()
+        .create_stream_marker(&UserId::from("123"), Some("hello, this is a marker!"))
+        .await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_streams() {
+    let suite = HttpMock::new().await;
+    suite.get_streams().await;
+
+    let result = suite.api().get_streams().send().await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_followed_streams() {
+    let suite = HttpMock::new().await;
+    suite.get_followed_streams().await;
+
+    let result = suite
+        .api()
+        .get_followed_streams(&UserId::from("141981764"))
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_stream_markers_by_user_id() {
+    let suite = HttpMock::new().await;
+    suite.get_stream_markers().await;
+
+    let result = suite
+        .api()
+        .get_stream_markers(&UserId::from("123"))
+        .first(5)
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_streams_2() {
+    let suite = HttpMock::new().await;
+    suite.get_streams_2().await;
+
+    let result = suite
+        .api()
+        .get_streams()
+        .user_logins(&["cohhcarnage", "lana_lux"])
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}
 
 // #[tokio::test]
 // async fn mock_api() -> Result<()> {

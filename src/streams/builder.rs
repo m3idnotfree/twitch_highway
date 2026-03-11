@@ -1,5 +1,4 @@
 use crate::{
-    request::TwitchAPIRequest,
     streams::{GetStreamMarkersResponse, StreamsResponse},
     types::{
         constants::{
@@ -8,25 +7,114 @@ use crate::{
         },
         GameId, UserId, VideoId,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetStreamsBuilder<'a> {
-            user_ids	:&'a [UserId] [key = USER_ID, convert = extend],
-            user_logins:&'a [&'a str] [key = USER_LOGIN, convert = extend],
-            game_ids:&'a [GameId] [key = GAME_ID, convert = extend],
-            kind: GetStreamType [key = TYPE, convert = as_ref],
-            languages: &'a [&'a str] [key = LANGUAGE, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            before: &'a str [key = BEFORE],
-            after: &'a str [key = AFTER],
+#[derive(Debug)]
+pub struct GetStreamsBuilder<'a> {
+    client: &'a Client,
+    user_ids: Option<&'a [UserId]>,
+    user_logins: Option<&'a [&'a str]>,
+    game_ids: Option<&'a [GameId]>,
+    kind: Option<GetStreamType>,
+    languages: Option<&'a [&'a str]>,
+    first: Option<u8>,
+    before: Option<&'a str>,
+    after: Option<&'a str>,
+}
 
-    } -> StreamsResponse;
-    endpoint: GetStreams,
-    method: GET,
-    path: [STREAMS],
+impl<'a> GetStreamsBuilder<'a> {
+    pub fn new(client: &'a Client) -> Self {
+        Self {
+            client,
+            user_ids: None,
+            user_logins: None,
+            game_ids: None,
+            kind: None,
+            languages: None,
+            first: None,
+            before: None,
+            after: None,
+        }
+    }
+
+    pub fn user_ids(mut self, value: &'a [UserId]) -> Self {
+        self.user_ids = Some(value);
+        self
+    }
+
+    pub fn user_logins(mut self, value: &'a [&'a str]) -> Self {
+        self.user_logins = Some(value);
+        self
+    }
+
+    pub fn game_ids(mut self, value: &'a [GameId]) -> Self {
+        self.game_ids = Some(value);
+        self
+    }
+
+    pub fn kind(mut self, value: GetStreamType) -> Self {
+        self.kind = Some(value);
+        self
+    }
+
+    pub fn languages(mut self, value: &'a [&'a str]) -> Self {
+        self.languages = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn before(mut self, value: &'a str) -> Self {
+        self.before = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<StreamsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().push(STREAMS);
+
+        if let Some(ids) = self.user_ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (USER_ID, id)));
+        }
+        if let Some(logins) = self.user_logins {
+            url.query_pairs_mut()
+                .extend_pairs(logins.iter().map(|login| (USER_LOGIN, login)));
+        }
+        if let Some(ids) = self.game_ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (GAME_ID, id)));
+        }
+        if let Some(val) = self.kind {
+            url.query_pairs_mut().append_pair(TYPE, val.as_ref());
+        }
+        if let Some(val) = self.languages {
+            url.query_pairs_mut()
+                .extend_pairs(val.iter().map(|l| (LANGUAGE, l)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.before {
+            url.query_pairs_mut().append_pair(BEFORE, val);
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -44,18 +132,50 @@ impl AsRef<str> for GetStreamType {
     }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetFollowedStreamsBuilder<'a> {
-        req: {user_id: &'a UserId [key = USER_ID]},
-        opts: {
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
+#[derive(Debug)]
+pub struct GetFollowedStreamsBuilder<'a> {
+    client: &'a Client,
+    user_id: &'a UserId,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetFollowedStreamsBuilder<'a> {
+    pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
+        Self {
+            client,
+            user_id,
+            first: None,
+            after: None,
         }
-    } -> StreamsResponse;
-    endpoint: GetFollowedStreams,
-    method: GET,
-    path: [STREAMS, FOLLOWED],
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<StreamsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([STREAMS, FOLLOWED]);
+
+        url.query_pairs_mut().append_pair(USER_ID, self.user_id);
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug)]
@@ -64,9 +184,34 @@ pub enum StreamMarkerSelect<'a> {
     Video(&'a VideoId),
 }
 
+impl<'a> From<&'a UserId> for StreamMarkerSelect<'a> {
+    fn from(value: &'a UserId) -> Self {
+        Self::User(value)
+    }
+}
+
+impl<'a> From<&'a VideoId> for StreamMarkerSelect<'a> {
+    fn from(value: &'a VideoId) -> Self {
+        Self::Video(value)
+    }
+}
+
+impl<'a> StreamMarkerSelect<'a> {
+    pub(crate) fn append_to_query(&self, url: &mut url::Url) {
+        match self {
+            Self::User(id) => {
+                url.query_pairs_mut().append_pair(USER_ID, id);
+            }
+            Self::Video(id) => {
+                url.query_pairs_mut().append_pair(VIDEO_ID, id);
+            }
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct GetStermaMarkersBuilder<'a> {
-    api: &'a Client,
+    client: &'a Client,
     select: StreamMarkerSelect<'a>,
     first: Option<u8>,
     before: Option<&'a str>,
@@ -74,20 +219,10 @@ pub struct GetStermaMarkersBuilder<'a> {
 }
 
 impl<'a> GetStermaMarkersBuilder<'a> {
-    pub fn user_id(api: &'a Client, user_id: &'a UserId) -> Self {
+    pub(crate) fn new(client: &'a Client, select: impl Into<StreamMarkerSelect<'a>>) -> Self {
         Self {
-            api,
-            select: StreamMarkerSelect::User(user_id),
-            first: None,
-            before: None,
-            after: None,
-        }
-    }
-
-    pub fn video_id(api: &'a Client, video_id: &'a VideoId) -> Self {
-        Self {
-            api,
-            select: StreamMarkerSelect::Video(video_id),
+            client,
+            select: select.into(),
             first: None,
             before: None,
             after: None,
@@ -98,59 +233,35 @@ impl<'a> GetStermaMarkersBuilder<'a> {
         self.first = Some(value);
         self
     }
+
     pub fn before(mut self, value: &'a str) -> Self {
         self.before = Some(value);
         self
     }
+
     pub fn after(mut self, value: &'a str) -> Self {
         self.after = Some(value);
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<GetStreamMarkersResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<GetStreamMarkersResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[STREAMS, MARKERS]);
+        url.path_segments_mut().unwrap().extend([STREAMS, MARKERS]);
 
-        let mut query = url.query_pairs_mut();
-
-        match self.select {
-            StreamMarkerSelect::User(id) => {
-                query.append_pair(USER_ID, id);
-            }
-            StreamMarkerSelect::Video(id) => {
-                query.append_pair(VIDEO_ID, id);
-            }
-        }
+        self.select.append_to_query(&mut url);
 
         if let Some(value) = self.first {
-            query.append_pair(FIRST, &value.to_string());
+            url.query_pairs_mut().append_pair(FIRST, &value.to_string());
         }
-
         if let Some(value) = self.before {
-            query.append_pair(BEFORE, value.as_ref());
+            url.query_pairs_mut().append_pair(BEFORE, value.as_ref());
         }
         if let Some(value) = self.after {
-            query.append_pair(AFTER, value.as_ref());
+            url.query_pairs_mut().append_pair(AFTER, value.as_ref());
         }
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetStreamMarkers,
-            url,
-            reqwest::Method::GET,
-            self.api.default_headers(),
-            None,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<GetStreamMarkersResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
     }
 }
