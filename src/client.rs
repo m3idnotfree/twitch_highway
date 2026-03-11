@@ -91,12 +91,6 @@ impl Client {
         headers
     }
 
-    pub(crate) fn build_jwt_headers(&self, jwt: &crate::types::JWTToken) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers).bearer_token(jwt.as_str());
-        headers
-    }
-
     #[allow(unused)]
     pub(crate) fn base_url(&self) -> Url {
         self.url.clone()

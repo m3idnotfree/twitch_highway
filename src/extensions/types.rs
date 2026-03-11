@@ -175,19 +175,26 @@ impl BitsProductExtension {
 }
 
 #[derive(Serialize)]
-pub(crate) struct SetExtensionRequiredConfigurationBody<'a> {
+pub struct SetExtensionRequiredConfigurationBody<'a> {
     pub extension_id: &'a ExtensionId,
     pub extension_version: &'a str,
     pub required_configuration: &'a str,
 }
 
 #[derive(Serialize)]
-pub(crate) struct SendExtensionPubSubMessageBody<'a> {
+pub struct SendExtensionPubSubMessageBody<'a> {
     pub target: &'a [&'a str],
     pub message: &'a str,
     pub broadcaster_id: &'a BroadcasterId,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub is_global_broadcast: Option<bool>,
+}
+
+#[derive(Serialize)]
+pub struct ExtensionChatMessageIntoRequestBody<'a> {
+    pub text: &'a str,
+    pub extension_id: &'a ExtensionId,
+    pub extension_version: &'a str,
 }
 
 #[cfg(test)]

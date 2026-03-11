@@ -16,10 +16,14 @@ pub use types::{
     VideoOverlay, Views,
 };
 
-use types::{SendExtensionPubSubMessageBody, SetExtensionRequiredConfigurationBody};
+use types::{
+    ExtensionChatMessageIntoRequestBody, SendExtensionPubSubMessageBody,
+    SetExtensionRequiredConfigurationBody,
+};
+
+use std::future::Future;
 
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             BITS, BROADCASTER_ID, CHAT, DELAY, EXTENSIONS, EXTENSION_ID, EXTENSION_VERSION, JWT,
@@ -27,7 +31,7 @@ use crate::{
         },
         BroadcasterId, Cost, ExtensionId, JWTToken,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait ExtensionsAPI {
@@ -54,14 +58,14 @@ pub trait ExtensionsAPI {
     ///     types::{ExtensionId, JWTToken},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extension_configuration_segment(
     ///         JWTToken::from("1234"),
     ///         &ExtensionId::from("5678"),
     ///         &[Segment::Broadcaster],
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -102,13 +106,13 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .set_extension_configuration_segment(
     ///         &ExtensionId::from("1234"),
     ///         Segment::Broadcaster,
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -137,10 +141,6 @@ pub trait ExtensionsAPI {
     /// * `extension_version` -
     /// * `required_configuration` -
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -150,7 +150,7 @@ pub trait ExtensionsAPI {
     ///     types::{BroadcasterId, ExtensionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .set_extension_required_configuration(
     ///         &BroadcasterId::from("1234"),
@@ -158,7 +158,6 @@ pub trait ExtensionsAPI {
     ///         "extension_version",
     ///         "required_configuration"
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -178,7 +177,7 @@ pub trait ExtensionsAPI {
         extension_id: &ExtensionId,
         extension_version: &str,
         required_configuration: &str,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Sends a message to one or more viewers
     ///
@@ -189,10 +188,6 @@ pub trait ExtensionsAPI {
     /// * `message` -
     /// * `is_global_broadcast` -
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -202,7 +197,7 @@ pub trait ExtensionsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_extension_pubsub_message(
     ///         &["target"],
@@ -210,7 +205,6 @@ pub trait ExtensionsAPI {
     ///         &BroadcasterId::from("1234"),
     ///         None
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -230,7 +224,7 @@ pub trait ExtensionsAPI {
         message: &str,
         broadcaster_id: &BroadcasterId,
         is_global_broadcast: Option<bool>,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of broadcasters that are streaming live and have installed or activated the extension
     ///
@@ -252,10 +246,10 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extension_live_channels(&ExtensionId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -293,10 +287,9 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extension_secrets(&ExtensionId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -313,7 +306,7 @@ pub trait ExtensionsAPI {
     fn get_extension_secrets(
         &self,
         extension_id: &ExtensionId,
-    ) -> TwitchAPIRequest<ExtensionSecretsResponse>;
+    ) -> impl Future<Output = Result<ExtensionSecretsResponse, Error>> + Send;
 
     /// Creates a shared secret used to sign and verify JWT tokens
     ///
@@ -335,10 +328,9 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_extension_secret(&ExtensionId::from("1234"), None)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -356,7 +348,7 @@ pub trait ExtensionsAPI {
         &self,
         extension_id: &ExtensionId,
         delay: Option<u64>,
-    ) -> TwitchAPIRequest<ExtensionSecretsResponse>;
+    ) -> impl Future<Output = Result<ExtensionSecretsResponse, Error>> + Send;
 
     /// Sends a message to the specified broadcaster’s chat room
     ///
@@ -367,10 +359,6 @@ pub trait ExtensionsAPI {
     /// * `extension_id` -
     /// * `extension_version` -
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -380,7 +368,7 @@ pub trait ExtensionsAPI {
     ///     types::{BroadcasterId, ExtensionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_extension_chat_message(
     ///         &BroadcasterId::from("1234"),
@@ -388,7 +376,6 @@ pub trait ExtensionsAPI {
     ///         &ExtensionId::from("5678"),
     ///         "extension_version"
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -408,7 +395,7 @@ pub trait ExtensionsAPI {
         text: &str,
         extension_id: &ExtensionId,
         extension_version: &str,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets information about an extension
     ///
@@ -430,10 +417,9 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extensions(&ExtensionId::from("1234"), None)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -451,7 +437,7 @@ pub trait ExtensionsAPI {
         &self,
         extension_id: &ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<ExtensionsResponse>;
+    ) -> impl Future<Output = Result<ExtensionsResponse, Error>> + Send;
 
     /// Gets information about a released extension
     ///
@@ -473,10 +459,9 @@ pub trait ExtensionsAPI {
     ///     types::ExtensionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_released_extensions(&ExtensionId::from("1234"), None)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -494,7 +479,7 @@ pub trait ExtensionsAPI {
         &self,
         extension_id: &ExtensionId,
         extension_version: Option<&str>,
-    ) -> TwitchAPIRequest<ExtensionsResponse>;
+    ) -> impl Future<Output = Result<ExtensionsResponse, Error>> + Send;
 
     /// Gets the list of Bits products that belongs to the extension
     ///
@@ -512,10 +497,9 @@ pub trait ExtensionsAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::extensions::ExtensionsAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extension_bits_products(None)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -532,7 +516,7 @@ pub trait ExtensionsAPI {
     fn get_extension_bits_products(
         &self,
         should_inclue_all: Option<bool>,
-    ) -> TwitchAPIRequest<ExtensionsBitsProductsResponse>;
+    ) -> impl Future<Output = Result<ExtensionsBitsProductsResponse, Error>> + Send;
 
     /// Adds or updates a Bits product that the extension created
     ///
@@ -556,14 +540,14 @@ pub trait ExtensionsAPI {
     ///     types::{Cost, CostType}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_extension_bits_product(
     ///         "sku",
     ///         Cost::new(5000, CostType::Bits),
     ///         "display_name",
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -594,6 +578,7 @@ impl ExtensionsAPI for Client {
     ) -> GetExtensionConfigurationSegmentBuilder<'a> {
         GetExtensionConfigurationSegmentBuilder::new(self, jwt_token, extension_id, segments)
     }
+
     fn set_extension_configuration_segment<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
@@ -601,118 +586,181 @@ impl ExtensionsAPI for Client {
     ) -> SetExtensionConfigurationSegmentBuilder<'a> {
         SetExtensionConfigurationSegmentBuilder::new(self, extension_id, segment)
     }
-    simple_endpoint!(
-            fn set_extension_required_configuration(
-                broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-                extension_id: &ExtensionId [skip],
-                extension_version: &str [skip],
-                required_configuration: &str [skip],
-            ) -> NoContent;
-            endpoint: SetExtensionRequiredConfiguration,
-            method: PUT,
-            path: [EXTENSIONS, REQUIRED_CONFIGURATION],
-            headers: [json],
-            body: {
-                serde_json::to_string(&SetExtensionRequiredConfigurationBody {
-                    extension_id,
-                    extension_version,
-                    required_configuration
-                }).ok()
-        }
-    );
-    simple_endpoint!(
-        fn send_extension_pubsub_message(
-            targets: &[&str] [skip],
-            message: &str [skip],
-            broadcaster_id: &BroadcasterId [skip],
-            is_global_broadcast: Option<bool> [skip],
-        ) -> NoContent;
-            endpoint: SendExtensionPubSubMessage,
-            method: POST,
-            path: [EXTENSIONS, PUBSUB],
-            headers: [json],
-            body: {
-                let body =  SendExtensionPubSubMessageBody{
-                    target:targets,
-                    message,
-                    broadcaster_id,
-                    is_global_broadcast,
-                };
-                serde_json::to_string(&body).ok()
-            }
-    );
+
+    async fn set_extension_required_configuration(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        extension_id: &ExtensionId,
+        extension_version: &str,
+        required_configuration: &str,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EXTENSIONS, REQUIRED_CONFIGURATION]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        let req = self
+            .http_client()
+            .put(url)
+            .json(&SetExtensionRequiredConfigurationBody {
+                extension_id,
+                extension_version,
+                required_configuration,
+            });
+        self.no_content(req).await
+    }
+
+    async fn send_extension_pubsub_message(
+        &self,
+        targets: &[&str],
+        message: &str,
+        broadcaster_id: &BroadcasterId,
+        is_global_broadcast: Option<bool>,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EXTENSIONS, PUBSUB]);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&SendExtensionPubSubMessageBody {
+                target: targets,
+                message,
+                broadcaster_id,
+                is_global_broadcast,
+            });
+        self.no_content(req).await
+    }
+
     fn get_extension_live_channels<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
     ) -> GetExtensionLiveChannelsBuilder<'a> {
         GetExtensionLiveChannelsBuilder::new(self, extension_id)
     }
-    simple_endpoint!(
-    fn get_extension_secrets(
-        extension_id: &ExtensionId [key = EXTENSION_ID],
-    ) -> ExtensionSecretsResponse;
-        endpoint: GetExtensionSecrets,
-        method: GET,
-        path: [EXTENSIONS, JWT, SECRETS],
-    );
-    simple_endpoint!(
-    fn create_extension_secret(
-        extension_id: &ExtensionId [key = EXTENSION_ID],
-        delay: Option<u64> [opt, key = DELAY, convert = to_string],
-    ) -> ExtensionSecretsResponse;
-        endpoint: CreateExtensionSecret,
-        method: POST,
-        path: [EXTENSIONS, JWT, SECRETS],
-    );
-    simple_endpoint!(
-    fn send_extension_chat_message(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        text: &str [skip],
-        extension_id: &ExtensionId [skip],
-        extension_version: &str [skip],
-    ) -> NoContent;
-        endpoint: SendExtensionChatMessage,
-        method: POST,
-        path: [EXTENSIONS, CHAT],
-        headers: [json],
-        // body: {ExtensionChatMessageIntoRequestBody::new(text, extension_id, extension_version).into_json()}
-        body: {
-            Some(
-                serde_json::json!({
-                    "text":text,
-                    EXTENSION_ID:extension_id,
-                    EXTENSION_VERSION:extension_version
-                }).to_string()
-            )
-        }
-    );
-    simple_endpoint!(
-    fn get_extensions(
-        extension_id: &ExtensionId [key = EXTENSION_ID],
-        extension_version: Option<&str> [opt, key = EXTENSION_VERSION],
-    ) -> ExtensionsResponse;
-        endpoint: GetExtensions,
-        method: GET,
-        path: [EXTENSIONS],
-    );
-    simple_endpoint!(
-    fn get_released_extensions(
-        extension_id: &ExtensionId [key = EXTENSION_ID],
-        extension_version: Option<&str> [opt, key = EXTENSION_VERSION],
-    ) -> ExtensionsResponse;
-        endpoint: GetReleasedExtensions,
-        method: GET,
-        path: [EXTENSIONS, RELEASED],
-    );
-    simple_endpoint!(
-    fn get_extension_bits_products(
-        should_include_all: Option<bool> [opt, key = SHOULD_INCLUDE_ALL, convert = to_string],
-    ) -> ExtensionsBitsProductsResponse;
-        endpoint: GetExtensionBitsProducts,
-        method: GET,
-        path: [BITS, EXTENSIONS],
 
-    );
+    async fn get_extension_secrets(
+        &self,
+        extension_id: &ExtensionId,
+    ) -> Result<ExtensionSecretsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EXTENSIONS, JWT, SECRETS]);
+
+        url.query_pairs_mut()
+            .append_pair(EXTENSION_ID, extension_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn create_extension_secret(
+        &self,
+        extension_id: &ExtensionId,
+        delay: Option<u64>,
+    ) -> Result<ExtensionSecretsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EXTENSIONS, JWT, SECRETS]);
+
+        url.query_pairs_mut()
+            .append_pair(EXTENSION_ID, extension_id);
+        if let Some(d) = delay {
+            url.query_pairs_mut().append_pair(DELAY, &d.to_string());
+        }
+
+        self.json(self.http_client().post(url)).await
+    }
+
+    async fn send_extension_chat_message(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        text: &str,
+        extension_id: &ExtensionId,
+        extension_version: &str,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([EXTENSIONS, CHAT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&ExtensionChatMessageIntoRequestBody {
+                text,
+                extension_id,
+                extension_version,
+            });
+        self.no_content(req).await
+    }
+
+    async fn get_extensions(
+        &self,
+        extension_id: &ExtensionId,
+        extension_version: Option<&str>,
+    ) -> Result<ExtensionsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(EXTENSIONS);
+
+        url.query_pairs_mut()
+            .append_pair(EXTENSION_ID, extension_id);
+        if let Some(v) = extension_version {
+            url.query_pairs_mut().append_pair(EXTENSION_VERSION, v);
+        }
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn get_released_extensions(
+        &self,
+        extension_id: &ExtensionId,
+        extension_version: Option<&str>,
+    ) -> Result<ExtensionsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EXTENSIONS, RELEASED]);
+
+        url.query_pairs_mut()
+            .append_pair(EXTENSION_ID, extension_id);
+        if let Some(v) = extension_version {
+            url.query_pairs_mut().append_pair(EXTENSION_VERSION, v);
+        }
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn get_extension_bits_products(
+        &self,
+        should_inclue_all: Option<bool>,
+    ) -> Result<ExtensionsBitsProductsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([BITS, EXTENSIONS]);
+
+        if let Some(all) = should_inclue_all {
+            url.query_pairs_mut()
+                .append_pair(SHOULD_INCLUDE_ALL, &all.to_string());
+        }
+
+        self.json(self.http_client().get(url)).await
+    }
+
     fn update_extension_bits_product<'a>(
         &'a self,
         sku: &'a str,
