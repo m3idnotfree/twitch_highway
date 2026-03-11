@@ -19,6 +19,10 @@ name = "twitch-cli"
 path = "tests/twitch_cli.rs"
 
 [[test]]
+name = "hype-train"
+path = "tests/hype_train.rs"
+
+[[test]]
 name = "moderation"
 path = "tests/moderation.rs"
 

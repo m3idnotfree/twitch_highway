@@ -9,11 +9,15 @@ pub use types::{
     HypeTrainType, SharedAllTimeHigh, SharedTrainParticipant,
 };
 
-use crate::types::{
-    constants::{HYPE_TRAIN, STATUS},
-    BroadcasterId,
+use std::future::Future;
+
+use crate::{
+    types::{
+        constants::{BROADCASTER_ID, HYPE_TRAIN, STATUS},
+        BroadcasterId,
+    },
+    Client, Error,
 };
-use crate::{request::TwitchAPIRequest, Client};
 
 pub trait HypeTrainAPI {
     /// # **REMOVED**
@@ -43,7 +47,7 @@ pub trait HypeTrainAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_hype_train_events(&BroadcasterId::from("1234"))
     ///     .json()
@@ -88,10 +92,9 @@ pub trait HypeTrainAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_hype_train_status(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -108,7 +111,7 @@ pub trait HypeTrainAPI {
     fn get_hype_train_status(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<HypeTrainStatusResponse>;
+    ) -> impl Future<Output = Result<HypeTrainStatusResponse, Error>> + Send;
 }
 
 impl HypeTrainAPI for Client {
@@ -118,12 +121,20 @@ impl HypeTrainAPI for Client {
     ) -> GetHypeTrainEventsBuilder<'a> {
         GetHypeTrainEventsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-        fn get_hype_train_status(
-            broadcaster_id: &BroadcasterId
-        ) -> HypeTrainStatusResponse;
-            endpoint: GetHypeTrainStatus,
-            method: GET,
-            path: [HYPE_TRAIN, STATUS],
-    );
+
+    async fn get_hype_train_status(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> Result<HypeTrainStatusResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([HYPE_TRAIN, STATUS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.json(self.http_client().get(url)).await
+    }
 }
