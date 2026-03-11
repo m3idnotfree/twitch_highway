@@ -644,7 +644,7 @@ async fn mock_api_search_channels(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_broadcaster_subscriptions(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_broadcaster_subscriptions(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
 
     Ok(())
@@ -653,7 +653,6 @@ async fn mock_api_get_broadcaster_subscriptions(api: &TwitchFixture) -> Result<(
 async fn mock_api_check_user_subscription(api: &TwitchFixture) -> Result<()> {
     api.api
         .check_user_subscription(&api.selected_broadcaster_id(), &api.selected_user_id())
-        .json()
         .await?;
 
     Ok(())

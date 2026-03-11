@@ -6,13 +6,15 @@ pub use builder::GetBroadcasterSubscriptionsBuilder;
 pub use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 pub use types::{Subscription, Tier};
 
-use crate::types::{
-    constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER, USER_ID},
-    BroadcasterId, UserId,
-};
+use std::future::Future;
 
-use crate::request::TwitchAPIRequest;
-use crate::Client;
+use crate::{
+    types::{
+        constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER, USER_ID},
+        BroadcasterId, UserId,
+    },
+    Client, Error,
+};
 
 pub trait SubscriptionsAPI {
     /// Gets a list of users that subscribe to the specified broadcaster
@@ -34,10 +36,10 @@ pub trait SubscriptionsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_broadcaster_subscriptions(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -76,13 +78,12 @@ pub trait SubscriptionsAPI {
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .check_user_subscription(
     ///         &BroadcasterId::from("1234"),
     ///         &UserId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -100,7 +101,7 @@ pub trait SubscriptionsAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<UserSubscriptionResponse>;
+    ) -> impl Future<Output = Result<UserSubscriptionResponse, Error>> + Send;
 }
 
 impl SubscriptionsAPI for Client {
@@ -110,18 +111,22 @@ impl SubscriptionsAPI for Client {
     ) -> GetBroadcasterSubscriptionsBuilder<'a> {
         GetBroadcasterSubscriptionsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-        fn check_user_subscription(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            user_id: &UserId [key = USER_ID],
-        ) -> UserSubscriptionResponse;
-            endpoint: CheckUserSubscriptions,
-            method: GET,
-            path: [SUBSCRIPTIONS, USER],
-    //             query_params: {
-    //                 query(BROADCASTER_ID, broadcaster_id),
-    //                 query(USER_ID, user_id)
-    //             }
 
-    );
+    async fn check_user_subscription(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        user_id: &UserId,
+    ) -> Result<UserSubscriptionResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([SUBSCRIPTIONS, USER]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(USER_ID, user_id);
+
+        self.json(self.http_client().get(url)).await
+    }
 }
