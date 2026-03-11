@@ -2,33 +2,75 @@ use serde::Serialize;
 
 use crate::{
     predictions::{PredictionStatus, PredictionsResponse},
-    request::TwitchAPIRequest,
     types::{
         constants::{AFTER, BROADCASTER_ID, FIRST, ID, PREDICTIONS},
         BroadcasterId, PredictionId,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetPredictionsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            ids: &'a [PredictionId] [key = ID, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
+#[derive(Debug)]
+pub struct GetPredictionsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    ids: Option<&'a [PredictionId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetPredictionsBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            ids: None,
+            first: None,
+            after: None,
         }
-    } -> PredictionsResponse;
-    endpoint: GetPredictions,
-    method: GET,
-    path: [PREDICTIONS],
+    }
+
+    pub fn ids(mut self, value: &'a [PredictionId]) -> Self {
+        self.ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<PredictionsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().push(PREDICTIONS);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(ids) = self.ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Serialize)]
 pub struct EndPredictionBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     id: &'a PredictionId,
     status: PredictionStatus,
@@ -38,13 +80,13 @@ pub struct EndPredictionBuilder<'a> {
 
 impl<'a> EndPredictionBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         id: &'a PredictionId,
         status: PredictionStatus,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             id,
             status,
@@ -57,28 +99,12 @@ impl<'a> EndPredictionBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<PredictionsResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<PredictionsResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[PREDICTIONS]);
+        url.path_segments_mut().unwrap().push(PREDICTIONS);
 
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::EndPrediction,
-            url,
-            reqwest::Method::PATCH,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<PredictionsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().patch(url).json(&self);
+        self.client.json(req).await
     }
 }

@@ -6,12 +6,13 @@ pub use builder::{EndPredictionBuilder, GetPredictionsBuilder};
 pub use response::PredictionsResponse;
 pub use types::{Prediction, PredictionStatus};
 
+use std::future::Future;
+
 use types::CreatePredictionBody;
 
 use crate::{
-    request::TwitchAPIRequest,
     types::{constants::PREDICTIONS, BroadcasterId, PredictionId, Title},
-    Client,
+    Client, Error,
 };
 
 pub trait PredictionsAPI {
@@ -34,10 +35,10 @@ pub trait PredictionsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_predictions(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -79,7 +80,7 @@ pub trait PredictionsAPI {
     ///     types::{BroadcasterId,Title}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_prediction(
     ///         &BroadcasterId::from("1234"),
@@ -87,7 +88,6 @@ pub trait PredictionsAPI {
     ///         &[Title::new("title-1")],
     ///         30
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -107,7 +107,7 @@ pub trait PredictionsAPI {
         title: &str,
         outcomes: &[Title],
         prediction_window: u64,
-    ) -> TwitchAPIRequest<PredictionsResponse>;
+    ) -> impl Future<Output = Result<PredictionsResponse, Error>> + Send;
 
     /// Locks, resolves, or cancels a Channel Points Prediction
     ///
@@ -130,14 +130,14 @@ pub trait PredictionsAPI {
     ///     types::{BroadcasterId, PredictionId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .end_prediction(
     ///         &BroadcasterId::from("1234"),
     ///         &PredictionId::from("5678"),
     ///         PredictionStatus::ACTIVE,
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -166,26 +166,27 @@ impl PredictionsAPI for Client {
     ) -> GetPredictionsBuilder<'a> {
         GetPredictionsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-    fn create_prediction(
-        broadcaster_id: &BroadcasterId [skip],
-        title: &str [skip],
-        outcomes: &[Title] [skip],
-        prediction_window: u64 [skip],
-    ) -> PredictionsResponse;
-        endpoint: CreatePrediction,
-        method: POST,
-        path: [PREDICTIONS],
-        headers: [json],
-        body: {
-            serde_json::to_string(&CreatePredictionBody {
-                broadcaster_id,
-                title,
-                outcomes,
-                prediction_window,
-            }).ok()
-        }
-    );
+
+    async fn create_prediction(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        title: &str,
+        outcomes: &[Title],
+        prediction_window: u64,
+    ) -> Result<PredictionsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(PREDICTIONS);
+
+        let req = self.http_client().post(url).json(&CreatePredictionBody {
+            broadcaster_id,
+            title,
+            outcomes,
+            prediction_window,
+        });
+        self.json(req).await
+    }
+
     fn end_prediction<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

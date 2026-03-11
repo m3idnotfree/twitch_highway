@@ -579,7 +579,7 @@ async fn mock_api_create_poll(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_predictions(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_predictions(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -595,7 +595,6 @@ async fn mock_api_create_prediction(api: &TwitchFixture) -> Result<()> {
             ],
             120,
         )
-        .json()
         .await?;
     Ok(())
 }
@@ -608,7 +607,7 @@ async fn mock_api_end_prediction(api: &TwitchFixture) -> Result<()> {
             &prediction_id,
             PredictionStatus::CANCELED,
         )
-        .json()
+        .send()
         .await?;
     Ok(())
 }
