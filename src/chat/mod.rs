@@ -17,9 +17,9 @@ pub use builder::{
     SendChatMessageBuilder, UpdateChatSettingsBuilder,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::NoContent,
-    request::TwitchAPIRequest,
     types::{
         constants::{
             BADGES, BROADCASTER_ID, CHAT, COLOR, EMOTES, EMOTE_SET_ID, FROM_BROADCASTER_ID, GLOBAL,
@@ -27,7 +27,7 @@ use crate::{
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait ChatAPI {
@@ -46,12 +46,12 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_chatters(&BroadcasterId::from("1234"), &ModeratorId::from("5678"))
     ///     .first(5)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -90,10 +90,9 @@ pub trait ChatAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_emotes(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -110,7 +109,7 @@ pub trait ChatAPI {
     fn get_channel_emotes(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<EmotesResponse>;
+    ) -> impl Future<Output = Result<EmotesResponse, Error>> + Send;
 
     /// Gets the list of global emotes
     ///
@@ -124,10 +123,9 @@ pub trait ChatAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_global_emotes()
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -141,7 +139,7 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-global-emotes>
-    fn get_global_emotes(&self) -> TwitchAPIRequest<EmotesResponse>;
+    fn get_global_emotes(&self) -> impl Future<Output = Result<EmotesResponse, Error>> + Send;
 
     /// Gets emotes for one or more specified emote sets
     ///
@@ -159,10 +157,9 @@ pub trait ChatAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_emote_sets(&["e1", "e2"])
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -176,7 +173,10 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-emote-sets>
-    fn get_emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse>;
+    fn get_emote_sets(
+        &self,
+        emote_set_ids: &[&str],
+    ) -> impl Future<Output = Result<EmotesResponse, Error>> + Send;
 
     /// Gets the broadcaster’s list of custom chat badges
     ///
@@ -197,10 +197,9 @@ pub trait ChatAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_chat_badges(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -217,7 +216,7 @@ pub trait ChatAPI {
     fn get_channel_chat_badges(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<BadgesResponse>;
+    ) -> impl Future<Output = Result<BadgesResponse, Error>> + Send;
 
     /// Gets Twitch’s list of chat badges
     ///
@@ -231,10 +230,9 @@ pub trait ChatAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::chat::ChatAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_global_chat_badges()
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -248,7 +246,7 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-global-chat-badges>
-    fn get_global_chat_badges(&self) -> TwitchAPIRequest<BadgesResponse>;
+    fn get_global_chat_badges(&self) -> impl Future<Output = Result<BadgesResponse, Error>> + Send;
 
     /// Gets the broadcaster’s chat settings
     ///
@@ -269,11 +267,11 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_chat_settings(&BroadcasterId::from("1234"))
     ///     .moderator_id(&ModeratorId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -311,10 +309,9 @@ pub trait ChatAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_shared_chat_session(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -331,7 +328,7 @@ pub trait ChatAPI {
     fn get_shared_chat_session(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<SharedChatSessionResponse>;
+    ) -> impl Future<Output = Result<SharedChatSessionResponse, Error>> + Send;
 
     /// Retrieves emotes available to the user across all channels
     ///
@@ -352,12 +349,12 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_user_emotes(&UserId::from("5678"))
     ///     .broadcaster_id(&BroadcasterId::from("1234"))
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -393,12 +390,12 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_chat_settings(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -439,7 +436,7 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_chat_announcement(
     ///         &BroadcasterId::from("1234"),
@@ -447,7 +444,7 @@ pub trait ChatAPI {
     ///         "message"
     ///     )
     ///     .color(AnnouncementColor::Blue)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -476,10 +473,6 @@ pub trait ChatAPI {
     /// * `to_broadcaster_id` - The ID of the broadcaster that’s receiving the Shoutout.
     /// * `moderator_id` - The ID of the broadcaster or a user that is one of the broadcaster’s moderators.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -489,14 +482,13 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_a_shoutout(
     ///         &BroadcasterId::from("1234"),
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -515,7 +507,7 @@ pub trait ChatAPI {
         from_broadcaster_id: &BroadcasterId,
         to_broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Sends a message to the broadcaster’s chat room
     ///
@@ -538,7 +530,7 @@ pub trait ChatAPI {
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .send_chat_message(
     ///         &BroadcasterId::from("1234"),
@@ -546,7 +538,7 @@ pub trait ChatAPI {
     ///         "message"
     ///     )
     ///     .for_source_only(true)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -586,10 +578,9 @@ pub trait ChatAPI {
     ///     types::UserId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_user_chat_color(&[UserId::from("1234")])
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -603,7 +594,10 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-chat-color>
-    fn get_user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse>;
+    fn get_user_chat_color(
+        &self,
+        user_ids: &[UserId],
+    ) -> impl Future<Output = Result<UsersColorResponse, Error>> + Send;
 
     /// Updates the color used for the user’s name in chat
     ///
@@ -611,10 +605,6 @@ pub trait ChatAPI {
     ///
     /// * `user_id` - The ID of the user whose chat color you want to update.
     /// * `color` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -625,10 +615,9 @@ pub trait ChatAPI {
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_user_chat_color(&UserId::from("1234"), ChatColor::BlueViolet)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -646,7 +635,7 @@ pub trait ChatAPI {
         &self,
         user_id: &UserId,
         color: ChatColor,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 }
 
 impl ChatAPI for Client {
@@ -657,140 +646,94 @@ impl ChatAPI for Client {
     ) -> GetChattersBuilder<'a> {
         GetChattersBuilder::new(self, broadcaster_id, moderator_id)
     }
-    fn get_channel_emotes(
+
+    async fn get_channel_emotes(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<EmotesResponse> {
+    ) -> Result<EmotesResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, EMOTES]);
-        let mut query = url.query_pairs_mut();
+        url.path_segments_mut().unwrap().extend([CHAT, EMOTES]);
 
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetChannelEmotes,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
-    fn get_global_emotes(&self) -> TwitchAPIRequest<EmotesResponse> {
+
+    async fn get_global_emotes(&self) -> Result<EmotesResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[CHAT, EMOTES, GLOBAL]);
+            .extend([CHAT, EMOTES, GLOBAL]);
 
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetGlobalEmotes,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
-    fn get_emote_sets(&self, emote_set_ids: &[&str]) -> TwitchAPIRequest<EmotesResponse> {
+
+    async fn get_emote_sets(&self, emote_set_ids: &[&str]) -> Result<EmotesResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[CHAT, EMOTES, SET]);
+        url.path_segments_mut().unwrap().extend([CHAT, EMOTES, SET]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .extend_pairs(emote_set_ids.iter().map(|id| (EMOTE_SET_ID, id)));
 
-        query.extend_pairs(emote_set_ids.iter().map(|id| (EMOTE_SET_ID, id)));
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetEmoteSets,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-chat-badges>
-    fn get_channel_chat_badges(
+    async fn get_channel_chat_badges(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<BadgesResponse> {
+    ) -> Result<BadgesResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, BADGES]);
+        url.path_segments_mut().unwrap().extend([CHAT, BADGES]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
 
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetChannelChatBadges,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
-    fn get_global_chat_badges(&self) -> TwitchAPIRequest<BadgesResponse> {
+
+    async fn get_global_chat_badges(&self) -> Result<BadgesResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[CHAT, BADGES, GLOBAL]);
+            .extend([CHAT, BADGES, GLOBAL]);
 
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetGlobalChatBadges,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     fn get_chat_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> GetChatSettingsBuilder<'a> {
         GetChatSettingsBuilder::new(self, broadcaster_id)
     }
-    fn get_shared_chat_session(
+
+    async fn get_shared_chat_session(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<SharedChatSessionResponse> {
+    ) -> Result<SharedChatSessionResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[SHARED_CHAT, SESSION]);
+            .extend([SHARED_CHAT, SESSION]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
 
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetShardChatSession,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a> {
         GetUserEmotesBuilder::new(self, user_id)
     }
+
     fn update_chat_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -798,6 +741,7 @@ impl ChatAPI for Client {
     ) -> UpdateChatSettingsBuilder<'a> {
         UpdateChatSettingsBuilder::new(self, broadcaster_id, moderator_id)
     }
+
     fn send_chat_announcement<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -806,33 +750,25 @@ impl ChatAPI for Client {
     ) -> SendChatAnnouncementBuilder<'a> {
         SendChatAnnouncementBuilder::new(self, broadcaster_id, moderator_id, message)
     }
-    fn send_a_shoutout(
+
+    async fn send_a_shoutout(
         &self,
         from_broadcaster_id: &BroadcasterId,
         to_broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<NoContent> {
+    ) -> Result<(), Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, SHOUTOUTS]);
+        url.path_segments_mut().unwrap().extend([CHAT, SHOUTOUTS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(FROM_BROADCASTER_ID, from_broadcaster_id)
+            .append_pair(TO_BROADCASTER_ID, to_broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
 
-        query.append_pair(FROM_BROADCASTER_ID, from_broadcaster_id);
-        query.append_pair(TO_BROADCASTER_ID, to_broadcaster_id);
-        query.append_pair(MODERATOR_ID, moderator_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::SendAShoutout,
-            url,
-            reqwest::Method::POST,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.no_content(self.http_client().post(url)).await
     }
+
     fn send_chat_message<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -841,49 +777,31 @@ impl ChatAPI for Client {
     ) -> SendChatMessageBuilder<'a> {
         SendChatMessageBuilder::new(self, broadcaster_id, sender_id, message)
     }
-    fn get_user_chat_color(&self, user_ids: &[UserId]) -> TwitchAPIRequest<UsersColorResponse> {
+
+    async fn get_user_chat_color(&self, user_ids: &[UserId]) -> Result<UsersColorResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
+        url.path_segments_mut().unwrap().extend([CHAT, COLOR]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .extend_pairs(user_ids.iter().map(|id| (USER_ID, id)));
 
-        query.extend_pairs(user_ids.iter().map(|id| (USER_ID, id)));
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetUserChatColor,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
-    fn update_user_chat_color(
+
+    async fn update_user_chat_color(
         &self,
         user_id: &UserId,
         color: ChatColor,
-    ) -> TwitchAPIRequest<NoContent> {
+    ) -> Result<(), Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, COLOR]);
+        url.path_segments_mut().unwrap().extend([CHAT, COLOR]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(USER_ID, user_id)
+            .append_pair(COLOR, color.as_ref());
 
-        query.append_pair(USER_ID, user_id);
-        query.append_pair(COLOR, color.as_ref());
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateUserChatColor,
-            url,
-            reqwest::Method::PUT,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.no_content(self.http_client().put(url)).await
     }
 }

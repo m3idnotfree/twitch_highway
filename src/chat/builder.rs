@@ -5,7 +5,6 @@ use crate::{
         AnnouncementColor, ChatSettingResponse, ChattersResponse, EmotesResponse,
         SendChatMessageResponse,
     },
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             AFTER, ANNOUNCEMENTS, BROADCASTER_ID, CHAT, CHATTERS, EMOTES, FIRST, MESSAGES,
@@ -13,56 +12,151 @@ use crate::{
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetChattersBuilder<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID],
-            moderator_id: &'a ModeratorId [key = MODERATOR_ID]
-        },
-        opts: {
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
-        }
-    } -> ChattersResponse;
-    endpoint: GetChatters,
-    method: GET,
-    path: [CHAT, CHATTERS],
+#[derive(Debug)]
+pub struct GetChattersBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: &'a ModeratorId,
+    first: Option<u8>,
+    after: Option<&'a str>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetChatSettingsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {moderator_id: &'a ModeratorId [key = MODERATOR_ID]}
-    } -> ChatSettingResponse;
-    endpoint: GetChatSettings,
-    method: GET,
-    path: [CHAT, SETTINGS],
+impl<'a> GetChattersBuilder<'a> {
+    pub fn new(
+        client: &'a Client,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id,
+            first: None,
+            after: None,
+        }
+    }
 
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+    pub async fn send(self) -> Result<ChattersResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([CHAT, CHATTERS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetUserEmotesBuilder<'a> {
-        req: {user_id: &'a UserId [key = USER_ID]},
-        opts: {
-            broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID],
-            after: &'a str [key = AFTER],
+#[derive(Debug)]
+pub struct GetChatSettingsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: Option<&'a ModeratorId>,
+}
+
+impl<'a> GetChatSettingsBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id: None,
         }
-    } -> EmotesResponse;
-    endpoint: GetUserEmotes,
-    method: GET,
-    path: [CHAT, EMOTES, USER],
+    }
+
+    pub fn moderator_id(mut self, value: &'a ModeratorId) -> Self {
+        self.moderator_id = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ChatSettingResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([CHAT, SETTINGS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(val) = self.moderator_id {
+            url.query_pairs_mut().append_pair(MODERATOR_ID, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetUserEmotesBuilder<'a> {
+    client: &'a Client,
+    user_id: &'a UserId,
+    broadcaster_id: Option<&'a BroadcasterId>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetUserEmotesBuilder<'a> {
+    pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
+        Self {
+            client,
+            user_id,
+            broadcaster_id: None,
+            after: None,
+        }
+    }
+
+    pub fn broadcaster_id(mut self, value: &'a BroadcasterId) -> Self {
+        self.broadcaster_id = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<EmotesResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHAT, EMOTES, USER]);
+
+        url.query_pairs_mut().append_pair(USER_ID, self.user_id);
+        if let Some(val) = self.broadcaster_id {
+            url.query_pairs_mut().append_pair(BROADCASTER_ID, val);
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Serialize)]
 pub struct UpdateChatSettingsBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -90,12 +184,12 @@ pub struct UpdateChatSettingsBuilder<'a> {
 
 impl<'a> UpdateChatSettingsBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             moderator_id,
             emote_mode: None,
@@ -109,80 +203,70 @@ impl<'a> UpdateChatSettingsBuilder<'a> {
             unique_chat_mode: None,
         }
     }
+
     pub fn emote_mode(mut self, value: bool) -> Self {
         self.emote_mode = Some(value);
         self
     }
+
     pub fn follower_mode(mut self, value: bool) -> Self {
         self.follower_mode = Some(value);
         self
     }
+
     pub fn follower_mode_duration(mut self, value: u64) -> Self {
         self.follower_mode_duration = Some(value);
         self
     }
+
     pub fn non_moderator_chat_delay(mut self, value: bool) -> Self {
         self.non_moderator_chat_delay = Some(value);
         self
     }
+
     pub fn non_moderator_chat_delay_duration(mut self, value: u64) -> Self {
         self.non_moderator_chat_delay_duration = Some(value);
         self
     }
+
     pub fn slow_mode(mut self, value: bool) -> Self {
         self.slow_mode = Some(value);
         self
     }
+
     pub fn slow_mode_wait_time(mut self, value: u64) -> Self {
         self.slow_mode_wait_time = Some(value);
         self
     }
+
     pub fn subscriber_mode(mut self, value: bool) -> Self {
         self.subscriber_mode = Some(value);
         self
     }
+
     pub fn unique_chat_mode(mut self, value: bool) -> Self {
         self.unique_chat_mode = Some(value);
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<ChatSettingResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<ChatSettingResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, SETTINGS]);
+        url.path_segments_mut().unwrap().extend([CHAT, SETTINGS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
 
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-        query.append_pair(MODERATOR_ID, self.moderator_id);
-
-        drop(query);
-
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateChatSettings,
-            url,
-            reqwest::Method::PATCH,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<ChatSettingResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().patch(url).json(&self);
+        self.client.json(req).await
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct SendChatAnnouncementBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -195,13 +279,13 @@ pub struct SendChatAnnouncementBuilder<'a> {
 
 impl<'a> SendChatAnnouncementBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         message: &'a str,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             moderator_id,
             message,
@@ -214,46 +298,26 @@ impl<'a> SendChatAnnouncementBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<(), Error> {
+        let mut url = self.client.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[CHAT, ANNOUNCEMENTS]);
+            .extend([CHAT, ANNOUNCEMENTS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
 
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-        query.append_pair(MODERATOR_ID, self.moderator_id);
-
-        drop(query);
-
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::SendChatAnnouncement,
-            url,
-            reqwest::Method::POST,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<NoContent, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().post(url).json(&self);
+        self.client.no_content(req).await
     }
 }
 
 #[derive(Debug, Serialize)]
 pub struct SendChatMessageBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
-
+    client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     sender_id: &'a UserId,
     message: &'a str,
@@ -265,14 +329,13 @@ pub struct SendChatMessageBuilder<'a> {
 
 impl<'a> SendChatMessageBuilder<'a> {
     pub fn new(
-        api: &'a Client,
-
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         sender_id: &'a UserId,
         message: &'a str,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             sender_id,
             message,
@@ -280,36 +343,23 @@ impl<'a> SendChatMessageBuilder<'a> {
             reply_parent_message_id: None,
         }
     }
+
     pub fn for_source_only(mut self, value: bool) -> Self {
         self.for_source_only = Some(value);
         self
     }
+
     pub fn reply_parent_message_id(mut self, value: &'a str) -> Self {
         self.reply_parent_message_id = Some(value);
         self
     }
-    pub fn build(self) -> TwitchAPIRequest<SendChatMessageResponse> {
-        let mut url = self.api.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHAT, MESSAGES]);
+    pub async fn send(self) -> Result<SendChatMessageResponse, Error> {
+        let mut url = self.client.base_url();
 
-        let body = serde_json::to_string(&self).ok();
+        url.path_segments_mut().unwrap().extend([CHAT, MESSAGES]);
 
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::SendChatMessage,
-            url,
-            reqwest::Method::POST,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<SendChatMessageResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().post(url).json(&self);
+        self.client.json(req).await
     }
 }

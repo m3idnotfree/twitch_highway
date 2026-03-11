@@ -157,7 +157,7 @@ async fn send_chat_message(
             &user.user_id,
             &request.message,
         )
-        .json()
+        .send()
         .await
     {
         Ok(_) => {

@@ -392,7 +392,7 @@ async fn mock_api_get_charity_campaign_donations(api: &TwitchFixture) -> Result<
 async fn mock_api_get_chatters(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_chatters(&api.selected_broadcaster_id(), &api.selected_moderator_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -400,13 +400,12 @@ async fn mock_api_get_chatters(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_channel_emotes(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_emotes(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
 
 async fn mock_api_get_global_emotes(api: &TwitchFixture) -> Result<()> {
-    api.api.get_global_emotes().json().await?;
+    api.api.get_global_emotes().await?;
     Ok(())
 }
 
@@ -418,20 +417,19 @@ async fn mock_api_get_global_emotes(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_channel_chat_badges(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_chat_badges(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
 
 async fn mock_api_get_global_chat_badges(api: &TwitchFixture) -> Result<()> {
-    api.api.get_global_chat_badges().json().await?;
+    api.api.get_global_chat_badges().await?;
     Ok(())
 }
 
 async fn mock_api_get_chat_settings(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_chat_settings(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -456,7 +454,7 @@ async fn mock_api_update_chat_settings(api: &TwitchFixture) -> Result<()> {
     api.api
         .update_chat_settings(&api.selected_broadcaster_id(), &api.selected_moderator_id())
         .follower_mode(false)
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -496,7 +494,6 @@ async fn mock_api_update_chat_settings(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_user_chat_color(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_user_chat_color(&[api.selected_user_id()])
-        .json()
         .await?;
     Ok(())
 }
@@ -504,7 +501,6 @@ async fn mock_api_get_user_chat_color(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_update_user_chat_color(api: &TwitchFixture) -> Result<()> {
     api.api
         .update_user_chat_color(&api.selected_user_id(), ChatColor::Green)
-        .json()
         .await?;
     Ok(())
 }
