@@ -15,15 +15,16 @@ pub use types::{
     Panel, User, UserActiveExtensions, UserAuthorization, UserExtension, UserType,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             AUTHORIZATION, BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USERS, USER_ID,
         },
         BroadcasterId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait UserAPI {
@@ -42,11 +43,11 @@ pub trait UserAPI {
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_users()
     ///     .ids(&[UserId::from("1234")])
-    ///     .json()
+    ///     .send()
     ///     .await?;
     /// # Ok(())
     /// # }
@@ -78,8 +79,8 @@ pub trait UserAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::users::UserAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
-    /// let response = api.update_user("description").json().await?;
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
+    /// let response = api.update_user("description").await?;
     ///
     /// # Ok(())
     /// # }
@@ -92,7 +93,10 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#update-user>
-    fn update_user(&self, description: &str) -> TwitchAPIRequest<UpdateUsersResponse>;
+    fn update_user(
+        &self,
+        description: &str,
+    ) -> impl Future<Output = Result<UpdateUsersResponse, Error>> + Send;
 
     /// Gets the list of users that the broadcaster has blocked
     ///
@@ -113,10 +117,10 @@ pub trait UserAPI {
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_user_block_list(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -154,12 +158,12 @@ pub trait UserAPI {
     ///     users::{BlockReason, BlockSourceContext, UserAPI},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .block_user(&UserId::from("1234"))
     ///     .source_context(BlockSourceContext::Chat)
     ///     .reason(BlockReason::Harassment)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -181,10 +185,6 @@ pub trait UserAPI {
     ///
     /// * `target_user_id` - The ID of the user to remove from the broadcaster’s list of blocked users.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -194,8 +194,8 @@ pub trait UserAPI {
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
-    /// let response = api.unblock_user(&UserId::from("1234")).json().await?;
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
+    /// let response = api.unblock_user(&UserId::from("1234")).await?;
     ///
     /// # Ok(())
     /// # }
@@ -208,7 +208,10 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#unblock-user>
-    fn unblock_user(&self, target_user_id: &UserId) -> TwitchAPIRequest<NoContent>;
+    fn unblock_user(
+        &self,
+        target_user_id: &UserId,
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of all extensions (both active and inactive) that the broadcaster has installed
     ///
@@ -222,8 +225,8 @@ pub trait UserAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::users::UserAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
-    /// let response = api.get_user_extensions().json().await?;
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
+    /// let response = api.get_user_extensions().await?;
     ///
     /// # Ok(())
     /// # }
@@ -237,8 +240,9 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-extensions>
-    fn get_user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse>;
-
+    fn get_user_extensions(
+        &self,
+    ) -> impl Future<Output = Result<UserExtensionsResponse, Error>> + Send;
     /// Gets the active extensions that the broadcaster has installed for each configuration
     ///
     /// # Returns
@@ -254,11 +258,11 @@ pub trait UserAPI {
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_user_active_extensions()
     ///     .user_id(&UserId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -288,13 +292,13 @@ pub trait UserAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::users::{Component, Overlay, Panel, UserAPI};
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_user_extensions()
     ///     .add_panel(Panel::new(true))
     ///     .add_overlay(Overlay::new(true))
     ///     .add_component(Component::new(true))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -325,10 +329,9 @@ pub trait UserAPI {
     ///     users::UserAPI,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_authorization_by_user(&[UserId::from("1234"), UserId::from("5678")])
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -345,90 +348,77 @@ pub trait UserAPI {
     fn get_authorization_by_user(
         &self,
         user_ids: &[UserId],
-    ) -> TwitchAPIRequest<GetAuthorizationByUserResponse>;
+    ) -> impl Future<Output = Result<GetAuthorizationByUserResponse, Error>> + Send;
 }
 
 impl UserAPI for Client {
     fn get_users<'a>(&'a self) -> GetUsersBuilder<'a> {
         GetUsersBuilder::new(self)
     }
-    fn update_user(&self, description: &str) -> TwitchAPIRequest<UpdateUsersResponse> {
+
+    async fn update_user(&self, description: &str) -> Result<UpdateUsersResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[USERS]);
+        url.path_segments_mut().unwrap().push(USERS);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut().append_pair(DESCRIPTION, description);
 
-        query.append_pair(DESCRIPTION, description);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateUser,
-            url,
-            reqwest::Method::PUT,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().put(url)).await
     }
+
     fn get_user_block_list<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> GetUserBlockListBuilder<'a> {
         GetUserBlockListBuilder::new(self, broadcaster_id)
     }
+
     fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> BlockUserBuilder<'a> {
         BlockUserBuilder::new(self, target_user_id)
     }
-    fn unblock_user(&self, target_user_id: &UserId) -> TwitchAPIRequest<NoContent> {
+
+    async fn unblock_user(&self, target_user_id: &UserId) -> Result<(), Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[USERS, BLOCKS]);
+        url.path_segments_mut().unwrap().extend([USERS, BLOCKS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(TARGET_USER_ID, target_user_id);
 
-        query.append_pair(TARGET_USER_ID, target_user_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UnblockUser,
-            url,
-            reqwest::Method::DELETE,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.no_content(self.http_client().delete(url)).await
     }
-    fn get_user_extensions(&self) -> TwitchAPIRequest<UserExtensionsResponse> {
+
+    async fn get_user_extensions(&self) -> Result<UserExtensionsResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[USERS, EXTENSIONS, LIST]);
+            .extend([USERS, EXTENSIONS, LIST]);
 
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetUserExtensions,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a> {
         GetUserActiveExtensionsBuilder::new(self)
     }
+
     fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a> {
         UpdateUserExtensionsBuilder::new(self)
     }
-    simple_endpoint!(
-    fn get_authorization_by_user(
-        user_ids: &[UserId] [key = USER_ID, convert = extend]
-    ) -> GetAuthorizationByUserResponse;
-        endpoint: GetAuthorizationByUser,
-        method: GET,
-        path: [AUTHORIZATION, USERS],
-    );
+
+    async fn get_authorization_by_user(
+        &self,
+        user_ids: &[UserId],
+    ) -> Result<GetAuthorizationByUserResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([AUTHORIZATION, USERS]);
+
+        url.query_pairs_mut()
+            .extend_pairs(user_ids.iter().map(|id| (USER_ID, id)));
+
+        self.json(self.http_client().get(url)).await
+    }
 }

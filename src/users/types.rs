@@ -71,6 +71,7 @@ pub enum ExtensionType {
     Overlay,
     Panel,
 }
+
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct UserActiveExtensions {
     panel: HashMap<String, Panel>,
@@ -110,10 +111,6 @@ impl UserActiveExtensions {
         self.component.insert(format!("{}", count), component);
         self
     }
-
-    pub fn into_json(self) -> Option<String> {
-        serde_json::to_string(&self).ok()
-    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -140,10 +137,7 @@ impl AsRef<str> for BlockSourceContext {
 
 impl From<BlockSourceContext> for String {
     fn from(value: BlockSourceContext) -> Self {
-        match value {
-            BlockSourceContext::Chat => "chat".to_string(),
-            BlockSourceContext::Whisper => "whisper".to_string(),
-        }
+        value.as_str().to_string()
     }
 }
 
@@ -173,11 +167,7 @@ impl AsRef<str> for BlockReason {
 
 impl From<BlockReason> for String {
     fn from(value: BlockReason) -> String {
-        match value {
-            BlockReason::Harassment => "harassment".to_string(),
-            BlockReason::Spam => "spam".to_string(),
-            BlockReason::Other => "other".to_string(),
-        }
+        value.as_str().to_string()
     }
 }
 
@@ -202,9 +192,20 @@ impl Panel {
         }
     }
 
-    opt_method!(id, ExtensionId);
-    opt_method!(version, String[into]);
-    opt_method!(name, String[into]);
+    pub fn id(mut self, value: ExtensionId) -> Self {
+        self.id = Some(value);
+        self
+    }
+
+    pub fn version(mut self, value: impl Into<String>) -> Self {
+        self.version = Some(value.into());
+        self
+    }
+
+    pub fn name(mut self, value: impl Into<String>) -> Self {
+        self.name = Some(value.into());
+        self
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -228,9 +229,20 @@ impl Overlay {
         }
     }
 
-    opt_method!(id, ExtensionId);
-    opt_method!(version, String[into]);
-    opt_method!(name, String[into]);
+    pub fn id(mut self, value: ExtensionId) -> Self {
+        self.id = Some(value);
+        self
+    }
+
+    pub fn version(mut self, value: impl Into<String>) -> Self {
+        self.version = Some(value.into());
+        self
+    }
+
+    pub fn name(mut self, value: impl Into<String>) -> Self {
+        self.name = Some(value.into());
+        self
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -260,11 +272,30 @@ impl Component {
         }
     }
 
-    opt_method!(id, ExtensionId);
-    opt_method!(version, String[into]);
-    opt_method!(name, String[into]);
-    opt_method!(x, u64);
-    opt_method!(y, u64);
+    pub fn id(mut self, value: ExtensionId) -> Self {
+        self.id = Some(value);
+        self
+    }
+
+    pub fn version(mut self, value: impl Into<String>) -> Self {
+        self.version = Some(value.into());
+        self
+    }
+
+    pub fn name(mut self, value: impl Into<String>) -> Self {
+        self.name = Some(value.into());
+        self
+    }
+
+    pub fn x(mut self, value: u64) -> Self {
+        self.x = Some(value);
+        self
+    }
+
+    pub fn y(mut self, value: u64) -> Self {
+        self.y = Some(value);
+        self
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

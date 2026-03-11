@@ -676,19 +676,19 @@ async fn mock_api_get_teams(api: &TwitchFixture) -> Result<()> {
 }
 
 async fn mock_api_get_users(api: &TwitchFixture) -> Result<()> {
-    api.api.get_users().json().await?;
+    api.api.get_users().send().await?;
     Ok(())
 }
 
 async fn mock_api_update_user(api: &TwitchFixture) -> Result<()> {
-    api.api.update_user("ffs").json().await?;
+    api.api.update_user("ffs").await?;
     Ok(())
 }
 
 async fn mock_api_get_user_block_list(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_user_block_list(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -696,16 +696,16 @@ async fn mock_api_get_user_block_list(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_block_user(api: &TwitchFixture) -> Result<()> {
     let random_user = api.get_random_user()?;
     let user_id = UserId::from(random_user.id);
-    api.api.block_user(&user_id).json().await?;
+    api.api.block_user(&user_id).send().await?;
     Ok(())
 }
 
 async fn mock_api_unblock_user(api: &TwitchFixture) -> Result<()> {
-    api.api.unblock_user(&api.selected_user_id()).json().await?;
+    api.api.unblock_user(&api.selected_user_id()).await?;
     Ok(())
 }
 // async fn mock_api_get_user_extensions(api: &TwitchFixture) -> Result<()> {
-//     api.api.get_user_extensions().json().await?;
+//     api.api.get_user_extensions().await?;
 //     Ok(())
 // }
 // async fn mock_api_get_user_active_extensions(api: &TwitchFixture) -> Result<()> {

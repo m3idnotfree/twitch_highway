@@ -1,5 +1,4 @@
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             AFTER, BLOCKS, BROADCASTER_ID, EXTENSIONS, FIRST, ID, LOGIN, REASON, SOURCE_CONTEXT,
@@ -11,69 +10,197 @@ use crate::{
         BlockReason, BlockSourceContext, BlockUserListResponse, Component, Overlay, Panel,
         UserActiveExtensions, UserActiveExtensionsResponse, UsersInfoResponse,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetUsersBuilder<'a> {
-        ids: &'a [UserId] [key = ID, convert = extend],
-        logins: &'a [&'a str] [key = LOGIN, convert = extend]
-    } -> UsersInfoResponse;
-    endpoint: GetUsers,
-    method: GET,
-    path: [USERS],
+#[derive(Debug)]
+pub struct GetUsersBuilder<'a> {
+    client: &'a Client,
+    ids: Option<&'a [UserId]>,
+    logins: Option<&'a [&'a str]>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetUserBlockListBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]}
-        opts: {
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
+impl<'a> GetUsersBuilder<'a> {
+    pub fn new(client: &'a Client) -> Self {
+        Self {
+            client,
+            ids: None,
+            logins: None,
         }
-    } -> BlockUserListResponse;
-    endpoint: GetUserBlockList,
-    method: GET,
-    path: [USERS, BLOCKS],
-}
+    }
 
-define_request_builder! {
-    #[derive(Debug)]
-    BlockUserBuilder<'a> {
-        req: {target_user_id: &'a UserId [key = TARGET_USER_ID, convert = as_ref]},
-        opts: {
-            source_context: BlockSourceContext [key = SOURCE_CONTEXT, convert = as_ref],
-            reason: BlockReason [key = REASON, convert = as_ref]
+    pub fn ids(mut self, value: &'a [UserId]) -> Self {
+        self.ids = Some(value);
+        self
+    }
+
+    pub fn logins(mut self, value: &'a [&'a str]) -> Self {
+        self.logins = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<UsersInfoResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().push(USERS);
+
+        if let Some(ids) = self.ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (ID, id)));
         }
-    } -> NoContent;
-    endpoint: BlockUser,
-    method: PUT,
-    path: [USERS, BLOCKS],
 
+        if let Some(logins) = self.logins {
+            url.query_pairs_mut()
+                .extend_pairs(logins.iter().map(|login| (LOGIN, login)));
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetUserActiveExtensionsBuilder<'a> {
-        user_id: &'a UserId [key = USER_ID]
-    } -> UserActiveExtensionsResponse;
-    endpoint: GetUserActiveExtensions,
-    method: GET,
-    path: [USERS, EXTENSIONS],
+#[derive(Debug)]
+pub struct GetUserBlockListBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetUserBlockListBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<BlockUserListResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([USERS, BLOCKS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct BlockUserBuilder<'a> {
+    client: &'a Client,
+    target_user_id: &'a UserId,
+    source_context: Option<BlockSourceContext>,
+    reason: Option<BlockReason>,
+}
+
+impl<'a> BlockUserBuilder<'a> {
+    pub fn new(client: &'a Client, target_user_id: &'a UserId) -> Self {
+        Self {
+            client,
+            target_user_id,
+            source_context: None,
+            reason: None,
+        }
+    }
+
+    pub fn source_context(mut self, value: BlockSourceContext) -> Self {
+        self.source_context = Some(value);
+        self
+    }
+
+    pub fn reason(mut self, value: BlockReason) -> Self {
+        self.reason = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<(), Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([USERS, BLOCKS]);
+
+        url.query_pairs_mut()
+            .append_pair(TARGET_USER_ID, self.target_user_id.as_ref());
+
+        if let Some(val) = self.source_context {
+            url.query_pairs_mut()
+                .append_pair(SOURCE_CONTEXT, val.as_ref());
+        }
+
+        if let Some(val) = self.reason {
+            url.query_pairs_mut().append_pair(REASON, val.as_ref());
+        }
+
+        let req = self.client.http_client().put(url);
+        self.client.no_content(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetUserActiveExtensionsBuilder<'a> {
+    client: &'a Client,
+    user_id: Option<&'a UserId>,
+}
+
+impl<'a> GetUserActiveExtensionsBuilder<'a> {
+    pub fn new(client: &'a Client) -> Self {
+        Self {
+            client,
+            user_id: None,
+        }
+    }
+
+    pub fn user_id(mut self, value: &'a UserId) -> Self {
+        self.user_id = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<UserActiveExtensionsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([USERS, EXTENSIONS]);
+
+        if let Some(val) = self.user_id {
+            url.query_pairs_mut().append_pair(USER_ID, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug)]
 pub struct UpdateUserExtensionsBuilder<'a> {
-    api: &'a Client,
+    client: &'a Client,
     data: UserActiveExtensions,
 }
 
 impl<'a> UpdateUserExtensionsBuilder<'a> {
-    pub fn new(api: &'a Client) -> Self {
+    pub fn new(client: &'a Client) -> Self {
         Self {
-            api,
+            client,
             data: UserActiveExtensions::new(),
         }
     }
@@ -98,30 +225,12 @@ impl<'a> UpdateUserExtensionsBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<UserActiveExtensionsResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<UserActiveExtensionsResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[USERS, EXTENSIONS]);
+        url.path_segments_mut().unwrap().extend([USERS, EXTENSIONS]);
 
-        let body = serde_json::to_string(&self.data).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateUserExtensions,
-            url,
-            reqwest::Method::PUT,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<UserActiveExtensionsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().put(url).json(&self.data);
+        self.client.json(req).await
     }
 }
