@@ -618,16 +618,12 @@ async fn mock_api_start_raid(api: &TwitchFixture) -> Result<()> {
     let to_user = BroadcasterId::from(random_user.id);
     api.api
         .start_raid(&api.selected_broadcaster_id(), &to_user)
-        .json()
         .await?;
     Ok(())
 }
 
 async fn mock_api_cancel_raid(api: &TwitchFixture) -> Result<()> {
-    api.api
-        .cancel_raid(&api.selected_broadcaster_id())
-        .json()
-        .await?;
+    api.api.cancel_raid(&api.selected_broadcaster_id()).await?;
     Ok(())
 }
 

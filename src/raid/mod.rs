@@ -4,13 +4,14 @@ mod types;
 pub use response::StartRaidResponse;
 pub use types::StartRaid;
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, FROM_BROADCASTER_ID, RAIDS, TO_BROADCASTER_ID},
         BroadcasterId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait RaidAPI {
@@ -34,12 +35,11 @@ pub trait RaidAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let from_broadcaster_id = BroadcasterId::from("1234");
     /// let to_broadcaster_id = BroadcasterId::from("5678");
     /// let response = api
     ///     .start_raid(&from_broadcaster_id, &to_broadcaster_id)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -57,17 +57,13 @@ pub trait RaidAPI {
         &self,
         from_broadcaster_id: &BroadcasterId,
         to_broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<StartRaidResponse>;
+    ) -> impl Future<Output = Result<StartRaidResponse, Error>> + Send;
 
     /// Cancel a pending raid
     ///
     /// # Arguments
     ///
     /// * `broadcaster_id` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -78,10 +74,9 @@ pub trait RaidAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .cancel_raid(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -95,25 +90,37 @@ pub trait RaidAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
-    fn cancel_raid(&self, broadcaster_id: &BroadcasterId) -> TwitchAPIRequest<NoContent>;
+    fn cancel_raid(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 }
 
 impl RaidAPI for Client {
-    simple_endpoint!(
-        fn start_raid(
-            from_broadcaster_id: &BroadcasterId [key = FROM_BROADCASTER_ID],
-            to_broadcaster_id: &BroadcasterId [key = TO_BROADCASTER_ID],
-        ) -> StartRaidResponse;
-            endpoint: Startraid,
-            method: POST,
-            path: [RAIDS],
-    );
-    simple_endpoint!(
-        fn cancel_raid(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        ) -> NoContent ;
-            endpoint: Cancelraid,
-            method: DELETE,
-            path: [RAIDS],
-    );
+    async fn start_raid(
+        &self,
+        from_broadcaster_id: &BroadcasterId,
+        to_broadcaster_id: &BroadcasterId,
+    ) -> Result<StartRaidResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(RAIDS);
+
+        url.query_pairs_mut()
+            .append_pair(FROM_BROADCASTER_ID, from_broadcaster_id)
+            .append_pair(TO_BROADCASTER_ID, to_broadcaster_id);
+
+        self.json(self.http_client().post(url)).await
+    }
+
+    async fn cancel_raid(&self, broadcaster_id: &BroadcasterId) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(RAIDS);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
 }
