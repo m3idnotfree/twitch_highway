@@ -9,16 +9,17 @@ pub use builder::{
 pub use response::{Schedule, ScheduleResponse};
 pub use types::{Segment, Vacation};
 
+use std::future::Future;
+
 use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, ICALENDAR, ID, SCHEDULE, SEGMENT},
         BroadcasterId, SegmentId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait ScheduleAPI {
@@ -41,10 +42,10 @@ pub trait ScheduleAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_stream_schedule(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -81,10 +82,9 @@ pub trait ScheduleAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_icalendar(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -98,7 +98,10 @@ pub trait ScheduleAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-channel-icalendar>
-    fn get_channel_icalendar(&self, broadcaster_id: &BroadcasterId) -> TwitchAPIRequest<String>;
+    fn get_channel_icalendar(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> impl Future<Output = Result<String, Error>> + Send;
 
     /// Updates the broadcaster’s schedule settings, such as scheduling a vacation.
     ///
@@ -119,10 +122,10 @@ pub trait ScheduleAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_channel_stream_schedule(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -165,7 +168,7 @@ pub trait ScheduleAPI {
     /// use chrono::{DateTime, Utc};
     /// use chrono_tz::America::New_York;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
@@ -173,7 +176,7 @@ pub trait ScheduleAPI {
     ///         New_York,
     ///         60
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -216,13 +219,13 @@ pub trait ScheduleAPI {
     ///     types::{BroadcasterId, SegmentId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
     ///         &SegmentId::from("5678")
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -249,10 +252,6 @@ pub trait ScheduleAPI {
     /// * `broadcaster_id` - The ID of the broadcaster that owns the streaming schedule.
     /// * `id` - The ID of the broadcast segment to remove.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -262,13 +261,12 @@ pub trait ScheduleAPI {
     ///     types::{BroadcasterId, SegmentId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .delete_channel_stream_schedule_segment(
     ///         &BroadcasterId::from("1234"),
     ///         &SegmentId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -286,7 +284,7 @@ pub trait ScheduleAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         id: &SegmentId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 }
 
 impl ScheduleAPI for Client {
@@ -296,20 +294,27 @@ impl ScheduleAPI for Client {
     ) -> GetChanelStreamScheduleBuilder<'a> {
         GetChanelStreamScheduleBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-        fn get_channel_icalendar(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID]
-        ) -> String;
-            endpoint: GetChanneliCalendar,
-            method: GET,
-            path: [SCHEDULE, ICALENDAR],
-    );
+
+    async fn get_channel_icalendar(&self, broadcaster_id: &BroadcasterId) -> Result<String, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([SCHEDULE, ICALENDAR]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.text(self.http_client().get(url)).await
+    }
+
     fn update_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> UpdateChannelStreamScheduleBuilder<'a> {
         UpdateChannelStreamScheduleBuilder::new(self, broadcaster_id)
     }
+
     fn create_channel_stream_schedule_segment<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -325,6 +330,7 @@ impl ScheduleAPI for Client {
             duration,
         )
     }
+
     fn update_channel_stream_schedule_segment<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -332,13 +338,20 @@ impl ScheduleAPI for Client {
     ) -> UpdateChannelStreamScheduleSegmentBulider<'a> {
         UpdateChannelStreamScheduleSegmentBulider::new(self, broadcaster_id, id)
     }
-    simple_endpoint!(
-        fn delete_channel_stream_schedule_segment(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            id: &SegmentId [key = ID]
-        ) -> NoContent;
-            endpoint: DeleteChannelStreamScheduleSegment,
-            method: DELETE,
-            path: [SCHEDULE, SEGMENT],
-    );
+
+    async fn delete_channel_stream_schedule_segment(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        id: &SegmentId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([SCHEDULE, SEGMENT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(ID, id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
 }

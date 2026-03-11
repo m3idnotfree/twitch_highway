@@ -4,7 +4,6 @@ use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     schedule::ScheduleResponse,
     types::{
         constants::{
@@ -13,49 +12,160 @@ use crate::{
         },
         BroadcasterId, CategoryId, SegmentId,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetChanelStreamScheduleBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            start_time: &'a DateTime<Utc> [key = START_TIME, convert = rfc3339_opt],
-            // Not supported
-            // utc_offset: &'a str,
-            ids: &'a [&'a SegmentId] [key = ID, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
-
-        }
-    } -> ScheduleResponse;
-        endpoint: GetChannelStreamSchedule,
-        method: GET,
-        path: [SCHEDULE],
+#[derive(Debug)]
+pub struct GetChanelStreamScheduleBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    start_time: Option<&'a DateTime<Utc>>,
+    ids: Option<&'a [&'a SegmentId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    UpdateChannelStreamScheduleBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            vacation_start_time: &'a DateTime<Utc> [key = VACATION_START_TIME, convert = rfc3339_opt],
-            vacation_end_time: &'a DateTime<Utc> [key = VACATION_END_TIME, convert = rfc3339_opt],
-            timezone: Tz [key = TIMEZONE, convert = timezone],
-            is_vacation_enabled: bool [key = IS_VACATION_ENABLED, convert = to_string]
+impl<'a> GetChanelStreamScheduleBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            start_time: None,
+            ids: None,
+            first: None,
+            after: None,
         }
-    } -> NoContent;
-    endpoint: UpdateChannelStreamSchedule,
-    method: PATCH,
-    path: [SCHEDULE, SETTINGS],
+    }
+
+    pub fn start_time(mut self, value: &'a DateTime<Utc>) -> Self {
+        self.start_time = Some(value);
+        self
+    }
+
+    pub fn ids(mut self, value: &'a [&'a SegmentId]) -> Self {
+        self.ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ScheduleResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().push(SCHEDULE);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(val) = self.start_time {
+            url.query_pairs_mut().append_pair(
+                START_TIME,
+                &val.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+            );
+        }
+        if let Some(ids) = self.ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct UpdateChannelStreamScheduleBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    vacation_start_time: Option<&'a DateTime<Utc>>,
+    vacation_end_time: Option<&'a DateTime<Utc>>,
+    timezone: Option<Tz>,
+    is_vacation_enabled: Option<bool>,
+}
+
+impl<'a> UpdateChannelStreamScheduleBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            vacation_start_time: None,
+            vacation_end_time: None,
+            timezone: None,
+            is_vacation_enabled: None,
+        }
+    }
+
+    pub fn vacation_start_time(mut self, value: &'a DateTime<Utc>) -> Self {
+        self.vacation_start_time = Some(value);
+        self
+    }
+
+    pub fn vacation_end_time(mut self, value: &'a DateTime<Utc>) -> Self {
+        self.vacation_end_time = Some(value);
+        self
+    }
+
+    pub fn timezone(mut self, value: Tz) -> Self {
+        self.timezone = Some(value);
+        self
+    }
+
+    pub fn is_vacation_enabled(mut self, value: bool) -> Self {
+        self.is_vacation_enabled = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<(), Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut()
+            .unwrap()
+            .extend([SCHEDULE, SETTINGS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(val) = self.vacation_start_time {
+            url.query_pairs_mut().append_pair(
+                VACATION_START_TIME,
+                &val.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+            );
+        }
+        if let Some(val) = self.vacation_end_time {
+            url.query_pairs_mut().append_pair(
+                VACATION_END_TIME,
+                &val.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
+            );
+        }
+        if let Some(val) = self.timezone {
+            url.query_pairs_mut().append_pair(TIMEZONE, val.name());
+        }
+        if let Some(val) = self.is_vacation_enabled {
+            url.query_pairs_mut()
+                .append_pair(IS_VACATION_ENABLED, &val.to_string());
+        }
+
+        let req = self.client.http_client().patch(url);
+        self.client.no_content(req).await
+    }
 }
 
 #[serde_as]
 #[derive(Debug, Serialize)]
 pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     start_time: String,
@@ -72,14 +182,14 @@ pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
 
 impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         start_time: &'a DateTime<Utc>,
         timezone: Tz,
         duration: u16,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             start_time: start_time.to_rfc3339_opts(chrono::SecondsFormat::Secs, true),
             timezone: timezone.name(),
@@ -90,41 +200,30 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
         }
     }
 
-    opt_method!(category_id, &'a CategoryId);
-    opt_method!(title, &'a str);
-    opt_method!(is_recurring, bool);
-
-    pub fn build(self) -> TwitchAPIRequest<ScheduleResponse> {
-        let mut url = self.api.base_url();
-
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[SCHEDULE, SEGMENT]);
-
-        let mut query = url.query_pairs_mut();
-
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-
-        let body = serde_json::to_string(&self).ok();
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::CreateChannelStreamScheduleSegment,
-            url,
-            reqwest::Method::POST,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
+    pub fn category_id(mut self, value: &'a CategoryId) -> Self {
+        self.category_id = Some(value);
+        self
     }
 
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
+    pub fn title(mut self, value: &'a str) -> Self {
+        self.title = Some(value);
+        self
     }
 
-    pub async fn json(self) -> Result<ScheduleResponse, crate::Error> {
-        self.build().json().await
+    pub fn is_recurring(mut self, value: bool) -> Self {
+        self.is_recurring = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ScheduleResponse, Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut().unwrap().extend([SCHEDULE, SEGMENT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+
+        let req = self.client.http_client().post(url).json(&self);
+        self.client.json(req).await
     }
 }
 
@@ -132,7 +231,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
 #[derive(Debug, Serialize)]
 pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -152,9 +251,9 @@ pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
 }
 
 impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
-    pub fn new(api: &'a Client, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             id,
             start_time: None,
@@ -166,44 +265,45 @@ impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
         }
     }
 
-    opt_method!(start_time, &'a str);
-    opt_method!(duration, u16);
-    opt_method!(category_id, &'a CategoryId);
-    opt_method!(title, &'a str);
-    opt_method!(timezone, Tz[timezone]);
-    opt_method!(is_canceled, bool);
-
-    pub fn build(self) -> TwitchAPIRequest<ScheduleResponse> {
-        let mut url = self.api.base_url();
-
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[SCHEDULE, SEGMENT]);
-
-        let mut query = url.query_pairs_mut();
-
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-        query.append_pair(ID, self.id);
-
-        let body = serde_json::to_string(&self).ok();
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateChannelStreamScheduleSegment,
-            url,
-            reqwest::Method::PATCH,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
+    pub fn start_time(mut self, value: &'a str) -> Self {
+        self.start_time = Some(value);
+        self
     }
 
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
+    pub fn duration(mut self, value: u16) -> Self {
+        self.duration = Some(value);
+        self
     }
 
-    pub async fn json(self) -> Result<ScheduleResponse, crate::Error> {
-        self.build().json().await
+    pub fn category_id(mut self, value: &'a CategoryId) -> Self {
+        self.category_id = Some(value);
+        self
+    }
+
+    pub fn title(mut self, value: &'a str) -> Self {
+        self.title = Some(value);
+        self
+    }
+
+    pub fn timezone(mut self, value: Tz) -> Self {
+        self.timezone = Some(value.name());
+        self
+    }
+
+    pub fn is_canceled(mut self, value: bool) -> Self {
+        self.is_canceled = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ScheduleResponse, Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut().unwrap().extend([SCHEDULE, SEGMENT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(ID, self.id);
+
+        let req = self.client.http_client().patch(url).json(&self);
+        self.client.json(req).await
     }
 }
