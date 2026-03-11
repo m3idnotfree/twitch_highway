@@ -532,7 +532,6 @@ async fn mock_api_get_clips(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_creator_goals(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_creator_goals(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
