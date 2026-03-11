@@ -6,10 +6,14 @@ pub use builder::GetCharityCampaignDonationBuilder;
 pub use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 pub use types::{CharityCampaign, CharityCampaignDonation};
 
+use std::future::Future;
+
 use crate::{
-    request::TwitchAPIRequest,
-    types::{constants::CHARITY, BroadcasterId},
-    Client,
+    types::{
+        constants::{BROADCASTER_ID, CHARITY},
+        BroadcasterId,
+    },
+    Client, Error,
 };
 
 pub trait CharityAPI {
@@ -32,10 +36,9 @@ pub trait CharityAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_charity_campaign(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -52,7 +55,7 @@ pub trait CharityAPI {
     fn get_charity_campaign(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<CharityCampaignResponse>;
+    ) -> impl Future<Output = Result<CharityCampaignResponse, Error>> + Send;
 
     /// Gets the list of donations that users have made to the broadcaster’s active charity campaign
     ///
@@ -73,10 +76,10 @@ pub trait CharityAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_charity_campaign_donations(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -97,14 +100,22 @@ pub trait CharityAPI {
 }
 
 impl CharityAPI for Client {
-    simple_endpoint!(
-        fn get_charity_campaign(
-            broadcaster_id: &BroadcasterId,
-        ) -> CharityCampaignResponse;
-            endpoint: GetCharityCampaign,
-            method: GET,
-            path: [CHARITY, "campaigns"],
-    );
+    async fn get_charity_campaign(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> Result<CharityCampaignResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHARITY, "campaigns"]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
     fn get_charity_campaign_donations<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

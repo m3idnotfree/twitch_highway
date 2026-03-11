@@ -375,7 +375,6 @@ async fn mock_api_get_channel_followers(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_charity_campaign(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_charity_campaign(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
@@ -383,7 +382,7 @@ async fn mock_api_get_charity_campaign(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_charity_campaign_donations(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_charity_campaign_donations(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
 
     Ok(())
