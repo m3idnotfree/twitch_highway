@@ -2,32 +2,66 @@ use serde::Serialize;
 
 use crate::{
     conduits::{GetConduitShardsResponse, UpdateConduitShardsResponse},
-    request::TwitchAPIRequest,
     types::{
         constants::{AFTER, CONDUITS, CONDUIT_ID, EVENTSUB, SHARDS, STATUS},
         ConduitId, SessionId, ShardId, Status,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetConduitShardsBuilder<'a> {
-        req: {conduit_id: &'a ConduitId [key = CONDUIT_ID]},
-        opts: {
-            status: Status [key = STATUS, convert = as_ref],
-            after: &'a str [key = AFTER]
+#[derive(Debug)]
+pub struct GetConduitShardsBuilder<'a> {
+    client: &'a Client,
+    conduit_id: &'a ConduitId,
+    status: Option<Status>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetConduitShardsBuilder<'a> {
+    pub fn new(client: &'a Client, conduit_id: &'a ConduitId) -> Self {
+        Self {
+            client,
+            conduit_id,
+            status: None,
+            after: None,
+        }
     }
-    } -> GetConduitShardsResponse;
-    endpoint: GetConduitShards,
-    method: GET,
-    path: [EVENTSUB, CONDUITS, SHARDS],
+
+    pub fn status(mut self, value: Status) -> Self {
+        self.status = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<GetConduitShardsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EVENTSUB, CONDUITS, SHARDS]);
+
+        url.query_pairs_mut()
+            .append_pair(CONDUIT_ID, self.conduit_id);
+        if let Some(val) = self.status {
+            url.query_pairs_mut().append_pair(STATUS, val.as_ref());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Serialize)]
 pub struct UpdateConduitShardsBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     conduit_id: ConduitId,
     shards: Vec<ShardUpdate>,
 }
@@ -35,7 +69,7 @@ pub struct UpdateConduitShardsBuilder<'a> {
 impl<'a> UpdateConduitShardsBuilder<'a> {
     pub fn new(api: &'a Client, conduit_id: ConduitId) -> Self {
         Self {
-            api,
+            client: api,
             conduit_id,
             shards: Vec::new(),
         }
@@ -57,31 +91,15 @@ impl<'a> UpdateConduitShardsBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<UpdateConduitShardsResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<UpdateConduitShardsResponse, Error> {
+        let mut url = self.client.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[EVENTSUB, CONDUITS, SHARDS]);
+            .extend([EVENTSUB, CONDUITS, SHARDS]);
 
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateConduitShards,
-            url,
-            reqwest::Method::PATCH,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<UpdateConduitShardsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().patch(url).json(&self);
+        self.client.json(req).await
     }
 }
 
