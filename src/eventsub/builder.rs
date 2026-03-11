@@ -6,34 +6,93 @@ use crate::{
     eventsub::{
         Condition, CreateEventSubscriptionsResponse, EventSubscriptionsResponse, SubscriptionType,
     },
-    request::TwitchAPIRequest,
     types::{
         constants::{AFTER, EVENTSUB, STATUS, SUBSCRIPTIONS, SUBSCRIPTION_ID, TYPE, USER_ID},
         BroadcasterId, CampaignId, CategoryId, ConduitId, ExtensionClientId, ModeratorId,
         OrganizationId, RewardId, SessionId, Status, SubscriptionId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetEventSubBuilder<'a> {
-        status: &'a Status [key = STATUS, convert = as_ref],
-        kind: &'a SubscriptionType [key = TYPE, convert = as_ref],
-        user_id: &'a UserId [key = USER_ID],
-        subscription_id: &'a SubscriptionId [key = SUBSCRIPTION_ID],
-        after: &'a str [key = AFTER],
-    } -> EventSubscriptionsResponse;
-    endpoint: GetEventSub,
-    method: GET,
-    path: [EVENTSUB, SUBSCRIPTIONS],
+#[derive(Debug)]
+pub struct GetEventSubBuilder<'a> {
+    client: &'a Client,
+    status: Option<&'a Status>,
+    kind: Option<&'a SubscriptionType>,
+    user_id: Option<&'a UserId>,
+    subscription_id: Option<&'a SubscriptionId>,
+    after: Option<&'a str>,
+}
 
+impl<'a> GetEventSubBuilder<'a> {
+    pub fn new(client: &'a Client) -> Self {
+        Self {
+            client,
+            status: None,
+            kind: None,
+            user_id: None,
+            subscription_id: None,
+            after: None,
+        }
+    }
+
+    pub fn status(mut self, value: &'a Status) -> Self {
+        self.status = Some(value);
+        self
+    }
+
+    pub fn kind(mut self, value: &'a SubscriptionType) -> Self {
+        self.kind = Some(value);
+        self
+    }
+
+    pub fn user_id(mut self, value: &'a UserId) -> Self {
+        self.user_id = Some(value);
+        self
+    }
+
+    pub fn subscription_id(mut self, value: &'a SubscriptionId) -> Self {
+        self.subscription_id = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<EventSubscriptionsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([EVENTSUB, SUBSCRIPTIONS]);
+
+        if let Some(val) = self.status {
+            url.query_pairs_mut().append_pair(STATUS, val.as_ref());
+        }
+        if let Some(val) = self.kind {
+            url.query_pairs_mut().append_pair(TYPE, val.as_ref());
+        }
+        if let Some(val) = self.user_id {
+            url.query_pairs_mut().append_pair(USER_ID, val);
+        }
+        if let Some(val) = self.subscription_id {
+            url.query_pairs_mut().append_pair(SUBSCRIPTION_ID, val);
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Clone, Serialize)]
 pub struct CreateEventSubBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(rename = "type")]
     kind: SubscriptionType,
     version: String,
@@ -42,10 +101,15 @@ pub struct CreateEventSubBuilder<'a> {
 }
 
 impl<'a> CreateEventSubBuilder<'a> {
-    pub fn webhook(api: &'a Client, kind: SubscriptionType, callback: Url, secret: String) -> Self {
+    pub fn webhook(
+        client: &'a Client,
+        kind: SubscriptionType,
+        callback: Url,
+        secret: String,
+    ) -> Self {
         let version = kind.version().to_string();
         Self {
-            api,
+            client,
             kind,
             version,
             condition: Condition::default(),
@@ -56,7 +120,7 @@ impl<'a> CreateEventSubBuilder<'a> {
     pub fn websocket(api: &'a Client, kind: SubscriptionType, session_id: SessionId) -> Self {
         let version = kind.version().to_string();
         Self {
-            api,
+            client: api,
             version,
             kind,
             condition: Condition::default(),
@@ -67,7 +131,7 @@ impl<'a> CreateEventSubBuilder<'a> {
     pub fn conduit(api: &'a Client, kind: SubscriptionType, conduit_id: ConduitId) -> Self {
         let version = kind.version().to_string();
         Self {
-            api,
+            client: api,
             kind,
             version,
             condition: Condition::default(),
@@ -79,80 +143,76 @@ impl<'a> CreateEventSubBuilder<'a> {
         self.condition = self.condition.broadcaster_user_id(value);
         self
     }
+
     pub fn moderator_user_id(mut self, value: ModeratorId) -> Self {
         self.condition = self.condition.moderator_user_id(value);
         self
     }
+
     pub fn broadcaster_id(mut self, value: BroadcasterId) -> Self {
         self.condition = self.condition.broadcaster_id(value);
         self
     }
+
     pub fn user_id(mut self, value: UserId) -> Self {
         self.condition = self.condition.user_id(value);
         self
     }
+
     pub fn client_id(mut self, value: ClientId) -> Self {
         self.condition = self.condition.client_id(value);
         self
     }
+
     pub fn from_broadcaster_user_id(mut self, value: BroadcasterId) -> Self {
         self.condition = self.condition.from_broadcaster_user_id(value);
         self
     }
+
     pub fn to_broadcaster_user_id(mut self, value: BroadcasterId) -> Self {
         self.condition = self.condition.to_broadcaster_user_id(value);
         self
     }
+
     pub fn reward_id(mut self, value: RewardId) -> Self {
         self.condition = self.condition.reward_id(value);
         self
     }
+
     pub fn conduit_id(mut self, value: ConduitId) -> Self {
         self.condition = self.condition.conduit_id(value);
         self
     }
+
     pub fn organization_id(mut self, value: OrganizationId) -> Self {
         self.condition = self.condition.organization_id(value);
         self
     }
+
     pub fn category_id(mut self, value: CategoryId) -> Self {
         self.condition = self.condition.category_id(value);
         self
     }
+
     pub fn campaign_id(mut self, value: CampaignId) -> Self {
         self.condition = self.condition.campaign_id(value);
         self
     }
+
     pub fn extension_client_id(mut self, value: ExtensionClientId) -> Self {
         self.condition = self.condition.extension_client_id(value);
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<CreateEventSubscriptionsResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<CreateEventSubscriptionsResponse, Error> {
+        let mut url = self.client.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[EVENTSUB, SUBSCRIPTIONS]);
+            .extend([EVENTSUB, SUBSCRIPTIONS]);
 
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::CreateEventSub,
-            url,
-            reqwest::Method::POST,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<CreateEventSubscriptionsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().post(url).json(&self);
+        self.client.json(req).await
     }
 }
 

@@ -176,7 +176,7 @@ async fn on_welcome(Session(session): Session, State(state): State<AppState>) {
         .websocket_subscription(SubscriptionType::ChannelChatMessage, session.id.clone())
         .broadcaster_user_id(user_info.user_id.to_broadcaster_id())
         .user_id(user_info.user_id.clone())
-        .json()
+        .send()
         .await
     {
         Ok(resp) => {

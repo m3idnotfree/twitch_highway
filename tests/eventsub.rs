@@ -1,46 +1,92 @@
 #[macro_use]
 mod common;
 
+use common::HttpMock;
 use twitch_highway::{
     eventsub::{EventSubAPI, SubscriptionType},
     types::{ConduitId, SessionId, SubscriptionId, UserId},
 };
 use url::Url;
 
-api_test!(
-    create_eventsub | api | {
-        api.webhook_subscription(
+#[tokio::test]
+async fn create_eventsub() {
+    let suite = HttpMock::new().await;
+    suite.create_eventsub().await;
+
+    let result = suite
+        .api()
+        .webhook_subscription(
             SubscriptionType::UserUpdate,
             Url::parse("https://this-is-a-callback.com").unwrap(),
             "s3cre7",
         )
         .user_id(UserId::from("1234"))
-    }
-);
+        .send()
+        .await;
 
-api_test!(delete_eventsub[&SubscriptionId::from("26b1c993-bfcf-44d9-b876-379dacafe75a")]);
+    assert!(result.is_ok());
+}
 
-api_test!(get_eventsub | api | { api.get_eventsub() });
+#[tokio::test]
+async fn delete_eventsub() {
+    let suite = HttpMock::new().await;
+    suite.delete_eventsub().await;
 
-api_test!(
-    create_eventsub as create_eventsub2 | api | {
-        api.websocket_subscription(
+    let result = suite
+        .api()
+        .delete_eventsub(&SubscriptionId::from(
+            "26b1c993-bfcf-44d9-b876-379dacafe75a",
+        ))
+        .await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn get_eventsub() {
+    let suite = HttpMock::new().await;
+    suite.get_eventsub().await;
+
+    let result = suite.api().get_eventsub().send().await;
+
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn create_eventsub2() {
+    let suite = HttpMock::new().await;
+    suite.create_eventsub2().await;
+
+    let result = suite
+        .api()
+        .websocket_subscription(
             SubscriptionType::UserUpdate,
             SessionId::from("AQoQexAWVYKSTIu4ec_2VAxyuhAB"),
         )
         .user_id(UserId::from("1234"))
-    }
-);
+        .send()
+        .await;
 
-api_test!(
-    create_eventsub as create_eventsub3 | api | {
-        api.conduit_subscription(
+    assert!(result.is_ok());
+}
+
+#[tokio::test]
+async fn create_eventsub3() {
+    let suite = HttpMock::new().await;
+    suite.create_eventsub3().await;
+
+    let result = suite
+        .api()
+        .conduit_subscription(
             SubscriptionType::UserUpdate,
             ConduitId::from("bfcfc993-26b1-b876-44d9-afe75a379dac"),
         )
         .user_id(UserId::from("1234"))
-    }
-);
+        .send()
+        .await;
+
+    assert!(result.is_ok());
+}
 
 #[cfg(test)]
 #[cfg(any(feature = "webhook-actix", feature = "webhook-axum"))]

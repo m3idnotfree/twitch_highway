@@ -23,15 +23,17 @@ pub use subscription_types::SubscriptionType;
 
 #[allow(unused_imports)]
 pub(crate) use resolve_subscription_type;
+
+use std::future::Future;
+
 use url::Url;
 
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{EVENTSUB, ID, SUBSCRIPTIONS},
         ConduitId, SessionId, SubscriptionId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait EventSubAPI {
@@ -57,7 +59,7 @@ pub trait EventSubAPI {
     /// };
     /// use url::Url;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .webhook_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -66,7 +68,7 @@ pub trait EventSubAPI {
     ///     )
     ///     .broadcaster_user_id(BroadcasterId::from("1234"))
     ///     .moderator_user_id(ModeratorId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -107,7 +109,7 @@ pub trait EventSubAPI {
     ///     types::{BroadcasterId, ModeratorId, SessionId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .websocket_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -115,7 +117,7 @@ pub trait EventSubAPI {
     ///     )
     ///     .broadcaster_user_id(BroadcasterId::from("1234"))
     ///     .moderator_user_id(ModeratorId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -155,7 +157,7 @@ pub trait EventSubAPI {
     ///     types::{BroadcasterId, ConduitId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .conduit_subscription(
     ///         SubscriptionType::ChannelFollow,
@@ -163,7 +165,7 @@ pub trait EventSubAPI {
     ///     )
     ///     .broadcaster_user_id(BroadcasterId::from("1234"))
     ///     .moderator_user_id(ModeratorId::from("5678"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -189,10 +191,6 @@ pub trait EventSubAPI {
     ///
     /// * `subscription_id` - The ID of the subscription to delete.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -202,11 +200,10 @@ pub trait EventSubAPI {
     ///     types::SubscriptionId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let subscription_id = SubscriptionId::from("1234");
     /// let response = api
     ///     .delete_eventsub(&subscription_id)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -220,7 +217,10 @@ pub trait EventSubAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription>
-    fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> TwitchAPIRequest<NoContent>;
+    fn delete_eventsub(
+        &self,
+        subscription_id: &SubscriptionId,
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of EventSub subscriptions that the client in the access token created
     ///
@@ -234,10 +234,10 @@ pub trait EventSubAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::eventsub::EventSubAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_eventsub()
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -263,6 +263,7 @@ impl EventSubAPI for Client {
     ) -> CreateEventSubBuilder<'a> {
         CreateEventSubBuilder::webhook(self, kind, callback, secret.into())
     }
+
     fn websocket_subscription<'a>(
         &'a self,
         kind: SubscriptionType,
@@ -270,6 +271,7 @@ impl EventSubAPI for Client {
     ) -> CreateEventSubBuilder<'a> {
         CreateEventSubBuilder::websocket(self, kind, session_id)
     }
+
     fn conduit_subscription<'a>(
         &'a self,
         kind: SubscriptionType,
@@ -277,28 +279,19 @@ impl EventSubAPI for Client {
     ) -> CreateEventSubBuilder<'a> {
         CreateEventSubBuilder::conduit(self, kind, conduit_id)
     }
-    fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> TwitchAPIRequest<NoContent> {
+
+    async fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> Result<(), Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut()
             .unwrap()
             .extend(&[EVENTSUB, SUBSCRIPTIONS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut().append_pair(ID, subscription_id);
 
-        query.append_pair(ID, subscription_id);
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::DeleteEventSub,
-            url,
-            reqwest::Method::DELETE,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.no_content(self.http_client().delete(url)).await
     }
+
     fn get_eventsub<'a>(&'a self) -> GetEventSubBuilder<'a> {
         GetEventSubBuilder::new(self)
     }
