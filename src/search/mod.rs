@@ -25,10 +25,10 @@ pub trait SearchAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::search::SearchAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .search_categories("%23archery")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -60,10 +60,10 @@ pub trait SearchAPI {
     /// # use twitch_highway::Client;
     /// use twitch_highway::search::SearchAPI;
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .search_channels("%20death")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -84,6 +84,7 @@ impl SearchAPI for Client {
     fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a> {
         SearchCategoriesBuilder::new(self, query)
     }
+
     fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a> {
         SearchChannelsBuilder::new(self, query)
     }

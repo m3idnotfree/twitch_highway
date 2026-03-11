@@ -632,12 +632,12 @@ async fn mock_api_cancel_raid(api: &TwitchFixture) -> Result<()> {
 }
 
 async fn mock_api_search_categories(api: &TwitchFixture) -> Result<()> {
-    api.api.search_categories("ff").json().await?;
+    api.api.search_categories("ff").send().await?;
     Ok(())
 }
 
 async fn mock_api_search_channels(api: &TwitchFixture) -> Result<()> {
-    api.api.search_channels("ff").json().await?;
+    api.api.search_channels("ff").send().await?;
     Ok(())
 }
 
