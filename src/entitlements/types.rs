@@ -46,11 +46,8 @@ impl FulfillmentStatus {
 }
 
 impl From<FulfillmentStatus> for String {
-    fn from(status: FulfillmentStatus) -> Self {
-        match status {
-            FulfillmentStatus::CLAIMED => "CLAIMED".to_string(),
-            FulfillmentStatus::FULFILLED => "FULFILLED".to_string(),
-        }
+    fn from(value: FulfillmentStatus) -> Self {
+        value.as_str().to_string()
     }
 }
 
