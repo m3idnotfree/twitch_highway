@@ -558,7 +558,7 @@ async fn mock_api_get_creator_goals(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_polls(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_polls(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -571,7 +571,7 @@ async fn mock_api_create_poll(api: &TwitchFixture) -> Result<()> {
             &[Title::new("Heads"), Title::new("Tails")],
             30,
         )
-        .json()
+        .send()
         .await?;
     Ok(())
 }

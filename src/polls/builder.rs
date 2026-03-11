@@ -2,31 +2,72 @@ use serde::Serialize;
 
 use crate::{
     polls::PollsResponse,
-    request::TwitchAPIRequest,
     types::constants::{AFTER, BROADCASTER_ID, FIRST, ID, POLLS},
     types::{BroadcasterId, PollId, Title},
-    Client,
+    Client, Error,
 };
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetPollsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            ids: &'a [PollId] [key = ID, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
+#[derive(Debug)]
+pub struct GetPollsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    ids: Option<&'a [PollId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetPollsBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            ids: None,
+            first: None,
+            after: None,
         }
-    } -> PollsResponse;
-    endpoint: GetPolls,
-    method: GET,
-    path: [POLLS],
+    }
+
+    pub fn ids(mut self, value: &'a [PollId]) -> Self {
+        self.ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<PollsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().push(POLLS);
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(ids) = self.ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Serialize)]
 pub struct CreatePollBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     title: &'a str,
     choices: &'a [Title],
@@ -41,14 +82,14 @@ pub struct CreatePollBuilder<'a> {
 
 impl<'a> CreatePollBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         title: &'a str,
         choices: &'a [Title],
         duration: u16,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             title,
             choices,
@@ -67,28 +108,12 @@ impl<'a> CreatePollBuilder<'a> {
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<PollsResponse> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<PollsResponse, Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[POLLS]);
+        url.path_segments_mut().unwrap().push(POLLS);
 
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::CreatePoll,
-            url,
-            reqwest::Method::POST,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<PollsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().post(url).json(&self);
+        self.client.json(req).await
     }
 }

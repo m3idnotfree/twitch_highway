@@ -6,12 +6,13 @@ pub use builder::{CreatePollBuilder, GetPollsBuilder};
 pub use response::PollsResponse;
 pub use types::{EndPollStatus, Poll, PollStatus};
 
+use std::future::Future;
+
 use types::EndPollBody;
 
 use crate::{
-    request::TwitchAPIRequest,
     types::{constants::POLLS, BroadcasterId, PollId, Title},
-    Client,
+    Client, Error,
 };
 
 pub trait PollsAPI {
@@ -34,10 +35,10 @@ pub trait PollsAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_polls(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -75,7 +76,7 @@ pub trait PollsAPI {
     ///     types::{BroadcasterId, Title}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_poll(
     ///         &BroadcasterId::from("1234"),
@@ -83,7 +84,7 @@ pub trait PollsAPI {
     ///         &[Title::new("title_1"), Title::new("title_2")],
     ///         300
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -126,14 +127,13 @@ pub trait PollsAPI {
     ///     types::{BroadcasterId, PollId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .end_poll(
     ///         &BroadcasterId::from("1234"),
     ///         &PollId::from("5678"),
     ///         EndPollStatus::TERMINATED,
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -152,13 +152,14 @@ pub trait PollsAPI {
         broadcaster_id: &BroadcasterId,
         id: &PollId,
         status: EndPollStatus,
-    ) -> TwitchAPIRequest<PollsResponse>;
+    ) -> impl Future<Output = Result<PollsResponse, Error>> + Send;
 }
 
 impl PollsAPI for Client {
     fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPollsBuilder<'a> {
         GetPollsBuilder::new(self, broadcaster_id)
     }
+
     fn create_poll<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -168,30 +169,22 @@ impl PollsAPI for Client {
     ) -> CreatePollBuilder<'a> {
         CreatePollBuilder::new(self, broadcaster_id, title, choices, duration)
     }
-    fn end_poll(
+
+    async fn end_poll(
         &self,
         broadcaster_id: &BroadcasterId,
         id: &PollId,
         status: EndPollStatus,
-    ) -> TwitchAPIRequest<PollsResponse> {
+    ) -> Result<PollsResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[POLLS]);
+        url.path_segments_mut().unwrap().push(POLLS);
 
-        let body = serde_json::to_string(&EndPollBody {
+        let req = self.http_client().patch(url).json(&EndPollBody {
             broadcaster_id,
             id,
             status,
-        })
-        .ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::EndPoll,
-            url,
-            reqwest::Method::PATCH,
-            self.header_json(),
-            body,
-            self.http_client().clone(),
-        )
+        });
+        self.json(req).await
     }
 }
