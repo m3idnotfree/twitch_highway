@@ -37,7 +37,7 @@
 //!     )
 //!     .duration(600) // Optional
 //!     .reason("no reason") // Optional: 10 minues
-//!     .json()
+//!     .send()
 //!     .await?;
 //!
 //! println!("User banned successfully");

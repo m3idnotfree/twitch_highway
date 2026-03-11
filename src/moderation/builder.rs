@@ -5,21 +5,21 @@ use crate::{
         AutoModSettingsResponse, BanUsersResponse, BlockedTermsResponse, GetBannedUsersResponse,
         ModeratedChannelResponse, ModeratorsResponse, UnbanRequestResponse, UnbanRequestStatus,
     },
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
             AFTER, AUTOMOD, BANNED, BANS, BEFORE, BLOCKED_TERMS, BROADCASTER_ID, CHANNELS, CHAT,
-            FIRST, MODERATION, MODERATORS, MODERATOR_ID, SETTINGS, UNBAN_REQUESTS, USER_ID, VIPS,
+            FIRST, MODERATION, MODERATORS, MODERATOR_ID, SETTINGS, STATUS, UNBAN_REQUESTS, USER_ID,
+            VIPS,
         },
         BroadcasterId, ModeratorId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 #[derive(Debug, Serialize)]
 pub struct UpdateAutomodSettingsBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -47,12 +47,12 @@ pub struct UpdateAutomodSettingsBuilder<'a> {
 
 impl<'a> UpdateAutomodSettingsBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             moderator_id,
             aggression: None,
@@ -66,71 +66,143 @@ impl<'a> UpdateAutomodSettingsBuilder<'a> {
             swearing: None,
         }
     }
-    opt_method!(aggression, u64);
-    opt_method!(bullying, u64);
-    opt_method!(disability, u64);
-    opt_method!(misogyny, u64);
-    opt_method!(overall_level, u64);
-    opt_method!(race_ethnicity_or_religion, u64);
-    opt_method!(sex_based_terms, u64);
-    opt_method!(sexuality_sex_or_gender, u64);
-    opt_method!(swearing, u64);
 
-    pub fn build(self) -> TwitchAPIRequest<AutoModSettingsResponse> {
-        let mut url = self.api.base_url();
+    pub fn aggression(mut self, value: u64) -> Self {
+        self.aggression = Some(value);
+        self
+    }
+
+    pub fn bullying(mut self, value: u64) -> Self {
+        self.bullying = Some(value);
+        self
+    }
+
+    pub fn disability(mut self, value: u64) -> Self {
+        self.disability = Some(value);
+        self
+    }
+
+    pub fn misogyny(mut self, value: u64) -> Self {
+        self.misogyny = Some(value);
+        self
+    }
+
+    pub fn overall_level(mut self, value: u64) -> Self {
+        self.overall_level = Some(value);
+        self
+    }
+
+    pub fn race_ethnicity_or_religion(mut self, value: u64) -> Self {
+        self.race_ethnicity_or_religion = Some(value);
+        self
+    }
+
+    pub fn sex_based_terms(mut self, value: u64) -> Self {
+        self.sex_based_terms = Some(value);
+        self
+    }
+
+    pub fn sexuality_sex_or_gender(mut self, value: u64) -> Self {
+        self.sexuality_sex_or_gender = Some(value);
+        self
+    }
+
+    pub fn swearing(mut self, value: u64) -> Self {
+        self.swearing = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<AutoModSettingsResponse, Error> {
+        let mut url = self.client.base_url();
 
         url.path_segments_mut()
             .unwrap()
-            .extend(&[MODERATION, AUTOMOD, SETTINGS]);
+            .extend([MODERATION, AUTOMOD, SETTINGS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
 
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-        query.append_pair(MODERATOR_ID, self.moderator_id);
-
-        let body = serde_json::to_string(&self).ok();
-
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::UpdateAutoModSettings,
-            url,
-            reqwest::Method::PUT,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<AutoModSettingsResponse, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().put(url).json(&self);
+        self.client.json(req).await
     }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetBannedUsersBuilder<'a> {
-        req: {broadcaster_id:&'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            user_ids: &'a [UserId] [key = USER_ID, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
-            before: &'a str[key = BEFORE],
+#[derive(Debug)]
+
+pub struct GetBannedUsersBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    user_ids: Option<&'a [UserId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+    before: Option<&'a str>,
+}
+
+impl<'a> GetBannedUsersBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            user_ids: None,
+            first: None,
+            after: None,
+            before: None,
         }
-    } -> GetBannedUsersResponse;
-    endpoint: GetBannedUsers,
-    method: GET,
-    path: [MODERATION, BANNED],
+    }
+
+    pub fn user_ids(mut self, value: &'a [UserId]) -> Self {
+        self.user_ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub fn before(mut self, value: &'a str) -> Self {
+        self.before = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<GetBannedUsersResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, BANNED]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(ids) = self.user_ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (USER_ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+        if let Some(val) = self.before {
+            url.query_pairs_mut().append_pair(BEFORE, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
 #[derive(Debug, Serialize)]
 pub struct BanUserBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
     #[serde(skip)]
@@ -145,13 +217,13 @@ pub struct BanUserBuilder<'a> {
 
 impl<'a> BanUserBuilder<'a> {
     pub fn new(
-        api: &'a Client,
+        client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         user_id: &'a UserId,
     ) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             moderator_id,
             user_id,
@@ -160,12 +232,19 @@ impl<'a> BanUserBuilder<'a> {
         }
     }
 
-    opt_method!(duration, u64);
-    opt_method!(reason, &'a str);
+    pub fn duration(mut self, value: u64) -> Self {
+        self.duration = Some(value);
+        self
+    }
 
-    pub fn build(self) -> TwitchAPIRequest<BanUsersResponse> {
+    pub fn reason(mut self, value: &'a str) -> Self {
+        self.reason = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<BanUsersResponse, Error> {
         let Self {
-            api,
+            client,
             broadcaster_id,
             moderator_id,
             user_id,
@@ -173,41 +252,25 @@ impl<'a> BanUserBuilder<'a> {
             reason,
         } = self;
 
-        let mut url = api.base_url();
-        url.path_segments_mut().unwrap().extend(&[MODERATION, BANS]);
+        let mut url = client.base_url();
+        url.path_segments_mut().unwrap().extend([MODERATION, BANS]);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
 
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
-        query.append_pair(MODERATOR_ID, moderator_id);
-
-        drop(query);
-
-        let body = serde_json::to_string(&BanUserRequestBody {
-            data: BanUserData {
-                user_id,
-                duration,
-                reason,
-            },
-        })
-        .ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::BanUsers,
-            url,
-            reqwest::Method::POST,
-            api.header_json(),
-            body,
-            api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<BanUsersResponse, crate::Error> {
-        self.build().json().await
+        let req = self
+            .client
+            .http_client()
+            .post(url)
+            .json(&BanUserRequestBody {
+                data: BanUserData {
+                    user_id,
+                    duration,
+                    reason,
+                },
+            });
+        client.json(req).await
     }
 }
 
@@ -225,114 +288,389 @@ struct BanUserData<'a> {
     reason: Option<&'a str>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetUnbanRequestsBuilder<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID],
-            moderator_id: &'a ModeratorId [key = MODERATOR_ID],
-            status: UnbanRequestStatus [convert = as_ref],
-        },
-        opts: {
-            user_id: &'a UserId [key = USER_ID],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
+#[derive(Debug)]
+pub struct GetUnbanRequestsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: &'a ModeratorId,
+    status: UnbanRequestStatus,
+    user_id: Option<&'a UserId>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetUnbanRequestsBuilder<'a> {
+    pub fn new(
+        client: &'a Client,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+        status: UnbanRequestStatus,
+    ) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id,
+            status,
+            user_id: None,
+            first: None,
+            after: None,
         }
-    } -> UnbanRequestResponse;
-    endpoint: GetUnbanRequests,
-    method: GET,
-    path: [MODERATION, UNBAN_REQUESTS],
-}
-
-define_request_builder! {
-    #[derive(Debug)]
-    ResolveUnbanRequestBuilder<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID],
-            moderator_id: &'a ModeratorId [key = MODERATOR_ID],
-            unban_request_id: &'a str [key = "unban_request_id"],
-            status: UnbanRequestStatus [key = "status", convert = as_ref],
-        },
-        opts: {
-            resolution_text: &'a str,
-        }
-    } -> UnbanRequestResponse;
-    endpoint: ResolveUnbanRequests,
-    method: PATCH,
-    path: [MODERATION, "unban_requests"],
-}
-
-define_request_builder! {
-    #[derive(Debug)]
-    GetBlockedTermsBuilder<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId,
-            moderator_id: &'a ModeratorId,
-        },
-        opts: {
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
-        }
-    } -> BlockedTermsResponse;
-    endpoint: GetBlockedTerms,
-    method: GET,
-    path: [MODERATION, BLOCKED_TERMS],
-}
-
-define_request_builder! {
-    #[derive(Debug)]
-    DeleteChatMessagesBuilder<'a> {
-        req: {
-            broadcaster_id: &'a BroadcasterId,
-            moderator_id: &'a ModeratorId,
-        },
-        opts: {message_id: &'a str}
-    } -> NoContent;
-    endpoint: DeleteChatMessages,
-    method: DELETE,
-    path: [MODERATION, CHAT],
-}
-
-define_request_builder! {
-    #[derive(Debug)]
-    GetModeratedChannelsBuilder<'a> {
-        req: {user_id: &'a UserId},
-        opts: {
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
     }
-    } -> ModeratedChannelResponse;
-        endpoint: GetModeratedChannels,
-        method: GET,
-        path: [MODERATION, CHANNELS],
+
+    pub fn user_id(mut self, value: &'a UserId) -> Self {
+        self.user_id = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<UnbanRequestResponse, Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, UNBAN_REQUESTS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id)
+            .append_pair(STATUS, self.status.as_ref());
+        if let Some(val) = self.user_id {
+            url.query_pairs_mut().append_pair(USER_ID, val);
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetModeratorsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId},
-        opts: {
-            user_ids: &'a [UserId] [convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
-        }
-    } -> ModeratorsResponse;
-    endpoint: GetModerators,
-    method: GET,
-    path: [MODERATION, MODERATORS],
+#[derive(Debug)]
+pub struct ResolveUnbanRequestBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: &'a ModeratorId,
+    unban_request_id: &'a str,
+    status: UnbanRequestStatus,
+    resolution_text: Option<&'a str>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetVipsBuilder<'a> {
-        req: {broadcaster_id: &'a BroadcasterId},
-        opts: {
-            user_ids: &'a [UserId] [key = USER_ID, convert = extend],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER],
+impl<'a> ResolveUnbanRequestBuilder<'a> {
+    pub fn new(
+        client: &'a Client,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+        unban_request_id: &'a str,
+        status: UnbanRequestStatus,
+    ) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id,
+            unban_request_id,
+            status,
+            resolution_text: None,
         }
-    } -> ModeratorsResponse;
-            endpoint: GetVIPs,
-            method: GET,
-            path: [CHANNELS, VIPS],
+    }
+
+    pub fn resolution_text(mut self, value: &'a str) -> Self {
+        self.resolution_text = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<UnbanRequestResponse, Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, UNBAN_REQUESTS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id)
+            .append_pair("unban_request_id", self.unban_request_id)
+            .append_pair(STATUS, self.status.as_ref());
+        if let Some(val) = self.resolution_text {
+            url.query_pairs_mut().append_pair("resolution_text", val);
+        }
+
+        let req = self.client.http_client().patch(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetBlockedTermsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: &'a ModeratorId,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetBlockedTermsBuilder<'a> {
+    pub fn new(
+        client: &'a Client,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<BlockedTermsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, BLOCKED_TERMS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct DeleteChatMessagesBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    moderator_id: &'a ModeratorId,
+    message_id: Option<&'a str>,
+}
+
+impl<'a> DeleteChatMessagesBuilder<'a> {
+    pub fn new(
+        client: &'a Client,
+        broadcaster_id: &'a BroadcasterId,
+        moderator_id: &'a ModeratorId,
+    ) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            moderator_id,
+            message_id: None,
+        }
+    }
+
+    pub fn message_id(mut self, value: &'a str) -> Self {
+        self.message_id = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<(), Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([MODERATION, CHAT]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id)
+            .append_pair(MODERATOR_ID, self.moderator_id);
+        if let Some(val) = self.message_id {
+            url.query_pairs_mut().append_pair("message_id", val);
+        }
+
+        let req = self.client.http_client().delete(url);
+        self.client.no_content(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetModeratedChannelsBuilder<'a> {
+    client: &'a Client,
+    user_id: &'a UserId,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetModeratedChannelsBuilder<'a> {
+    pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
+        Self {
+            client,
+            user_id,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ModeratedChannelResponse, Error> {
+        let mut url = self.client.base_url();
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, CHANNELS]);
+
+        url.query_pairs_mut().append_pair(USER_ID, self.user_id);
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetModeratorsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    user_ids: Option<&'a [UserId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetModeratorsBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            user_ids: None,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn user_ids(mut self, value: &'a [UserId]) -> Self {
+        self.user_ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ModeratorsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, MODERATORS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(ids) = self.user_ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (USER_ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+
+#[derive(Debug)]
+pub struct GetVipsBuilder<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    user_ids: Option<&'a [UserId]>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetVipsBuilder<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            user_ids: None,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn user_ids(mut self, value: &'a [UserId]) -> Self {
+        self.user_ids = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ModeratorsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut().unwrap().extend([CHANNELS, VIPS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(ids) = self.user_ids {
+            url.query_pairs_mut()
+                .extend_pairs(ids.iter().map(|id| (USER_ID, id)));
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }

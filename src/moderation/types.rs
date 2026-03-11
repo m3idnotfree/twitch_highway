@@ -187,40 +187,40 @@ pub struct SuspiciousUser {
 }
 
 #[derive(Serialize)]
-pub(crate) struct CheckAutomodStatusBody<'a> {
+pub struct CheckAutomodStatusBody<'a> {
     pub data: &'a [CheckAutoMod],
 }
 
 #[derive(Serialize)]
-pub(crate) struct ManageHeldAutomodMessagesBody<'a> {
+pub struct ManageHeldAutomodMessagesBody<'a> {
     pub user_id: &'a UserId,
     pub msg_id: &'a str,
     pub action: AutoModAction,
 }
 
 #[derive(Serialize)]
-pub(crate) struct AddBlockedTermBody<'a> {
+pub struct AddBlockedTermBody<'a> {
     pub text: &'a str,
 }
 
 #[derive(Serialize)]
-pub(crate) struct UpdateShieldModeStatusBody {
+pub struct UpdateShieldModeStatusBody {
     pub is_active: bool,
 }
 
 #[derive(Serialize)]
-pub(crate) struct WarnChatUserBodyWrapper<'a> {
+pub struct WarnChatUserBodyWrapper<'a> {
     pub data: WarnChatUserBody<'a>,
 }
 
 #[derive(Serialize)]
-pub(crate) struct WarnChatUserBody<'a> {
+pub struct WarnChatUserBody<'a> {
     pub user_id: &'a UserId,
     pub reason: &'a str,
 }
 
 #[derive(Serialize)]
-pub(crate) struct SuspiciousBody<'a> {
+pub struct SuspiciousBody<'a> {
     pub user_id: &'a UserId,
     pub status: SuspiciousStatus,
 }

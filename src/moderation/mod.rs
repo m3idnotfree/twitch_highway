@@ -24,18 +24,21 @@ use types::{
     UpdateShieldModeStatusBody, WarnChatUserBody, WarnChatUserBodyWrapper,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{
-            AUTOMOD, BANS, BLOCKED_TERMS, BROADCASTER_ID, CHANNELS, ENFORCEMENTS, MESSAGE,
+            AUTOMOD, BANS, BLOCKED_TERMS, BROADCASTER_ID, CHANNELS, ENFORCEMENTS, ID, MESSAGE,
             MODERATION, MODERATORS, MODERATOR_ID, SETTINGS, SHIELD_MODE, STATUS, USER_ID, VIPS,
             WARNINGS,
         },
         BlockedTermId, BroadcasterId, ModeratorId, UserId,
     },
-    Client,
+    Client, Error,
 };
+
+const SUSPICIOUS_USERS: &str = "suspicious_users";
 
 pub trait ModerationAPI {
     /// Checks whether AutoMod would flag the specified message for review
@@ -58,13 +61,12 @@ pub trait ModerationAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .check_automod_status(
     ///         &BroadcasterId::from("1234"),
     ///         &[CheckAutoMod::new("123", "text")],
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -82,7 +84,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         data: &[CheckAutoMod],
-    ) -> TwitchAPIRequest<CheckAutoModStatusResponse>;
+    ) -> impl Future<Output = Result<CheckAutoModStatusResponse, Error>> + Send;
 
     /// Allow or deny the message that AutoMod flagged for review
     ///
@@ -91,10 +93,6 @@ pub trait ModerationAPI {
     /// * `user_id` - The moderator who is approving or denying the held message.
     /// * `msg_id` - The ID of the message to allow or deny.
     /// * `action` - [`AutoModAction`]
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -105,14 +103,13 @@ pub trait ModerationAPI {
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .manage_held_automod_messages(
     ///         &UserId::from("1234"),
     ///         "836485",
     ///         AutoModAction::ALLOW,
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -131,7 +128,7 @@ pub trait ModerationAPI {
         user_id: &UserId,
         msg_id: &str,
         action: AutoModAction,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets the broadcaster’s AutoMod settings
     ///
@@ -153,13 +150,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_automod_settings(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -177,7 +173,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<AutoModSettingsResponse>;
+    ) -> impl Future<Output = Result<AutoModSettingsResponse, Error>> + Send;
 
     /// Updates the broadcaster’s AutoMod settings
     ///
@@ -199,13 +195,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_automod_settings(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -244,10 +240,10 @@ pub trait ModerationAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_banned_users(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -286,14 +282,14 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .ban_user(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         &UserId::from("6789")
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -323,10 +319,6 @@ pub trait ModerationAPI {
     /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
     /// * `user_id` - The ID of the user to remove the ban or timeout from.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -336,14 +328,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .unban_user(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         &UserId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -362,7 +353,7 @@ pub trait ModerationAPI {
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of unban requests for a broadcaster’s channel
     ///
@@ -385,14 +376,14 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_unban_requests(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         UnbanRequestStatus::Pending,
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -435,7 +426,7 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .resolve_unban_request(
     ///         &BroadcasterId::from("1234"),
@@ -443,7 +434,7 @@ pub trait ModerationAPI {
     ///         "unban_request_id",
     ///         UnbanRequestStatus::Denied,
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -485,13 +476,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_blocked_terms(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678")
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -532,14 +523,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .add_blocked_term(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         "text"
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -558,7 +548,7 @@ pub trait ModerationAPI {
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         text: &str,
-    ) -> TwitchAPIRequest<BlockedTermsResponse>;
+    ) -> impl Future<Output = Result<BlockedTermsResponse, Error>> + Send;
 
     /// Removes the word or phrase from the broadcaster’s list of blocked terms
     ///
@@ -567,10 +557,6 @@ pub trait ModerationAPI {
     /// * `broadcaster_id` - The ID of the broadcaster that owns the list of blocked terms.
     /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
     /// * `id` - The ID of the blocked term to remove from the broadcaster’s list of blocked terms.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -581,14 +567,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, BlockedTermId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .remove_blocked_term(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         &BlockedTermId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -607,7 +592,7 @@ pub trait ModerationAPI {
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         id: &BlockedTermId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Removes a single chat message or all chat messages from the broadcaster’s chat room
     ///
@@ -629,13 +614,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .delete_chat_messages(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///     )
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -674,10 +659,10 @@ pub trait ModerationAPI {
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_moderated_channels(&UserId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -713,10 +698,10 @@ pub trait ModerationAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_moderators(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -739,10 +724,6 @@ pub trait ModerationAPI {
     /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room.
     /// * `user_id` - The ID of the user to add as a moderator in the broadcaster’s chat room.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -752,13 +733,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .add_channel_moderator(
     ///         &BroadcasterId::from("1234"),
     ///         &UserId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -776,7 +756,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Removes a moderator from the broadcaster’s chat room
     ///
@@ -784,10 +764,6 @@ pub trait ModerationAPI {
     ///
     /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room.
     /// * `user_id` - The ID of the user to remove as a moderator from the broadcaster’s chat room.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -798,13 +774,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .remove_channel_moderator(
     ///         &BroadcasterId::from("1234"),
     ///         &UserId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -822,7 +797,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of the broadcaster’s VIPs
     ///
@@ -843,10 +818,10 @@ pub trait ModerationAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_vips(&BroadcasterId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -869,10 +844,6 @@ pub trait ModerationAPI {
     /// * `broadcaster_id` - The ID of the broadcaster that’s adding the user as a VIP.
     /// * `user_id` - The ID of the user to give VIP status to.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -882,13 +853,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .add_channel_vip(
     ///         &BroadcasterId::from("1234"),
     ///         &UserId::from("5678")
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -906,7 +876,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Removes the specified user as a VIP in the broadcaster’s channel
     ///
@@ -914,10 +884,6 @@ pub trait ModerationAPI {
     ///
     /// * `broadcaster_id` - The ID of the broadcaster who owns the channel where the user has VIP status.
     /// * `user_id` - The ID of the user to remove VIP status from.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
     ///
     /// # Example
     ///
@@ -928,13 +894,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .remove_channel_vip(
     ///         &BroadcasterId::from("1234"),
     ///         &UserId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -952,7 +917,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Activates or deactivates the broadcaster’s Shield Mode
     ///
@@ -975,14 +940,13 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_shield_mode_status(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///         false
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -1001,7 +965,7 @@ pub trait ModerationAPI {
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         is_active: bool,
-    ) -> TwitchAPIRequest<ShieldModeStatusResponse>;
+    ) -> impl Future<Output = Result<ShieldModeStatusResponse, Error>> + Send;
 
     /// Gets the broadcaster’s Shield Mode activation status
     ///
@@ -1023,13 +987,12 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_shield_mode_status(
     ///         &BroadcasterId::from("1234"),
     ///         &ModeratorId::from("5678"),
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -1047,7 +1010,7 @@ pub trait ModerationAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
-    ) -> TwitchAPIRequest<ShieldModeStatusResponse>;
+    ) -> impl Future<Output = Result<ShieldModeStatusResponse, Error>> + Send;
 
     /// Warns a user in the specified broadcaster’s chat room, preventing them from chat interaction until the warning is acknowledged
     ///
@@ -1071,7 +1034,7 @@ pub trait ModerationAPI {
     ///     types::{BroadcasterId, ModeratorId, UserId},
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .warn_chat_user(
     ///         &BroadcasterId::from("1234"),
@@ -1079,7 +1042,6 @@ pub trait ModerationAPI {
     ///         &UserId::from("7890"),
     ///         "no reason"
     ///     )
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -1099,7 +1061,7 @@ pub trait ModerationAPI {
         moderator_id: &ModeratorId,
         user_id: &UserId,
         reason: &str,
-    ) -> TwitchAPIRequest<WarnChatUsersResponse>;
+    ) -> impl Future<Output = Result<WarnChatUsersResponse, Error>> + Send;
 
     fn add_suspicious_status_to_chat_user(
         &self,
@@ -1107,49 +1069,80 @@ pub trait ModerationAPI {
         moderator_id: &ModeratorId,
         user_id: &UserId,
         status: SuspiciousStatus,
-    ) -> TwitchAPIRequest<SuspiciousResponse>;
+    ) -> impl Future<Output = Result<SuspiciousResponse, Error>> + Send;
 
     fn remove_suspicious_status_from_chat_user(
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
         user_id: &UserId,
-    ) -> TwitchAPIRequest<SuspiciousResponse>;
+    ) -> impl Future<Output = Result<SuspiciousResponse, Error>> + Send;
 }
 
 impl ModerationAPI for Client {
-    simple_endpoint!(
-        fn check_automod_status(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            data: &[CheckAutoMod] [skip],
-        ) -> CheckAutoModStatusResponse;
-            endpoint: CheckAutoModStatus,
-            method: POST,
-            path: [MODERATION, ENFORCEMENTS, STATUS],
-            headers: [json],
-            body: {serde_json::to_string(&CheckAutomodStatusBody {data}).ok()}
-    );
-    simple_endpoint!(
-        fn manage_held_automod_messages(
-            user_id: &UserId [skip],
-            msg_id: &str [skip],
-            action: AutoModAction [skip],
-        ) -> NoContent;
-            endpoint: ManageHeldAutoModMessages,
-            method: POST,
-            path: [MODERATION,AUTOMOD, MESSAGE],
-            headers: [json],
-            body:{serde_json::to_string(&ManageHeldAutomodMessagesBody {user_id, msg_id, action}).ok()}
-    );
-    simple_endpoint!(
-        fn get_automod_settings(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            moderator_id: &ModeratorId [key = MODERATOR_ID],
-        ) -> AutoModSettingsResponse;
-            endpoint: GetAutoModSettings,
-            method: GET,
-            path: [MODERATION, AUTOMOD, SETTINGS],
-    );
+    async fn check_automod_status(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        data: &[CheckAutoMod],
+    ) -> Result<CheckAutoModStatusResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, ENFORCEMENTS, STATUS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&CheckAutomodStatusBody { data });
+        self.json(req).await
+    }
+
+    async fn manage_held_automod_messages(
+        &self,
+        user_id: &UserId,
+        msg_id: &str,
+        action: AutoModAction,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, AUTOMOD, MESSAGE]);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&ManageHeldAutomodMessagesBody {
+                user_id,
+                msg_id,
+                action,
+            });
+        self.no_content(req).await
+    }
+
+    async fn get_automod_settings(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> Result<AutoModSettingsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, AUTOMOD, SETTINGS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        let req = self.http_client().get(url);
+        self.json(req).await
+    }
+
     fn update_automod_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1157,12 +1150,14 @@ impl ModerationAPI for Client {
     ) -> UpdateAutomodSettingsBuilder<'a> {
         UpdateAutomodSettingsBuilder::new(self, broadcaster_id, moderator_id)
     }
+
     fn get_banned_users<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> GetBannedUsersBuilder<'a> {
         GetBannedUsersBuilder::new(self, broadcaster_id)
     }
+
     fn ban_user<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1171,16 +1166,26 @@ impl ModerationAPI for Client {
     ) -> BanUserBuilder<'a> {
         BanUserBuilder::new(self, broadcaster_id, moderator_id, user_id)
     }
-    simple_endpoint!(
-        fn unban_user(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            moderator_id: &ModeratorId [key = MODERATOR_ID],
-            user_id: &UserId [key = USER_ID],
-        ) -> NoContent;
-            endpoint: BanUsers,
-            method: DELETE,
-            path: [MODERATION, BANS],
-    );
+
+    async fn unban_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([MODERATION, BANS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(USER_ID, user_id);
+
+        let req = self.http_client().delete(url);
+        self.no_content(req).await
+    }
+
     fn get_unban_requests<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1189,6 +1194,7 @@ impl ModerationAPI for Client {
     ) -> GetUnbanRequestsBuilder<'a> {
         GetUnbanRequestsBuilder::new(self, broadcaster_id, moderator_id, status)
     }
+
     fn resolve_unban_request<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1204,6 +1210,7 @@ impl ModerationAPI for Client {
             status,
         )
     }
+
     fn get_blocked_terms<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1211,28 +1218,51 @@ impl ModerationAPI for Client {
     ) -> GetBlockedTermsBuilder<'a> {
         GetBlockedTermsBuilder::new(self, broadcaster_id, moderator_id)
     }
-    simple_endpoint!(
-        fn add_blocked_term(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            text: &str [skip],
-        ) -> BlockedTermsResponse;
-            endpoint: AddBlockedTerm,
-            method: POST,
-            path: [MODERATION, BLOCKED_TERMS],
-            headers: [json],
-            body: {serde_json::to_string(&AddBlockedTermBody {text}).ok()}
-    );
-    simple_endpoint!(
-        fn remove_blocked_term(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            id: &BlockedTermId,
-        ) -> NoContent;
-            endpoint: RemoveBlockedTerm,
-            method: DELETE,
-            path: [MODERATION, BLOCKED_TERMS],
-    );
+
+    async fn add_blocked_term(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        text: &str,
+    ) -> Result<BlockedTermsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, BLOCKED_TERMS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&AddBlockedTermBody { text });
+        self.json(req).await
+    }
+
+    async fn remove_blocked_term(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        id: &BlockedTermId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, BLOCKED_TERMS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(ID, id);
+
+        let req = self.http_client().delete(url);
+        self.no_content(req).await
+    }
+
     fn delete_chat_messages<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -1240,115 +1270,197 @@ impl ModerationAPI for Client {
     ) -> DeleteChatMessagesBuilder<'a> {
         DeleteChatMessagesBuilder::new(self, broadcaster_id, moderator_id)
     }
+
     fn get_moderated_channels<'a>(
         &'a self,
         user_id: &'a UserId,
     ) -> GetModeratedChannelsBuilder<'a> {
         GetModeratedChannelsBuilder::new(self, user_id)
     }
+
     fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModeratorsBuilder<'a> {
         GetModeratorsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-        fn add_channel_moderator(
-            broadcaster_id: &BroadcasterId,
-            user_id: &UserId,
-        ) -> NoContent;
-            endpoint: AddChannelModerator,
-            method: POST,
-            path: [MODERATION, MODERATORS],
-    );
-    simple_endpoint!(
-        fn remove_channel_moderator(
-            broadcaster_id: &BroadcasterId,
-            user_id: &UserId,
-        ) -> NoContent;
-            endpoint: RemoveChannelModerator,
-            method: DELETE,
-            path: [MODERATION, MODERATORS],
-    );
+
+    async fn add_channel_moderator(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        user_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, MODERATORS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(USER_ID, user_id);
+
+        self.no_content(self.http_client().post(url)).await
+    }
+
+    async fn remove_channel_moderator(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        user_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, MODERATORS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(USER_ID, user_id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
+
     fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVipsBuilder<'a> {
         GetVipsBuilder::new(self, broadcaster_id)
     }
-    simple_endpoint!(
-        fn add_channel_vip(
-            broadcaster_id: &BroadcasterId,
-            user_id: &UserId,
-        ) -> NoContent;
-            endpoint: AddChannelVIP,
-            method: POST,
-            path: [CHANNELS, VIPS],
-    );
-    simple_endpoint!(
-        fn remove_channel_vip(
-            broadcaster_id: &BroadcasterId,
-            user_id: &UserId,
-        ) -> NoContent;
-            endpoint: RemoveChannelVIP,
-            method: DELETE,
-            path: [CHANNELS, VIPS],
-    );
-    simple_endpoint!(
-        fn update_shield_mode_status(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            is_active: bool [skip],
-        ) -> ShieldModeStatusResponse;
-            endpoint: UpdateShieldModeStatus,
-            method: PUT,
-            path: [MODERATION, SHIELD_MODE],
-            headers: [json],
-            body: {serde_json::to_string(&UpdateShieldModeStatusBody {is_active}).ok()}
-    );
-    simple_endpoint!(
-        fn get_shield_mode_status(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-        ) -> ShieldModeStatusResponse;
-            endpoint: GetShieldModeStatus,
-            method: GET,
-            path: [MODERATION, SHIELD_MODE],
-    );
-    simple_endpoint!(
-        fn warn_chat_user(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            user_id: &UserId [skip],
-            reason: &str [skip],
-        ) -> WarnChatUsersResponse;
-            endpoint: WarnChatUser,
-            method: POST,
-            path: [MODERATION, WARNINGS],
-            headers: [json],
-            body: {serde_json::to_string(&WarnChatUserBodyWrapper {
-                data: WarnChatUserBody {user_id, reason}
-            }
-            ).ok()}
-    );
-    simple_endpoint!(
-        fn add_suspicious_status_to_chat_user(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            user_id: &UserId [skip],
-            status: SuspiciousStatus [skip],
-        ) -> SuspiciousResponse;
-            endpoint: AddSuspiciousStatusToChatUser,
-            method: POST,
-            path: [MODERATION, "suspicious_users"],
-            headers: [json],
-            body: {serde_json::to_string(&SuspiciousBody {
-                    user_id,
-                    status
-                }).ok()}
-    );
-    simple_endpoint!(
-        fn remove_suspicious_status_from_chat_user(
-            broadcaster_id: &BroadcasterId,
-            moderator_id: &ModeratorId,
-            user_id: &UserId,
-        ) -> SuspiciousResponse;
-            endpoint: RemoveSuspiciousStatusFromChatUser,
-            method: DELETE,
-            path: [MODERATION, "suspicious_users"]
-    );
+
+    async fn add_channel_vip(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        user_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend(&[CHANNELS, VIPS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(USER_ID, user_id);
+
+        let req = self.http_client().post(url);
+        self.execute(req).await?;
+        Ok(())
+    }
+
+    async fn remove_channel_vip(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        user_id: &UserId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([CHANNELS, VIPS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(USER_ID, user_id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
+
+    async fn update_shield_mode_status(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        is_active: bool,
+    ) -> Result<ShieldModeStatusResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, SHIELD_MODE]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        let req = self
+            .http_client()
+            .put(url)
+            .json(&UpdateShieldModeStatusBody { is_active });
+        self.json(req).await
+    }
+
+    async fn get_shield_mode_status(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+    ) -> Result<ShieldModeStatusResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, SHIELD_MODE]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn warn_chat_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+        reason: &str,
+    ) -> Result<WarnChatUsersResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, WARNINGS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        let req = self.http_client().post(url).json(&WarnChatUserBodyWrapper {
+            data: WarnChatUserBody { user_id, reason },
+        });
+        self.json(req).await
+    }
+
+    async fn add_suspicious_status_to_chat_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+        status: SuspiciousStatus,
+    ) -> Result<SuspiciousResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, SUSPICIOUS_USERS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id);
+
+        let req = self
+            .http_client()
+            .post(url)
+            .json(&SuspiciousBody { user_id, status });
+        self.json(req).await
+    }
+
+    async fn remove_suspicious_status_from_chat_user(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        moderator_id: &ModeratorId,
+        user_id: &UserId,
+    ) -> Result<SuspiciousResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([MODERATION, SUSPICIOUS_USERS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(MODERATOR_ID, moderator_id)
+            .append_pair(USER_ID, user_id);
+
+        self.json(self.http_client().delete(url)).await
+    }
 }
