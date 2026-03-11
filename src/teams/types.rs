@@ -1,7 +1,40 @@
 use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
-use crate::types::{BroadcasterId, TeamId, UserId};
+use crate::types::{
+    constants::{ID, NAME},
+    BroadcasterId, TeamId, UserId,
+};
+
+pub enum TeamSelect<'a> {
+    Name(&'a str),
+    Id(&'a TeamId),
+}
+
+impl<'a> From<&'a str> for TeamSelect<'a> {
+    fn from(value: &'a str) -> Self {
+        Self::Name(value)
+    }
+}
+
+impl<'a> From<&'a TeamId> for TeamSelect<'a> {
+    fn from(value: &'a TeamId) -> Self {
+        Self::Id(value)
+    }
+}
+
+impl<'a> TeamSelect<'a> {
+    pub(crate) fn append_to_query(&self, url: &mut url::Url) {
+        match self {
+            Self::Name(name) => {
+                url.query_pairs_mut().append_pair(NAME, name);
+            }
+            Self::Id(id) => {
+                url.query_pairs_mut().append_pair(ID, id);
+            }
+        }
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BroadcasterTeam {

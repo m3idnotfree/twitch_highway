@@ -662,15 +662,13 @@ async fn mock_api_check_user_subscription(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_channel_teams(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_teams(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
 
 async fn mock_api_get_teams(api: &TwitchFixture) -> Result<()> {
     api.api
-        .get_teams_by_id(&TeamId::from(api.selected_broadcaster_id().to_string()))
-        .text()
+        .get_teams(&TeamId::from(api.selected_broadcaster_id().to_string()))
         .await?;
     Ok(())
 }

@@ -4,13 +4,16 @@ mod types;
 pub use response::{ChannelTeamsResponse, TeamsResponse};
 pub use types::{BroadcasterTeam, Team, TeamUser};
 
+use types::TeamSelect;
+
+use std::future::Future;
+
 use crate::{
-    request::TwitchAPIRequest,
     types::{
-        constants::{BROADCASTER_ID, CHANNEL, ID, NAME, TEAMS},
-        BroadcasterId, TeamId,
+        constants::{BROADCASTER_ID, CHANNEL, TEAMS},
+        BroadcasterId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait TeamsAPI {
@@ -33,10 +36,9 @@ pub trait TeamsAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_teams(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -53,48 +55,13 @@ pub trait TeamsAPI {
     fn get_channel_teams(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelTeamsResponse>;
+    ) -> impl Future<Output = Result<ChannelTeamsResponse, Error>> + Send;
 
     /// Gets information about the specified Twitch team by name
     ///
     /// # Arguments
     ///
-    /// * `name` - The name of the team to get.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`TeamsResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::teams::TeamsAPI;
-    ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
-    /// let response = api
-    ///     .get_teams_by_name("name")
-    ///     .json()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// No scope required
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams_by_name(&self, name: &str) -> TwitchAPIRequest<TeamsResponse>;
-
-    /// Gets information about the specified Twitch team by id
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The ID of the team to get.
+    /// * `select` - The filter to use. Pass `&str` (name) or [TeamId](crate::types::TeamId).
     ///
     /// # Returns
     ///
@@ -109,12 +76,12 @@ pub trait TeamsAPI {
     ///     types::TeamId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
-    /// let response = api
-    ///     .get_teams_by_id(&TeamId::from("1234"))
-    ///     .json()
-    ///     .await?;
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
+    /// // By name
+    /// let response = api.get_teams("name").await?;
     ///
+    /// // By team ID
+    /// let response = api.get_teams(&TeamId::from("1234")).await?;
     /// # Ok(())
     /// # }
     /// ```
@@ -126,32 +93,38 @@ pub trait TeamsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-teams>
-    fn get_teams_by_id(&self, id: &TeamId) -> TwitchAPIRequest<TeamsResponse>;
+    fn get_teams<'a>(
+        &'a self,
+        select: impl Into<TeamSelect<'a>> + Send,
+    ) -> impl Future<Output = Result<TeamsResponse, Error>> + Send;
 }
 
 impl TeamsAPI for Client {
-    simple_endpoint!(
-        fn get_channel_teams(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        ) -> ChannelTeamsResponse;
-            endpoint: GetChannelTeams,
-            method: GET,
-            path: [TEAMS, CHANNEL],
-    );
-    simple_endpoint!(
-        fn get_teams_by_name(
-            name: &str [key = NAME]
-        ) -> TeamsResponse;
-            endpoint: GetTeams,
-            method: GET,
-            path: [TEAMS],
-    );
-    simple_endpoint!(
-        fn get_teams_by_id(
-            id: &TeamId [key = ID]
-        ) -> TeamsResponse;
-            endpoint: GetTeams,
-            method: GET,
-            path: [TEAMS],
-    );
+    async fn get_channel_teams(
+        &self,
+        broadcaster_id: &BroadcasterId,
+    ) -> Result<ChannelTeamsResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().extend([TEAMS, CHANNEL]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
+
+        self.json(self.http_client().get(url)).await
+    }
+
+    async fn get_teams<'a>(
+        &'a self,
+        select: impl Into<TeamSelect<'a>> + Send,
+    ) -> Result<TeamsResponse, Error> {
+        let select = select.into();
+        let mut url = self.base_url();
+
+        url.path_segments_mut().unwrap().push(TEAMS);
+
+        select.append_to_query(&mut url);
+
+        self.json(self.http_client().get(url)).await
+    }
 }
