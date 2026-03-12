@@ -45,11 +45,7 @@ async fn mock_api() -> Result<()> {
     })
     .await?;
 
-    let resp = api
-        .api
-        .get_content_classification_labels(None)
-        .json()
-        .await?;
+    let resp = api.api.get_content_classification_labels(None).await?;
 
     assert!(!resp.data.is_empty());
 
