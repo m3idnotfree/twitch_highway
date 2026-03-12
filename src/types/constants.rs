@@ -44,7 +44,6 @@ pub const EMOTE_SET_ID: &str = "emote_set_id";
 pub const ENDED_AT: &str = "ended_at";
 pub const ENFORCEMENTS: &str = "enforcements";
 pub const ENTITLEMENTS: &str = "entitlements";
-pub const EVENTS: &str = "events";
 pub const EVENTSUB: &str = "eventsub";
 pub const EXTENSIONS: &str = "extensions";
 pub const EXTENSION_ID: &str = "extension_id";

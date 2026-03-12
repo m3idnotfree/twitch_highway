@@ -114,10 +114,6 @@
 
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
-#[macro_use]
-mod macros;
-
-pub mod request;
 pub mod types;
 
 mod client;

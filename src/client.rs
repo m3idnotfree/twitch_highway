@@ -4,7 +4,6 @@ use asknothingx2_util::{
     api::{preset, HeaderMut},
     oauth::{AccessToken, ClientId},
 };
-use reqwest::header::HeaderMap;
 use serde::de::DeserializeOwned;
 use url::Url;
 
@@ -71,32 +70,10 @@ impl Client {
         self
     }
 
-    #[allow(unused)]
-    pub(crate) fn default_headers(&self) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers)
-            .bearer_token(self.access_token.secret())
-            .client_id(&self.client_id)
-            .unwrap();
-        headers
-    }
-
-    pub(crate) fn header_json(&self) -> HeaderMap {
-        let mut headers = HeaderMap::new();
-        HeaderMut::new(&mut headers)
-            .bearer_token(self.access_token.secret())
-            .client_id(&self.client_id)
-            .unwrap()
-            .content_type_json();
-        headers
-    }
-
-    #[allow(unused)]
     pub(crate) fn base_url(&self) -> Url {
         self.url.clone()
     }
 
-    #[allow(unused)]
     pub(crate) fn http_client(&self) -> &reqwest::Client {
         &self.client
     }

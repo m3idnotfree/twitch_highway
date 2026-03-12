@@ -4,7 +4,6 @@ use asknothingx2_util::{
     api::preset,
     oauth::{AccessToken, ClientId},
 };
-use serde::de::DeserializeOwned;
 use serde_json::json;
 use url::Url;
 use wiremock::{
@@ -12,7 +11,7 @@ use wiremock::{
     Mock, MockBuilder, MockServer, ResponseTemplate,
 };
 
-use twitch_highway::{request::TwitchAPIRequest, Client};
+use twitch_highway::Client;
 
 #[derive(Debug)]
 pub struct HttpMock {
@@ -50,14 +49,6 @@ impl HttpMock {
                 "Bearer 2gbdx6oar67tqtcmt49t3wpcgycthx",
             ))
             .and(header("client-id", "wbmytr93xzw8zbg0p1izqyzzc5mbiz"))
-    }
-
-    pub fn execute<F, T>(&self, f: F) -> TwitchAPIRequest<T>
-    where
-        F: FnOnce(&Client) -> TwitchAPIRequest<T>,
-        T: DeserializeOwned,
-    {
-        f(&self.api)
     }
 
     pub fn api(&self) -> &Client {
