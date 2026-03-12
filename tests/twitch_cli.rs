@@ -239,7 +239,7 @@ async fn mock_api_create_custom_rewards(api: &TwitchFixture, title: &str) -> Res
     let resp = api
         .api
         .create_custom_rewards(&api.selected_broadcaster_id(), title, 6)
-        .json()
+        .send()
         .await?;
 
     assert!(resp.data.is_some());
@@ -255,7 +255,6 @@ async fn mock_api_delete_custom_reward(
 ) -> Result<()> {
     api.api
         .delete_custom_reward(&api.selected_broadcaster_id(), custom_reward_id)
-        .send()
         .await?;
 
     Ok(())
@@ -265,7 +264,7 @@ async fn mock_api_get_custom_reward(api: &TwitchFixture) -> Result<CustomReward>
     let resp = api
         .api
         .get_custom_reward(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
 
     assert!(resp.data.is_some());

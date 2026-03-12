@@ -13,13 +13,14 @@ pub use types::{
 
 use types::UpdateRedemptionStatusBody;
 
+use std::future::Future;
+
 use crate::{
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
         BroadcasterId, RedemptionId, RewardId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait ChannelPointsAPI {
@@ -38,7 +39,7 @@ pub trait ChannelPointsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .create_custom_rewards(&BroadcasterId::from("1234"), "title", 64)
     ///     .prompt("prompt")
@@ -52,7 +53,7 @@ pub trait ChannelPointsAPI {
     ///     .is_global_cooldown_enabled(true)
     ///     .global_cooldown_seconds(50)
     ///     .should_redemptions_skip_request_queue(true)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -80,10 +81,6 @@ pub trait ChannelPointsAPI {
     /// * `broadcaster_id` - The ID of the broadcaster that created the custom reward.
     /// * `reward_id` - The ID of the custom reward to delete.
     ///
-    /// # Returns
-    ///
-    /// Returns a [`NoContent`]
-    ///
     /// # Example
     ///
     /// ```rust
@@ -93,12 +90,11 @@ pub trait ChannelPointsAPI {
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .delete_custom_reward(
     ///         &BroadcasterId::from("1234"),
     ///         &RewardId::from("5678"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -116,7 +112,7 @@ pub trait ChannelPointsAPI {
         &self,
         broadcaster_id: &BroadcasterId,
         reward_id: &RewardId,
-    ) -> TwitchAPIRequest<NoContent>;
+    ) -> impl Future<Output = Result<(), Error>> + Send;
 
     /// Gets a list of custom rewards that the specified broadcaster created
     ///
@@ -133,12 +129,12 @@ pub trait ChannelPointsAPI {
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_custom_reward(&BroadcasterId::from("1234"))
     ///     .custom_reward_ids(&[RewardId::from("5678")])
     ///     .only_manageable_rewards(true)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -172,7 +168,7 @@ pub trait ChannelPointsAPI {
     ///     types::{BroadcasterId, RewardId, RedemptionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_custom_reward_redemption(
     ///         &BroadcasterId::from("1234"),
@@ -182,7 +178,7 @@ pub trait ChannelPointsAPI {
     ///     .ids(&[RedemptionId::from("6789")])
     ///     .first(5)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -217,7 +213,7 @@ pub trait ChannelPointsAPI {
     ///     types::{BroadcasterId, RewardId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_custom_reward(
     ///         &BroadcasterId::from("1234"),
@@ -235,7 +231,7 @@ pub trait ChannelPointsAPI {
     ///     .global_cooldown_seconds(50)
     ///     .is_paused(false)
     ///     .should_redemptions_skip_request_queue(true)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -277,13 +273,12 @@ pub trait ChannelPointsAPI {
     ///     types::{BroadcasterId, RedemptionId, RewardId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .update_redemption_status(&BroadcasterId::from("1234"),
     ///         &RewardId::from("5678"),
     ///         &[RedemptionId::from("78901")],
     ///         RedemptionStatus::CANCELED)
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -303,7 +298,7 @@ pub trait ChannelPointsAPI {
         reward_id: &RewardId,
         redemption_ids: &[RedemptionId],
         status: RedemptionStatus,
-    ) -> TwitchAPIRequest<CustomRewardsRedemptionResponse>;
+    ) -> impl Future<Output = Result<CustomRewardsRedemptionResponse, Error>> + Send;
 }
 
 impl ChannelPointsAPI for Client {
@@ -315,20 +310,32 @@ impl ChannelPointsAPI for Client {
     ) -> CreateCustomRewardBuilder<'a> {
         CreateCustomRewardBuilder::new(self, broadcaster_id, title, cost)
     }
-    simple_endpoint!(fn delete_custom_reward(
-        broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-        reward_id: &RewardId [key = ID]
-    ) -> NoContent;
-        endpoint: DeleteCustomReward,
-        method: DELETE,
-        path: [CHANNEL_POINTS, CUSTOM_REWARDS]
-    );
+
+    async fn delete_custom_reward(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        reward_id: &RewardId,
+    ) -> Result<(), Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHANNEL_POINTS, CUSTOM_REWARDS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(ID, reward_id);
+
+        self.no_content(self.http_client().delete(url)).await
+    }
+
     fn get_custom_reward<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> GetCustomRewardBuilder<'a> {
         GetCustomRewardBuilder::new(self, broadcaster_id)
     }
+
     fn get_custom_reward_redemption<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -336,6 +343,7 @@ impl ChannelPointsAPI for Client {
     ) -> GetCustomRewardRedemptionBuilder<'a> {
         GetCustomRewardRedemptionBuilder::new(self, broadcaster_id, reward_id)
     }
+
     fn update_custom_reward<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -343,19 +351,29 @@ impl ChannelPointsAPI for Client {
     ) -> UpdateCustomRewardBuilder<'a> {
         UpdateCustomRewardBuilder::new(self, broadcaster_id, reward_id)
     }
-    simple_endpoint!(
-        fn update_redemption_status(
-            broadcaster_id: &BroadcasterId [key = BROADCASTER_ID],
-            reward_id: &RewardId [key = REWARD_ID],
-            redemption_ids: &[RedemptionId] [key = ID, convert = extend],
-            status: RedemptionStatus [skip]
-        ) -> CustomRewardsRedemptionResponse;
-            endpoint: UpdateRedemptionStatus,
-            method: PATCH,
-            path: [CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS],
-            headers: [json],
-            body: {
-                serde_json::to_string(&UpdateRedemptionStatusBody {status}).ok()
-            }
-    );
+
+    async fn update_redemption_status(
+        &self,
+        broadcaster_id: &BroadcasterId,
+        reward_id: &RewardId,
+        redemption_ids: &[RedemptionId],
+        status: RedemptionStatus,
+    ) -> Result<CustomRewardsRedemptionResponse, Error> {
+        let mut url = self.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHANNEL_POINTS, CUSTOM_REWARDS, REDEMPTIONS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id)
+            .append_pair(REWARD_ID, reward_id)
+            .extend_pairs(redemption_ids.iter().map(|id| (ID, id)));
+
+        let req = self
+            .http_client()
+            .patch(url)
+            .json(&UpdateRedemptionStatusBody { status });
+        self.json(req).await
+    }
 }
