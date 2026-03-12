@@ -12,13 +12,14 @@ pub use types::{
     ContentClassificationLabelsID, FollowedChannel,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::TwitchAPIRequest,
     types::{
         constants::{BROADCASTER_ID, CHANNELS, EDITORS},
         BroadcasterId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 pub trait ChannelsAPI {
@@ -41,10 +42,9 @@ pub trait ChannelsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_info(&[BroadcasterId::from("1234")])
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -61,7 +61,7 @@ pub trait ChannelsAPI {
     fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<ChannelInfoResponse>;
+    ) -> impl Future<Output = Result<ChannelInfoResponse, Error>> + Send;
 
     /// Updates a channel’s properties
     ///
@@ -78,7 +78,7 @@ pub trait ChannelsAPI {
     ///     types::{BroadcasterId, GameId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .modify_channel_info(&BroadcasterId::from("1234"))
     ///     .broadcaster_language("")
@@ -88,7 +88,7 @@ pub trait ChannelsAPI {
     ///     .tags(&[""])
     ///     .content_classification_labels(&[ContentClassificationLabel::new(ContentClassificationLabelsID::Gambling, false)])
     ///     .is_branded_content(false)
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -126,10 +126,9 @@ pub trait ChannelsAPI {
     ///     types::BroadcasterId
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_editor(&BroadcasterId::from("1234"))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -146,7 +145,7 @@ pub trait ChannelsAPI {
     fn get_channel_editor(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelEditorsResponse>;
+    ) -> impl Future<Output = Result<ChannelEditorsResponse, Error>> + Send;
 
     /// Gets a list of broadcasters that the specified user follows
     ///
@@ -163,13 +162,13 @@ pub trait ChannelsAPI {
     ///     types::{BroadcasterId, UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_followed_channels(&UserId::from("1234"))
     ///     .broadcaster_id(&BroadcasterId::from("5678"))
     ///     .first(5)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -200,13 +199,13 @@ pub trait ChannelsAPI {
     ///     types::{BroadcasterId,UserId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_channel_followers(&BroadcasterId::from("1234"))
     ///     .user_id(&UserId::from("5678"))
     ///     .first(5)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -227,61 +226,45 @@ pub trait ChannelsAPI {
 }
 
 impl ChannelsAPI for Client {
-    fn get_channel_info(
+    async fn get_channel_info(
         &self,
         broadcaster_ids: &[BroadcasterId],
-    ) -> TwitchAPIRequest<ChannelInfoResponse> {
+    ) -> Result<ChannelInfoResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHANNELS]);
-        let mut query = url.query_pairs_mut();
+        url.path_segments_mut().unwrap().push(CHANNELS);
 
-        query.extend_pairs(broadcaster_ids.iter().map(|id| (BROADCASTER_ID, id)));
+        url.query_pairs_mut()
+            .extend_pairs(broadcaster_ids.iter().map(|id| (BROADCASTER_ID, id)));
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetChanelInformation,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     fn modify_channel_info<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> ModifyChannelInfoBuilder<'a> {
         ModifyChannelInfoBuilder::new(self, broadcaster_id)
     }
-    fn get_channel_editor(
+
+    async fn get_channel_editor(
         &self,
         broadcaster_id: &BroadcasterId,
-    ) -> TwitchAPIRequest<ChannelEditorsResponse> {
+    ) -> Result<ChannelEditorsResponse, Error> {
         let mut url = self.base_url();
 
-        url.path_segments_mut()
-            .unwrap()
-            .extend(&[CHANNELS, EDITORS]);
-        let mut query = url.query_pairs_mut();
+        url.path_segments_mut().unwrap().extend([CHANNELS, EDITORS]);
 
-        query.append_pair(BROADCASTER_ID, broadcaster_id);
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, broadcaster_id);
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetChannelEditors,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
+
     fn get_followed_channels<'a>(&'a self, user_id: &'a UserId) -> GetFollowedChannels<'a> {
         GetFollowedChannels::new(self, user_id)
     }
+
     fn get_channel_followers<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,

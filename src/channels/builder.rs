@@ -2,18 +2,17 @@ use serde::Serialize;
 
 use crate::{
     channels::{ChannelFollowersResponse, ContentClassificationLabel, FollowerdChannelsResponse},
-    request::{NoContent, TwitchAPIRequest},
     types::{
         constants::{AFTER, BROADCASTER_ID, CHANNELS, FIRST, FOLLOWED, FOLLOWERS, USER_ID},
         BroadcasterId, GameId, UserId,
     },
-    Client,
+    Client, Error,
 };
 
 #[derive(Debug, Serialize)]
 pub struct ModifyChannelInfoBuilder<'a> {
     #[serde(skip)]
-    api: &'a Client,
+    client: &'a Client,
     #[serde(skip)]
     broadcaster_id: &'a BroadcasterId,
 
@@ -34,9 +33,9 @@ pub struct ModifyChannelInfoBuilder<'a> {
 }
 
 impl<'a> ModifyChannelInfoBuilder<'a> {
-    pub fn new(api: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
-            api,
+            client,
             broadcaster_id,
             broadcaster_language: None,
             title: None,
@@ -47,26 +46,32 @@ impl<'a> ModifyChannelInfoBuilder<'a> {
             is_branded_content: None,
         }
     }
+
     pub fn broadcaster_language(mut self, value: &'a str) -> Self {
         self.broadcaster_language = Some(value);
         self
     }
+
     pub fn title(mut self, value: &'a str) -> Self {
         self.title = Some(value);
         self
     }
+
     pub fn game_id(mut self, value: &'a GameId) -> Self {
         self.game_id = Some(value);
         self
     }
+
     pub fn delay(mut self, value: u64) -> Self {
         self.delay = Some(value);
         self
     }
+
     pub fn tags(mut self, value: &'a [&'a str]) -> Self {
         self.tags = Some(value);
         self
     }
+
     pub fn content_classification_labels(
         mut self,
         value: &'a [ContentClassificationLabel],
@@ -74,69 +79,137 @@ impl<'a> ModifyChannelInfoBuilder<'a> {
         self.content_classification_labels = Some(value);
         self
     }
+
     pub fn is_branded_content(mut self, value: bool) -> Self {
         self.is_branded_content = Some(value);
         self
     }
 
-    pub fn build(self) -> TwitchAPIRequest<NoContent> {
-        let mut url = self.api.base_url();
+    pub async fn send(self) -> Result<(), Error> {
+        let mut url = self.client.base_url();
 
-        url.path_segments_mut().unwrap().extend(&[CHANNELS]);
+        url.path_segments_mut().unwrap().push(CHANNELS);
 
-        let mut query = url.query_pairs_mut();
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
 
-        query.append_pair(BROADCASTER_ID, self.broadcaster_id);
-
-        drop(query);
-
-        let body = serde_json::to_string(&self).ok();
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::ModifyChannelInformation,
-            url,
-            reqwest::Method::PATCH,
-            self.api.header_json(),
-            body,
-            self.api.http_client().clone(),
-        )
-    }
-
-    pub async fn send(self) -> Result<reqwest::Response, crate::Error> {
-        self.build().send().await
-    }
-
-    pub async fn json(self) -> Result<NoContent, crate::Error> {
-        self.build().json().await
+        let req = self.client.http_client().patch(url).json(&self);
+        self.client.no_content(req).await
     }
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetFollowedChannels<'a> {
-        req: { user_id: &'a UserId [key = USER_ID] },
-        opts: {
-            broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
-        }
-    } -> FollowerdChannelsResponse;
-    endpoint: GetFollowedChannels,
-    method: GET,
-    path: [CHANNELS, FOLLOWED],
+#[derive(Debug)]
+pub struct GetFollowedChannels<'a> {
+    client: &'a Client,
+    user_id: &'a UserId,
+    broadcaster_id: Option<&'a BroadcasterId>,
+    first: Option<u8>,
+    after: Option<&'a str>,
 }
 
-define_request_builder! {
-    #[derive(Debug)]
-    GetChannelFollowersRequest<'a> {
-        req: { broadcaster_id: &'a BroadcasterId [key = BROADCASTER_ID]},
-        opts: {
-            user_id: &'a UserId [key = USER_ID],
-            first: u8 [key = FIRST, convert = to_string],
-            after: &'a str [key = AFTER]
+impl<'a> GetFollowedChannels<'a> {
+    pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
+        Self {
+            client,
+            user_id,
+            broadcaster_id: None,
+            first: None,
+            after: None,
         }
-    } -> ChannelFollowersResponse;
-    endpoint: GetChannelFollowers,
-    method: GET,
-    path: [CHANNELS, FOLLOWERS],
+    }
+
+    pub fn broadcaster_id(mut self, value: &'a BroadcasterId) -> Self {
+        self.broadcaster_id = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<FollowerdChannelsResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHANNELS, FOLLOWED]);
+
+        url.query_pairs_mut().append_pair(USER_ID, self.user_id);
+        if let Some(val) = self.broadcaster_id {
+            url.query_pairs_mut().append_pair(BROADCASTER_ID, val);
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
+}
+#[derive(Debug)]
+pub struct GetChannelFollowersRequest<'a> {
+    client: &'a Client,
+    broadcaster_id: &'a BroadcasterId,
+    user_id: Option<&'a UserId>,
+    first: Option<u8>,
+    after: Option<&'a str>,
+}
+
+impl<'a> GetChannelFollowersRequest<'a> {
+    pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
+        Self {
+            client,
+            broadcaster_id,
+            user_id: None,
+            first: None,
+            after: None,
+        }
+    }
+
+    pub fn user_id(mut self, value: &'a UserId) -> Self {
+        self.user_id = Some(value);
+        self
+    }
+
+    pub fn first(mut self, value: u8) -> Self {
+        self.first = Some(value);
+        self
+    }
+
+    pub fn after(mut self, value: &'a str) -> Self {
+        self.after = Some(value);
+        self
+    }
+
+    pub async fn send(self) -> Result<ChannelFollowersResponse, Error> {
+        let mut url = self.client.base_url();
+
+        url.path_segments_mut()
+            .unwrap()
+            .extend([CHANNELS, FOLLOWERS]);
+
+        url.query_pairs_mut()
+            .append_pair(BROADCASTER_ID, self.broadcaster_id);
+        if let Some(val) = self.user_id {
+            url.query_pairs_mut().append_pair(USER_ID, val);
+        }
+        if let Some(val) = self.first {
+            url.query_pairs_mut().append_pair(FIRST, &val.to_string());
+        }
+        if let Some(val) = self.after {
+            url.query_pairs_mut().append_pair(AFTER, val);
+        }
+
+        let req = self.client.http_client().get(url);
+        self.client.json(req).await
+    }
 }

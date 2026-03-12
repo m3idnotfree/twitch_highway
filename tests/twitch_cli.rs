@@ -334,7 +334,6 @@ async fn mock_api_get_custom_reward(api: &TwitchFixture) -> Result<CustomReward>
 async fn mock_api_get_channel_info(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_info(&[api.selected_broadcaster_id()])
-        .json()
         .await?;
     Ok(())
 }
@@ -343,7 +342,7 @@ async fn mock_api_modify_channel_info(api: &TwitchFixture) -> Result<()> {
     api.api
         .modify_channel_info(&api.selected_broadcaster_id())
         .broadcaster_language("en")
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -351,7 +350,6 @@ async fn mock_api_modify_channel_info(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_channel_editors(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_editor(&api.selected_broadcaster_id())
-        .json()
         .await?;
     Ok(())
 }
@@ -359,7 +357,7 @@ async fn mock_api_get_channel_editors(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_followed_channels(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_followed_channels(&api.selected_user_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
@@ -367,7 +365,7 @@ async fn mock_api_get_followed_channels(api: &TwitchFixture) -> Result<()> {
 async fn mock_api_get_channel_followers(api: &TwitchFixture) -> Result<()> {
     api.api
         .get_channel_followers(&api.selected_broadcaster_id())
-        .json()
+        .send()
         .await?;
     Ok(())
 }
