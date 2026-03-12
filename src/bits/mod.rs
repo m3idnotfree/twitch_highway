@@ -9,12 +9,14 @@ pub use types::{
     ProductType, Tier, TierLevel, TransactionProductData, Type,
 };
 
+use std::future::Future;
+
 use crate::{
-    request::TwitchAPIRequest,
     types::{
         constants::{BITS, BROADCASTER_ID, CHEERMOTES},
         BroadcasterId, ExtensionId,
     },
+    Error,
 };
 
 pub trait BitsAPI {
@@ -33,14 +35,14 @@ pub trait BitsAPI {
     ///     types::UserId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_bits_leaderboard()
     ///     .count(50)
     ///     .period(Period::Week)
     ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
     ///     .user_id(&UserId::from("1234"))
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -75,10 +77,9 @@ pub trait BitsAPI {
     ///     types::BroadcasterId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_cheermotes(Some(&BroadcasterId::from("1234")))
-    ///     .json()
     ///     .await?;
     ///
     /// # Ok(())
@@ -95,7 +96,7 @@ pub trait BitsAPI {
     fn get_cheermotes(
         &self,
         broadcaster_id: Option<&BroadcasterId>,
-    ) -> TwitchAPIRequest<CheermotesResponse>;
+    ) -> impl Future<Output = Result<CheermotesResponse, Error>> + Send;
 
     /// Gets an extension’s list of transactions
     ///
@@ -112,13 +113,13 @@ pub trait BitsAPI {
     ///     types::{ExtensionId, TransactionId}
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let response = api
     ///     .get_extension_transactions(&ExtensionId::from("1234"))
     ///     .ids(&[TransactionId::from("5678"), TransactionId::from("6789")])
     ///     .first(50)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     ///
     /// # Ok(())
@@ -142,30 +143,21 @@ impl BitsAPI for crate::Client {
     fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a> {
         BitsLeaderboardRequest::new(self)
     }
-    fn get_cheermotes(
+
+    async fn get_cheermotes(
         &self,
         broadcaster_id: Option<&BroadcasterId>,
-    ) -> TwitchAPIRequest<CheermotesResponse> {
+    ) -> Result<CheermotesResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend([BITS, CHEERMOTES]);
 
-        let mut query = url.query_pairs_mut();
-
         if let Some(broadcaster_id) = broadcaster_id {
-            query.append_pair(BROADCASTER_ID, broadcaster_id);
+            url.query_pairs_mut()
+                .append_pair(BROADCASTER_ID, broadcaster_id);
         }
 
-        drop(query);
-
-        TwitchAPIRequest::new(
-            crate::request::EndpointType::GetCheermotes,
-            url,
-            reqwest::Method::GET,
-            self.default_headers(),
-            None,
-            self.http_client().clone(),
-        )
+        self.json(self.http_client().get(url)).await
     }
 
     fn get_extension_transactions<'a>(

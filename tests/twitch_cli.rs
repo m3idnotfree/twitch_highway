@@ -220,13 +220,13 @@ async fn mock_api() -> Result<()> {
 }
 
 async fn mock_api_get_bits_leaderboard(api: &TwitchFixture) -> Result<()> {
-    let resp = api.api.get_bits_leaderboard().json().await?;
+    let resp = api.api.get_bits_leaderboard().send().await?;
     assert!(!resp.data.is_empty());
     Ok(())
 }
 
 async fn mock_api_get_cheermotes(api: &TwitchFixture) -> Result<()> {
-    let resp = api.api.get_cheermotes(None).json().await?;
+    let resp = api.api.get_cheermotes(None).await?;
     assert!(!resp.data.is_empty());
     Ok(())
 }
