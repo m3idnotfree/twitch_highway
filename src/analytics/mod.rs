@@ -23,7 +23,7 @@ pub trait AnalyticsAPI {
     ///     types::ExtensionId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let extension_id = ExtensionId::from("72189");
     /// let response = api
     ///     .get_extension_analytics()
@@ -33,7 +33,7 @@ pub trait AnalyticsAPI {
     ///     .ended_at(&"2018-03-01T00:00:00Z".parse().unwrap())
     ///     .first(50)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     /// # Ok(())
     /// # }
@@ -62,7 +62,7 @@ pub trait AnalyticsAPI {
     ///     types::GameId,
     /// };
     ///
-    /// # async fn example(api: Client) -> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
     /// let game_id = GameId::from("72189");
     /// let response = api
     ///     .get_game_analytics()
@@ -72,7 +72,7 @@ pub trait AnalyticsAPI {
     ///     .ended_at(&"2018-03-01T00:00:00Z".parse().unwrap())
     ///     .first(50)
     ///     .after("eyJiI...")
-    ///     .json()
+    ///     .send()
     ///     .await?;
     /// # Ok(())
     /// # }
