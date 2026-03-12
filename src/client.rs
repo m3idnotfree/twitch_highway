@@ -15,8 +15,6 @@ static BASE_URL: LazyLock<Url> = LazyLock::new(|| url::Url::parse(TWITCH_API_BAS
 
 #[derive(Debug, Clone)]
 pub struct Client {
-    access_token: AccessToken,
-    client_id: ClientId,
     url: Url,
     client: reqwest::Client,
 }
@@ -36,8 +34,6 @@ impl Client {
             .unwrap();
 
         Self {
-            access_token,
-            client_id,
             url: BASE_URL.clone(),
             client: client.build().unwrap(),
         }
@@ -58,8 +54,6 @@ impl Client {
         let client = builder.default_headers(headers);
 
         Self {
-            access_token,
-            client_id,
             url: BASE_URL.clone(),
             client: client.build().unwrap(),
         }
