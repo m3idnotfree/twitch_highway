@@ -13,7 +13,7 @@ mod condition;
 mod response;
 mod subscription;
 
-pub use builder::{CreateEventSub, GetEventSub, TransportRequest};
+pub use builder::{CreateEventSub, GetEventSub};
 pub use condition::Condition;
 pub use response::{
     CreateEventSubscriptionsResponse, EventSubscriptionsResponse, TransportResponse,
@@ -24,39 +24,28 @@ pub use subscription_types::SubscriptionType;
 #[allow(unused_imports)]
 pub(crate) use resolve_subscription_type;
 
-use std::future::Future;
+use builder::TransportType;
 
-use url::Url;
+use std::future::Future;
 
 use crate::{
     types::{
         constants::{EVENTSUB, ID, SUBSCRIPTIONS},
-        ConduitId, SessionId, SubscriptionId,
+        SubscriptionId,
     },
     Client, Error,
 };
 
 pub trait EventSubAPI {
+    /// - webhook: `(Url, String)` or `(Url, &str)` - callback URL and secret
+    /// - websocket: `SessionId`
+    /// - conduit: `ConduitId`
+    ///
     /// See <https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription>
-    fn webhook_subscription<'a>(
+    fn subscribe<'a>(
         &'a self,
         kind: SubscriptionType,
-        callback: Url,
-        secret: impl Into<String>,
-    ) -> CreateEventSub<'a>;
-
-    /// See <https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription>
-    fn websocket_subscription<'a>(
-        &'a self,
-        kind: SubscriptionType,
-        session_id: SessionId,
-    ) -> CreateEventSub<'a>;
-
-    /// See <https://dev.twitch.tv/docs/api/reference/#create-eventsub-subscription>
-    fn conduit_subscription<'a>(
-        &'a self,
-        kind: SubscriptionType,
-        conduit_id: ConduitId,
+        transport: impl Into<TransportType>,
     ) -> CreateEventSub<'a>;
 
     /// See <https://dev.twitch.tv/docs/api/reference/#delete-eventsub-subscription>
@@ -70,29 +59,12 @@ pub trait EventSubAPI {
 }
 
 impl EventSubAPI for Client {
-    fn webhook_subscription<'a>(
+    fn subscribe<'a>(
         &'a self,
         kind: SubscriptionType,
-        callback: Url,
-        secret: impl Into<String>,
+        transport: impl Into<TransportType>,
     ) -> CreateEventSub<'a> {
-        CreateEventSub::webhook(self, kind, callback, secret.into())
-    }
-
-    fn websocket_subscription<'a>(
-        &'a self,
-        kind: SubscriptionType,
-        session_id: SessionId,
-    ) -> CreateEventSub<'a> {
-        CreateEventSub::websocket(self, kind, session_id)
-    }
-
-    fn conduit_subscription<'a>(
-        &'a self,
-        kind: SubscriptionType,
-        conduit_id: ConduitId,
-    ) -> CreateEventSub<'a> {
-        CreateEventSub::conduit(self, kind, conduit_id)
+        CreateEventSub::new(self, kind, transport)
     }
 
     async fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> Result<(), Error> {

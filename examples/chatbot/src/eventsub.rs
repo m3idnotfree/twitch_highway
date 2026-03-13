@@ -173,7 +173,7 @@ async fn on_welcome(Session(session): Session, State(state): State<AppState>) {
     );
 
     match api
-        .websocket_subscription(SubscriptionType::ChannelChatMessage, session.id.clone())
+        .subscribe(SubscriptionType::ChannelChatMessage, session.id.clone())
         .broadcaster_user_id(user_info.user_id.to_broadcaster_id())
         .user_id(user_info.user_id.clone())
         .send()

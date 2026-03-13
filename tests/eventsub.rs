@@ -15,10 +15,12 @@ async fn create_eventsub() {
 
     let result = suite
         .api()
-        .webhook_subscription(
+        .subscribe(
             SubscriptionType::UserUpdate,
-            Url::parse("https://this-is-a-callback.com").unwrap(),
-            "s3cre7",
+            (
+                Url::parse("https://this-is-a-callback.com").unwrap(),
+                "s3cre7",
+            ),
         )
         .user_id(UserId::from("1234"))
         .send()
@@ -59,7 +61,7 @@ async fn create_eventsub2() {
 
     let result = suite
         .api()
-        .websocket_subscription(
+        .subscribe(
             SubscriptionType::UserUpdate,
             SessionId::from("AQoQexAWVYKSTIu4ec_2VAxyuhAB"),
         )
@@ -77,7 +79,7 @@ async fn create_eventsub3() {
 
     let result = suite
         .api()
-        .conduit_subscription(
+        .subscribe(
             SubscriptionType::UserUpdate,
             ConduitId::from("bfcfc993-26b1-b876-44d9-afe75a379dac"),
         )

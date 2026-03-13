@@ -97,15 +97,14 @@ pub struct CreateEventSub<'a> {
     kind: SubscriptionType,
     version: String,
     condition: Condition,
-    transport: TransportRequest,
+    transport: TransportType,
 }
 
 impl<'a> CreateEventSub<'a> {
-    pub fn webhook(
+    pub(crate) fn new(
         client: &'a Client,
         kind: SubscriptionType,
-        callback: Url,
-        secret: String,
+        transport: impl Into<TransportType>,
     ) -> Self {
         let version = kind.version().to_string();
         Self {
@@ -113,29 +112,7 @@ impl<'a> CreateEventSub<'a> {
             kind,
             version,
             condition: Condition::default(),
-            transport: TransportRequest::Webhook { callback, secret },
-        }
-    }
-
-    pub fn websocket(api: &'a Client, kind: SubscriptionType, session_id: SessionId) -> Self {
-        let version = kind.version().to_string();
-        Self {
-            client: api,
-            version,
-            kind,
-            condition: Condition::default(),
-            transport: TransportRequest::Websocket { session_id },
-        }
-    }
-
-    pub fn conduit(api: &'a Client, kind: SubscriptionType, conduit_id: ConduitId) -> Self {
-        let version = kind.version().to_string();
-        Self {
-            client: api,
-            kind,
-            version,
-            condition: Condition::default(),
-            transport: TransportRequest::Conduit { conduit_id },
+            transport: transport.into(),
         }
     }
 
@@ -218,8 +195,38 @@ impl<'a> CreateEventSub<'a> {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "method", rename_all = "lowercase")]
-pub enum TransportRequest {
-    Webhook { callback: Url, secret: String },
-    Websocket { session_id: SessionId },
+pub enum TransportType {
+    WebHook { callback: Url, secret: String },
+    WebSocket { session_id: SessionId },
     Conduit { conduit_id: ConduitId },
+}
+
+impl From<(Url, String)> for TransportType {
+    fn from(value: (Url, String)) -> Self {
+        Self::WebHook {
+            callback: value.0,
+            secret: value.1,
+        }
+    }
+}
+
+impl From<(Url, &str)> for TransportType {
+    fn from(value: (Url, &str)) -> Self {
+        Self::WebHook {
+            callback: value.0,
+            secret: value.1.to_string(),
+        }
+    }
+}
+
+impl From<SessionId> for TransportType {
+    fn from(session_id: SessionId) -> Self {
+        Self::WebSocket { session_id }
+    }
+}
+
+impl From<ConduitId> for TransportType {
+    fn from(conduit_id: ConduitId) -> Self {
+        Self::Conduit { conduit_id }
+    }
 }
