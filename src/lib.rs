@@ -1,19 +1,9 @@
-//! # twitch_highway
-//!
 //! A Rust library for the Twitch Helix API with type safety and comprehensive EventSub support.
 //!
 //! Official Twitch API Documentation: <https://dev.twitch.tv/docs/api/reference/>
 //!
 //! ## Getting Started
 //!
-//! **Important:** By default, no API endpoints are enabled. You must specify the features you need in `Cargo.toml`.
-//!
-//! ```toml
-//! [dependencies]
-//! twitch_highway = "0.4"
-//! tokio = { version = "1", features = ["full"] }
-//! asknothingx2-util = { version = "0.4", features = ["oauth"] }
-//! ```
 //! ### Basic Usage
 //!
 //! ```no_run
@@ -35,8 +25,8 @@
 //!         &ModeratorId::from("67890"),
 //!         &UserId::from("54321"),
 //!     )
-//!     .duration(600) // Optional
-//!     .reason("no reason") // Optional: 10 minues
+//!     .duration(600) // Optional: 10 minutes
+//!     .reason("no reason") // Optional
 //!     .send()
 //!     .await?;
 //!
@@ -82,11 +72,8 @@
 //!
 //! #### Feature Flags
 //!
-//! - `webhook-verify`: Core verification only
-//! - `webhook-http`: Generic HTTP header support
 //! - `webhook-axum`: Axum framework support
 //! - `webhook-actix`: Actix-web framework support
-//! - `webhook`: All webhook features
 //!
 //! ### WebSocket Client
 //!
@@ -97,18 +84,13 @@
 //!
 //! #### Feature Flags
 //!
-//! - `websocket`:  WebSocket clietn with reconnection and event routing
+//! - `websocket`: WebSocket client with reconnection and event routing
 //!
 //! See the [`eventsub`] module documentation for more details.
 //!
 //! ## OAuth Token Management
 //!
-//! This library is designed to work with [`twitch_oauth_token`](https://docs.rs/twitch_oauth_token) for OAuth authentication:
-//!
-//! ```toml
-//! [dependencies]
-//! twitch_oauth_token = "4"
-//! ```
+//! This library is designed to work with [`twitch_oauth_token`](https://docs.rs/twitch_oauth_token) for OAuth authentication.
 //!
 
 #![cfg_attr(docsrs, feature(doc_cfg))]

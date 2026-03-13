@@ -2,7 +2,7 @@
 
 [![crates.io](https://img.shields.io/crates/v/twitch_highway.svg)](https://crates.io/crates/twitch_highway)
 [![Documentation](https://docs.rs/twitch_highway/badge.svg)](https://docs.rs/twitch_highway)
-[![MIT/Apache-2 licensed](https://img.shields.io/crates/l/twitch_highway.svg)]
+![MIT/Apache-2 licensed](https://img.shields.io/crates/l/twitch_highway.svg)
 
 A Rust library for the Twitch API with compile-time safety and comprehensive response support.
 
@@ -13,15 +13,6 @@ A Rust library for the Twitch API with compile-time safety and comprehensive res
 - EventSub WebSocket client with automatic reconnection and routing
 
 ## Quick Start
-
-```toml
-[dependencies]
-twitch_highway = "0.4"
-tokio = { version = "1", features = ["full"] }
-asknothingx2-util = { version = "0.5", features = ["oauth"] }
-# or
-# twitch_oauth_token = { version = "4" }
-```
 
 ```rust
 use twitch_highway::{
@@ -44,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let response = api.ban_user(&broadcaster_id, &moderator_id, &user_id)
         .reason("no reason")
         .duration(600) // 10 minutes
-        .json()
+        .send()
         .await;
 
     match response {
@@ -72,8 +63,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.4", features = ["webhook-axum"] }
-axum = "0.8"
+twitch_highway = { features = ["webhook-axum"] }
 ```
 
 ```rust
@@ -103,7 +93,7 @@ let app = Router::new().route("/webhook", post(webhook_handler));
 
 ```toml
 [dependencies]
-twitch_highway = { version = "0.4", features = ["websocket"] }
+twitch_highway = { features = ["websocket"] }
 ```
 
 ```rust
