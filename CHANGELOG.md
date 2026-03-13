@@ -1,3 +1,9 @@
+## [0.5.1](https://github.com/m3idnotfree/twitch_highway/compare/v0.5.0..v0.5.1) - 2026-03-13
+
+### Bug Fixes
+
+- **(eventsub)** Source_badges should be Vec<Badge>([d4397b6](https://github.com/m3idnotfree/twitch_highway/commit/d4397b6e068cf92e2b05c4a2d8cb4ffbbcbaaca5))
+
 ## [0.5.0](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.3..v0.5.0) - 2026-03-13
 
 ### Features
