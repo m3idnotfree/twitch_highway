@@ -16,7 +16,7 @@
 //! ```
 //! ### Basic Usage
 //!
-//! ```rust
+//! ```no_run
 //! use asknothingx2_util::oauth::{AccessToken, ClientId};
 //! use twitch_highway::{
 //!     moderation::ModerationAPI,
@@ -47,11 +47,10 @@
 //!
 //! ## Error Handling
 //!
-//! ```rust
-//! # use twitch_highway::request::TwitchAPIRequest;
-//! # use serde::de::DeserializeOwned;
-//! # async fn example<T: DeserializeOwned>(api: TwitchAPIRequest<T>) {
-//! match api.json().await {
+//! ```no_run
+//! # use twitch_highway::{types::UserId, videos::VideosAPI, Client};
+//! # async fn example(api: Client) {
+//! match api.get_videos(&UserId::from("123")).send().await {
 //!     Ok(response) => {
 //!         // Process successful response
 //!     }
