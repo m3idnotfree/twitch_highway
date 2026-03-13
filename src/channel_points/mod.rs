@@ -23,49 +23,7 @@ use crate::{
 };
 
 pub trait ChannelPointsAPI {
-    /// Creates a Custom Reward in the broadcaster’s channel
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`CreateCustomRewardBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::ChannelPointsAPI,
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .create_custom_rewards(&BroadcasterId::from("1234"), "title", 64)
-    ///     .prompt("prompt")
-    ///     .background_color("blue")
-    ///     .is_enabled(false)
-    ///     .is_user_input_required(true)
-    ///     .is_max_per_stream_enabled(true)
-    ///     .max_per_stream(5)
-    ///     .is_max_per_stream_enabled(true)
-    ///     .max_per_user_per_stream(5)
-    ///     .is_global_cooldown_enabled(true)
-    ///     .global_cooldown_seconds(50)
-    ///     .should_redemptions_skip_request_queue(true)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
+    /// See <https://dev.twitch.tv/docs/api/reference/#create-custom-rewards>
     fn create_custom_rewards<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -73,221 +31,31 @@ pub trait ChannelPointsAPI {
         cost: u64,
     ) -> CreateCustomReward<'a>;
 
-    /// Deletes a custom reward that the broadcaster created
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that created the custom reward.
-    /// * `reward_id` - The ID of the custom reward to delete.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::ChannelPointsAPI,
-    ///     types::{BroadcasterId, RewardId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .delete_custom_reward(
-    ///         &BroadcasterId::from("1234"),
-    ///         &RewardId::from("5678"))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
+    /// See <https://dev.twitch.tv/docs/api/reference/#delete-custom-reward>
     fn delete_custom_reward(
         &self,
         broadcaster_id: &BroadcasterId,
         reward_id: &RewardId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Gets a list of custom rewards that the specified broadcaster created
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetCustomRewardBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::ChannelPointsAPI,
-    ///     types::{BroadcasterId, RewardId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_custom_reward(&BroadcasterId::from("1234"))
-    ///     .custom_reward_ids(&[RewardId::from("5678")])
-    ///     .only_manageable_rewards(true)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:redemptions or channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
     fn get_custom_reward<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetCustomReward<'a>;
 
-    /// Gets a list of redemptions for the specified custom reward
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetCustomRewardRedemptionBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::{ChannelPointsAPI, RedemptionStatus, Sort},
-    ///     types::{BroadcasterId, RewardId, RedemptionId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_custom_reward_redemption(
-    ///         &BroadcasterId::from("1234"),
-    ///         &RewardId::from("5678"))
-    ///     .status(RedemptionStatus::CANCELED)
-    ///     .sort(Sort::NEWEST)
-    ///     .ids(&[RedemptionId::from("6789")])
-    ///     .first(5)
-    ///     .after("eyJiI...")
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:redemptions or channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-custom-reward-redemption>
     fn get_custom_reward_redemption<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
     ) -> GetCustomRewardRedemption<'a>;
 
-    /// Updates a custom reward
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`UpdateCustomRewardBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::ChannelPointsAPI,
-    ///     types::{BroadcasterId, RewardId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .update_custom_reward(
-    ///         &BroadcasterId::from("1234"),
-    ///         &RewardId::from("5678"))
-    ///     .title("title")
-    ///     .cost(60)
-    ///     .prompt("prompt")
-    ///     .background_color("blue")
-    ///     .is_enabled(false)
-    ///     .is_user_input_required(true)
-    ///     .is_max_per_stream_enabled(true)
-    ///     .max_per_stream(5)
-    ///     .max_per_user_per_stream(5)
-    ///     .is_global_cooldown_enabled(true)
-    ///     .global_cooldown_seconds(50)
-    ///     .is_paused(false)
-    ///     .should_redemptions_skip_request_queue(true)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-custom-reward>
     fn update_custom_reward<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
     ) -> UpdateCustomReward<'a>;
 
-    /// Updates a redemption’s status
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that’s updating the redemption.
-    /// * `reward_id` - The ID that identifies the reward that’s been redeemed.
-    /// * `redemption_ids` - A list of IDs that identify the redemptions to update.
-    /// * `status` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`CustomRewardsRedemptionResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     channel_points::{ChannelPointsAPI, RedemptionStatus},
-    ///     types::{BroadcasterId, RedemptionId, RewardId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .update_redemption_status(&BroadcasterId::from("1234"),
-    ///         &RewardId::from("5678"),
-    ///         &[RedemptionId::from("78901")],
-    ///         RedemptionStatus::CANCELED)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:redemptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-redemption-status>
     fn update_redemption_status(
         &self,
         broadcaster_id: &BroadcasterId,

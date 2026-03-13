@@ -15,41 +15,7 @@ use crate::{
 };
 
 pub trait GoalsAPI {
-    /// Gets the broadcaster’s list of active goals
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that created the goals.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GoalsResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     goals::GoalsAPI,
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_creator_goals(&BroadcasterId::from("1234"))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:goals`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-creator-goals>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-creator-goals>
     fn get_creator_goals(
         &self,
         broadcaster_id: &BroadcasterId,

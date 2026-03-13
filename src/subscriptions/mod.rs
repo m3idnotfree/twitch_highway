@@ -17,86 +17,13 @@ use crate::{
 };
 
 pub trait SubscriptionsAPI {
-    /// Gets a list of users that subscribe to the specified broadcaster
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - ID. This ID must match the user ID in the access token.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetBroadcasterSubscriptionsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     subscriptions::SubscriptionsAPI,
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_broadcaster_subscriptions(&BroadcasterId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:subscriptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-broadcaster-subscriptions>
     fn get_broadcaster_subscriptions<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
     ) -> GetBroadcasterSubscriptions<'a>;
 
-    /// Checks whether the user subscribes to the broacaster’s channel
-    ///
-    /// # Arguments
-    ///
-    /// * `broacaster_id` - The ID of a partner or affiliate broadcaster.
-    /// * `user_id` - The ID of the user that you’re checking to see whether they subscribe to the broadcaster in broadcaster_id.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`UserSubscriptionResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     subscriptions::SubscriptionsAPI,
-    ///     types::{BroadcasterId, UserId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .check_user_subscription(
-    ///         &BroadcasterId::from("1234"),
-    ///         &UserId::from("5678")
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `user:read:subscriptions`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#check-user-subscription>
+    /// See <https://dev.twitch.tv/docs/api/reference/#check-user-subscription>
     fn check_user_subscription(
         &self,
         broadcaster_id: &BroadcasterId,

@@ -15,81 +15,14 @@ use crate::{
 };
 
 pub trait RaidAPI {
-    /// Raid another channel by sending the broadcaster’s viewers to the targeted channel
-    ///
-    /// # Arguments
-    ///
-    /// * `from_broadcaster_id` - The ID of the broadcaster that’s sending the raiding party.
-    /// * `to_broadcaster_id` - The ID of the broadcaster to raid.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`StartRaidResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     raid::RaidAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let from_broadcaster_id = BroadcasterId::from("1234");
-    /// let to_broadcaster_id = BroadcasterId::from("5678");
-    /// let response = api
-    ///     .start_raid(&from_broadcaster_id, &to_broadcaster_id)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:raids`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
+    /// See <https://dev.twitch.tv/docs/api/reference/#start-a-raid>
     fn start_raid(
         &self,
         from_broadcaster_id: &BroadcasterId,
         to_broadcaster_id: &BroadcasterId,
     ) -> impl Future<Output = Result<StartRaidResponse, Error>> + Send;
 
-    /// Cancel a pending raid
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` -
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     raid::RaidAPI,
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .cancel_raid(&BroadcasterId::from("1234"))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:raids`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
+    /// See <https://dev.twitch.tv/docs/api/reference/#cancel-a-raid>
     fn cancel_raid(
         &self,
         broadcaster_id: &BroadcasterId,

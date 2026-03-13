@@ -19,140 +19,15 @@ use crate::{
 };
 
 pub trait ClipsAPI {
-    /// Creates a clip from the broadcaster’s stream
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose stream you want to create a clip from.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`CreateClipBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     clips::ClipsAPI,
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .create_clip(&BroadcasterId::from("1234"))
-    ///     .title("title")
-    ///     .duration(5.3)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `clips:edit`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#create-clip>
+    /// See <https://dev.twitch.tv/docs/api/reference/#create-clip>
     fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClip<'a>;
 
-    /// Gets one or more video clips that were captured from streams
+    /// - `&BroadcasterId`, `&GameId`, or `&[ClipId]` (slice, array, or Vec)
     ///
-    /// # Arguments
-    ///
-    /// * `select` - The filter to use. Pass [`BroadcasterId`], [GameId](crate::types::GameId), or `&[`[`ClipId`]`]`.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetClipsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     clips::ClipsAPI,
-    ///     types::{BroadcasterId, ClipId, GameId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// // By broadcaster ID
-    /// let response = api
-    ///     .get_clips(&BroadcasterId::from("1234"))
-    ///     .first(50)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// // By game ID
-    /// let response = api
-    ///     .get_clips(&GameId::from("1234"))
-    ///     .first(50)
-    ///     .send()
-    ///     .await?;
-    ///
-    /// // By clip IDs
-    /// let ids = vec![ClipId::from("1234"), ClipId::from("5678")];
-    /// let response = api
-    ///     .get_clips(&ids)
-    ///     .send()
-    ///     .await?;
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// No scope required
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-clips>
     fn get_clips<'a>(&'a self, select: impl Into<ClipSelect<'a>>) -> GetClips<'a>;
 
-    /// Provides URLs to download the video file(s) for the specified clips
-    ///
-    /// # Arguments
-    ///
-    /// * `editor_id` - The User ID of the editor for the channel you want to download a clip for.
-    /// * `broadcaster_id` - The ID of the broadcaster you want to download clips for.
-    /// * `clip_ids` - The ID that identifies the clip you want to download. Include this parameter for each clip you want to download. (max 10)
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ClipsDownloadResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     clips::ClipsAPI,
-    ///     types::{BroadcasterId, ClipId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_clips_download(
-    ///         &UserId::from("1234"),
-    ///         &BroadcasterId::from("5678"),
-    ///         &[ClipId::from("1234"), ClipId::from("5678")]
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `editor:manage:clips or channel:manage:clips`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference#get-clips-download>
+    /// See <https://dev.twitch.tv/docs/api/reference#get-clips-download>
     fn get_clips_download(
         &self,
         editor_id: &UserId,
@@ -160,6 +35,7 @@ pub trait ClipsAPI {
         clip_ids: &[ClipId],
     ) -> impl Future<Output = Result<ClipsDownloadResponse, Error>> + Send;
 
+    /// See <https://dev.twitch.tv/docs/api/reference#create-clip-from-vod>
     fn create_clip_from_vod(
         &self,
         editor_id: &UserId,

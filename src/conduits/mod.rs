@@ -21,230 +21,32 @@ use crate::{
 };
 
 pub trait ConduitsAPI {
-    /// Gets the conduits for a client ID
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ConduitResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::conduits::ConduitsAPI;
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_conduits()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// No scope required
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-conduits>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-conduits>
     fn get_conduits(&self) -> impl Future<Output = Result<ConduitResponse, Error>> + Send;
 
-    /// Creates a new conduit
-    ///
-    /// # Arguments
-    ///
-    /// * `shard_count` - The number of shards to create for this conduit.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ConduitResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::conduits::ConduitsAPI;
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .create_conduits(5)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// App access token
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#create-conduits>
+    /// See <https://dev.twitch.tv/docs/api/reference/#create-conduits>
     fn create_conduits(
         &self,
         shard_count: u64,
     ) -> impl Future<Output = Result<ConduitResponse, Error>> + Send;
 
-    /// Updates a conduit’s shard count
-    ///
-    /// # Arguments
-    ///
-    /// * `conduit_id` -
-    /// * `shard_count` - The new number of shards for this conduit.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ConduitResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     conduits::ConduitsAPI,
-    ///     types::ConduitId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let conduit_id = ConduitId::from("1234");
-    /// let response = api
-    ///     .update_conduits(&conduit_id, 5)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// App access token
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-conduits>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-conduits>
     fn update_conduits(
         &self,
         conduit_id: &ConduitId,
         shard_count: u64,
     ) -> impl Future<Output = Result<ConduitResponse, Error>> + Send;
 
-    /// Deletes a specified conduit
-    ///
-    /// # Arguments
-    ///
-    /// * `conduit_id` -
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     conduits::ConduitsAPI,
-    ///     types::ConduitId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .delete_conduits(&ConduitId::from("1234"))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// App access token
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#delete-conduit>
+    /// See <https://dev.twitch.tv/docs/api/reference/#delete-conduit>
     fn delete_conduits(
         &self,
         conduit_id: &ConduitId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Gets a lists of all shards for a conduit
-    ///
-    /// # Arguments
-    ///
-    /// * `conduit_id` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetConduitShardsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     conduits::ConduitsAPI,
-    ///     types::{ConduitId, Status},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_conduit_shards(&ConduitId::from("1234"))
-    ///     .status(Status::Enabled)
-    ///     .after("eyJiI...")
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// App access token
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-conduit-shards>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-conduit-shards>
     fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShards<'a>;
 
-    /// Updates shard(s) for a conduit
-    ///
-    /// # Arguments
-    ///
-    /// * `conduit_id` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`UpdateConduitShardsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     conduits::ConduitsAPI,
-    ///     types::{ConduitId, SessionId, ShardId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .update_conduit_shards(ConduitId::from("1234"))
-    ///     .webhook(ShardId::from("1234"), "callback", "secret")
-    ///     .websocket(ShardId::from("5678"), SessionId::from("7890"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// App access token
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-conduit-shards>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-conduit-shards>
     fn update_conduit_shards<'a>(&'a self, conduit_id: ConduitId) -> UpdateConduitShards<'a>;
 }
 

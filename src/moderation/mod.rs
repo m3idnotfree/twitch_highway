@@ -40,88 +40,14 @@ use crate::{
 const SUSPICIOUS_USERS: &str = "suspicious_users";
 
 pub trait ModerationAPI {
-    /// Checks whether AutoMod would flag the specified message for review
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose AutoMod settings and list of blocked terms are used to check the message.
-    /// * `data` - Array of messages to check
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`CheckAutoModStatusResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::{CheckAutoMod, ModerationAPI},
-    ///     types::BroadcasterId
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .check_automod_status(
-    ///         &BroadcasterId::from("1234"),
-    ///         &[CheckAutoMod::new("123", "text")],
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderation:read`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
+    /// See <https://dev.twitch.tv/docs/api/reference/#check-automod-status>
     fn check_automod_status(
         &self,
         broadcaster_id: &BroadcasterId,
         data: &[CheckAutoMod],
     ) -> impl Future<Output = Result<CheckAutoModStatusResponse, Error>> + Send;
 
-    /// Allow or deny the message that AutoMod flagged for review
-    ///
-    /// # Arguments
-    ///
-    /// * `user_id` - The moderator who is approving or denying the held message.
-    /// * `msg_id` - The ID of the message to allow or deny.
-    /// * `action` - [`AutoModAction`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::{AutoModAction, ModerationAPI},
-    ///     types::UserId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .manage_held_automod_messages(
-    ///         &UserId::from("1234"),
-    ///         "836485",
-    ///         AutoModAction::ALLOW,
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:automod`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
+    /// See <https://dev.twitch.tv/docs/api/reference/#manage-held-automod-messages>
     fn manage_held_automod_messages(
         &self,
         user_id: &UserId,
@@ -129,177 +55,24 @@ pub trait ModerationAPI {
         action: AutoModAction,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Gets the broadcaster’s AutoMod settings
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose AutoMod settings you want to get.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`AutoModSettingsResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_automod_settings(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678")
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:read:automod_settings`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-automod-settings>
     fn get_automod_settings(
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
     ) -> impl Future<Output = Result<AutoModSettingsResponse, Error>> + Send;
 
-    /// Updates the broadcaster’s AutoMod settings
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose AutoMod settings you want to update.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`UpdateAutomodSettingsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .update_automod_settings(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    ///  `moderator:manage:automod_settings`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-automod-settings>
     fn update_automod_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> UpdateAutomodSettings<'a>;
 
-    /// Gets all users that the broadcaster banned or put in a timeout
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose list of banned users you want to get
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetBannedUsersBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_banned_users(&BroadcasterId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderation:read or moderator:manage:banned_users`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
     fn get_banned_users<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetBannedUsers<'a>;
 
-    /// Bans a user from participating in the specified broadcaster’s chat room or puts them in a timeout
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose chat room the user is being banned from.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    /// * `user_id` - The ID of the user to ban or put in a timeout.
-    /// # Returns
-    ///
-    /// Returns a [`BanUserBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .ban_user(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         &UserId::from("6789")
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:banned_users`
-    ///
-    /// API Reference
-    ///
-    /// maximum is 1,209,600 seconds (2 weeks).
-    /// <https://dev.twitch.tv/docs/api/reference/#ban-user>
+    /// See <https://dev.twitch.tv/docs/api/reference/#ban-user>
     fn ban_user<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -307,43 +80,7 @@ pub trait ModerationAPI {
         user_id: &'a UserId,
     ) -> CreateBan<'a>;
 
-    /// emoves the ban or timeout that was placed on the specified user
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose chat room the user is banned from chatting in.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    /// * `user_id` - The ID of the user to remove the ban or timeout from.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .unban_user(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         &UserId::from("5678"),
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:banned_users `
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#unban-user>
+    /// See <https://dev.twitch.tv/docs/api/reference/#unban-user>
     fn unban_user(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -351,48 +88,7 @@ pub trait ModerationAPI {
         user_id: &UserId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Gets a list of unban requests for a broadcaster’s channel
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose channel is receiving unban requests.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests.
-    /// * `status` -
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetUnbanRequestsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::{ModerationAPI, UnbanRequestStatus},
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_unban_requests(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         UnbanRequestStatus::Pending,
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:read:unban_requests or moderator:manage:unban_requests`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-unban-requests>
     fn get_unban_requests<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -400,50 +96,7 @@ pub trait ModerationAPI {
         status: UnbanRequestStatus,
     ) -> GetUnbanRequests<'a>;
 
-    /// Resolves an unban request by approving or denying it
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose channel is approving or denying the unban request.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests.
-    /// * `unban_request_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests.
-    /// * `status` - [`UnbanRequestStatus`]
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ResolveUnbanRequestBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::{ModerationAPI, UnbanRequestStatus},
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .resolve_unban_request(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         "unban_request_id",
-    ///         UnbanRequestStatus::Denied,
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:unban_requests`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
+    /// See <https://dev.twitch.tv/docs/api/reference/#resolve-unban-requests>
     fn resolve_unban_request<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
@@ -452,93 +105,14 @@ pub trait ModerationAPI {
         status: UnbanRequestStatus,
     ) -> ResolveUnbanRequest<'a>;
 
-    /// Gets the broadcaster’s list of non-private, blocked words or phrases
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose blocked terms you’re getting.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetBlockedTermsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_blocked_terms(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678")
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:read:blocked_terms or moderator:manage:blocked_terms`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-blocked-terms>
     fn get_blocked_terms<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> GetBlockedTerms<'a>;
 
-    /// Adds a word or phrase to the broadcaster’s list of blocked terms
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that owns the list of blocked terms.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    /// * `text` - The word or phrase to block from being used in the broadcaster’s chat room. (min 2, max 500)
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`BlockedTermsResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .add_blocked_term(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         "text"
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:blocked_terms`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
+    /// See <https://dev.twitch.tv/docs/api/reference/#add-blocked-term>
     fn add_blocked_term(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -546,43 +120,7 @@ pub trait ModerationAPI {
         text: &str,
     ) -> impl Future<Output = Result<BlockedTermsResponse, Error>> + Send;
 
-    /// Removes the word or phrase from the broadcaster’s list of blocked terms
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that owns the list of blocked terms.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    /// * `id` - The ID of the blocked term to remove from the broadcaster’s list of blocked terms.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, BlockedTermId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .remove_blocked_term(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         &BlockedTermId::from("5678"),
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:blocked_terms`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
+    /// See <https://dev.twitch.tv/docs/api/reference/#remove-blocked-term>
     fn remove_blocked_term(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -590,371 +128,51 @@ pub trait ModerationAPI {
         id: &BlockedTermId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Removes a single chat message or all chat messages from the broadcaster’s chat room
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room to remove messages from.
-    /// * `moderator_id` - The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`DeleteChatMessagesBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .delete_chat_messages(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///     )
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:chat_messages`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
+    /// See <https://dev.twitch.tv/docs/api/reference/#delete-chat-messages>
     fn delete_chat_messages<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
     ) -> DeleteChatMessages<'a>;
 
-    /// Gets a list of channels that the specified user has moderator privileges in
-    ///
-    /// # Arguments
-    ///
-    /// * `user_id` - A user’s ID. Returns the list of channels that this user has moderator privileges in.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetModeratedChannelsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::UserId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_moderated_channels(&UserId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `user:read:moderated_channels`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
     fn get_moderated_channels<'a>(&'a self, user_id: &'a UserId) -> GetModeratedChannels<'a>;
 
-    /// Gets all users allowed to moderate the broadcaster’s chat room
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose list of moderators you want to get.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetModeratorsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_moderators(&BroadcasterId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderation:read or channel:manage:moderators`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-moderators>
     fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModerators<'a>;
 
-    /// Adds a moderator to the broadcaster’s chat room
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room.
-    /// * `user_id` - The ID of the user to add as a moderator in the broadcaster’s chat room.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .add_channel_moderator(
-    ///         &BroadcasterId::from("1234"),
-    ///         &UserId::from("5678"),
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:moderators`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
+    /// See <https://dev.twitch.tv/docs/api/reference/#add-channel-moderator>
     fn add_channel_moderator(
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Removes a moderator from the broadcaster’s chat room
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that owns the chat room.
-    /// * `user_id` - The ID of the user to remove as a moderator from the broadcaster’s chat room.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .remove_channel_moderator(
-    ///         &BroadcasterId::from("1234"),
-    ///         &UserId::from("5678")
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:moderators`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
+    /// See <https://dev.twitch.tv/docs/api/reference/#remove-channel-moderator>
     fn remove_channel_moderator(
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Gets a list of the broadcaster’s VIPs
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose list of VIPs you want to get.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetVipsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_vips(&BroadcasterId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:vips or channel:manage:vips `
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-vips>
     fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVips<'a>;
 
-    /// Adds the specified user as a VIP in the broadcaster’s channel
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster that’s adding the user as a VIP.
-    /// * `user_id` - The ID of the user to give VIP status to.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .add_channel_vip(
-    ///         &BroadcasterId::from("1234"),
-    ///         &UserId::from("5678")
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:vips`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
+    /// See <https://dev.twitch.tv/docs/api/reference/#add-channel-vip>
     fn add_channel_vip(
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Removes the specified user as a VIP in the broadcaster’s channel
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster who owns the channel where the user has VIP status.
-    /// * `user_id` - The ID of the user to remove VIP status from.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .remove_channel_vip(
-    ///         &BroadcasterId::from("1234"),
-    ///         &UserId::from("5678"),
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:vips`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
+    /// See <https://dev.twitch.tv/docs/api/reference/#remove-channel-vip>
     fn remove_channel_vip(
         &self,
         broadcaster_id: &BroadcasterId,
         user_id: &UserId,
     ) -> impl Future<Output = Result<(), Error>> + Send;
 
-    /// Activates or deactivates the broadcaster’s Shield Mode
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose Shield Mode you want to activate or deactivate.
-    /// * `moderator_id` - The ID of the broadcaster whose Shield Mode you want to activate or deactivate.
-    /// * `is_active` - A Boolean value that determines whether to activate Shield Mode.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ShieldModeStatusResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .update_shield_mode_status(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         false
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:shield_mode`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
+    /// See <https://dev.twitch.tv/docs/api/reference/#update-shield-mode-status>
     fn update_shield_mode_status(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -962,94 +180,14 @@ pub trait ModerationAPI {
         is_active: bool,
     ) -> impl Future<Output = Result<ShieldModeStatusResponse, Error>> + Send;
 
-    /// Gets the broadcaster’s Shield Mode activation status
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster whose Shield Mode activation status you want to get.
-    /// * `moderator_id` - The ID of the broadcaster or a user that is one of the broadcaster’s moderators.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`ShieldModeStatusResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::ModerationAPI,
-    ///     types::{BroadcasterId, ModeratorId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_shield_mode_status(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:read:shield_mode or moderator:manage:shield_mode`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-shield-mode-status>
     fn get_shield_mode_status(
         &self,
         broadcaster_id: &BroadcasterId,
         moderator_id: &ModeratorId,
     ) -> impl Future<Output = Result<ShieldModeStatusResponse, Error>> + Send;
 
-    /// Warns a user in the specified broadcaster’s chat room, preventing them from chat interaction until the warning is acknowledged
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the channel in which the warning will take effect.
-    /// * `moderator_id` - The ID of the twitch user who requested the warning.
-    /// * `user_id` - The ID of the twitch user to be warned.
-    /// * `reason` - custom reason for the warning. Max 500 chars.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`WarnChatUsersResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     moderation::{ModerationAPI},
-    ///     types::{BroadcasterId, ModeratorId, UserId},
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .warn_chat_user(
-    ///         &BroadcasterId::from("1234"),
-    ///         &ModeratorId::from("5678"),
-    ///         &UserId::from("7890"),
-    ///         "no reason"
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `moderator:manage:warnings`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
+    /// See <https://dev.twitch.tv/docs/api/reference/#warn-chat-user>
     fn warn_chat_user(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -1058,6 +196,7 @@ pub trait ModerationAPI {
         reason: &str,
     ) -> impl Future<Output = Result<WarnChatUsersResponse, Error>> + Send;
 
+    /// See <https://dev.twitch.tv/docs/api/reference/#add-suspicious-status-to-chat-user>
     fn add_suspicious_status_to_chat_user(
         &self,
         broadcaster_id: &BroadcasterId,
@@ -1066,6 +205,7 @@ pub trait ModerationAPI {
         status: SuspiciousStatus,
     ) -> impl Future<Output = Result<SuspiciousResponse, Error>> + Send;
 
+    /// See <https://dev.twitch.tv/docs/api/reference/#remove-suspicious-status-from-chat-user>
     fn remove_suspicious_status_from_chat_user(
         &self,
         broadcaster_id: &BroadcasterId,

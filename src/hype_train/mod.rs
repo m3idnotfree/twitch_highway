@@ -18,41 +18,7 @@ use crate::{
 };
 
 pub trait HypeTrainAPI {
-    /// Get the status of a Hype Train for the specified broadcaster
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The User ID of the channel broadcaster.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`HypeTrainStatusResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     hype_train::HypeTrainAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_hype_train_status(&BroadcasterId::from("1234"))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:hype_train`
-    ///
-    /// API Reference
-    ///
-    // <https://dev.twitch.tv/docs/api/reference/#get-hype-train-status>
+    // See <https://dev.twitch.tv/docs/api/reference/#get-hype-train-status>
     fn get_hype_train_status(
         &self,
         broadcaster_id: &BroadcasterId,

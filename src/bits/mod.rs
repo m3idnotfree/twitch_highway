@@ -20,119 +20,16 @@ use crate::{
 };
 
 pub trait BitsAPI {
-    /// Gets the Bits leaderboard for the authenticated broadcaster
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`BitsLeaderboardRequest`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     bits::{BitsAPI, Period},
-    ///     types::UserId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_bits_leaderboard()
-    ///     .count(50)
-    ///     .period(Period::Week)
-    ///     .started_at(&"2018-01-01T00:00:00Z".parse().unwrap())
-    ///     .user_id(&UserId::from("1234"))
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `bits:read`
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
     fn get_bits_leaderboard<'a>(&'a self) -> GetBitsLeaderboard<'a>;
 
-    /// Gets a list of Cheermotes that users can use to cheer Bits in any Bits-enabled channel’s chat room
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - Optional The ID of the broadcaster whose custom Cheermotes you want to get.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`CheermotesResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     bits::BitsAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_cheermotes(Some(&BroadcasterId::from("1234")))
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// No scope required
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-cheermotes>
     fn get_cheermotes(
         &self,
         broadcaster_id: Option<&BroadcasterId>,
     ) -> impl Future<Output = Result<CheermotesResponse, Error>> + Send;
 
-    /// Gets an extension’s list of transactions
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`GetExtensionTransactionsBuilder`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     bits::BitsAPI,
-    ///     types::{ExtensionId, TransactionId}
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .get_extension_transactions(&ExtensionId::from("1234"))
-    ///     .ids(&[TransactionId::from("5678"), TransactionId::from("6789")])
-    ///     .first(50)
-    ///     .after("eyJiI...")
-    ///     .send()
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// No scope required
-    ///
-    /// API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-extension-transactions>
     fn get_extension_transactions<'a>(
         &'a self,
         extension_id: &'a ExtensionId,

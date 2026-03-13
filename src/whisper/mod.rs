@@ -13,41 +13,7 @@ use crate::{
 use types::WhisperBody;
 
 pub trait WhisperAPI {
-    /// Sends a whisper message to the specified user
-    /// # Arguments
-    ///
-    /// * `from_user_id` - this user must have a verified phone number.
-    /// * `to_user_id` - user to receive the whisper.
-    /// * `message`
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     types::UserId,
-    ///     whisper::WhisperAPI
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let response = api
-    ///     .send_whisper(
-    ///         &UserId::from("8456"),
-    ///         &UserId::from("2574"),
-    ///         "message"
-    ///     )
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    /// # Required Scope
-    ///
-    /// `user:manage:whispers`
-    ///
-    /// # API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#send-whisper>
+    /// See <https://dev.twitch.tv/docs/api/reference/#send-whisper>
     fn send_whisper(
         &self,
         from_user_id: &UserId,

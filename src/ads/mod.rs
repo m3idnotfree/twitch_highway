@@ -17,126 +17,20 @@ use crate::{
 };
 
 pub trait AdsAPI {
-    /// Starts a commercial break on the specified channel
-    ///
-    /// # Arguments
-    /// * `broadcaster_id` - The ID of the partner or affiliate broadcaster.
-    /// * `length` - The length of the commercial to run, in seconds maximum 180.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`StartCommercialResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     ads::AdsAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let broadcaster_id = BroadcasterId::from("1234");
-    /// let response = api
-    ///     .start_commercial(&broadcaster_id, 60)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:edit:commercial`
-    ///
-    /// # API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#start-commercial>
+    /// See <https://dev.twitch.tv/docs/api/reference/#start-commercial>
     fn start_commercial(
         &self,
         broadcaster_id: &BroadcasterId,
         length: u8,
     ) -> impl Future<Output = Result<StartCommercialResponse, Error>> + Send;
 
-    /// Gets the broadcaster's ad schedule and details about scheduled ads
-    ///
-    /// # Arguments
-    ///
-    /// * `broadcaster_id` - The ID of the broadcaster. must match the user ID in the
-    ///   auth token.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`AdScheduleResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     ads::AdsAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let broadcaster_id = BroadcasterId::from("1234");
-    /// let response = api
-    ///     .get_ad_schedule(&broadcaster_id)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:read:ads`
-    ///
-    /// # API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
+    /// See <https://dev.twitch.tv/docs/api/reference/#get-ad-schedule>
     fn get_ad_schedule(
         &self,
         broadcaster_id: &BroadcasterId,
     ) -> impl Future<Output = Result<AdScheduleResponse, Error>> + Send;
 
-    /// Snoozes the next scheduled ad for the broadcaster
-    ///
-    /// # Arguments
-    /// * `broadcaster_id` - The ID of the broadcaster. must match the user ID in the
-    ///   auth token.
-    ///
-    /// # Returns
-    ///
-    /// Returns a [`SnoozeNextAdResponse`]
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// # use twitch_highway::Client;
-    /// use twitch_highway::{
-    ///     ads::AdsAPI,
-    ///     types::BroadcasterId,
-    /// };
-    ///
-    /// # async fn example(api: Client) -> Result<(), twitch_highway::Error> {
-    /// let broadcaster_id = BroadcasterId::from("1234");
-    /// let response = api
-    ///     .snooze_next_ad(&broadcaster_id)
-    ///     .await?;
-    ///
-    /// # Ok(())
-    /// # }
-    /// ```
-    ///
-    /// # Required Scope
-    ///
-    /// `channel:manage:ads`
-    ///
-    /// # API Reference
-    ///
-    /// <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
+    /// See <https://dev.twitch.tv/docs/api/reference/#snooze-next-ad>
     fn snooze_next_ad(
         &self,
         broadcaster_id: &BroadcasterId,
