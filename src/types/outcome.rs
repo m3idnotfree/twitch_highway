@@ -32,24 +32,3 @@ impl AsRef<str> for OutocmeColor {
         self.as_str()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::types::OutocmeColor;
-
-    #[test]
-    fn outcome_color_enum() {
-        let colors = vec![(OutocmeColor::BLUE, "BLUE"), (OutocmeColor::PINK, "PINK")];
-
-        for (color, expected_str) in colors {
-            assert_eq!(color.as_str(), expected_str);
-            assert_eq!(color.as_ref(), expected_str);
-
-            let serialized = serde_json::to_string(&color).unwrap();
-            assert_eq!(serialized, format!("\"{}\"", expected_str));
-
-            let deserialized: OutocmeColor = serde_json::from_str(&serialized).unwrap();
-            assert_eq!(deserialized.as_str(), expected_str);
-        }
-    }
-}

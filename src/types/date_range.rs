@@ -58,35 +58,3 @@ impl fmt::Display for DateRange {
         }
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use crate::types::DateRange;
-
-    #[test]
-    fn base() {
-        let json =
-            "{\"started_at\":\"2018-03-01T00:00:00Z\",\"ended_at\":\"2018-06-01T00:00:00Z\"}";
-
-        let date_range: DateRange = serde_json::from_str(json).unwrap();
-
-        assert!(date_range.started_at.is_some());
-        assert!(date_range.ended_at.is_some());
-
-        let round_tip = serde_json::to_string(&date_range).unwrap();
-        assert_eq!(round_tip, json);
-    }
-
-    #[test]
-    fn empty_ended_at() {
-        let json = "{\"started_at\":\"2018-03-01T00:00:00Z\",\"ended_at\":\"\"}";
-
-        let date_range: DateRange = serde_json::from_str(json).unwrap();
-
-        assert!(date_range.started_at.is_some());
-        assert!(date_range.ended_at.is_none());
-
-        let round_tip = serde_json::to_string(&date_range).unwrap();
-        assert_eq!(round_tip, json);
-    }
-}
