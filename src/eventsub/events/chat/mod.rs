@@ -40,7 +40,7 @@ pub struct ChannelChatMessage {
     pub source_broadcaster_user_name: Option<String>,
     pub source_broadcaster_user_login: Option<String>,
     pub source_message_id: Option<String>,
-    pub source_badges: Option<Badge>,
+    pub source_badges: Option<Vec<Badge>>,
     pub is_source_only: Option<bool>,
 }
 
@@ -158,7 +158,7 @@ pub struct ChannelChatNotification {
     pub source_broadcaster_user_name: Option<String>,
     pub source_broadcaster_user_login: Option<String>,
     pub source_message_id: Option<String>,
-    pub source_badges: Option<Badge>,
+    pub source_badges: Option<Vec<Badge>>,
 
     pub shared_chat_sub: Option<SubGiftNotification>,
     pub shared_chat_resub: Option<ResubNotification>,
