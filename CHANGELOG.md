@@ -1,3 +1,63 @@
+## [0.5.0](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.3..v0.5.0) - 2026-03-13
+
+### Features
+
+- **(client)** Add execute(), json(), text(), no_content() helpers([a407615](https://github.com/m3idnotfree/twitch_highway/commit/a4076159c4582cd27f503b9625aeabf1a3023d24))
+- Re-export AccessToken, ClientId([c774975](https://github.com/m3idnotfree/twitch_highway/commit/c774975e45086017ded97077f7f1f2bf3c88743b))
+
+### Refactor
+
+- **(client)** [**breaking**] Rename TwitchAPI to Client([c13c771](https://github.com/m3idnotfree/twitch_highway/commit/c13c771b69e609f6c933d3a00134e6722accc53f))
+- **(whisper)** [**breaking**] Remove TwitchAPIRequest wrapper([aaf0329](https://github.com/m3idnotfree/twitch_highway/commit/aaf03290bdbf5f41f9950474ef52dfd29683c0a2))
+- **(videos)** [**breaking**] Remove TwitchAPIRequest wrapper([40a9774](https://github.com/m3idnotfree/twitch_highway/commit/40a9774e7dce799988fadfaf4668505207a1fe51))
+- **(users)** [**breaking**] Remove TwitchAPIRequest wrapper([8a44708](https://github.com/m3idnotfree/twitch_highway/commit/8a447084cdbbb7775d598ff9c81c7f4cc6de5833))
+- **(teams)** [**breaking**] Remove TwitchAPIRequest wrapper([33a0b75](https://github.com/m3idnotfree/twitch_highway/commit/33a0b756a69dc7c463e04a06087ed0d402353ff9))
+- **(subscriptions)** [**breaking**] Remove TwitchAPIRequest wrapper([e0ed247](https://github.com/m3idnotfree/twitch_highway/commit/e0ed2478d1c73fa1424e041c803d878817921e1e))
+- **(streams)** [**breaking**] Remove TwitchAPIRequest wrapper([5d87e3d](https://github.com/m3idnotfree/twitch_highway/commit/5d87e3d3c8eae20b7109f0436c773d14d7525883))
+- **(search)** [**breaking**] Remove TwitchAPIRequest wrapper([cbcc0f5](https://github.com/m3idnotfree/twitch_highway/commit/cbcc0f50e32cb60b69ee56ed4ecff6a5a1570d21))
+- **(schedule)** [**breaking**] Remove TwitchAPIRequest wrapper([9250586](https://github.com/m3idnotfree/twitch_highway/commit/925058621b67df322a5496ffa2efe91222c934dc))
+- **(raid)** [**breaking**] Remove TwitchAPIRequest wrapper([d0b5f19](https://github.com/m3idnotfree/twitch_highway/commit/d0b5f19b94de15c3f571261f4c5ac7f4e7234630))
+- **(predictions)** [**breaking**] Remove TwitchAPIRequest wrapper([f72090b](https://github.com/m3idnotfree/twitch_highway/commit/f72090b03808e0729cd2ec1000d8fce2036a23bb))
+- **(polls)** [**breaking**] Remove TwitchAPIRequest wrapper([e5b11ea](https://github.com/m3idnotfree/twitch_highway/commit/e5b11eaf20d51055597682eb1785de8b9b676567))
+- **(moderation)** [**breaking**] Remove TwitchAPIRequest wrapper([495e977](https://github.com/m3idnotfree/twitch_highway/commit/495e977c05e360cf6a059d7d54ea83c65ece268a))
+- **(hype-train)** [**breaking**] Remove TwitchAPIRequest wrapper([6738c17](https://github.com/m3idnotfree/twitch_highway/commit/6738c17dd2bdce8ebbce062bff6ac7f8655bbc7c))
+- **(guest-star)** [**breaking**] Remove TwitchAPIRequest wrapper([27fc2a3](https://github.com/m3idnotfree/twitch_highway/commit/27fc2a34834cd931d13706312e689a8fea998e0d))
+- **(goals)** [**breaking**] Remove TwitchAPIRequest wrapper([c8094e7](https://github.com/m3idnotfree/twitch_highway/commit/c8094e7a24c13b4b95293de1184de3da887fbe6e))
+- **(games)** [**breaking**] Remove TwitchAPIRequest wrapper([ef9452e](https://github.com/m3idnotfree/twitch_highway/commit/ef9452e75b84e9f3c2d2ee6388b1a7907be98735))
+- **(extensions)** [**breaking**] Remove TwitchAPIRequest wrapper([2bb14e9](https://github.com/m3idnotfree/twitch_highway/commit/2bb14e98ca575757de35e701caf954c4c769aa30))
+- **(eventsub)** [**breaking**] Remove TwitchAPIRequest wrapper([9abc6df](https://github.com/m3idnotfree/twitch_highway/commit/9abc6df734c401c656ed8ab9f8ffae5fb0c6b52a))
+- **(entitlements)** [**breaking**] Remove TwitchAPIRequest wrapper([eddb1ad](https://github.com/m3idnotfree/twitch_highway/commit/eddb1ada523ba7977d2744c796b583ed3d3d4e40))
+- **(conduits)** [**breaking**] Remove TwitchAPIRequest wrapper([31caa46](https://github.com/m3idnotfree/twitch_highway/commit/31caa46d9d26fcce11dfab5a260419d70be4e96c))
+- **(clips)** [**breaking**] Remove TwitchAPIRequest wrapper([090c90a](https://github.com/m3idnotfree/twitch_highway/commit/090c90afe2017c096fb5010dd93f03018773b988))
+- **(chat)** [**breaking**] Remove TwitchAPIRequest wrapper([71d5827](https://github.com/m3idnotfree/twitch_highway/commit/71d5827d400d76dc38b4a759f79e9a243e201d74))
+- **(charity)** [**breaking**] Remove TwitchAPIRequest wrapper([5ed3bfe](https://github.com/m3idnotfree/twitch_highway/commit/5ed3bfea22c15b74fb9228dad271084f1bc613ae))
+- **(channels)** [**breaking**] Remove TwitchAPIRequest wrapper([9fa141d](https://github.com/m3idnotfree/twitch_highway/commit/9fa141d114b5d98b167f5f65655c66cdb9c21942))
+- **(channel-points)** [**breaking**] Remove TwitchAPIRequest wrapper([1eea104](https://github.com/m3idnotfree/twitch_highway/commit/1eea1044f08253ce94fc6856d674832c1c5588e5))
+- **(ccls)** [**breaking**] Remove TwitchAPIRequest wrapper([91353f2](https://github.com/m3idnotfree/twitch_highway/commit/91353f2b6d76fb03af38cff9b2d2b0e641dba82e))
+- **(bits)** [**breaking**] Remove TwitchAPIRequest wrapper([3acdb0c](https://github.com/m3idnotfree/twitch_highway/commit/3acdb0ccbe6c45bc9a66f391fae20abb1967fc66))
+- **(analytics)** [**breaking**] Remove TwitchAPIRequest wrapper([1c8b7a9](https://github.com/m3idnotfree/twitch_highway/commit/1c8b7a9223d1a000e80bef5a6c58a752824eb95c))
+- **(ads)** [**breaking**] Remove TwitchAPIRequest wrapper([52931f1](https://github.com/m3idnotfree/twitch_highway/commit/52931f1377637577d4b7749125101052956a50a6))
+- **(hype-train)** [**breaking**] Remove deprecated get_hype_train_events()([bf022bf](https://github.com/m3idnotfree/twitch_highway/commit/bf022bf758076f935f12633dccd31efe60b06b5b))
+- **(client)** [**breaking**] Remove access_token and client_id fields([49e5861](https://github.com/m3idnotfree/twitch_highway/commit/49e586143e68f46ff85f2eb50abc96a633b85058))
+- [**breaking**] Remove Builder suffix from builder structs([f4ee95a](https://github.com/m3idnotfree/twitch_highway/commit/f4ee95a61c295575167d8ab96b15d94578543e39))
+- **(eventsub)** [**breaking**] Replace subscription methods with subscribe()([e646f0b](https://github.com/m3idnotfree/twitch_highway/commit/e646f0b792ade739e828b6bc39bc912b5a335765))
+- **(error)** [**breaking**] Improve error messages([1706043](https://github.com/m3idnotfree/twitch_highway/commit/1706043b9eba64a3b38216799cfc54f97ad586b1))
+
+### Documentation
+
+- Remove verbose doc comments([8065c48](https://github.com/m3idnotfree/twitch_highway/commit/8065c48d167494d85a7232e882b8a34f3f50b2c4))
+- Update Error Handling example([fbbdfe0](https://github.com/m3idnotfree/twitch_highway/commit/fbbdfe060e1ca057c2c2ab5cc04a25d75aa4ec67))
+- Remove version references([551d1c8](https://github.com/m3idnotfree/twitch_highway/commit/551d1c8a7d16cb526b3b33e8400a63575b5533a0))
+
+### Testing
+
+- Remove redundant deserialization unit tests([febb74e](https://github.com/m3idnotfree/twitch_highway/commit/febb74e778b7be46c92ab03bf6cd8cac190393d0))
+
+### Miscellaneous
+
+- Remove unused imports and dead code([fa66ac9](https://github.com/m3idnotfree/twitch_highway/commit/fa66ac91aa00df4aafa554629f4103135a0e47bc))
+- Remove unused dependencies([ca38b98](https://github.com/m3idnotfree/twitch_highway/commit/ca38b98c8f5d0ef2f369e5ca69002008edf9e1b6))
+
 ## [0.4.3](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.2..v0.4.3) - 2026-03-07
 
 ## [0.4.2](https://github.com/m3idnotfree/twitch_highway/compare/v0.4.1..v0.4.2) - 2026-03-06
