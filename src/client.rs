@@ -1,13 +1,10 @@
 use std::sync::LazyLock;
 
-use asknothingx2_util::{
-    api::{preset, HeaderMut},
-    oauth::{AccessToken, ClientId},
-};
+use asknothingx2_util::api::{preset, HeaderMut};
 use serde::de::DeserializeOwned;
 use url::Url;
 
-use crate::{error, Error};
+use crate::{error, AccessToken, ClientId, Error};
 
 const TWITCH_API_BASE: &str = "https://api.twitch.tv/helix";
 

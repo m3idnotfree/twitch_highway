@@ -24,13 +24,10 @@ asknothingx2-util = { version = "0.5", features = ["oauth"] }
 ```
 
 ```rust
-use asknothingx2_util::oauth::{AccessToken, ClientId};
-// or
-// use twitch_oauth_token::oauth::{AccessToken, ClientId};
-
 use twitch_highway::{
     moderation::ModerationAPI,
     types::{BroadcasterId, ModeratorId, UserId},
+    AccessToken, ClientId,
 };
 
 #[tokio::main]

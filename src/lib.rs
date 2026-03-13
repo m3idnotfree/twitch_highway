@@ -17,10 +17,10 @@
 //! ### Basic Usage
 //!
 //! ```no_run
-//! use asknothingx2_util::oauth::{AccessToken, ClientId};
 //! use twitch_highway::{
 //!     moderation::ModerationAPI,
 //!     types::{BroadcasterId, ModeratorId, UserId},
+//!     AccessToken, ClientId,
 //! };
 //!
 //! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
@@ -117,6 +117,7 @@ pub mod types;
 
 mod client;
 mod error;
+mod serde_helpers;
 
 pub use client::Client;
 pub use error::Error;
@@ -151,4 +152,4 @@ pub mod users;
 pub mod videos;
 pub mod whisper;
 
-mod serde_helpers;
+pub use asknothingx2_util::oauth::{AccessToken, ClientId};
