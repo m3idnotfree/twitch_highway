@@ -77,7 +77,7 @@ impl Client {
             .await?
             .json()
             .await
-            .map_err(error::decode_error)
+            .map_err(error::parse_error)
     }
 
     pub(crate) async fn text(&self, req: reqwest::RequestBuilder) -> Result<String, Error> {
@@ -85,7 +85,7 @@ impl Client {
             .await?
             .text()
             .await
-            .map_err(error::decode_error)
+            .map_err(error::parse_error)
     }
 
     pub(crate) async fn no_content(&self, req: reqwest::RequestBuilder) -> Result<(), Error> {
@@ -104,7 +104,7 @@ impl Client {
             let status = resp.status();
             let v = resp.bytes().await?;
             let body = String::from_utf8_lossy(&v);
-            Err(error::api_error(format!("HTTP {status}: {body}")))
+            Err(error::api_error(format!("{status}: {body}")))
         }
     }
 }

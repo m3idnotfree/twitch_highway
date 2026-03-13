@@ -51,8 +51,8 @@
 //!         } else if e.is_api() {
 //!             // Twitch API returned an error (4xx, 5xx)
 //!             eprintln!("API error: {}", e);
-//!         } else if e.is_decode() {
-//!             // Failed to parse JSON response
+//!         } else if e.is_parse() {
+//!             // Failed to parse response
 //!             eprintln!("JSON decode error: {}", e);
 //!         }
 //!     }
