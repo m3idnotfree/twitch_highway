@@ -2,9 +2,9 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{CreateClipBuilder, GetClipsBuilder};
-pub use response::{ClipsDownloadResponse, ClipsInfoResponse, CreateClipsResponse};
-pub use types::{Clip, ClipDownload, CreateClip};
+pub use builder::{CreateClip, GetClips};
+pub use response::{ClipsDownloadResponse, ClipsInfoResponse, NewClipResponse};
+pub use types::{Clip, ClipDownload, NewClip};
 
 use builder::ClipSelect;
 
@@ -57,7 +57,7 @@ pub trait ClipsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#create-clip>
-    fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClipBuilder<'a>;
+    fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClip<'a>;
 
     /// Gets one or more video clips that were captured from streams
     ///
@@ -110,7 +110,7 @@ pub trait ClipsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-clips>
-    fn get_clips<'a>(&'a self, select: impl Into<ClipSelect<'a>>) -> GetClipsBuilder<'a>;
+    fn get_clips<'a>(&'a self, select: impl Into<ClipSelect<'a>>) -> GetClips<'a>;
 
     /// Provides URLs to download the video file(s) for the specified clips
     ///
@@ -168,16 +168,16 @@ pub trait ClipsAPI {
         vod_offset: u64,
         title: &str,
         duration: Option<f64>,
-    ) -> impl Future<Output = Result<CreateClipsResponse, Error>> + Send;
+    ) -> impl Future<Output = Result<NewClipResponse, Error>> + Send;
 }
 
 impl ClipsAPI for Client {
-    fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClipBuilder<'a> {
-        CreateClipBuilder::new(self, broadcaster_id)
+    fn create_clip<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> CreateClip<'a> {
+        CreateClip::new(self, broadcaster_id)
     }
 
-    fn get_clips<'a>(&'a self, select: impl Into<ClipSelect<'a>>) -> GetClipsBuilder<'a> {
-        GetClipsBuilder::new(self, select)
+    fn get_clips<'a>(&'a self, select: impl Into<ClipSelect<'a>>) -> GetClips<'a> {
+        GetClips::new(self, select)
     }
 
     async fn get_clips_download(
@@ -206,7 +206,7 @@ impl ClipsAPI for Client {
         vod_offset: u64,
         title: &str,
         duration: Option<f64>,
-    ) -> Result<CreateClipsResponse, Error> {
+    ) -> Result<NewClipResponse, Error> {
         let mut url = self.base_url();
 
         url.path_segments_mut().unwrap().extend([VIDEOS, CLIPS]);

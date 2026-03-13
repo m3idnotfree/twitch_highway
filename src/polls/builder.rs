@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetPollsBuilder<'a> {
+pub struct GetPolls<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     ids: Option<&'a [PollId]>,
@@ -16,7 +16,7 @@ pub struct GetPollsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetPollsBuilder<'a> {
+impl<'a> GetPolls<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -65,7 +65,7 @@ impl<'a> GetPollsBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct CreatePollBuilder<'a> {
+pub struct CreatePoll<'a> {
     #[serde(skip)]
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
@@ -80,7 +80,7 @@ pub struct CreatePollBuilder<'a> {
     channel_points_per_vote: Option<u32>,
 }
 
-impl<'a> CreatePollBuilder<'a> {
+impl<'a> CreatePoll<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,

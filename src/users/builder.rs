@@ -14,13 +14,13 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetUsersBuilder<'a> {
+pub struct GetUsers<'a> {
     client: &'a Client,
     ids: Option<&'a [UserId]>,
     logins: Option<&'a [&'a str]>,
 }
 
-impl<'a> GetUsersBuilder<'a> {
+impl<'a> GetUsers<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -60,14 +60,14 @@ impl<'a> GetUsersBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetUserBlockListBuilder<'a> {
+pub struct GetUserBlockList<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetUserBlockListBuilder<'a> {
+impl<'a> GetUserBlockList<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -109,14 +109,14 @@ impl<'a> GetUserBlockListBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct BlockUserBuilder<'a> {
+pub struct CreateBlockUser<'a> {
     client: &'a Client,
     target_user_id: &'a UserId,
     source_context: Option<BlockSourceContext>,
     reason: Option<BlockReason>,
 }
 
-impl<'a> BlockUserBuilder<'a> {
+impl<'a> CreateBlockUser<'a> {
     pub fn new(client: &'a Client, target_user_id: &'a UserId) -> Self {
         Self {
             client,
@@ -159,12 +159,12 @@ impl<'a> BlockUserBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetUserActiveExtensionsBuilder<'a> {
+pub struct GetUserActiveExtensions<'a> {
     client: &'a Client,
     user_id: Option<&'a UserId>,
 }
 
-impl<'a> GetUserActiveExtensionsBuilder<'a> {
+impl<'a> GetUserActiveExtensions<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -192,12 +192,12 @@ impl<'a> GetUserActiveExtensionsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct UpdateUserExtensionsBuilder<'a> {
+pub struct UpdateUserExtensions<'a> {
     client: &'a Client,
     data: UserActiveExtensions,
 }
 
-impl<'a> UpdateUserExtensionsBuilder<'a> {
+impl<'a> UpdateUserExtensions<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,

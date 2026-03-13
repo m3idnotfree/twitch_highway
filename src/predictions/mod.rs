@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{EndPredictionBuilder, GetPredictionsBuilder};
+pub use builder::{EndPrediction, GetPredictions};
 pub use response::PredictionsResponse;
 pub use types::{Prediction, PredictionStatus};
 
@@ -52,10 +52,7 @@ pub trait PredictionsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-predictions>
-    fn get_predictions<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetPredictionsBuilder<'a>;
+    fn get_predictions<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPredictions<'a>;
 
     /// Creates a Channel Points Prediction
     ///
@@ -156,15 +153,12 @@ pub trait PredictionsAPI {
         broadcaster_id: &'a BroadcasterId,
         id: &'a PredictionId,
         status: PredictionStatus,
-    ) -> EndPredictionBuilder<'a>;
+    ) -> EndPrediction<'a>;
 }
 
 impl PredictionsAPI for Client {
-    fn get_predictions<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetPredictionsBuilder<'a> {
-        GetPredictionsBuilder::new(self, broadcaster_id)
+    fn get_predictions<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPredictions<'a> {
+        GetPredictions::new(self, broadcaster_id)
     }
 
     async fn create_prediction(
@@ -192,7 +186,7 @@ impl PredictionsAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         id: &'a PredictionId,
         status: PredictionStatus,
-    ) -> EndPredictionBuilder<'a> {
-        EndPredictionBuilder::new(self, broadcaster_id, id, status)
+    ) -> EndPrediction<'a> {
+        EndPrediction::new(self, broadcaster_id, id, status)
     }
 }

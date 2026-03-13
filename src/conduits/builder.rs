@@ -10,14 +10,14 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetConduitShardsBuilder<'a> {
+pub struct GetConduitShards<'a> {
     client: &'a Client,
     conduit_id: &'a ConduitId,
     status: Option<Status>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetConduitShardsBuilder<'a> {
+impl<'a> GetConduitShards<'a> {
     pub fn new(client: &'a Client, conduit_id: &'a ConduitId) -> Self {
         Self {
             client,
@@ -59,14 +59,14 @@ impl<'a> GetConduitShardsBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UpdateConduitShardsBuilder<'a> {
+pub struct UpdateConduitShards<'a> {
     #[serde(skip)]
     client: &'a Client,
     conduit_id: ConduitId,
     shards: Vec<ShardUpdate>,
 }
 
-impl<'a> UpdateConduitShardsBuilder<'a> {
+impl<'a> UpdateConduitShards<'a> {
     pub fn new(api: &'a Client, conduit_id: ConduitId) -> Self {
         Self {
             client: api,

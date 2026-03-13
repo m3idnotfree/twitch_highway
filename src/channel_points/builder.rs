@@ -15,7 +15,7 @@ use crate::{
 const ONLY_MANAGEABLE_REWARDS: &str = "only_manageable_rewards";
 
 #[derive(Debug, Serialize)]
-pub struct CreateCustomRewardBuilder<'a> {
+pub struct CreateCustomReward<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -47,7 +47,7 @@ pub struct CreateCustomRewardBuilder<'a> {
     should_redemptions_skip_request_queue: Option<bool>,
 }
 
-impl<'a> CreateCustomRewardBuilder<'a> {
+impl<'a> CreateCustomReward<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -144,14 +144,14 @@ impl<'a> CreateCustomRewardBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetCustomRewardBuilder<'a> {
+pub struct GetCustomReward<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     custom_reward_ids: Option<&'a [RewardId]>,
     only_manageable_rewards: Option<bool>,
 }
 
-impl<'a> GetCustomRewardBuilder<'a> {
+impl<'a> GetCustomReward<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -196,7 +196,7 @@ impl<'a> GetCustomRewardBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetCustomRewardRedemptionBuilder<'a> {
+pub struct GetCustomRewardRedemption<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     reward_id: &'a RewardId,
@@ -207,7 +207,7 @@ pub struct GetCustomRewardRedemptionBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetCustomRewardRedemptionBuilder<'a> {
+impl<'a> GetCustomRewardRedemption<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -284,7 +284,7 @@ impl<'a> GetCustomRewardRedemptionBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UpdateCustomRewardBuilder<'a> {
+pub struct UpdateCustomReward<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -322,7 +322,7 @@ pub struct UpdateCustomRewardBuilder<'a> {
     should_redemptions_skip_request_queue: Option<bool>,
 }
 
-impl<'a> UpdateCustomRewardBuilder<'a> {
+impl<'a> UpdateCustomReward<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,

@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetStreamsBuilder<'a> {
+pub struct GetStreams<'a> {
     client: &'a Client,
     user_ids: Option<&'a [UserId]>,
     user_logins: Option<&'a [&'a str]>,
@@ -23,7 +23,7 @@ pub struct GetStreamsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetStreamsBuilder<'a> {
+impl<'a> GetStreams<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -133,14 +133,14 @@ impl AsRef<str> for GetStreamType {
 }
 
 #[derive(Debug)]
-pub struct GetFollowedStreamsBuilder<'a> {
+pub struct GetFollowedStreams<'a> {
     client: &'a Client,
     user_id: &'a UserId,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetFollowedStreamsBuilder<'a> {
+impl<'a> GetFollowedStreams<'a> {
     pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
         Self {
             client,
@@ -210,7 +210,7 @@ impl<'a> StreamMarkerSelect<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetStermaMarkersBuilder<'a> {
+pub struct GetStermaMarkers<'a> {
     client: &'a Client,
     select: StreamMarkerSelect<'a>,
     first: Option<u8>,
@@ -218,7 +218,7 @@ pub struct GetStermaMarkersBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetStermaMarkersBuilder<'a> {
+impl<'a> GetStermaMarkers<'a> {
     pub(crate) fn new(client: &'a Client, select: impl Into<StreamMarkerSelect<'a>>) -> Self {
         Self {
             client,

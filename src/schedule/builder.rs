@@ -16,7 +16,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetChanelStreamScheduleBuilder<'a> {
+pub struct GetChannelStreamSchedule<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     start_time: Option<&'a DateTime<Utc>>,
@@ -25,7 +25,7 @@ pub struct GetChanelStreamScheduleBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetChanelStreamScheduleBuilder<'a> {
+impl<'a> GetChannelStreamSchedule<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -87,7 +87,7 @@ impl<'a> GetChanelStreamScheduleBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct UpdateChannelStreamScheduleBuilder<'a> {
+pub struct UpdateChannelStreamSchedule<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     vacation_start_time: Option<&'a DateTime<Utc>>,
@@ -96,7 +96,7 @@ pub struct UpdateChannelStreamScheduleBuilder<'a> {
     is_vacation_enabled: Option<bool>,
 }
 
-impl<'a> UpdateChannelStreamScheduleBuilder<'a> {
+impl<'a> UpdateChannelStreamSchedule<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -163,7 +163,7 @@ impl<'a> UpdateChannelStreamScheduleBuilder<'a> {
 
 #[serde_as]
 #[derive(Debug, Serialize)]
-pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
+pub struct CreateChannelStreamScheduleSegment<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -180,7 +180,7 @@ pub struct CreateChannelStreamScheduleSegmentBuilder<'a> {
     is_recurring: Option<bool>,
 }
 
-impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
+impl<'a> CreateChannelStreamScheduleSegment<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -229,7 +229,7 @@ impl<'a> CreateChannelStreamScheduleSegmentBuilder<'a> {
 
 #[serde_as]
 #[derive(Debug, Serialize)]
-pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
+pub struct UpdateChannelStreamScheduleSegment<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -250,7 +250,7 @@ pub struct UpdateChannelStreamScheduleSegmentBulider<'a> {
     is_canceled: Option<bool>,
 }
 
-impl<'a> UpdateChannelStreamScheduleSegmentBulider<'a> {
+impl<'a> UpdateChannelStreamScheduleSegment<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId, id: &'a SegmentId) -> Self {
         Self {
             client,

@@ -13,7 +13,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetExtensionBuilder<'a> {
+pub struct GetExtensionAnalytics<'a> {
     client: &'a Client,
     extension_id: Option<&'a ExtensionId>,
     kind: Option<AnalyticsType>,
@@ -23,7 +23,7 @@ pub struct GetExtensionBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetExtensionBuilder<'a> {
+impl<'a> GetExtensionAnalytics<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -104,7 +104,7 @@ impl<'a> GetExtensionBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetGameAnalyticsBuilder<'a> {
+pub struct GetGameAnalytics<'a> {
     client: &'a Client,
     game_id: Option<&'a GameId>,
     kind: Option<AnalyticsType>,
@@ -114,7 +114,7 @@ pub struct GetGameAnalyticsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetGameAnalyticsBuilder<'a> {
+impl<'a> GetGameAnalytics<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,

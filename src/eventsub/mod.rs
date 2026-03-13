@@ -13,7 +13,7 @@ mod condition;
 mod response;
 mod subscription;
 
-pub use builder::{CreateEventSubBuilder, GetEventSubBuilder, TransportRequest};
+pub use builder::{CreateEventSub, GetEventSub, TransportRequest};
 pub use condition::Condition;
 pub use response::{
     CreateEventSubscriptionsResponse, EventSubscriptionsResponse, TransportResponse,
@@ -87,7 +87,7 @@ pub trait EventSubAPI {
         kind: SubscriptionType,
         callback: Url,
         secret: impl Into<String>,
-    ) -> CreateEventSubBuilder<'a>;
+    ) -> CreateEventSub<'a>;
 
     /// Creates a WebSocket EventSub subscription
     ///
@@ -135,7 +135,7 @@ pub trait EventSubAPI {
         &'a self,
         kind: SubscriptionType,
         session_id: SessionId,
-    ) -> CreateEventSubBuilder<'a>;
+    ) -> CreateEventSub<'a>;
 
     /// Creates a conduit EventSub subscription
     ///
@@ -183,7 +183,7 @@ pub trait EventSubAPI {
         &'a self,
         kind: SubscriptionType,
         conduit_id: ConduitId,
-    ) -> CreateEventSubBuilder<'a>;
+    ) -> CreateEventSub<'a>;
 
     /// Deletes an EventSub subscription
     ///
@@ -251,7 +251,7 @@ pub trait EventSubAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-eventsub-subscriptions>
-    fn get_eventsub<'a>(&'a self) -> GetEventSubBuilder<'a>;
+    fn get_eventsub<'a>(&'a self) -> GetEventSub<'a>;
 }
 
 impl EventSubAPI for Client {
@@ -260,24 +260,24 @@ impl EventSubAPI for Client {
         kind: SubscriptionType,
         callback: Url,
         secret: impl Into<String>,
-    ) -> CreateEventSubBuilder<'a> {
-        CreateEventSubBuilder::webhook(self, kind, callback, secret.into())
+    ) -> CreateEventSub<'a> {
+        CreateEventSub::webhook(self, kind, callback, secret.into())
     }
 
     fn websocket_subscription<'a>(
         &'a self,
         kind: SubscriptionType,
         session_id: SessionId,
-    ) -> CreateEventSubBuilder<'a> {
-        CreateEventSubBuilder::websocket(self, kind, session_id)
+    ) -> CreateEventSub<'a> {
+        CreateEventSub::websocket(self, kind, session_id)
     }
 
     fn conduit_subscription<'a>(
         &'a self,
         kind: SubscriptionType,
         conduit_id: ConduitId,
-    ) -> CreateEventSubBuilder<'a> {
-        CreateEventSubBuilder::conduit(self, kind, conduit_id)
+    ) -> CreateEventSub<'a> {
+        CreateEventSub::conduit(self, kind, conduit_id)
     }
 
     async fn delete_eventsub(&self, subscription_id: &SubscriptionId) -> Result<(), Error> {
@@ -292,7 +292,7 @@ impl EventSubAPI for Client {
         self.no_content(self.http_client().delete(url)).await
     }
 
-    fn get_eventsub<'a>(&'a self) -> GetEventSubBuilder<'a> {
-        GetEventSubBuilder::new(self)
+    fn get_eventsub<'a>(&'a self) -> GetEventSub<'a> {
+        GetEventSub::new(self)
     }
 }

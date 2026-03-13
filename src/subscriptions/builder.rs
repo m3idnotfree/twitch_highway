@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetBroadcasterSubscriptionsBuilder<'a> {
+pub struct GetBroadcasterSubscriptions<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     user_ids: Option<&'a [UserId]>,
@@ -17,7 +17,7 @@ pub struct GetBroadcasterSubscriptionsBuilder<'a> {
     before: Option<&'a str>,
 }
 
-impl<'a> GetBroadcasterSubscriptionsBuilder<'a> {
+impl<'a> GetBroadcasterSubscriptions<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,

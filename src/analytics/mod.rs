@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{GetExtensionBuilder, GetGameAnalyticsBuilder};
+pub use builder::{GetExtensionAnalytics, GetGameAnalytics};
 pub use response::{ExtensionAnalyticsResponse, GameAnalyticsResponse};
 pub use types::{AnalyticsType, ExtensionAnalytic, GameAnalytic};
 
@@ -46,7 +46,7 @@ pub trait AnalyticsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-extension-analytics>
-    fn get_extension_analytics<'a>(&'a self) -> GetExtensionBuilder<'a>;
+    fn get_extension_analytics<'a>(&'a self) -> GetExtensionAnalytics<'a>;
 
     /// Gets an analytics report for one or more games
     ///
@@ -85,14 +85,14 @@ pub trait AnalyticsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-game-analytics>
-    fn get_game_analytics<'a>(&'a self) -> GetGameAnalyticsBuilder<'a>;
+    fn get_game_analytics<'a>(&'a self) -> GetGameAnalytics<'a>;
 }
 
 impl AnalyticsAPI for Client {
-    fn get_extension_analytics<'a>(&'a self) -> GetExtensionBuilder<'a> {
-        GetExtensionBuilder::new(self)
+    fn get_extension_analytics<'a>(&'a self) -> GetExtensionAnalytics<'a> {
+        GetExtensionAnalytics::new(self)
     }
-    fn get_game_analytics<'a>(&'a self) -> GetGameAnalyticsBuilder<'a> {
-        GetGameAnalyticsBuilder::new(self)
+    fn get_game_analytics<'a>(&'a self) -> GetGameAnalytics<'a> {
+        GetGameAnalytics::new(self)
     }
 }

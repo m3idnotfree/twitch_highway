@@ -3,8 +3,8 @@ mod response;
 mod types;
 
 pub use builder::{
-    GetExtensionConfigurationSegmentBuilder, GetExtensionLiveChannelsBuilder,
-    SetExtensionConfigurationSegmentBuilder, UpdateExtensionBitsProductBuilder,
+    GetExtensionConfigurationSegment, GetExtensionLiveChannels, SetExtensionConfigurationSegment,
+    UpdateExtensionBitsProduct,
 };
 pub use response::{
     ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose, ExtensionSecretsResponse,
@@ -84,7 +84,7 @@ pub trait ExtensionsAPI {
         jwt_token: JWTToken,
         extension_id: &'a ExtensionId,
         segments: &'a [Segment],
-    ) -> GetExtensionConfigurationSegmentBuilder<'a>;
+    ) -> GetExtensionConfigurationSegment<'a>;
 
     /// Updates a configuration segment
     ///
@@ -130,7 +130,7 @@ pub trait ExtensionsAPI {
         &'a self,
         extension_id: &'a ExtensionId,
         segment: Segment,
-    ) -> SetExtensionConfigurationSegmentBuilder<'a>;
+    ) -> SetExtensionConfigurationSegment<'a>;
 
     /// Updates the extension’s required_configuration string
     ///
@@ -266,7 +266,7 @@ pub trait ExtensionsAPI {
     fn get_extension_live_channels<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
-    ) -> GetExtensionLiveChannelsBuilder<'a>;
+    ) -> GetExtensionLiveChannels<'a>;
 
     /// Gets an extension’s list of shared secrets
     ///
@@ -566,7 +566,7 @@ pub trait ExtensionsAPI {
         sku: &'a str,
         cost: Cost,
         display_name: &'a str,
-    ) -> UpdateExtensionBitsProductBuilder<'a>;
+    ) -> UpdateExtensionBitsProduct<'a>;
 }
 
 impl ExtensionsAPI for Client {
@@ -575,16 +575,16 @@ impl ExtensionsAPI for Client {
         jwt_token: JWTToken,
         extension_id: &'a ExtensionId,
         segments: &'a [Segment],
-    ) -> GetExtensionConfigurationSegmentBuilder<'a> {
-        GetExtensionConfigurationSegmentBuilder::new(self, jwt_token, extension_id, segments)
+    ) -> GetExtensionConfigurationSegment<'a> {
+        GetExtensionConfigurationSegment::new(self, jwt_token, extension_id, segments)
     }
 
     fn set_extension_configuration_segment<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
         segment: Segment,
-    ) -> SetExtensionConfigurationSegmentBuilder<'a> {
-        SetExtensionConfigurationSegmentBuilder::new(self, extension_id, segment)
+    ) -> SetExtensionConfigurationSegment<'a> {
+        SetExtensionConfigurationSegment::new(self, extension_id, segment)
     }
 
     async fn set_extension_required_configuration(
@@ -642,8 +642,8 @@ impl ExtensionsAPI for Client {
     fn get_extension_live_channels<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
-    ) -> GetExtensionLiveChannelsBuilder<'a> {
-        GetExtensionLiveChannelsBuilder::new(self, extension_id)
+    ) -> GetExtensionLiveChannels<'a> {
+        GetExtensionLiveChannels::new(self, extension_id)
     }
 
     async fn get_extension_secrets(
@@ -766,7 +766,7 @@ impl ExtensionsAPI for Client {
         sku: &'a str,
         cost: Cost,
         display_name: &'a str,
-    ) -> UpdateExtensionBitsProductBuilder<'a> {
-        UpdateExtensionBitsProductBuilder::new(self, sku, cost, display_name)
+    ) -> UpdateExtensionBitsProduct<'a> {
+        UpdateExtensionBitsProduct::new(self, sku, cost, display_name)
     }
 }

@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[derive(Debug, Serialize)]
-pub struct ModifyChannelInfoBuilder<'a> {
+pub struct ModifyChannelInfo<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -32,7 +32,7 @@ pub struct ModifyChannelInfoBuilder<'a> {
     is_branded_content: Option<bool>,
 }
 
-impl<'a> ModifyChannelInfoBuilder<'a> {
+impl<'a> ModifyChannelInfo<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -156,7 +156,7 @@ impl<'a> GetFollowedChannels<'a> {
     }
 }
 #[derive(Debug)]
-pub struct GetChannelFollowersRequest<'a> {
+pub struct GetChannelFollowers<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     user_id: Option<&'a UserId>,
@@ -164,7 +164,7 @@ pub struct GetChannelFollowersRequest<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetChannelFollowersRequest<'a> {
+impl<'a> GetChannelFollowers<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,

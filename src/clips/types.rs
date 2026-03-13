@@ -5,7 +5,7 @@ use url::Url;
 use crate::types::{BroadcasterId, ClipId, GameId, UserId, VideoId};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CreateClip {
+pub struct NewClip {
     pub edit_url: Url,
     pub id: ClipId,
 }

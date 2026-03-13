@@ -3,8 +3,7 @@ mod response;
 mod types;
 
 pub use builder::{
-    CreateCustomRewardBuilder, GetCustomRewardBuilder, GetCustomRewardRedemptionBuilder,
-    UpdateCustomRewardBuilder,
+    CreateCustomReward, GetCustomReward, GetCustomRewardRedemption, UpdateCustomReward,
 };
 pub use response::{CustomRewardsRedemptionResponse, CustomRewardsResponse};
 pub use types::{
@@ -72,7 +71,7 @@ pub trait ChannelPointsAPI {
         broadcaster_id: &'a BroadcasterId,
         title: &'a str,
         cost: u64,
-    ) -> CreateCustomRewardBuilder<'a>;
+    ) -> CreateCustomReward<'a>;
 
     /// Deletes a custom reward that the broadcaster created
     ///
@@ -148,10 +147,7 @@ pub trait ChannelPointsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-custom-reward>
-    fn get_custom_reward<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetCustomRewardBuilder<'a>;
+    fn get_custom_reward<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetCustomReward<'a>;
 
     /// Gets a list of redemptions for the specified custom reward
     ///
@@ -196,7 +192,7 @@ pub trait ChannelPointsAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
-    ) -> GetCustomRewardRedemptionBuilder<'a>;
+    ) -> GetCustomRewardRedemption<'a>;
 
     /// Updates a custom reward
     ///
@@ -249,7 +245,7 @@ pub trait ChannelPointsAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
-    ) -> UpdateCustomRewardBuilder<'a>;
+    ) -> UpdateCustomReward<'a>;
 
     /// Updates a redemption’s status
     ///
@@ -307,8 +303,8 @@ impl ChannelPointsAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         title: &'a str,
         cost: u64,
-    ) -> CreateCustomRewardBuilder<'a> {
-        CreateCustomRewardBuilder::new(self, broadcaster_id, title, cost)
+    ) -> CreateCustomReward<'a> {
+        CreateCustomReward::new(self, broadcaster_id, title, cost)
     }
 
     async fn delete_custom_reward(
@@ -329,27 +325,24 @@ impl ChannelPointsAPI for Client {
         self.no_content(self.http_client().delete(url)).await
     }
 
-    fn get_custom_reward<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetCustomRewardBuilder<'a> {
-        GetCustomRewardBuilder::new(self, broadcaster_id)
+    fn get_custom_reward<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetCustomReward<'a> {
+        GetCustomReward::new(self, broadcaster_id)
     }
 
     fn get_custom_reward_redemption<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
-    ) -> GetCustomRewardRedemptionBuilder<'a> {
-        GetCustomRewardRedemptionBuilder::new(self, broadcaster_id, reward_id)
+    ) -> GetCustomRewardRedemption<'a> {
+        GetCustomRewardRedemption::new(self, broadcaster_id, reward_id)
     }
 
     fn update_custom_reward<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         reward_id: &'a RewardId,
-    ) -> UpdateCustomRewardBuilder<'a> {
-        UpdateCustomRewardBuilder::new(self, broadcaster_id, reward_id)
+    ) -> UpdateCustomReward<'a> {
+        UpdateCustomReward::new(self, broadcaster_id, reward_id)
     }
 
     async fn update_redemption_status(

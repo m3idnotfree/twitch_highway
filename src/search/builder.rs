@@ -7,14 +7,14 @@ use crate::{
 const LIVE_ONLY: &str = "live_only";
 
 #[derive(Debug)]
-pub struct SearchCategoriesBuilder<'a> {
+pub struct SearchCategories<'a> {
     client: &'a Client,
     query: &'a str,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> SearchCategoriesBuilder<'a> {
+impl<'a> SearchCategories<'a> {
     pub fn new(client: &'a Client, query: &'a str) -> Self {
         Self {
             client,
@@ -55,7 +55,7 @@ impl<'a> SearchCategoriesBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct SearchChannelsBuilder<'a> {
+pub struct SearchChannels<'a> {
     client: &'a Client,
     query: &'a str,
     live_only: Option<bool>,
@@ -63,7 +63,7 @@ pub struct SearchChannelsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> SearchChannelsBuilder<'a> {
+impl<'a> SearchChannels<'a> {
     pub fn new(client: &'a Client, query: &'a str) -> Self {
         Self {
             client,

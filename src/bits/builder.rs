@@ -15,7 +15,7 @@ use crate::{
 use crate::bits::Period;
 
 #[derive(Debug)]
-pub struct BitsLeaderboardRequest<'a> {
+pub struct GetBitsLeaderboard<'a> {
     client: &'a Client,
     count: Option<u8>,
     period: Option<Period>,
@@ -23,7 +23,7 @@ pub struct BitsLeaderboardRequest<'a> {
     user_id: Option<&'a UserId>,
 }
 
-impl<'a> BitsLeaderboardRequest<'a> {
+impl<'a> GetBitsLeaderboard<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -82,7 +82,7 @@ impl<'a> BitsLeaderboardRequest<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetExtensionTransactionsBuilder<'a> {
+pub struct GetExtensionTransactions<'a> {
     client: &'a Client,
     extension_id: &'a ExtensionId,
     ids: Option<&'a [TransactionId]>,
@@ -90,7 +90,7 @@ pub struct GetExtensionTransactionsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetExtensionTransactionsBuilder<'a> {
+impl<'a> GetExtensionTransactions<'a> {
     pub fn new(client: &'a Client, extension_id: &'a ExtensionId) -> Self {
         Self {
             client,

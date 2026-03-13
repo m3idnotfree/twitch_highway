@@ -3,8 +3,7 @@ mod response;
 mod types;
 
 pub use builder::{
-    BlockUserBuilder, GetUserActiveExtensionsBuilder, GetUserBlockListBuilder, GetUsersBuilder,
-    UpdateUserExtensionsBuilder,
+    CreateBlockUser, GetUserActiveExtensions, GetUserBlockList, GetUsers, UpdateUserExtensions,
 };
 pub use response::{
     BlockUserListResponse, GetAuthorizationByUserResponse, UpdateUsersResponse,
@@ -60,7 +59,7 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-users>
-    fn get_users<'a>(&'a self) -> GetUsersBuilder<'a>;
+    fn get_users<'a>(&'a self) -> GetUsers<'a>;
 
     /// Updates the specified user’s information
     ///
@@ -134,10 +133,8 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
-    fn get_user_block_list<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetUserBlockListBuilder<'a>;
+    fn get_user_block_list<'a>(&'a self, broadcaster_id: &'a BroadcasterId)
+        -> GetUserBlockList<'a>;
 
     /// Blocks the specified user from interacting with or having contact with the broadcaster
     ///
@@ -177,7 +174,7 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#block-user>
-    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> BlockUserBuilder<'a>;
+    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> CreateBlockUser<'a>;
 
     /// Removes the user from the broadcaster’s list of blocked users
     ///
@@ -278,7 +275,7 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-active-extensions>
-    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a>;
+    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensions<'a>;
 
     /// Updates an installed extension’s information
     ///
@@ -312,7 +309,7 @@ pub trait UserAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#update-user-extensions>
-    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a>;
+    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensions<'a>;
 
     /// Gets the authorization scopes that the specified user(s) have granted the application
     ///
@@ -352,8 +349,8 @@ pub trait UserAPI {
 }
 
 impl UserAPI for Client {
-    fn get_users<'a>(&'a self) -> GetUsersBuilder<'a> {
-        GetUsersBuilder::new(self)
+    fn get_users<'a>(&'a self) -> GetUsers<'a> {
+        GetUsers::new(self)
     }
 
     async fn update_user(&self, description: &str) -> Result<UpdateUsersResponse, Error> {
@@ -369,12 +366,12 @@ impl UserAPI for Client {
     fn get_user_block_list<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetUserBlockListBuilder<'a> {
-        GetUserBlockListBuilder::new(self, broadcaster_id)
+    ) -> GetUserBlockList<'a> {
+        GetUserBlockList::new(self, broadcaster_id)
     }
 
-    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> BlockUserBuilder<'a> {
-        BlockUserBuilder::new(self, target_user_id)
+    fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> CreateBlockUser<'a> {
+        CreateBlockUser::new(self, target_user_id)
     }
 
     async fn unblock_user(&self, target_user_id: &UserId) -> Result<(), Error> {
@@ -398,12 +395,12 @@ impl UserAPI for Client {
         self.json(self.http_client().get(url)).await
     }
 
-    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensionsBuilder<'a> {
-        GetUserActiveExtensionsBuilder::new(self)
+    fn get_user_active_extensions<'a>(&'a self) -> GetUserActiveExtensions<'a> {
+        GetUserActiveExtensions::new(self)
     }
 
-    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensionsBuilder<'a> {
-        UpdateUserExtensionsBuilder::new(self)
+    fn update_user_extensions<'a>(&'a self) -> UpdateUserExtensions<'a> {
+        UpdateUserExtensions::new(self)
     }
 
     async fn get_authorization_by_user(

@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{GetFollowedStreamsBuilder, GetStermaMarkersBuilder, GetStreamsBuilder};
+pub use builder::{GetFollowedStreams, GetStermaMarkers, GetStreams};
 pub use response::{
     CreateStreamMarkerResponse, GetStreamMarkersResponse, StreamKeyResponse, StreamsResponse,
 };
@@ -94,7 +94,7 @@ pub trait StreamsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-streams>
-    fn get_streams<'a>(&'a self) -> GetStreamsBuilder<'a>;
+    fn get_streams<'a>(&'a self) -> GetStreams<'a>;
 
     /// Gets the list of broadcasters that the user follows and that are streaming live
     ///
@@ -133,7 +133,7 @@ pub trait StreamsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-followed-streams>
-    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreamsBuilder<'a>;
+    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreams<'a>;
 
     /// Adds a marker to a live stream
     ///
@@ -223,7 +223,7 @@ pub trait StreamsAPI {
     fn get_stream_markers<'a>(
         &'a self,
         select: impl Into<StreamMarkerSelect<'a>> + Send,
-    ) -> GetStermaMarkersBuilder<'a>;
+    ) -> GetStermaMarkers<'a>;
 }
 
 impl StreamsAPI for Client {
@@ -241,12 +241,12 @@ impl StreamsAPI for Client {
         self.json(self.http_client().get(url)).await
     }
 
-    fn get_streams<'a>(&'a self) -> GetStreamsBuilder<'a> {
-        GetStreamsBuilder::new(self)
+    fn get_streams<'a>(&'a self) -> GetStreams<'a> {
+        GetStreams::new(self)
     }
 
-    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreamsBuilder<'a> {
-        GetFollowedStreamsBuilder::new(self, user_id)
+    fn get_followed_streams<'a>(&'a self, user_id: &'a UserId) -> GetFollowedStreams<'a> {
+        GetFollowedStreams::new(self, user_id)
     }
 
     async fn create_stream_marker(
@@ -268,7 +268,7 @@ impl StreamsAPI for Client {
     fn get_stream_markers<'a>(
         &'a self,
         select: impl Into<StreamMarkerSelect<'a>> + Send,
-    ) -> GetStermaMarkersBuilder<'a> {
-        GetStermaMarkersBuilder::new(self, select)
+    ) -> GetStermaMarkers<'a> {
+        GetStermaMarkers::new(self, select)
     }
 }

@@ -14,7 +14,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct UpdateChannelGuestStarSettingsBuilder<'a> {
+pub struct UpdateChannelGuestStarSettings<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     is_moderator_send_live_enabled: Option<bool>,
@@ -24,7 +24,7 @@ pub struct UpdateChannelGuestStarSettingsBuilder<'a> {
     regenerate_browser_sources: Option<bool>,
 }
 
-impl<'a> UpdateChannelGuestStarSettingsBuilder<'a> {
+impl<'a> UpdateChannelGuestStarSettings<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -99,7 +99,7 @@ impl<'a> UpdateChannelGuestStarSettingsBuilder<'a> {
 
 #[derive(Debug)]
 
-pub struct UpdateGuestStarSlotBuilder<'a> {
+pub struct UpdateGuestStarSlot<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -108,7 +108,7 @@ pub struct UpdateGuestStarSlotBuilder<'a> {
     destination_slot_id: Option<&'a str>,
 }
 
-impl<'a> UpdateGuestStarSlotBuilder<'a> {
+impl<'a> UpdateGuestStarSlot<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -151,7 +151,7 @@ impl<'a> UpdateGuestStarSlotBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct DeleteGuestStarSlotBuilder<'a> {
+pub struct DeleteGuestStarSlot<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -161,7 +161,7 @@ pub struct DeleteGuestStarSlotBuilder<'a> {
     should_reinvite_guest: Option<&'a str>,
 }
 
-impl<'a> DeleteGuestStarSlotBuilder<'a> {
+impl<'a> DeleteGuestStarSlot<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -209,7 +209,7 @@ impl<'a> DeleteGuestStarSlotBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct UpdateGuestStarSlotSettingsBuilder<'a> {
+pub struct UpdateGuestStarSlotSettings<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -221,7 +221,7 @@ pub struct UpdateGuestStarSlotSettingsBuilder<'a> {
     volume: Option<u64>,
 }
 
-impl<'a> UpdateGuestStarSlotSettingsBuilder<'a> {
+impl<'a> UpdateGuestStarSlotSettings<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,

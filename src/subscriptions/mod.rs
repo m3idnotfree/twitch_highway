@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::GetBroadcasterSubscriptionsBuilder;
+pub use builder::GetBroadcasterSubscriptions;
 pub use response::{BroadcasterSubscriptionResponse, UserSubscriptionResponse};
 pub use types::{Subscription, Tier};
 
@@ -56,7 +56,7 @@ pub trait SubscriptionsAPI {
     fn get_broadcaster_subscriptions<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetBroadcasterSubscriptionsBuilder<'a>;
+    ) -> GetBroadcasterSubscriptions<'a>;
 
     /// Checks whether the user subscribes to the broacaster’s channel
     ///
@@ -108,8 +108,8 @@ impl SubscriptionsAPI for Client {
     fn get_broadcaster_subscriptions<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetBroadcasterSubscriptionsBuilder<'a> {
-        GetBroadcasterSubscriptionsBuilder::new(self, broadcaster_id)
+    ) -> GetBroadcasterSubscriptions<'a> {
+        GetBroadcasterSubscriptions::new(self, broadcaster_id)
     }
 
     async fn check_user_subscription(

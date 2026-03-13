@@ -3,8 +3,8 @@ mod response;
 mod types;
 
 pub use builder::{
-    CreateChannelStreamScheduleSegmentBuilder, GetChanelStreamScheduleBuilder,
-    UpdateChannelStreamScheduleBuilder, UpdateChannelStreamScheduleSegmentBulider,
+    CreateChannelStreamScheduleSegment, GetChannelStreamSchedule, UpdateChannelStreamSchedule,
+    UpdateChannelStreamScheduleSegment,
 };
 pub use response::{Schedule, ScheduleResponse};
 pub use types::{Segment, Vacation};
@@ -62,7 +62,7 @@ pub trait ScheduleAPI {
     fn get_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetChanelStreamScheduleBuilder<'a>;
+    ) -> GetChannelStreamSchedule<'a>;
 
     /// Gets the broadcaster’s streaming schedule as an iCalendar.
     /// # Arguments
@@ -142,7 +142,7 @@ pub trait ScheduleAPI {
     fn update_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> UpdateChannelStreamScheduleBuilder<'a>;
+    ) -> UpdateChannelStreamSchedule<'a>;
 
     /// Adds a single or recurring broadcast to the broadcaster’s streaming schedule.
     ///
@@ -197,7 +197,7 @@ pub trait ScheduleAPI {
         timezone: Tz,
         //  minutes, must be range 30, max 1380 (23 hours)
         duration: u16,
-    ) -> CreateChannelStreamScheduleSegmentBuilder<'a>;
+    ) -> CreateChannelStreamScheduleSegment<'a>;
 
     /// Updates a scheduled broadcast segment
     ///
@@ -243,7 +243,7 @@ pub trait ScheduleAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         id: &'a SegmentId,
-    ) -> UpdateChannelStreamScheduleSegmentBulider<'a>;
+    ) -> UpdateChannelStreamScheduleSegment<'a>;
 
     /// Removes a broadcast segment from the broadcaster’s streaming schedule
     ///
@@ -291,8 +291,8 @@ impl ScheduleAPI for Client {
     fn get_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetChanelStreamScheduleBuilder<'a> {
-        GetChanelStreamScheduleBuilder::new(self, broadcaster_id)
+    ) -> GetChannelStreamSchedule<'a> {
+        GetChannelStreamSchedule::new(self, broadcaster_id)
     }
 
     async fn get_channel_icalendar(&self, broadcaster_id: &BroadcasterId) -> Result<String, Error> {
@@ -311,8 +311,8 @@ impl ScheduleAPI for Client {
     fn update_channel_stream_schedule<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> UpdateChannelStreamScheduleBuilder<'a> {
-        UpdateChannelStreamScheduleBuilder::new(self, broadcaster_id)
+    ) -> UpdateChannelStreamSchedule<'a> {
+        UpdateChannelStreamSchedule::new(self, broadcaster_id)
     }
 
     fn create_channel_stream_schedule_segment<'a>(
@@ -321,8 +321,8 @@ impl ScheduleAPI for Client {
         start_time: &'a DateTime<Utc>,
         timezone: Tz,
         duration: u16,
-    ) -> CreateChannelStreamScheduleSegmentBuilder<'a> {
-        CreateChannelStreamScheduleSegmentBuilder::new(
+    ) -> CreateChannelStreamScheduleSegment<'a> {
+        CreateChannelStreamScheduleSegment::new(
             self,
             broadcaster_id,
             start_time,
@@ -335,8 +335,8 @@ impl ScheduleAPI for Client {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         id: &'a SegmentId,
-    ) -> UpdateChannelStreamScheduleSegmentBulider<'a> {
-        UpdateChannelStreamScheduleSegmentBulider::new(self, broadcaster_id, id)
+    ) -> UpdateChannelStreamScheduleSegment<'a> {
+        UpdateChannelStreamScheduleSegment::new(self, broadcaster_id, id)
     }
 
     async fn delete_channel_stream_schedule_segment(

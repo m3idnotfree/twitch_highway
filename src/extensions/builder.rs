@@ -13,7 +13,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetExtensionConfigurationSegmentBuilder<'a> {
+pub struct GetExtensionConfigurationSegment<'a> {
     client: &'a Client,
     jwt_token: JWTToken,
     extension_id: &'a ExtensionId,
@@ -21,7 +21,7 @@ pub struct GetExtensionConfigurationSegmentBuilder<'a> {
     broadcaster_id: Option<&'a BroadcasterId>,
 }
 
-impl<'a> GetExtensionConfigurationSegmentBuilder<'a> {
+impl<'a> GetExtensionConfigurationSegment<'a> {
     pub fn new(
         client: &'a Client,
         jwt_token: JWTToken,
@@ -66,7 +66,7 @@ impl<'a> GetExtensionConfigurationSegmentBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SetExtensionConfigurationSegmentBuilder<'a> {
+pub struct SetExtensionConfigurationSegment<'a> {
     #[serde(skip)]
     client: &'a Client,
     extension_id: &'a ExtensionId,
@@ -80,7 +80,7 @@ pub struct SetExtensionConfigurationSegmentBuilder<'a> {
     version: Option<&'a str>,
 }
 
-impl<'a> SetExtensionConfigurationSegmentBuilder<'a> {
+impl<'a> SetExtensionConfigurationSegment<'a> {
     pub fn new(client: &'a Client, extension_id: &'a ExtensionId, segment: Segment) -> Self {
         Self {
             client,
@@ -120,14 +120,14 @@ impl<'a> SetExtensionConfigurationSegmentBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetExtensionLiveChannelsBuilder<'a> {
+pub struct GetExtensionLiveChannels<'a> {
     client: &'a Client,
     extension_id: &'a ExtensionId,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetExtensionLiveChannelsBuilder<'a> {
+impl<'a> GetExtensionLiveChannels<'a> {
     pub fn new(client: &'a Client, extension_id: &'a ExtensionId) -> Self {
         Self {
             client,
@@ -166,7 +166,7 @@ impl<'a> GetExtensionLiveChannelsBuilder<'a> {
     }
 }
 #[derive(Debug, Serialize)]
-pub struct UpdateExtensionBitsProductBuilder<'a> {
+pub struct UpdateExtensionBitsProduct<'a> {
     #[serde(skip)]
     client: &'a Client,
 
@@ -182,7 +182,7 @@ pub struct UpdateExtensionBitsProductBuilder<'a> {
     is_broadcast: Option<bool>,
 }
 
-impl<'a> UpdateExtensionBitsProductBuilder<'a> {
+impl<'a> UpdateExtensionBitsProduct<'a> {
     pub fn new(client: &'a Client, sku: &'a str, cost: Cost, display_name: &'a str) -> Self {
         Self {
             client,

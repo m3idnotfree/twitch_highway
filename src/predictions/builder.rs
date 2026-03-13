@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetPredictionsBuilder<'a> {
+pub struct GetPredictions<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     ids: Option<&'a [PredictionId]>,
@@ -18,7 +18,7 @@ pub struct GetPredictionsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetPredictionsBuilder<'a> {
+impl<'a> GetPredictions<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -68,7 +68,7 @@ impl<'a> GetPredictionsBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct EndPredictionBuilder<'a> {
+pub struct EndPrediction<'a> {
     #[serde(skip)]
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
@@ -78,7 +78,7 @@ pub struct EndPredictionBuilder<'a> {
     winning_outcome_id: Option<&'a str>,
 }
 
-impl<'a> EndPredictionBuilder<'a> {
+impl<'a> EndPrediction<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,

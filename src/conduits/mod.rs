@@ -2,9 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{
-    GetConduitShardsBuilder, ShardUpdate, TransportConfig, UpdateConduitShardsBuilder,
-};
+pub use builder::{GetConduitShards, ShardUpdate, TransportConfig, UpdateConduitShards};
 pub use response::{
     ConduitResponse, GetConduitShardsResponse, UpdateConduitShardsResponse, UpdateShardError,
 };
@@ -207,7 +205,7 @@ pub trait ConduitsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-conduit-shards>
-    fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShardsBuilder<'a>;
+    fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShards<'a>;
 
     /// Updates shard(s) for a conduit
     ///
@@ -247,8 +245,7 @@ pub trait ConduitsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#update-conduit-shards>
-    fn update_conduit_shards<'a>(&'a self, conduit_id: ConduitId)
-        -> UpdateConduitShardsBuilder<'a>;
+    fn update_conduit_shards<'a>(&'a self, conduit_id: ConduitId) -> UpdateConduitShards<'a>;
 }
 
 impl ConduitsAPI for Client {
@@ -306,14 +303,11 @@ impl ConduitsAPI for Client {
         self.no_content(self.http_client().delete(url)).await
     }
 
-    fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShardsBuilder<'a> {
-        GetConduitShardsBuilder::new(self, conduit_id)
+    fn get_conduit_shards<'a>(&'a self, conduit_id: &'a ConduitId) -> GetConduitShards<'a> {
+        GetConduitShards::new(self, conduit_id)
     }
 
-    fn update_conduit_shards<'a>(
-        &'a self,
-        conduit_id: ConduitId,
-    ) -> UpdateConduitShardsBuilder<'a> {
-        UpdateConduitShardsBuilder::new(self, conduit_id)
+    fn update_conduit_shards<'a>(&'a self, conduit_id: ConduitId) -> UpdateConduitShards<'a> {
+        UpdateConduitShards::new(self, conduit_id)
     }
 }

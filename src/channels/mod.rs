@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{GetChannelFollowersRequest, GetFollowedChannels, ModifyChannelInfoBuilder};
+pub use builder::{GetChannelFollowers, GetFollowedChannels, ModifyChannelInfo};
 pub use response::{
     ChannelEditorsResponse, ChannelFollowersResponse, ChannelInfoResponse,
     FollowerdChannelsResponse,
@@ -105,7 +105,7 @@ pub trait ChannelsAPI {
     fn modify_channel_info<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> ModifyChannelInfoBuilder<'a>;
+    ) -> ModifyChannelInfo<'a>;
 
     /// Gets the broadcaster’s list editors
     ///
@@ -222,7 +222,7 @@ pub trait ChannelsAPI {
     fn get_channel_followers<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetChannelFollowersRequest<'a>;
+    ) -> GetChannelFollowers<'a>;
 }
 
 impl ChannelsAPI for Client {
@@ -243,8 +243,8 @@ impl ChannelsAPI for Client {
     fn modify_channel_info<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> ModifyChannelInfoBuilder<'a> {
-        ModifyChannelInfoBuilder::new(self, broadcaster_id)
+    ) -> ModifyChannelInfo<'a> {
+        ModifyChannelInfo::new(self, broadcaster_id)
     }
 
     async fn get_channel_editor(
@@ -268,7 +268,7 @@ impl ChannelsAPI for Client {
     fn get_channel_followers<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetChannelFollowersRequest<'a> {
-        GetChannelFollowersRequest::new(self, broadcaster_id)
+    ) -> GetChannelFollowers<'a> {
+        GetChannelFollowers::new(self, broadcaster_id)
     }
 }

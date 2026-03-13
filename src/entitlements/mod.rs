@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{GetDropsEntitlementsBuilder, UpdateDropsEntitlementsBuilder};
+pub use builder::{GetDropsEntitlements, UpdateDropsEntitlements};
 pub use response::{DropsEntitlementsResponse, UpdateDropEntitlementsResponse};
 pub use types::{DropEntitlement, DropEntitlementStatus, FulfillmentStatus, UpdateDropEntitlement};
 
@@ -47,7 +47,7 @@ pub trait EntitlementsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-drops-entitlements>
-    fn get_drops_entitlements<'a>(&'a self) -> GetDropsEntitlementsBuilder<'a>;
+    fn get_drops_entitlements<'a>(&'a self) -> GetDropsEntitlements<'a>;
 
     /// Updates the Drop entitlement’s fulfillment status
     ///
@@ -83,15 +83,15 @@ pub trait EntitlementsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#update-drops-entitlements>
-    fn update_drops_entitlements<'a>(&'a self) -> UpdateDropsEntitlementsBuilder<'a>;
+    fn update_drops_entitlements<'a>(&'a self) -> UpdateDropsEntitlements<'a>;
 }
 
 impl EntitlementsAPI for Client {
-    fn get_drops_entitlements<'a>(&'a self) -> GetDropsEntitlementsBuilder<'a> {
-        GetDropsEntitlementsBuilder::new(self)
+    fn get_drops_entitlements<'a>(&'a self) -> GetDropsEntitlements<'a> {
+        GetDropsEntitlements::new(self)
     }
 
-    fn update_drops_entitlements<'a>(&'a self) -> UpdateDropsEntitlementsBuilder<'a> {
-        UpdateDropsEntitlementsBuilder::new(self)
+    fn update_drops_entitlements<'a>(&'a self) -> UpdateDropsEntitlements<'a> {
+        UpdateDropsEntitlements::new(self)
     }
 }

@@ -17,7 +17,7 @@ use crate::{
 };
 
 #[derive(Debug, Serialize)]
-pub struct UpdateAutomodSettingsBuilder<'a> {
+pub struct UpdateAutomodSettings<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -45,7 +45,7 @@ pub struct UpdateAutomodSettingsBuilder<'a> {
     swearing: Option<u64>,
 }
 
-impl<'a> UpdateAutomodSettingsBuilder<'a> {
+impl<'a> UpdateAutomodSettings<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -130,7 +130,7 @@ impl<'a> UpdateAutomodSettingsBuilder<'a> {
 
 #[derive(Debug)]
 
-pub struct GetBannedUsersBuilder<'a> {
+pub struct GetBannedUsers<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     user_ids: Option<&'a [UserId]>,
@@ -139,7 +139,7 @@ pub struct GetBannedUsersBuilder<'a> {
     before: Option<&'a str>,
 }
 
-impl<'a> GetBannedUsersBuilder<'a> {
+impl<'a> GetBannedUsers<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -200,7 +200,7 @@ impl<'a> GetBannedUsersBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct BanUserBuilder<'a> {
+pub struct CreateBan<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -215,7 +215,7 @@ pub struct BanUserBuilder<'a> {
     reason: Option<&'a str>,
 }
 
-impl<'a> BanUserBuilder<'a> {
+impl<'a> CreateBan<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -289,7 +289,7 @@ struct BanUserData<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetUnbanRequestsBuilder<'a> {
+pub struct GetUnbanRequests<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -299,7 +299,7 @@ pub struct GetUnbanRequestsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetUnbanRequestsBuilder<'a> {
+impl<'a> GetUnbanRequests<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -358,7 +358,7 @@ impl<'a> GetUnbanRequestsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct ResolveUnbanRequestBuilder<'a> {
+pub struct ResolveUnbanRequest<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -367,7 +367,7 @@ pub struct ResolveUnbanRequestBuilder<'a> {
     resolution_text: Option<&'a str>,
 }
 
-impl<'a> ResolveUnbanRequestBuilder<'a> {
+impl<'a> ResolveUnbanRequest<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -411,7 +411,7 @@ impl<'a> ResolveUnbanRequestBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetBlockedTermsBuilder<'a> {
+pub struct GetBlockedTerms<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -419,7 +419,7 @@ pub struct GetBlockedTermsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetBlockedTermsBuilder<'a> {
+impl<'a> GetBlockedTerms<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -467,14 +467,14 @@ impl<'a> GetBlockedTermsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct DeleteChatMessagesBuilder<'a> {
+pub struct DeleteChatMessages<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
     message_id: Option<&'a str>,
 }
 
-impl<'a> DeleteChatMessagesBuilder<'a> {
+impl<'a> DeleteChatMessages<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -511,14 +511,14 @@ impl<'a> DeleteChatMessagesBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetModeratedChannelsBuilder<'a> {
+pub struct GetModeratedChannels<'a> {
     client: &'a Client,
     user_id: &'a UserId,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetModeratedChannelsBuilder<'a> {
+impl<'a> GetModeratedChannels<'a> {
     pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
         Self {
             client,
@@ -558,7 +558,7 @@ impl<'a> GetModeratedChannelsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetModeratorsBuilder<'a> {
+pub struct GetModerators<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     user_ids: Option<&'a [UserId]>,
@@ -566,7 +566,7 @@ pub struct GetModeratorsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetModeratorsBuilder<'a> {
+impl<'a> GetModerators<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -618,7 +618,7 @@ impl<'a> GetModeratorsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetVipsBuilder<'a> {
+pub struct GetVips<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     user_ids: Option<&'a [UserId]>,
@@ -626,7 +626,7 @@ pub struct GetVipsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetVipsBuilder<'a> {
+impl<'a> GetVips<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,

@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{SearchCategoriesBuilder, SearchChannelsBuilder};
+pub use builder::{SearchCategories, SearchChannels};
 pub use response::{CategoriesResponse, ChannelsResponse};
 pub use types::Channel;
 
@@ -42,7 +42,7 @@ pub trait SearchAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#search-categories>
-    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a>;
+    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategories<'a>;
 
     /// Gets the channels that match the specified query and have streamed content within the past 6 months
     ///
@@ -77,15 +77,15 @@ pub trait SearchAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#search-channels>
-    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a>;
+    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannels<'a>;
 }
 
 impl SearchAPI for Client {
-    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategoriesBuilder<'a> {
-        SearchCategoriesBuilder::new(self, query)
+    fn search_categories<'a>(&'a self, query: &'a str) -> SearchCategories<'a> {
+        SearchCategories::new(self, query)
     }
 
-    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannelsBuilder<'a> {
-        SearchChannelsBuilder::new(self, query)
+    fn search_channels<'a>(&'a self, query: &'a str) -> SearchChannels<'a> {
+        SearchChannels::new(self, query)
     }
 }

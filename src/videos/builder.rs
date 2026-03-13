@@ -64,7 +64,7 @@ impl<'a> VideoSelect<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetVideosBuilder<'a> {
+pub struct GetVideos<'a> {
     client: &'a Client,
     select: VideoSelect<'a>,
     language: Option<&'a str>,
@@ -76,7 +76,7 @@ pub struct GetVideosBuilder<'a> {
     before: Option<&'a str>,
 }
 
-impl<'a> GetVideosBuilder<'a> {
+impl<'a> GetVideos<'a> {
     pub(crate) fn new(client: &'a Client, select: impl Into<VideoSelect<'a>>) -> Self {
         Self {
             client,

@@ -1,7 +1,7 @@
 use chrono::{DateTime, SecondsFormat, Utc};
 
 use crate::{
-    clips::{ClipsInfoResponse, CreateClipsResponse},
+    clips::{ClipsInfoResponse, NewClipResponse},
     types::{
         constants::{
             AFTER, BROADCASTER_ID, CLIPS, ENDED_AT, FIRST, GAME_ID, ID, IS_FEATURED, STARTED_AT,
@@ -12,14 +12,14 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct CreateClipBuilder<'a> {
+pub struct CreateClip<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     title: Option<&'a str>,
     duration: Option<f64>,
 }
 
-impl<'a> CreateClipBuilder<'a> {
+impl<'a> CreateClip<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -39,7 +39,7 @@ impl<'a> CreateClipBuilder<'a> {
         self
     }
 
-    pub async fn send(self) -> Result<CreateClipsResponse, Error> {
+    pub async fn send(self) -> Result<NewClipResponse, Error> {
         let mut url = self.client.base_url();
 
         url.path_segments_mut().unwrap().push(CLIPS);
@@ -114,7 +114,7 @@ impl<'a> ClipSelect<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetClipsBuilder<'a> {
+pub struct GetClips<'a> {
     client: &'a Client,
     select: ClipSelect<'a>,
     started_at: Option<&'a DateTime<Utc>>,
@@ -124,7 +124,7 @@ pub struct GetClipsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetClipsBuilder<'a> {
+impl<'a> GetClips<'a> {
     pub(crate) fn new(client: &'a Client, select: impl Into<ClipSelect<'a>>) -> Self {
         Self {
             client,

@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{BitsLeaderboardRequest, GetExtensionTransactionsBuilder};
+pub use builder::{GetBitsLeaderboard, GetExtensionTransactions};
 pub use response::{BitsLeaderboardResponse, CheermotesResponse, ExtensionTransactionsResponse};
 pub use types::{
     BitsLeaderboard, Cheermotes, Dark, ExtensionTransaction, Images, Imagess, Light, Period,
@@ -56,7 +56,7 @@ pub trait BitsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-bits-leaderboard>
-    fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a>;
+    fn get_bits_leaderboard<'a>(&'a self) -> GetBitsLeaderboard<'a>;
 
     /// Gets a list of Cheermotes that users can use to cheer Bits in any Bits-enabled channel’s chat room
     ///
@@ -136,12 +136,12 @@ pub trait BitsAPI {
     fn get_extension_transactions<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
-    ) -> GetExtensionTransactionsBuilder<'a>;
+    ) -> GetExtensionTransactions<'a>;
 }
 
 impl BitsAPI for crate::Client {
-    fn get_bits_leaderboard<'a>(&'a self) -> BitsLeaderboardRequest<'a> {
-        BitsLeaderboardRequest::new(self)
+    fn get_bits_leaderboard<'a>(&'a self) -> GetBitsLeaderboard<'a> {
+        GetBitsLeaderboard::new(self)
     }
 
     async fn get_cheermotes(
@@ -163,7 +163,7 @@ impl BitsAPI for crate::Client {
     fn get_extension_transactions<'a>(
         &'a self,
         extension_id: &'a ExtensionId,
-    ) -> GetExtensionTransactionsBuilder<'a> {
-        GetExtensionTransactionsBuilder::new(self, extension_id)
+    ) -> GetExtensionTransactions<'a> {
+        GetExtensionTransactions::new(self, extension_id)
     }
 }

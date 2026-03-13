@@ -16,7 +16,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetChattersBuilder<'a> {
+pub struct GetChatters<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: &'a ModeratorId,
@@ -24,7 +24,7 @@ pub struct GetChattersBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetChattersBuilder<'a> {
+impl<'a> GetChatters<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -69,13 +69,13 @@ impl<'a> GetChattersBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetChatSettingsBuilder<'a> {
+pub struct GetChatSettings<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     moderator_id: Option<&'a ModeratorId>,
 }
 
-impl<'a> GetChatSettingsBuilder<'a> {
+impl<'a> GetChatSettings<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,
@@ -106,14 +106,14 @@ impl<'a> GetChatSettingsBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetUserEmotesBuilder<'a> {
+pub struct GetUserEmotes<'a> {
     client: &'a Client,
     user_id: &'a UserId,
     broadcaster_id: Option<&'a BroadcasterId>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetUserEmotesBuilder<'a> {
+impl<'a> GetUserEmotes<'a> {
     pub fn new(client: &'a Client, user_id: &'a UserId) -> Self {
         Self {
             client,
@@ -154,7 +154,7 @@ impl<'a> GetUserEmotesBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UpdateChatSettingsBuilder<'a> {
+pub struct UpdateChatSettings<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -182,7 +182,7 @@ pub struct UpdateChatSettingsBuilder<'a> {
     unique_chat_mode: Option<bool>,
 }
 
-impl<'a> UpdateChatSettingsBuilder<'a> {
+impl<'a> UpdateChatSettings<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -264,7 +264,7 @@ impl<'a> UpdateChatSettingsBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SendChatAnnouncementBuilder<'a> {
+pub struct SendChatAnnouncement<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(skip)]
@@ -277,7 +277,7 @@ pub struct SendChatAnnouncementBuilder<'a> {
     color: Option<AnnouncementColor>,
 }
 
-impl<'a> SendChatAnnouncementBuilder<'a> {
+impl<'a> SendChatAnnouncement<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,
@@ -315,7 +315,7 @@ impl<'a> SendChatAnnouncementBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct SendChatMessageBuilder<'a> {
+pub struct SendChatMessage<'a> {
     #[serde(skip)]
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
@@ -327,7 +327,7 @@ pub struct SendChatMessageBuilder<'a> {
     reply_parent_message_id: Option<&'a str>,
 }
 
-impl<'a> SendChatMessageBuilder<'a> {
+impl<'a> SendChatMessage<'a> {
     pub fn new(
         client: &'a Client,
         broadcaster_id: &'a BroadcasterId,

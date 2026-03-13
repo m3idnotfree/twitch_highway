@@ -15,7 +15,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetEventSubBuilder<'a> {
+pub struct GetEventSub<'a> {
     client: &'a Client,
     status: Option<&'a Status>,
     kind: Option<&'a SubscriptionType>,
@@ -24,7 +24,7 @@ pub struct GetEventSubBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetEventSubBuilder<'a> {
+impl<'a> GetEventSub<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -90,7 +90,7 @@ impl<'a> GetEventSubBuilder<'a> {
 }
 
 #[derive(Debug, Clone, Serialize)]
-pub struct CreateEventSubBuilder<'a> {
+pub struct CreateEventSub<'a> {
     #[serde(skip)]
     client: &'a Client,
     #[serde(rename = "type")]
@@ -100,7 +100,7 @@ pub struct CreateEventSubBuilder<'a> {
     transport: TransportRequest,
 }
 
-impl<'a> CreateEventSubBuilder<'a> {
+impl<'a> CreateEventSub<'a> {
     pub fn webhook(
         client: &'a Client,
         kind: SubscriptionType,

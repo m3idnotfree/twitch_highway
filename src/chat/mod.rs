@@ -13,8 +13,8 @@ pub use types::{
 };
 
 pub use builder::{
-    GetChatSettingsBuilder, GetChattersBuilder, GetUserEmotesBuilder, SendChatAnnouncementBuilder,
-    SendChatMessageBuilder, UpdateChatSettingsBuilder,
+    GetChatSettings, GetChatters, GetUserEmotes, SendChatAnnouncement, SendChatMessage,
+    UpdateChatSettings,
 };
 
 use std::future::Future;
@@ -69,7 +69,7 @@ pub trait ChatAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> GetChattersBuilder<'a>;
+    ) -> GetChatters<'a>;
 
     /// Gets the broadcaster’s list of custom emotes
     ///
@@ -285,10 +285,7 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-chat-settings>
-    fn get_chat_settings<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetChatSettingsBuilder<'a>;
+    fn get_chat_settings<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetChatSettings<'a>;
 
     /// Retrieves the active shared chat session for a channel
     ///
@@ -368,7 +365,7 @@ pub trait ChatAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-user-emotes>
-    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a>;
+    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotes<'a>;
 
     /// Updates the broadcaster’s chat settings
     ///
@@ -413,7 +410,7 @@ pub trait ChatAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> UpdateChatSettingsBuilder<'a>;
+    ) -> UpdateChatSettings<'a>;
 
     /// Sends an announcement to the broadcaster’s chat room
     ///
@@ -463,7 +460,7 @@ pub trait ChatAPI {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         message: &'a str,
-    ) -> SendChatAnnouncementBuilder<'a>;
+    ) -> SendChatAnnouncement<'a>;
 
     /// Sends a Shoutout to the specified broadcaster
     ///
@@ -557,7 +554,7 @@ pub trait ChatAPI {
         broadcaster_id: &'a BroadcasterId,
         sender_id: &'a UserId,
         message: &'a str,
-    ) -> SendChatMessageBuilder<'a>;
+    ) -> SendChatMessage<'a>;
 
     /// Gets the color used for the user’s name in chat
     ///
@@ -643,8 +640,8 @@ impl ChatAPI for Client {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> GetChattersBuilder<'a> {
-        GetChattersBuilder::new(self, broadcaster_id, moderator_id)
+    ) -> GetChatters<'a> {
+        GetChatters::new(self, broadcaster_id, moderator_id)
     }
 
     async fn get_channel_emotes(
@@ -707,11 +704,8 @@ impl ChatAPI for Client {
         self.json(self.http_client().get(url)).await
     }
 
-    fn get_chat_settings<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetChatSettingsBuilder<'a> {
-        GetChatSettingsBuilder::new(self, broadcaster_id)
+    fn get_chat_settings<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetChatSettings<'a> {
+        GetChatSettings::new(self, broadcaster_id)
     }
 
     async fn get_shared_chat_session(
@@ -730,16 +724,16 @@ impl ChatAPI for Client {
         self.json(self.http_client().get(url)).await
     }
 
-    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotesBuilder<'a> {
-        GetUserEmotesBuilder::new(self, user_id)
+    fn get_user_emotes<'a>(&'a self, user_id: &'a UserId) -> GetUserEmotes<'a> {
+        GetUserEmotes::new(self, user_id)
     }
 
     fn update_chat_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> UpdateChatSettingsBuilder<'a> {
-        UpdateChatSettingsBuilder::new(self, broadcaster_id, moderator_id)
+    ) -> UpdateChatSettings<'a> {
+        UpdateChatSettings::new(self, broadcaster_id, moderator_id)
     }
 
     fn send_chat_announcement<'a>(
@@ -747,8 +741,8 @@ impl ChatAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         message: &'a str,
-    ) -> SendChatAnnouncementBuilder<'a> {
-        SendChatAnnouncementBuilder::new(self, broadcaster_id, moderator_id, message)
+    ) -> SendChatAnnouncement<'a> {
+        SendChatAnnouncement::new(self, broadcaster_id, moderator_id, message)
     }
 
     async fn send_a_shoutout(
@@ -774,8 +768,8 @@ impl ChatAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         sender_id: &'a UserId,
         message: &'a str,
-    ) -> SendChatMessageBuilder<'a> {
-        SendChatMessageBuilder::new(self, broadcaster_id, sender_id, message)
+    ) -> SendChatMessage<'a> {
+        SendChatMessage::new(self, broadcaster_id, sender_id, message)
     }
 
     async fn get_user_chat_color(&self, user_ids: &[UserId]) -> Result<UsersColorResponse, Error> {

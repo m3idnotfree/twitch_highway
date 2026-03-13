@@ -8,14 +8,14 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetCharityCampaignDonationBuilder<'a> {
+pub struct GetCharityCampaignDonations<'a> {
     client: &'a Client,
     broadcaster_id: &'a BroadcasterId,
     first: Option<u8>,
     after: Option<&'a str>,
 }
 
-impl<'a> GetCharityCampaignDonationBuilder<'a> {
+impl<'a> GetCharityCampaignDonations<'a> {
     pub fn new(client: &'a Client, broadcaster_id: &'a BroadcasterId) -> Self {
         Self {
             client,

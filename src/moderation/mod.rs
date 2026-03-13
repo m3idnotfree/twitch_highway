@@ -3,9 +3,8 @@ mod response;
 mod types;
 
 pub use builder::{
-    BanUserBuilder, DeleteChatMessagesBuilder, GetBannedUsersBuilder, GetBlockedTermsBuilder,
-    GetModeratedChannelsBuilder, GetModeratorsBuilder, GetUnbanRequestsBuilder, GetVipsBuilder,
-    ResolveUnbanRequestBuilder, UpdateAutomodSettingsBuilder,
+    CreateBan, DeleteChatMessages, GetBannedUsers, GetBlockedTerms, GetModeratedChannels,
+    GetModerators, GetUnbanRequests, GetVips, ResolveUnbanRequest, UpdateAutomodSettings,
 };
 
 pub use response::{
@@ -219,7 +218,7 @@ pub trait ModerationAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> UpdateAutomodSettingsBuilder<'a>;
+    ) -> UpdateAutomodSettings<'a>;
 
     /// Gets all users that the broadcaster banned or put in a timeout
     ///
@@ -257,10 +256,7 @@ pub trait ModerationAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-banned-users>
-    fn get_banned_users<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetBannedUsersBuilder<'a>;
+    fn get_banned_users<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetBannedUsers<'a>;
 
     /// Bans a user from participating in the specified broadcaster’s chat room or puts them in a timeout
     ///
@@ -309,7 +305,7 @@ pub trait ModerationAPI {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         user_id: &'a UserId,
-    ) -> BanUserBuilder<'a>;
+    ) -> CreateBan<'a>;
 
     /// emoves the ban or timeout that was placed on the specified user
     ///
@@ -402,7 +398,7 @@ pub trait ModerationAPI {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         status: UnbanRequestStatus,
-    ) -> GetUnbanRequestsBuilder<'a>;
+    ) -> GetUnbanRequests<'a>;
 
     /// Resolves an unban request by approving or denying it
     ///
@@ -454,7 +450,7 @@ pub trait ModerationAPI {
         moderator_id: &'a ModeratorId,
         unban_request_id: &'a str,
         status: UnbanRequestStatus,
-    ) -> ResolveUnbanRequestBuilder<'a>;
+    ) -> ResolveUnbanRequest<'a>;
 
     /// Gets the broadcaster’s list of non-private, blocked words or phrases
     ///
@@ -500,7 +496,7 @@ pub trait ModerationAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> GetBlockedTermsBuilder<'a>;
+    ) -> GetBlockedTerms<'a>;
 
     /// Adds a word or phrase to the broadcaster’s list of blocked terms
     ///
@@ -638,7 +634,7 @@ pub trait ModerationAPI {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> DeleteChatMessagesBuilder<'a>;
+    ) -> DeleteChatMessages<'a>;
 
     /// Gets a list of channels that the specified user has moderator privileges in
     ///
@@ -676,8 +672,7 @@ pub trait ModerationAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-moderated-channels>
-    fn get_moderated_channels<'a>(&'a self, user_id: &'a UserId)
-        -> GetModeratedChannelsBuilder<'a>;
+    fn get_moderated_channels<'a>(&'a self, user_id: &'a UserId) -> GetModeratedChannels<'a>;
 
     /// Gets all users allowed to moderate the broadcaster’s chat room
     ///
@@ -715,7 +710,7 @@ pub trait ModerationAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-moderators>
-    fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModeratorsBuilder<'a>;
+    fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModerators<'a>;
 
     /// Adds a moderator to the broadcaster’s chat room
     ///
@@ -835,7 +830,7 @@ pub trait ModerationAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-vips>
-    fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVipsBuilder<'a>;
+    fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVips<'a>;
 
     /// Adds the specified user as a VIP in the broadcaster’s channel
     ///
@@ -1147,15 +1142,12 @@ impl ModerationAPI for Client {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> UpdateAutomodSettingsBuilder<'a> {
-        UpdateAutomodSettingsBuilder::new(self, broadcaster_id, moderator_id)
+    ) -> UpdateAutomodSettings<'a> {
+        UpdateAutomodSettings::new(self, broadcaster_id, moderator_id)
     }
 
-    fn get_banned_users<'a>(
-        &'a self,
-        broadcaster_id: &'a BroadcasterId,
-    ) -> GetBannedUsersBuilder<'a> {
-        GetBannedUsersBuilder::new(self, broadcaster_id)
+    fn get_banned_users<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetBannedUsers<'a> {
+        GetBannedUsers::new(self, broadcaster_id)
     }
 
     fn ban_user<'a>(
@@ -1163,8 +1155,8 @@ impl ModerationAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         user_id: &'a UserId,
-    ) -> BanUserBuilder<'a> {
-        BanUserBuilder::new(self, broadcaster_id, moderator_id, user_id)
+    ) -> CreateBan<'a> {
+        CreateBan::new(self, broadcaster_id, moderator_id, user_id)
     }
 
     async fn unban_user(
@@ -1191,8 +1183,8 @@ impl ModerationAPI for Client {
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
         status: UnbanRequestStatus,
-    ) -> GetUnbanRequestsBuilder<'a> {
-        GetUnbanRequestsBuilder::new(self, broadcaster_id, moderator_id, status)
+    ) -> GetUnbanRequests<'a> {
+        GetUnbanRequests::new(self, broadcaster_id, moderator_id, status)
     }
 
     fn resolve_unban_request<'a>(
@@ -1201,22 +1193,16 @@ impl ModerationAPI for Client {
         moderator_id: &'a ModeratorId,
         unban_request_id: &'a str,
         status: UnbanRequestStatus,
-    ) -> ResolveUnbanRequestBuilder<'a> {
-        ResolveUnbanRequestBuilder::new(
-            self,
-            broadcaster_id,
-            moderator_id,
-            unban_request_id,
-            status,
-        )
+    ) -> ResolveUnbanRequest<'a> {
+        ResolveUnbanRequest::new(self, broadcaster_id, moderator_id, unban_request_id, status)
     }
 
     fn get_blocked_terms<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> GetBlockedTermsBuilder<'a> {
-        GetBlockedTermsBuilder::new(self, broadcaster_id, moderator_id)
+    ) -> GetBlockedTerms<'a> {
+        GetBlockedTerms::new(self, broadcaster_id, moderator_id)
     }
 
     async fn add_blocked_term(
@@ -1267,19 +1253,16 @@ impl ModerationAPI for Client {
         &'a self,
         broadcaster_id: &'a BroadcasterId,
         moderator_id: &'a ModeratorId,
-    ) -> DeleteChatMessagesBuilder<'a> {
-        DeleteChatMessagesBuilder::new(self, broadcaster_id, moderator_id)
+    ) -> DeleteChatMessages<'a> {
+        DeleteChatMessages::new(self, broadcaster_id, moderator_id)
     }
 
-    fn get_moderated_channels<'a>(
-        &'a self,
-        user_id: &'a UserId,
-    ) -> GetModeratedChannelsBuilder<'a> {
-        GetModeratedChannelsBuilder::new(self, user_id)
+    fn get_moderated_channels<'a>(&'a self, user_id: &'a UserId) -> GetModeratedChannels<'a> {
+        GetModeratedChannels::new(self, user_id)
     }
 
-    fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModeratorsBuilder<'a> {
-        GetModeratorsBuilder::new(self, broadcaster_id)
+    fn get_moderators<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetModerators<'a> {
+        GetModerators::new(self, broadcaster_id)
     }
 
     async fn add_channel_moderator(
@@ -1318,8 +1301,8 @@ impl ModerationAPI for Client {
         self.no_content(self.http_client().delete(url)).await
     }
 
-    fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVipsBuilder<'a> {
-        GetVipsBuilder::new(self, broadcaster_id)
+    fn get_vips<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetVips<'a> {
+        GetVips::new(self, broadcaster_id)
     }
 
     async fn add_channel_vip(

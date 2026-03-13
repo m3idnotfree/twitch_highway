@@ -10,7 +10,7 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetDropsEntitlementsBuilder<'a> {
+pub struct GetDropsEntitlements<'a> {
     client: &'a Client,
     ids: Option<&'a [EntitlementId]>,
     user_id: Option<&'a UserId>,
@@ -20,7 +20,7 @@ pub struct GetDropsEntitlementsBuilder<'a> {
     after: Option<&'a str>,
 }
 
-impl<'a> GetDropsEntitlementsBuilder<'a> {
+impl<'a> GetDropsEntitlements<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -97,14 +97,14 @@ impl<'a> GetDropsEntitlementsBuilder<'a> {
 }
 
 #[derive(Debug, Serialize)]
-pub struct UpdateDropsEntitlementsBuilder<'a> {
+pub struct UpdateDropsEntitlements<'a> {
     #[serde(skip)]
     client: &'a Client,
     entitlement_ids: Option<&'a [EntitlementId]>,
     fulfillment_status: Option<FulfillmentStatus>,
 }
 
-impl<'a> UpdateDropsEntitlementsBuilder<'a> {
+impl<'a> UpdateDropsEntitlements<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,

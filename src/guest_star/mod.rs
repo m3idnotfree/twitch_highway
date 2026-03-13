@@ -3,8 +3,8 @@ mod response;
 mod types;
 
 pub use builder::{
-    DeleteGuestStarSlotBuilder, UpdateChannelGuestStarSettingsBuilder, UpdateGuestStarSlotBuilder,
-    UpdateGuestStarSlotSettingsBuilder,
+    DeleteGuestStarSlot, UpdateChannelGuestStarSettings, UpdateGuestStarSlot,
+    UpdateGuestStarSlotSettings,
 };
 pub use response::{GuestStarSettingsResponse, GustStarInvitesResponse, GustStarSessionResponse};
 pub use types::{
@@ -111,7 +111,7 @@ pub trait GuestStarAPI {
     fn update_channel_guest_star_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> UpdateChannelGuestStarSettingsBuilder<'a>;
+    ) -> UpdateChannelGuestStarSettings<'a>;
 
     /// Gets information about an ongoing Guest Star session for a particular channel
     ///
@@ -483,7 +483,7 @@ pub trait GuestStarAPI {
         moderator_id: &'a ModeratorId,
         session_id: &'a SessionId,
         source_slot_id: &'a str,
-    ) -> UpdateGuestStarSlotBuilder<'a>;
+    ) -> UpdateGuestStarSlot<'a>;
 
     /// Allows a caller to remove a slot assignment from a user participating in an active Guest Star session
     ///
@@ -538,7 +538,7 @@ pub trait GuestStarAPI {
         session_id: &'a SessionId,
         guest_id: &'a UserId,
         slot_id: &'a str,
-    ) -> DeleteGuestStarSlotBuilder<'a>;
+    ) -> DeleteGuestStarSlot<'a>;
 
     /// Allows a user to update slot settings for a particular guest within a Guest Star session
     ///
@@ -589,7 +589,7 @@ pub trait GuestStarAPI {
         moderator_id: &'a ModeratorId,
         session_id: &'a SessionId,
         slot_id: &'a str,
-    ) -> UpdateGuestStarSlotSettingsBuilder<'a>;
+    ) -> UpdateGuestStarSlotSettings<'a>;
 }
 
 impl GuestStarAPI for Client {
@@ -614,8 +614,8 @@ impl GuestStarAPI for Client {
     fn update_channel_guest_star_settings<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> UpdateChannelGuestStarSettingsBuilder<'a> {
-        UpdateChannelGuestStarSettingsBuilder::new(self, broadcaster_id)
+    ) -> UpdateChannelGuestStarSettings<'a> {
+        UpdateChannelGuestStarSettings::new(self, broadcaster_id)
     }
 
     async fn get_guest_star_session(
@@ -763,8 +763,8 @@ impl GuestStarAPI for Client {
         moderator_id: &'a ModeratorId,
         session_id: &'a SessionId,
         source_slot_id: &'a str,
-    ) -> UpdateGuestStarSlotBuilder<'a> {
-        UpdateGuestStarSlotBuilder::new(
+    ) -> UpdateGuestStarSlot<'a> {
+        UpdateGuestStarSlot::new(
             self,
             broadcaster_id,
             moderator_id,
@@ -780,8 +780,8 @@ impl GuestStarAPI for Client {
         session_id: &'a SessionId,
         guest_id: &'a UserId,
         slot_id: &'a str,
-    ) -> DeleteGuestStarSlotBuilder<'a> {
-        DeleteGuestStarSlotBuilder::new(
+    ) -> DeleteGuestStarSlot<'a> {
+        DeleteGuestStarSlot::new(
             self,
             broadcaster_id,
             moderator_id,
@@ -797,13 +797,7 @@ impl GuestStarAPI for Client {
         moderator_id: &'a ModeratorId,
         session_id: &'a SessionId,
         slot_id: &'a str,
-    ) -> UpdateGuestStarSlotSettingsBuilder<'a> {
-        UpdateGuestStarSlotSettingsBuilder::new(
-            self,
-            broadcaster_id,
-            moderator_id,
-            session_id,
-            slot_id,
-        )
+    ) -> UpdateGuestStarSlotSettings<'a> {
+        UpdateGuestStarSlotSettings::new(self, broadcaster_id, moderator_id, session_id, slot_id)
     }
 }

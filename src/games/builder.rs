@@ -8,14 +8,14 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct GetTopGamesBuilder<'a> {
+pub struct GetTopGames<'a> {
     client: &'a Client,
     first: Option<u8>,
     after: Option<&'a str>,
     before: Option<&'a str>,
 }
 
-impl<'a> GetTopGamesBuilder<'a> {
+impl<'a> GetTopGames<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,
@@ -61,14 +61,14 @@ impl<'a> GetTopGamesBuilder<'a> {
 }
 
 #[derive(Debug)]
-pub struct GetGamesBuilder<'a> {
+pub struct GetGames<'a> {
     client: &'a Client,
     ids: Option<&'a [GameId]>,
     names: Option<&'a [&'a str]>,
     igdb_ids: Option<&'a [&'a str]>,
 }
 
-impl<'a> GetGamesBuilder<'a> {
+impl<'a> GetGames<'a> {
     pub fn new(client: &'a Client) -> Self {
         Self {
             client,

@@ -2,13 +2,13 @@ use asknothingx2_util::serde::{deserialize_empty_object_as_none, serialize_none_
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    clips::{Clip, ClipDownload, CreateClip},
+    clips::{Clip, ClipDownload, NewClip},
     types::Pagination,
 };
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct CreateClipsResponse {
-    pub data: Vec<CreateClip>,
+pub struct NewClipResponse {
+    pub data: Vec<NewClip>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -31,7 +31,7 @@ pub struct ClipsDownloadResponse {
 mod tests {
     use serde_json::json;
 
-    use crate::clips::{ClipsDownloadResponse, ClipsInfoResponse, CreateClipsResponse};
+    use crate::clips::{ClipsDownloadResponse, ClipsInfoResponse, NewClipResponse};
 
     #[test]
     fn create_clips_response_deserialization() {
@@ -44,7 +44,7 @@ mod tests {
             ]
         });
 
-        let response: CreateClipsResponse = serde_json::from_value(json_data).unwrap();
+        let response: NewClipResponse = serde_json::from_value(json_data).unwrap();
 
         assert_eq!(response.data.len(), 1);
 

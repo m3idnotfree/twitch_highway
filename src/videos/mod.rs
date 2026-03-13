@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::GetVideosBuilder;
+pub use builder::GetVideos;
 pub use response::{DeleteVideosResponse, VideosResponse};
 pub use types::{MutedSegment, Period, Sort, Type, Video};
 
@@ -68,7 +68,7 @@ pub trait VideosAPI {
     /// # API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-videos>
-    fn get_videos<'a>(&'a self, select: impl Into<VideoSelect<'a>>) -> GetVideosBuilder<'a>;
+    fn get_videos<'a>(&'a self, select: impl Into<VideoSelect<'a>>) -> GetVideos<'a>;
 
     /// Deletes one or more videos
     ///
@@ -110,8 +110,8 @@ pub trait VideosAPI {
 }
 
 impl VideosAPI for Client {
-    fn get_videos<'a>(&'a self, select: impl Into<VideoSelect<'a>>) -> GetVideosBuilder<'a> {
-        GetVideosBuilder::new(self, select)
+    fn get_videos<'a>(&'a self, select: impl Into<VideoSelect<'a>>) -> GetVideos<'a> {
+        GetVideos::new(self, select)
     }
 
     async fn delete_videos(&self, ids: &[VideoId]) -> Result<DeleteVideosResponse, Error> {

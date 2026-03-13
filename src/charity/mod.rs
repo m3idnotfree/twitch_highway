@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::GetCharityCampaignDonationBuilder;
+pub use builder::GetCharityCampaignDonations;
 pub use response::{CharityCampaignDonationResponse, CharityCampaignResponse};
 pub use types::{CharityCampaign, CharityCampaignDonation};
 
@@ -96,7 +96,7 @@ pub trait CharityAPI {
     fn get_charity_campaign_donations<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetCharityCampaignDonationBuilder<'a>;
+    ) -> GetCharityCampaignDonations<'a>;
 }
 
 impl CharityAPI for Client {
@@ -119,7 +119,7 @@ impl CharityAPI for Client {
     fn get_charity_campaign_donations<'a>(
         &'a self,
         broadcaster_id: &'a BroadcasterId,
-    ) -> GetCharityCampaignDonationBuilder<'a> {
-        GetCharityCampaignDonationBuilder::new(self, broadcaster_id)
+    ) -> GetCharityCampaignDonations<'a> {
+        GetCharityCampaignDonations::new(self, broadcaster_id)
     }
 }

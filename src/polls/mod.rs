@@ -2,7 +2,7 @@ mod builder;
 mod response;
 mod types;
 
-pub use builder::{CreatePollBuilder, GetPollsBuilder};
+pub use builder::{CreatePoll, GetPolls};
 pub use response::PollsResponse;
 pub use types::{EndPollStatus, Poll, PollStatus};
 
@@ -52,7 +52,7 @@ pub trait PollsAPI {
     /// API Reference
     ///
     /// <https://dev.twitch.tv/docs/api/reference/#get-polls>
-    fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPollsBuilder<'a>;
+    fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPolls<'a>;
 
     /// Creates a poll that viewers in the broadcaster’s channel can vote on
     ///
@@ -104,7 +104,7 @@ pub trait PollsAPI {
         title: &'a str,
         choices: &'a [Title],
         duration: u16,
-    ) -> CreatePollBuilder<'a>;
+    ) -> CreatePoll<'a>;
 
     /// Ends an active poll
     ///
@@ -156,8 +156,8 @@ pub trait PollsAPI {
 }
 
 impl PollsAPI for Client {
-    fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPollsBuilder<'a> {
-        GetPollsBuilder::new(self, broadcaster_id)
+    fn get_polls<'a>(&'a self, broadcaster_id: &'a BroadcasterId) -> GetPolls<'a> {
+        GetPolls::new(self, broadcaster_id)
     }
 
     fn create_poll<'a>(
@@ -166,8 +166,8 @@ impl PollsAPI for Client {
         title: &'a str,
         choices: &'a [Title],
         duration: u16,
-    ) -> CreatePollBuilder<'a> {
-        CreatePollBuilder::new(self, broadcaster_id, title, choices, duration)
+    ) -> CreatePoll<'a> {
+        CreatePoll::new(self, broadcaster_id, title, choices, duration)
     }
 
     async fn end_poll(
