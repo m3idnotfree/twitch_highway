@@ -28,6 +28,7 @@ serde = "1.0.228"
 serde_json = "1.0.149"
 twitch_onthe = { path = "twitch_onthe", version = "=0.1.0" }
 twitch_tohell = { path = "twitch_tohell", version = "=0.1.0" }
+url = "2.5.8"
 
 [[test]]
 name = "twitch-cli"
@@ -174,7 +175,8 @@ tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"]
 tower = { version = "0.5.3", features = ["limit", "util"], optional = true }
 tracing = { version = "0.1.44", optional = true }
 twitch_oauth_token = "4.3.0"
-url = { version = "2.5.8", features = ["serde"] }
+twitch_onthe.workspace = true
+url = { workspace = true, features = ["serde"] }
 
 [dev-dependencies]
 actix-web = "4.13.0"

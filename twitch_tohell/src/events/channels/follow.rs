@@ -1,0 +1,15 @@
+use chrono::{DateTime, FixedOffset};
+use serde::{Deserialize, Serialize};
+
+use crate::{BroadcasterId, UserId};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ChannelFollow {
+    pub user_id: UserId,
+    pub user_login: String,
+    pub user_name: String,
+    pub broadcaster_user_id: BroadcasterId,
+    pub broadcaster_user_login: String,
+    pub broadcaster_user_name: String,
+    pub followed_at: DateTime<FixedOffset>,
+}
