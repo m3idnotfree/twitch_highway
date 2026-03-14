@@ -4,10 +4,10 @@ use std::{
 };
 
 use chrono::{DateTime, FixedOffset};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::Error as DeError};
 
 use crate::{
-    eventsub::{resolve_subscription_type, websocket::MessageType, SubscriptionType},
+    eventsub::{SubscriptionType, websocket::MessageType},
     types::MessageId,
 };
 
@@ -55,16 +55,22 @@ impl<'de> Deserialize<'de> for MetaData {
             message_id: MessageId,
             message_type: MessageType,
             message_timestamp: DateTime<FixedOffset>,
-            subscription_type: Option<SubscriptionType>,
+            subscription_type: Option<String>,
             subscription_version: Option<String>,
         }
 
         let helper = Helper::deserialize(deserializer)?;
 
-        #[rustfmt::skip]
-        let subscription_type = helper.subscription_type.map(|kind| {
-            resolve_subscription_type!(kind, opt helper.subscription_version.as_deref())
-        });
+        let subscription_type = helper
+            .subscription_type
+            .map(|kind| {
+                SubscriptionType::from_type_and_version(
+                    &kind,
+                    helper.subscription_version.as_deref(),
+                )
+                .map_err(DeError::custom)
+            })
+            .transpose()?;
 
         Ok(MetaData {
             message_id: helper.message_id,

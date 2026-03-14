@@ -5,35 +5,26 @@ pub mod websocket;
 
 pub mod events;
 
-#[macro_use]
-mod subscription_types;
+pub use twitch_onthe::eventsub::{Condition, Subscription, SubscriptionType};
 
 mod builder;
-mod condition;
 mod response;
-mod subscription;
 
 pub use builder::{CreateEventSub, GetEventSub};
-pub use condition::Condition;
 pub use response::{
     CreateEventSubscriptionsResponse, EventSubscriptionsResponse, TransportResponse,
 };
-pub use subscription::Subscription;
-pub use subscription_types::SubscriptionType;
-
-#[allow(unused_imports)]
-pub(crate) use resolve_subscription_type;
 
 use builder::TransportType;
 
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{EVENTSUB, ID, SUBSCRIPTIONS},
-        SubscriptionId,
-    },
     Client, Error,
+    types::{
+        SubscriptionId,
+        constants::{EVENTSUB, ID, SUBSCRIPTIONS},
+    },
 };
 
 pub trait EventSubAPI {

@@ -202,9 +202,8 @@ pub use verification::verify_event_message;
 use std::str::FromStr;
 
 use crate::eventsub::{
-    resolve_subscription_type,
-    webhook::types::{MESSAGE_RETRY, MESSAGE_TYPE, SUBSCRIPTION_TYPE, SUBSCRIPTION_VERSION},
     SubscriptionType,
+    webhook::types::{MESSAGE_RETRY, MESSAGE_TYPE, SUBSCRIPTION_TYPE, SUBSCRIPTION_VERSION},
 };
 
 pub fn generate_secret() -> String {
@@ -223,9 +222,7 @@ pub fn get_subscription_type<H: HeaderAccess>(headers: &H) -> Option<Subscriptio
     let s = headers.get_header(SUBSCRIPTION_TYPE)?;
     let v = get_subscription_version(headers);
 
-    let sub = SubscriptionType::from_str(s).ok()?;
-
-    Some(resolve_subscription_type!(sub, opt v))
+    SubscriptionType::from_type_and_version(s, v).ok()
 }
 
 pub fn get_subscription_version<H: HeaderAccess>(headers: &H) -> Option<&str> {

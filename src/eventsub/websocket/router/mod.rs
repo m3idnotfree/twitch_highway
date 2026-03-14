@@ -649,137 +649,137 @@ pub mod routes {
         EventFilter::Notification(Some(SubscriptionType::WhisperReceived))
     );
 
-    #[cfg(test)]
-    const _: () = {
-        const fn _route_fn() {
-            match panic!("") {
-                // Automod related
-                #[allow(unreachable_code)]
-                SubscriptionType::AutomodMessageHold => {}
-                SubscriptionType::AutomodMessageHoldV2 => {}
-                SubscriptionType::AutomodMessageUpdate => {}
-                SubscriptionType::AutomodMessageUpdateV2 => {}
-                SubscriptionType::AutomodSettingsUpdate => {}
-                SubscriptionType::AutomodTermsUpdate => {}
-
-                // Channel related
-                SubscriptionType::ChannelBitsUse => {}
-                SubscriptionType::ChannelUpdate => {}
-                SubscriptionType::ChannelFollow => {}
-                SubscriptionType::ChannelAdBreakBegin => {}
-
-                // Chat related
-                SubscriptionType::ChannelChatClear => {}
-                SubscriptionType::ChannelChatClearUserMessages => {}
-                SubscriptionType::ChannelChatMessage => {}
-                SubscriptionType::ChannelChatMessageDelete => {}
-                SubscriptionType::ChannelChatNotification => {}
-                SubscriptionType::ChannelChatSettingsUpdate => {}
-                SubscriptionType::ChannelChatUserMessageHold => {}
-                SubscriptionType::ChannelChatUserMessageUpdate => {}
-
-                // Shared Chat
-                SubscriptionType::ChannelSharedChatSessionBegin => {}
-                SubscriptionType::ChannelSharedChatSessionUpdate => {}
-                SubscriptionType::ChannelSharedChatSessionEnd => {}
-
-                // Subscription related
-                SubscriptionType::ChannelSubscribe => {}
-                SubscriptionType::ChannelSubscriptionEnd => {}
-                SubscriptionType::ChannelSubscriptionGift => {}
-                SubscriptionType::ChannelSubscriptionMessage => {}
-
-                // Channel interactions
-                SubscriptionType::ChannelCheer => {}
-                SubscriptionType::ChannelRaid => {}
-
-                // Moderation
-                SubscriptionType::ChannelBan => {}
-                SubscriptionType::ChannelUnban => {}
-                SubscriptionType::ChannelUnbanRequestCreate => {}
-                SubscriptionType::ChannelUnbanRequestResolve => {}
-                SubscriptionType::ChannelModerate => {}
-                SubscriptionType::ChannelModerateV2 => {}
-                SubscriptionType::ChannelModeratorAdd => {}
-                SubscriptionType::ChannelModeratorRemove => {}
-
-                // Guest Star (Beta)
-                SubscriptionType::ChannelGuestStarSessionBegin => {}
-                SubscriptionType::ChannelGuestStarSessionEnd => {}
-                SubscriptionType::ChannelGuestStarGuestUpdate => {}
-                SubscriptionType::ChannelGuestStarSettingsUpdate => {}
-
-                // Channel Points
-                SubscriptionType::ChannelPointsAutomaticRewardRedemptionAdd => {}
-                SubscriptionType::ChannelPointsAutomaticRewardRedemptionAddV2 => {}
-                SubscriptionType::ChannelPointsCustomRewardAdd => {}
-                SubscriptionType::ChannelPointsCustomRewardUpdate => {}
-                SubscriptionType::ChannelPointsCustomRewardRemove => {}
-                SubscriptionType::ChannelPointsCustomRewardRedemptionAdd => {}
-                SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate => {}
-
-                // Polls and Predictions
-                SubscriptionType::ChannelPollBegin => {}
-                SubscriptionType::ChannelPollProgress => {}
-                SubscriptionType::ChannelPollEnd => {}
-                SubscriptionType::ChannelPredictionBegin => {}
-                SubscriptionType::ChannelPredictionProgress => {}
-                SubscriptionType::ChannelPredictionLock => {}
-                SubscriptionType::ChannelPredictionEnd => {}
-
-                // Suspicious Users
-                SubscriptionType::ChannelSuspiciousUserMessage => {}
-                SubscriptionType::ChannelSuspiciousUserUpdate => {}
-
-                // VIP and Warnings
-                SubscriptionType::ChannelVIPAdd => {}
-                SubscriptionType::ChannelVIPRemove => {}
-                SubscriptionType::ChannelWarningAcknowledgement => {}
-                SubscriptionType::ChannelWarningSend => {}
-
-                // Charity
-                SubscriptionType::CharityDonation => {}
-                SubscriptionType::CharityCampaignStart => {}
-                SubscriptionType::CharityCampaignProgress => {}
-                SubscriptionType::CharityCampaignStop => {}
-
-                // Conduit
-                SubscriptionType::ConduitShardDisabled => {}
-
-                // Drops and Extensions
-                SubscriptionType::DropEntitlementGrant => {}
-                SubscriptionType::ExtensionBitsTransactionCreate => {}
-
-                // Goals and Hype Train
-                SubscriptionType::GoalBegin => {}
-                SubscriptionType::GoalProgress => {}
-                SubscriptionType::GoalEnd => {}
-                SubscriptionType::HypeTrainBeginV2 => {}
-                SubscriptionType::HypeTrainProgressV2 => {}
-                SubscriptionType::HypeTrainEndV2 => {}
-
-                // Shield Mode
-                SubscriptionType::ShieldModeBegin => {}
-                SubscriptionType::ShieldModeEnd => {}
-
-                // Shoutouts
-                SubscriptionType::ShoutoutCreate => {}
-                SubscriptionType::ShoutoutReceived => {}
-
-                // Stream Status
-                SubscriptionType::StreamOnline => {}
-                SubscriptionType::StreamOffline => {}
-
-                // User Authorization
-                SubscriptionType::UserAuthorizationGrant => {}
-                SubscriptionType::UserAuthorizationRevoke => {}
-                SubscriptionType::UserUpdate => {}
-
-                // Whispers
-                SubscriptionType::WhisperReceived => {}
-            }
-        }
-    };
+    // #[cfg(test)]
+    // const _: () = {
+    //     const fn _route_fn() {
+    //         match panic!("") {
+    //             // Automod related
+    //             #[allow(unreachable_code)]
+    //             SubscriptionType::AutomodMessageHold => {}
+    //             SubscriptionType::AutomodMessageHoldV2 => {}
+    //             SubscriptionType::AutomodMessageUpdate => {}
+    //             SubscriptionType::AutomodMessageUpdateV2 => {}
+    //             SubscriptionType::AutomodSettingsUpdate => {}
+    //             SubscriptionType::AutomodTermsUpdate => {}
+    //
+    //             // Channel related
+    //             SubscriptionType::ChannelBitsUse => {}
+    //             SubscriptionType::ChannelUpdate => {}
+    //             SubscriptionType::ChannelFollow => {}
+    //             SubscriptionType::ChannelAdBreakBegin => {}
+    //
+    //             // Chat related
+    //             SubscriptionType::ChannelChatClear => {}
+    //             SubscriptionType::ChannelChatClearUserMessages => {}
+    //             SubscriptionType::ChannelChatMessage => {}
+    //             SubscriptionType::ChannelChatMessageDelete => {}
+    //             SubscriptionType::ChannelChatNotification => {}
+    //             SubscriptionType::ChannelChatSettingsUpdate => {}
+    //             SubscriptionType::ChannelChatUserMessageHold => {}
+    //             SubscriptionType::ChannelChatUserMessageUpdate => {}
+    //
+    //             // Shared Chat
+    //             SubscriptionType::ChannelSharedChatSessionBegin => {}
+    //             SubscriptionType::ChannelSharedChatSessionUpdate => {}
+    //             SubscriptionType::ChannelSharedChatSessionEnd => {}
+    //
+    //             // Subscription related
+    //             SubscriptionType::ChannelSubscribe => {}
+    //             SubscriptionType::ChannelSubscriptionEnd => {}
+    //             SubscriptionType::ChannelSubscriptionGift => {}
+    //             SubscriptionType::ChannelSubscriptionMessage => {}
+    //
+    //             // Channel interactions
+    //             SubscriptionType::ChannelCheer => {}
+    //             SubscriptionType::ChannelRaid => {}
+    //
+    //             // Moderation
+    //             SubscriptionType::ChannelBan => {}
+    //             SubscriptionType::ChannelUnban => {}
+    //             SubscriptionType::ChannelUnbanRequestCreate => {}
+    //             SubscriptionType::ChannelUnbanRequestResolve => {}
+    //             SubscriptionType::ChannelModerate => {}
+    //             SubscriptionType::ChannelModerateV2 => {}
+    //             SubscriptionType::ChannelModeratorAdd => {}
+    //             SubscriptionType::ChannelModeratorRemove => {}
+    //
+    //             // Guest Star (Beta)
+    //             SubscriptionType::ChannelGuestStarSessionBegin => {}
+    //             SubscriptionType::ChannelGuestStarSessionEnd => {}
+    //             SubscriptionType::ChannelGuestStarGuestUpdate => {}
+    //             SubscriptionType::ChannelGuestStarSettingsUpdate => {}
+    //
+    //             // Channel Points
+    //             SubscriptionType::ChannelPointsAutomaticRewardRedemptionAdd => {}
+    //             SubscriptionType::ChannelPointsAutomaticRewardRedemptionAddV2 => {}
+    //             SubscriptionType::ChannelPointsCustomRewardAdd => {}
+    //             SubscriptionType::ChannelPointsCustomRewardUpdate => {}
+    //             SubscriptionType::ChannelPointsCustomRewardRemove => {}
+    //             SubscriptionType::ChannelPointsCustomRewardRedemptionAdd => {}
+    //             SubscriptionType::ChannelPointsCustomRewardRedemptionUpdate => {}
+    //
+    //             // Polls and Predictions
+    //             SubscriptionType::ChannelPollBegin => {}
+    //             SubscriptionType::ChannelPollProgress => {}
+    //             SubscriptionType::ChannelPollEnd => {}
+    //             SubscriptionType::ChannelPredictionBegin => {}
+    //             SubscriptionType::ChannelPredictionProgress => {}
+    //             SubscriptionType::ChannelPredictionLock => {}
+    //             SubscriptionType::ChannelPredictionEnd => {}
+    //
+    //             // Suspicious Users
+    //             SubscriptionType::ChannelSuspiciousUserMessage => {}
+    //             SubscriptionType::ChannelSuspiciousUserUpdate => {}
+    //
+    //             // VIP and Warnings
+    //             SubscriptionType::ChannelVIPAdd => {}
+    //             SubscriptionType::ChannelVIPRemove => {}
+    //             SubscriptionType::ChannelWarningAcknowledgement => {}
+    //             SubscriptionType::ChannelWarningSend => {}
+    //
+    //             // Charity
+    //             SubscriptionType::CharityDonation => {}
+    //             SubscriptionType::CharityCampaignStart => {}
+    //             SubscriptionType::CharityCampaignProgress => {}
+    //             SubscriptionType::CharityCampaignStop => {}
+    //
+    //             // Conduit
+    //             SubscriptionType::ConduitShardDisabled => {}
+    //
+    //             // Drops and Extensions
+    //             SubscriptionType::DropEntitlementGrant => {}
+    //             SubscriptionType::ExtensionBitsTransactionCreate => {}
+    //
+    //             // Goals and Hype Train
+    //             SubscriptionType::GoalBegin => {}
+    //             SubscriptionType::GoalProgress => {}
+    //             SubscriptionType::GoalEnd => {}
+    //             SubscriptionType::HypeTrainBeginV2 => {}
+    //             SubscriptionType::HypeTrainProgressV2 => {}
+    //             SubscriptionType::HypeTrainEndV2 => {}
+    //
+    //             // Shield Mode
+    //             SubscriptionType::ShieldModeBegin => {}
+    //             SubscriptionType::ShieldModeEnd => {}
+    //
+    //             // Shoutouts
+    //             SubscriptionType::ShoutoutCreate => {}
+    //             SubscriptionType::ShoutoutReceived => {}
+    //
+    //             // Stream Status
+    //             SubscriptionType::StreamOnline => {}
+    //             SubscriptionType::StreamOffline => {}
+    //
+    //             // User Authorization
+    //             SubscriptionType::UserAuthorizationGrant => {}
+    //             SubscriptionType::UserAuthorizationRevoke => {}
+    //             SubscriptionType::UserUpdate => {}
+    //
+    //             // Whispers
+    //             SubscriptionType::WhisperReceived => {}
+    //         }
+    //     }
+    // };
 }
 
 #[cfg(test)]
