@@ -2,17 +2,24 @@
 name = "twitch_highway"
 version = "0.5.1"
 authors = ["m3id"]
-edition = "2021"
+edition.workspace = true
 description = "Twitch API"
 documentation = "https://docs.rs/twitch_highway"
 repository = "https://github.com/m3idnotfree/twitch_highway"
-license = "MIT OR Apache-2.0"
+license.workspace = true
 keywords = ["api", "helix", "oauth", "streaming", "twitch"]
 categories = ["api-bindings", "web-programming"]
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
+
+[workspace]
+members = ["."]
+
+[workspace.package]
+edition = "2024"
+license = "MIT OR Apache-2.0"
 
 [[test]]
 name = "twitch-cli"
