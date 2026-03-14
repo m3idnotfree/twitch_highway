@@ -1,0 +1,17 @@
+[package]
+name = "twitch_onthe"
+version = "0.1.0"
+edition.workspace = true
+rust-version = "1.85"
+description = "Twitch types"
+documentation = "https://docs.rs/twitch_onthe"
+repository = "https://github.com/m3idnotfree/twitch_highway"
+license.workspace = true
+keywords = ["eventsub", "twitch", "types"]
+categories = ["api-bindings"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
