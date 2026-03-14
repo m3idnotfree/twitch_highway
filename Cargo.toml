@@ -15,7 +15,7 @@ all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [workspace]
-members = [".", "twitch_onthe"]
+members = [".", "twitch_onthe", "twitch_tohell"]
 
 [workspace.package]
 edition = "2024"

@@ -1,0 +1,17 @@
+[package]
+name = "twitch_tohell"
+version = "0.1.0"
+edition.workspace = true
+rust-version = "1.88"
+description = "Twitch EventSub webhook and WebSocket support"
+documentation = "https://docs.rs/twitch_tohell"
+repository = "https://github.com/m3idnotfree/twitch_highway"
+license.workspace = true
+keywords = ["eventsub", "twitch", "webhook", "websocket"]
+categories = ["api-bindings", "web-programming"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[dependencies]
