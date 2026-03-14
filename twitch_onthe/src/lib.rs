@@ -1,14 +1,9 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+#![cfg_attr(docsrs, feature(doc_cfg))]
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod eventsub;
+pub mod ids;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+mod types;
+
+pub use asknothingx2_util::oauth::ClientId;
+pub use types::*;

@@ -22,6 +22,10 @@ edition = "2024"
 license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
+asknothingx2-util = "0.5.0"
+chrono = "0.4.44"
+serde = "1.0.228"
+serde_json = "1.0.149"
 twitch_onthe = { path = "twitch_onthe", version = "=0.1.0" }
 
 [[test]]
@@ -142,9 +146,9 @@ path = "tests/whisper.rs"
 
 [dependencies]
 actix-http = { version = "3.12.0", optional = true }
-asknothingx2-util = { version = "0.5.0", features = ["api", "oauth", "serde"] }
+asknothingx2-util = { workspace = true, features = ["api", "oauth", "serde"] }
 axum-core = { version = "0.5.6", default-features = false, optional = true }
-chrono = { version = "0.4.44", features = ["serde"] }
+chrono = { workspace = true, features = ["serde"] }
 chrono-tz = "0.10.4"
 futures-util = { version = "0.3.32", optional = true }
 hex = { version = "0.4.3", optional = true }
@@ -153,8 +157,8 @@ http = { version = "1.4.0", optional = true }
 pin-project-lite = { version = "0.2.17", optional = true }
 rand = { version = "0.10.0", optional = true }
 reqwest = "0.13.2"
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
 serde_with = "3.17.0"
 sha2 = { version = "0.10.9", optional = true }
 subtle = { version = "2.6.1", optional = true }
