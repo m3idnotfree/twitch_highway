@@ -147,35 +147,16 @@ name = "whisper"
 path = "tests/whisper.rs"
 
 [dependencies]
-actix-http = { version = "3.12.0", optional = true }
 asknothingx2-util = { workspace = true, features = ["api", "oauth", "serde"] }
-axum-core = { version = "0.5.6", default-features = false, optional = true }
 chrono = { workspace = true, features = ["serde"] }
 chrono-tz = "0.10.4"
-futures-util = { version = "0.3.32", optional = true }
-hex = { version = "0.4.3", optional = true }
-hmac = { version = "0.12.1", optional = true }
-http = { version = "1.4.0", optional = true }
-pin-project-lite = { version = "0.2.17", optional = true }
-rand = { version = "0.10.0", optional = true }
 reqwest = "0.13.2"
 serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 serde_with = "3.17.0"
-sha2 = { version = "0.10.9", optional = true }
-subtle = { version = "2.6.1", optional = true }
-thiserror = { version = "2.0.18", optional = true }
-tokio = { version = "1.50.0", features = [
-  "net",
-  "rt-multi-thread",
-  "sync",
-  "time"
-], optional = true }
-tokio-tungstenite = { version = "0.28.0", features = ["rustls-tls-webpki-roots"], optional = true }
-tower = { version = "0.5.3", features = ["limit", "util"], optional = true }
-tracing = { version = "0.1.44", optional = true }
 twitch_oauth_token = "4.3.0"
 twitch_onthe.workspace = true
+twitch_tohell = { workspace = true }
 url = { workspace = true, features = ["serde"] }
 
 [dev-dependencies]
@@ -190,14 +171,6 @@ twitch_oauth_token = { version = "4.3.0", features = ["oneshot", "test"] }
 wiremock = "0.6.5"
 
 [features]
-webhook-actix = ["actix-http", "hex", "hmac", "rand", "sha2", "subtle"]
-webhook-axum = ["axum-core", "hex", "hmac", "http", "rand", "sha2", "subtle"]
-websocket = [
-  "dep:tower",
-  "futures-util",
-  "pin-project-lite",
-  "thiserror",
-  "tokio",
-  "tokio-tungstenite",
-  "tracing",
-]
+webhook-actix = ["twitch_tohell/webhook-actix"]
+webhook-axum = ["twitch_tohell/webhook-axum"]
+websocket = ["twitch_tohell/websocket"]

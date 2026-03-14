@@ -1,9 +1,9 @@
 #[cfg(any(feature = "webhook-actix", feature = "webhook-axum"))]
-pub mod webhook;
+pub use twitch_tohell::webhook;
 #[cfg(feature = "websocket")]
-pub mod websocket;
+pub use twitch_tohell::websocket;
 
-pub mod events;
+pub use twitch_tohell::events;
 
 pub use twitch_onthe::eventsub::{Condition, Subscription, SubscriptionType};
 
