@@ -1,18 +1,18 @@
 use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 use serde::Serialize;
-use serde_with::{serde_as, DisplayFromStr};
+use serde_with::{DisplayFromStr, serde_as};
 
 use crate::{
+    Client, Error,
     schedule::ScheduleResponse,
     types::{
+        BroadcasterId, CategoryId, SegmentId,
         constants::{
             AFTER, BROADCASTER_ID, FIRST, ID, IS_VACATION_ENABLED, SCHEDULE, SEGMENT, SETTINGS,
             START_TIME, TIMEZONE, VACATION_END_TIME, VACATION_START_TIME,
         },
-        BroadcasterId, CategoryId, SegmentId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

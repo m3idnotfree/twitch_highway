@@ -1,6 +1,8 @@
 use crate::{
+    Client, Error,
     guest_star::GroupLayout,
     types::{
+        BroadcasterId, ModeratorId, SessionId, UserId,
         constants::{
             BROADCASTER_ID, CHANNEL_SETTINGS, DESTINATION_SLOT_ID, GROUP_LAYOUT, GUEST_ID,
             GUEST_STAR, IS_AUDIO_ENABLED, IS_BROWSER_SOURCE_AUDIO_ENABLED, IS_LIVE,
@@ -8,9 +10,7 @@ use crate::{
             REGENERATE_BROWSER_SOURCES, SESSION_ID, SHOULD_REINVITE_GUEST, SLOT, SLOT_COUNT,
             SLOT_ID, SLOT_SETTINGS, SOURCE_SLOT_ID, VOLUME,
         },
-        BroadcasterId, ModeratorId, SessionId, UserId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

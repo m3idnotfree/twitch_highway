@@ -9,11 +9,11 @@ pub use types::{CharityCampaign, CharityCampaignDonation};
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, CHARITY},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{BROADCASTER_ID, CHARITY},
+    },
 };
 
 pub trait CharityAPI {

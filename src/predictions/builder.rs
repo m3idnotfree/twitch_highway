@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     predictions::{PredictionStatus, PredictionsResponse},
     types::{
-        constants::{AFTER, BROADCASTER_ID, FIRST, ID, PREDICTIONS},
         BroadcasterId, PredictionId,
+        constants::{AFTER, BROADCASTER_ID, FIRST, ID, PREDICTIONS},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

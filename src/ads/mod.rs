@@ -9,11 +9,11 @@ use types::StartCommercialBody;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{ADS, BROADCASTER_ID, CHANNELS, COMMERCIAL, SCHEDULE, SNOOZE},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{ADS, BROADCASTER_ID, CHANNELS, COMMERCIAL, SCHEDULE, SNOOZE},
+    },
 };
 
 pub trait AdsAPI {

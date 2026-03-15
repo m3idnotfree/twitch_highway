@@ -1,12 +1,12 @@
 use crate::{
+    Client, Error,
     types::{
+        GameId, UserId, VideoId,
         constants::{
             AFTER, BEFORE, FIRST, GAME_ID, ID, LANGUAGE, PERIOD, SORT, TYPE, USER_ID, VIDEOS,
         },
-        GameId, UserId, VideoId,
     },
     videos::{Period, Sort, Type, VideosResponse},
-    Client, Error,
 };
 
 #[derive(Debug)]

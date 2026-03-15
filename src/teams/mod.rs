@@ -9,11 +9,11 @@ use types::TeamSelect;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, CHANNEL, TEAMS},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{BROADCASTER_ID, CHANNEL, TEAMS},
+    },
 };
 
 pub trait TeamsAPI {

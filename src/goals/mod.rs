@@ -7,11 +7,11 @@ pub use types::{Goal, GoalType};
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, GOALS},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{BROADCASTER_ID, GOALS},
+    },
 };
 
 pub trait GoalsAPI {

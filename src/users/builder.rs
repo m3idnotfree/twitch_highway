@@ -1,16 +1,16 @@
 use crate::{
+    Client, Error,
     types::{
+        BroadcasterId, UserId,
         constants::{
             AFTER, BLOCKS, BROADCASTER_ID, EXTENSIONS, FIRST, ID, LOGIN, REASON, SOURCE_CONTEXT,
-            TARGET_USER_ID, USERS, USER_ID,
+            TARGET_USER_ID, USER_ID, USERS,
         },
-        BroadcasterId, UserId,
     },
     users::{
         BlockReason, BlockSourceContext, BlockUserListResponse, Component, Overlay, Panel,
         UserActiveExtensions, UserActiveExtensionsResponse, UsersInfoResponse,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

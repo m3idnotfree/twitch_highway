@@ -20,14 +20,14 @@ pub use builder::{
 use std::future::Future;
 
 use crate::{
+    Client, Error,
     types::{
+        BroadcasterId, ModeratorId, UserId,
         constants::{
-            BADGES, BROADCASTER_ID, CHAT, COLOR, EMOTES, EMOTE_SET_ID, FROM_BROADCASTER_ID, GLOBAL,
+            BADGES, BROADCASTER_ID, CHAT, COLOR, EMOTE_SET_ID, EMOTES, FROM_BROADCASTER_ID, GLOBAL,
             MODERATOR_ID, SESSION, SET, SHARED_CHAT, SHOUTOUTS, TO_BROADCASTER_ID, USER_ID,
         },
-        BroadcasterId, ModeratorId, UserId,
     },
-    Client, Error,
 };
 
 pub trait ChatAPI {

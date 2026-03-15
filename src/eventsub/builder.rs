@@ -3,15 +3,15 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::{
+    Client, Error,
     eventsub::{
         Condition, CreateEventSubscriptionsResponse, EventSubscriptionsResponse, SubscriptionType,
     },
     types::{
-        constants::{AFTER, EVENTSUB, STATUS, SUBSCRIPTIONS, SUBSCRIPTION_ID, TYPE, USER_ID},
         BroadcasterId, CampaignId, CategoryId, ConduitId, ExtensionClientId, ModeratorId,
         OrganizationId, RewardId, SessionId, Status, SubscriptionId, UserId,
+        constants::{AFTER, EVENTSUB, STATUS, SUBSCRIPTION_ID, SUBSCRIPTIONS, TYPE, USER_ID},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

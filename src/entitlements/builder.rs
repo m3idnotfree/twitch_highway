@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     entitlements::{DropsEntitlementsResponse, FulfillmentStatus, UpdateDropEntitlementsResponse},
     types::{
-        constants::{AFTER, DROPS, ENTITLEMENTS, FIRST, GAME_ID, ID, USER_ID},
         EntitlementId, GameId, UserId,
+        constants::{AFTER, DROPS, ENTITLEMENTS, FIRST, GAME_ID, ID, USER_ID},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

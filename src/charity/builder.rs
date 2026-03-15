@@ -1,10 +1,10 @@
 use crate::{
+    Client, Error,
     charity::CharityCampaignDonationResponse,
     types::{
-        constants::{AFTER, BROADCASTER_ID, CHARITY, DONATIONS, FIRST},
         BroadcasterId,
+        constants::{AFTER, BROADCASTER_ID, CHARITY, DONATIONS, FIRST},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

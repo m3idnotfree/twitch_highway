@@ -11,11 +11,11 @@ use builder::ClipSelect;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, CLIPS, CLIP_ID, DOWNLOADS, EDITOR_ID, VIDEOS},
-        BroadcasterId, ClipId, UserId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, ClipId, UserId,
+        constants::{BROADCASTER_ID, CLIP_ID, CLIPS, DOWNLOADS, EDITOR_ID, VIDEOS},
+    },
 };
 
 pub trait ClipsAPI {

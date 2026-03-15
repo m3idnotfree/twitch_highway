@@ -1,7 +1,7 @@
 use crate::{
+    Client, Error,
     search::{CategoriesResponse, ChannelsResponse},
     types::constants::{AFTER, CATEGORIES, CHANNELS, FIRST, QUERY, SEARCH},
-    Client, Error,
 };
 
 const LIVE_ONLY: &str = "live_only";

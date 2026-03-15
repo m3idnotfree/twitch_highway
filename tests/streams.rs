@@ -5,7 +5,7 @@
 mod common;
 
 use anyhow::Result;
-use common::{mock_api_start, HttpMock, TwitchFixture};
+use common::{HttpMock, TwitchFixture, mock_api_start};
 use twitch_highway::{
     streams::StreamsAPI,
     types::{BroadcasterId, UserId, VideoId},

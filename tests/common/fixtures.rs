@@ -3,16 +3,16 @@
 use asknothingx2_util::api::preset;
 use rand::{rngs::ThreadRng, seq::IndexedRandom};
 use twitch_highway::{
-    types::{BroadcasterId, UserId},
     Client as C,
+    types::{BroadcasterId, UserId},
 };
 use twitch_oauth_token::{
+    AppToken, TwitchOauth, UserToken,
     scope::ScopesMut,
     test_oauth::{
         mock_api::MockApiUnits,
         response::{Client, User},
     },
-    AppToken, TwitchOauth, UserToken,
 };
 use url::Url;
 

@@ -9,8 +9,8 @@ pub use types::Ccl;
 use std::future::Future;
 
 use crate::{
-    types::constants::{CONTENT_CLASSIFICATION_LABELS, LOCALE},
     Client, Error,
+    types::constants::{CONTENT_CLASSIFICATION_LABELS, LOCALE},
 };
 
 pub trait CclsAPI {

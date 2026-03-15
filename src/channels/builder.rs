@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     channels::{ChannelFollowersResponse, ContentClassificationLabel, FollowerdChannelsResponse},
     types::{
-        constants::{AFTER, BROADCASTER_ID, CHANNELS, FIRST, FOLLOWED, FOLLOWERS, USER_ID},
         BroadcasterId, GameId, UserId,
+        constants::{AFTER, BROADCASTER_ID, CHANNELS, FIRST, FOLLOWED, FOLLOWERS, USER_ID},
     },
-    Client, Error,
 };
 
 #[derive(Debug, Serialize)]

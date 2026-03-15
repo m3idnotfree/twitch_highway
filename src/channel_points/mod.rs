@@ -15,11 +15,11 @@ use types::UpdateRedemptionStatusBody;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
-        BroadcasterId, RedemptionId, RewardId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, RedemptionId, RewardId,
+        constants::{BROADCASTER_ID, CHANNEL_POINTS, CUSTOM_REWARDS, ID, REDEMPTIONS, REWARD_ID},
+    },
 };
 
 pub trait ChannelPointsAPI {

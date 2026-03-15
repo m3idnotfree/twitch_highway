@@ -10,11 +10,11 @@ pub use types::{
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, HYPE_TRAIN, STATUS},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{BROADCASTER_ID, HYPE_TRAIN, STATUS},
+    },
 };
 
 pub trait HypeTrainAPI {

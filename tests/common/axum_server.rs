@@ -1,27 +1,26 @@
 use std::sync::{
-    atomic::{AtomicUsize, Ordering},
     Arc,
+    atomic::{AtomicUsize, Ordering},
 };
 
 use axum::{
-    self,
+    self, Router,
     body::Body,
     body::Bytes,
     extract::State,
-    http::{header::HeaderMap, StatusCode},
+    http::{StatusCode, header::HeaderMap},
     response::Response,
     routing::post,
-    Router,
 };
 use tokio::{
     net::TcpListener,
-    sync::{oneshot, Mutex},
-};
-use twitch_highway::eventsub::webhook::{
-    get_message_type, get_subscription_type, verify_event_message, Challenge, MessageType,
-    Notification, Revoke, VerificationError,
+    sync::{Mutex, oneshot},
 };
 use twitch_highway::eventsub::SubscriptionType;
+use twitch_highway::eventsub::webhook::{
+    Challenge, MessageType, Notification, Revoke, VerificationError, get_message_type,
+    get_subscription_type, verify_event_message,
+};
 
 pub async fn axum_server(
     secret: String,

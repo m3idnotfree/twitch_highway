@@ -7,11 +7,11 @@ pub use types::StartRaid;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, FROM_BROADCASTER_ID, RAIDS, TO_BROADCASTER_ID},
-        BroadcasterId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId,
+        constants::{BROADCASTER_ID, FROM_BROADCASTER_ID, RAIDS, TO_BROADCASTER_ID},
+    },
 };
 
 pub trait RaidAPI {

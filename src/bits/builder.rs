@@ -1,15 +1,15 @@
 use chrono::{DateTime, Utc};
 
 use crate::{
+    Client, Error,
     bits::{BitsLeaderboardResponse, ExtensionTransactionsResponse},
     types::{
+        ExtensionId, TransactionId, UserId,
         constants::{
-            AFTER, BITS, COUNT, EXTENSIONS, EXTENSION_ID, FIRST, ID, LEADERBOARD, PERIOD,
+            AFTER, BITS, COUNT, EXTENSION_ID, EXTENSIONS, FIRST, ID, LEADERBOARD, PERIOD,
             STARTED_AT, TRANSACTIONS, USER_ID,
         },
-        ExtensionId, TransactionId, UserId,
     },
-    Client, Error,
 };
 
 use crate::bits::Period;

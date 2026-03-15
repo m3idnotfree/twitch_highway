@@ -11,8 +11,8 @@ use std::future::Future;
 use types::EndPollBody;
 
 use crate::{
-    types::{constants::POLLS, BroadcasterId, PollId, Title},
     Client, Error,
+    types::{BroadcasterId, PollId, Title, constants::POLLS},
 };
 
 pub trait PollsAPI {

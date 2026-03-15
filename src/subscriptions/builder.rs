@@ -1,10 +1,10 @@
 use crate::{
+    Client, Error,
     subscriptions::BroadcasterSubscriptionResponse,
     types::{
-        constants::{AFTER, BEFORE, BROADCASTER_ID, FIRST, SUBSCRIPTIONS, USER_ID},
         BroadcasterId, UserId,
+        constants::{AFTER, BEFORE, BROADCASTER_ID, FIRST, SUBSCRIPTIONS, USER_ID},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

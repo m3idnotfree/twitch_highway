@@ -26,15 +26,15 @@ use types::{
 use std::future::Future;
 
 use crate::{
+    Client, Error,
     types::{
+        BlockedTermId, BroadcasterId, ModeratorId, UserId,
         constants::{
             AUTOMOD, BANS, BLOCKED_TERMS, BROADCASTER_ID, CHANNELS, ENFORCEMENTS, ID, MESSAGE,
-            MODERATION, MODERATORS, MODERATOR_ID, SETTINGS, SHIELD_MODE, STATUS, USER_ID, VIPS,
+            MODERATION, MODERATOR_ID, MODERATORS, SETTINGS, SHIELD_MODE, STATUS, USER_ID, VIPS,
             WARNINGS,
         },
-        BlockedTermId, BroadcasterId, ModeratorId, UserId,
     },
-    Client, Error,
 };
 
 const SUSPICIOUS_USERS: &str = "suspicious_users";

@@ -1,13 +1,12 @@
 use std::sync::Arc;
 
-use tokio::sync::{oneshot, Mutex};
+use tokio::sync::{Mutex, oneshot};
 use twitch_highway::{
     eventsub::websocket::{
-        self,
+        self, Router as WsRouter,
         extract::{Session, State as WsState},
         layer::TraceLayer,
         routes::{channel_ban, welcome},
-        Router as WsRouter,
     },
     types::SessionId,
 };

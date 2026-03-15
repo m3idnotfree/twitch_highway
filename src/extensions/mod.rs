@@ -24,14 +24,14 @@ use types::{
 use std::future::Future;
 
 use crate::{
+    Client, Error,
     types::{
+        BroadcasterId, Cost, ExtensionId, JWTToken,
         constants::{
-            BITS, BROADCASTER_ID, CHAT, DELAY, EXTENSIONS, EXTENSION_ID, EXTENSION_VERSION, JWT,
+            BITS, BROADCASTER_ID, CHAT, DELAY, EXTENSION_ID, EXTENSION_VERSION, EXTENSIONS, JWT,
             PUBSUB, RELEASED, REQUIRED_CONFIGURATION, SECRETS, SHOULD_INCLUDE_ALL,
         },
-        BroadcasterId, Cost, ExtensionId, JWTToken,
     },
-    Client, Error,
 };
 
 pub trait ExtensionsAPI {

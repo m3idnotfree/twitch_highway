@@ -17,13 +17,13 @@ pub use types::{
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{
-            AUTHORIZATION, BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USERS, USER_ID,
-        },
-        BroadcasterId, UserId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, UserId,
+        constants::{
+            AUTHORIZATION, BLOCKS, DESCRIPTION, EXTENSIONS, LIST, TARGET_USER_ID, USER_ID, USERS,
+        },
+    },
 };
 
 pub trait UserAPI {
@@ -38,7 +38,7 @@ pub trait UserAPI {
 
     /// See <https://dev.twitch.tv/docs/api/reference/#get-user-block-list>
     fn get_user_block_list<'a>(&'a self, broadcaster_id: &'a BroadcasterId)
-        -> GetUserBlockList<'a>;
+    -> GetUserBlockList<'a>;
 
     /// See <https://dev.twitch.tv/docs/api/reference/#block-user>
     fn block_user<'a>(&'a self, target_user_id: &'a UserId) -> CreateBlockUser<'a>;

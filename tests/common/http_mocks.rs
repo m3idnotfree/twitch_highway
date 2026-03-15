@@ -7,8 +7,8 @@ use asknothingx2_util::{
 use serde_json::json;
 use url::Url;
 use wiremock::{
-    matchers::{body_json, header, method, path, query_param},
     Mock, MockBuilder, MockServer, ResponseTemplate,
+    matchers::{body_json, header, method, path, query_param},
 };
 
 use twitch_highway::Client;

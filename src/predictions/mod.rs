@@ -11,8 +11,8 @@ use std::future::Future;
 use types::CreatePredictionBody;
 
 use crate::{
-    types::{constants::PREDICTIONS, BroadcasterId, PredictionId, Title},
     Client, Error,
+    types::{BroadcasterId, PredictionId, Title, constants::PREDICTIONS},
 };
 
 pub trait PredictionsAPI {

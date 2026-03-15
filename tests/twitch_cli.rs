@@ -2,7 +2,7 @@
 mod common;
 
 use anyhow::Result;
-use common::{mock_api_start, TwitchFixture};
+use common::{TwitchFixture, mock_api_start};
 use std::time::Duration;
 use tokio::time::sleep;
 use twitch_highway::types::{BroadcasterId, PredictionId, RewardId, TeamId, Title, UserId};

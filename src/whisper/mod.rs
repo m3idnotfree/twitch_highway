@@ -3,11 +3,11 @@ mod types;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{FROM_USER_ID, TO_USER_ID, WHISPERS},
-        UserId,
-    },
     Client, Error,
+    types::{
+        UserId,
+        constants::{FROM_USER_ID, TO_USER_ID, WHISPERS},
+    },
 };
 
 use types::WhisperBody;

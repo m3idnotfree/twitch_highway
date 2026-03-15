@@ -1,13 +1,13 @@
 use crate::{
+    Client, Error,
     streams::{GetStreamMarkersResponse, StreamsResponse},
     types::{
+        GameId, UserId, VideoId,
         constants::{
             AFTER, BEFORE, FIRST, FOLLOWED, GAME_ID, LANGUAGE, MARKERS, STREAMS, TYPE, USER_ID,
             USER_LOGIN, VIDEO_ID,
         },
-        GameId, UserId, VideoId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

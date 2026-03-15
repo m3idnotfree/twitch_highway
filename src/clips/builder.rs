@@ -1,14 +1,14 @@
 use chrono::{DateTime, SecondsFormat, Utc};
 
 use crate::{
+    Client, Error,
     clips::{ClipsInfoResponse, NewClipResponse},
     types::{
+        BroadcasterId, ClipId, GameId,
         constants::{
             AFTER, BROADCASTER_ID, CLIPS, ENDED_AT, FIRST, GAME_ID, ID, IS_FEATURED, STARTED_AT,
         },
-        BroadcasterId, ClipId, GameId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

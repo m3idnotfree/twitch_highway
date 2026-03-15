@@ -1,18 +1,18 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     chat::{
         AnnouncementColor, ChatSettingResponse, ChattersResponse, EmotesResponse,
         SendChatMessageResponse,
     },
     types::{
+        BroadcasterId, ModeratorId, UserId,
         constants::{
             AFTER, ANNOUNCEMENTS, BROADCASTER_ID, CHAT, CHATTERS, EMOTES, FIRST, MESSAGES,
             MODERATOR_ID, SETTINGS, USER, USER_ID,
         },
-        BroadcasterId, ModeratorId, UserId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

@@ -1,6 +1,7 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     channel_points::{
         CustomRewardsRedemptionResponse, CustomRewardsResponse, RedemptionStatus, Sort,
     },
@@ -9,7 +10,6 @@ use crate::{
         SORT, STATUS,
     },
     types::{BroadcasterId, RedemptionId, RewardId},
-    Client, Error,
 };
 
 const ONLY_MANAGEABLE_REWARDS: &str = "only_manageable_rewards";

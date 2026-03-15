@@ -1,15 +1,15 @@
 use chrono::{DateTime, Utc};
 
 use crate::{
+    Client, Error,
     analytics::{AnalyticsType, ExtensionAnalyticsResponse, GameAnalyticsResponse},
     types::{
+        ExtensionId, GameId,
         constants::{
-            AFTER, ANALYTICS, ENDED_AT, EXTENSIONS, EXTENSION_ID, FIRST, GAMES, GAME_ID,
+            AFTER, ANALYTICS, ENDED_AT, EXTENSION_ID, EXTENSIONS, FIRST, GAME_ID, GAMES,
             STARTED_AT, TYPE,
         },
-        ExtensionId, GameId,
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

@@ -1,15 +1,15 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     extensions::{
         ConfigurationSegmentResponse, ExtensionLiveChannelsRespnose,
         ExtensionsBitsProductsResponse, Segment,
     },
     types::{
-        constants::{AFTER, BITS, CONFIGURATIONS, EXTENSIONS, EXTENSION_ID, FIRST, LIVE, SEGMENT},
         BroadcasterId, Cost, ExtensionId, JWTToken,
+        constants::{AFTER, BITS, CONFIGURATIONS, EXTENSION_ID, EXTENSIONS, FIRST, LIVE, SEGMENT},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

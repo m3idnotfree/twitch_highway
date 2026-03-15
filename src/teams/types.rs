@@ -2,8 +2,8 @@ use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{
-    constants::{ID, NAME},
     BroadcasterId, TeamId, UserId,
+    constants::{ID, NAME},
 };
 
 pub enum TeamSelect<'a> {

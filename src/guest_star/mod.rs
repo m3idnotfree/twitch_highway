@@ -15,14 +15,14 @@ pub use types::{
 use std::future::Future;
 
 use crate::{
+    Client, Error,
     types::{
+        BroadcasterId, ModeratorId, SessionId, UserId,
         constants::{
             BROADCASTER_ID, CHANNEL_SETTINGS, GUEST_ID, GUEST_STAR, INVITES, MODERATOR_ID, SESSION,
             SESSION_ID, SLOT, SLOT_ID,
         },
-        BroadcasterId, ModeratorId, SessionId, UserId,
     },
-    Client, Error,
 };
 
 pub trait GuestStarAPI {

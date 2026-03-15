@@ -1,10 +1,10 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     polls::PollsResponse,
     types::constants::{AFTER, BROADCASTER_ID, FIRST, ID, POLLS},
     types::{BroadcasterId, PollId, Title},
-    Client, Error,
 };
 
 #[derive(Debug)]

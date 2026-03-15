@@ -1,12 +1,12 @@
 use serde::Serialize;
 
 use crate::{
+    Client, Error,
     conduits::{GetConduitShardsResponse, UpdateConduitShardsResponse},
     types::{
-        constants::{AFTER, CONDUITS, CONDUIT_ID, EVENTSUB, SHARDS, STATUS},
         ConduitId, SessionId, ShardId, Status,
+        constants::{AFTER, CONDUIT_ID, CONDUITS, EVENTSUB, SHARDS, STATUS},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]

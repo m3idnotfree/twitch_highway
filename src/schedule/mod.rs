@@ -15,11 +15,11 @@ use chrono::{DateTime, Utc};
 use chrono_tz::Tz;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, ICALENDAR, ID, SCHEDULE, SEGMENT},
-        BroadcasterId, SegmentId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, SegmentId,
+        constants::{BROADCASTER_ID, ICALENDAR, ID, SCHEDULE, SEGMENT},
+    },
 };
 
 pub trait ScheduleAPI {

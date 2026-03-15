@@ -95,15 +95,15 @@ async fn create_eventsub3() {
 mod webhook {
     use std::{
         sync::{
-            atomic::{AtomicUsize, Ordering},
             Arc,
+            atomic::{AtomicUsize, Ordering},
         },
         time::Duration,
     };
 
     use tokio::{
         net::TcpListener,
-        sync::{oneshot, Mutex},
+        sync::{Mutex, oneshot},
         time::sleep,
     };
     use twitch_highway::eventsub::webhook::generate_secret;
@@ -280,7 +280,7 @@ mod websocket {
 
     use tokio::{sync::oneshot, time::sleep};
 
-    use crate::common::{trigger_websocket_event, websocket, CliConfig};
+    use crate::common::{CliConfig, trigger_websocket_event, websocket};
 
     #[tokio::test]
     async fn websocket() {

@@ -15,11 +15,11 @@ pub use types::{
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, CHANNELS, EDITORS},
-        BroadcasterId, UserId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, UserId,
+        constants::{BROADCASTER_ID, CHANNELS, EDITORS},
+    },
 };
 
 pub trait ChannelsAPI {

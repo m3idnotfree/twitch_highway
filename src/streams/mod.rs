@@ -15,11 +15,11 @@ use std::future::Future;
 use types::CreateStrseamMarkerBody;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, KEY, MARKERS, STREAMS},
-        BroadcasterId, UserId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, UserId,
+        constants::{BROADCASTER_ID, KEY, MARKERS, STREAMS},
+    },
 };
 
 pub trait StreamsAPI {

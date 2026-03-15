@@ -9,11 +9,11 @@ pub use types::{Subscription, Tier};
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER, USER_ID},
-        BroadcasterId, UserId,
-    },
     Client, Error,
+    types::{
+        BroadcasterId, UserId,
+        constants::{BROADCASTER_ID, SUBSCRIPTIONS, USER, USER_ID},
+    },
 };
 
 pub trait SubscriptionsAPI {

@@ -12,11 +12,11 @@ pub use types::{
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{BITS, BROADCASTER_ID, CHEERMOTES},
-        BroadcasterId, ExtensionId,
-    },
     Error,
+    types::{
+        BroadcasterId, ExtensionId,
+        constants::{BITS, BROADCASTER_ID, CHEERMOTES},
+    },
 };
 
 pub trait BitsAPI {

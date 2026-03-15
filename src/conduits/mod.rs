@@ -13,11 +13,11 @@ use types::{CreateConduitsBody, UpdateConduitsBody};
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{CONDUITS, EVENTSUB, ID},
-        ConduitId,
-    },
     Client, Error,
+    types::{
+        ConduitId,
+        constants::{CONDUITS, EVENTSUB, ID},
+    },
 };
 
 pub trait ConduitsAPI {

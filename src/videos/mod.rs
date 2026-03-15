@@ -11,11 +11,11 @@ use builder::VideoSelect;
 use std::future::Future;
 
 use crate::{
-    types::{
-        constants::{ID, VIDEOS},
-        VideoId,
-    },
     Client, Error,
+    types::{
+        VideoId,
+        constants::{ID, VIDEOS},
+    },
 };
 
 pub trait VideosAPI {

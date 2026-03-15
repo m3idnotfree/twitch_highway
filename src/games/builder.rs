@@ -1,10 +1,10 @@
 use crate::{
+    Client, Error,
     games::GamesResponse,
     types::{
-        constants::{AFTER, BEFORE, FIRST, GAMES, ID, IGDB_ID, NAME, TOP},
         GameId,
+        constants::{AFTER, BEFORE, FIRST, GAMES, ID, IGDB_ID, NAME, TOP},
     },
-    Client, Error,
 };
 
 #[derive(Debug)]
