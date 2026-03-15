@@ -1,12 +1,13 @@
 [package]
 name = "twitch_highway"
-version = "0.5.1"
+version = "0.5.2"
 authors = ["m3id"]
 edition.workspace = true
 description = "Twitch API"
 documentation = "https://docs.rs/twitch_highway"
 repository = "https://github.com/m3idnotfree/twitch_highway"
 license.workspace = true
+rust-version = "1.88"
 keywords = ["api", "helix", "oauth", "streaming", "twitch"]
 categories = ["api-bindings", "web-programming"]
 

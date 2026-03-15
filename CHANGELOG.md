@@ -1,3 +1,16 @@
+## [0.5.2](https://github.com/m3idnotfree/twitch_highway/compare/twitch_tohell-v0.1.0..v0.5.2) - 2026-03-15
+
+### Refactor
+
+- **(twitch_highway)** Migrate types to twitch_onthe([8fb3fcf](https://github.com/m3idnotfree/twitch_highway/commit/8fb3fcfda47462b3345a4a3cddf936a132198141))
+- **(twitch_highway)** Delegate webhook and websocket to twitch_tohell([1638f15](https://github.com/m3idnotfree/twitch_highway/commit/1638f150f5b754705efc2edab81ddd8d32219d83))
+- **(examples)** Migrate to_broadcaster_id to From trait([cf4ed21](https://github.com/m3idnotfree/twitch_highway/commit/cf4ed21f6bb48e24ceb04d441fde3ceef199b026))
+
+### Miscellaneous
+
+- **(examples)** Add Cargo.toml([fb31a34](https://github.com/m3idnotfree/twitch_highway/commit/fb31a344429d8b76c98309620959e7297ce8ccf3))
+- Format([ca0a3bd](https://github.com/m3idnotfree/twitch_highway/commit/ca0a3bd698a0ff94376c2d1c1262b0ca34e06eea))
+
 ## [0.5.1](https://github.com/m3idnotfree/twitch_highway/compare/v0.5.0..v0.5.1) - 2026-03-13
 
 ### Bug Fixes
