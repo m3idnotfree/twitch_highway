@@ -174,7 +174,7 @@ async fn on_welcome(Session(session): Session, State(state): State<AppState>) {
 
     match api
         .subscribe(SubscriptionType::ChannelChatMessage, session.id.clone())
-        .broadcaster_user_id(user_info.user_id.to_broadcaster_id())
+        .broadcaster_user_id(user_info.user_id.clone().into())
         .user_id(user_info.user_id.clone())
         .send()
         .await

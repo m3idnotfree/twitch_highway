@@ -153,7 +153,7 @@ async fn send_chat_message(
     let api = Client::new(user.token.access_token.clone(), user.client_id.clone());
     match api
         .send_chat_message(
-            &user.user_id.to_broadcaster_id(),
+            &user.user_id.clone().into(),
             &user.user_id,
             &request.message,
         )
