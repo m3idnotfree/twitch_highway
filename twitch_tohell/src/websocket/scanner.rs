@@ -1,44 +1,31 @@
 use crate::{SubscriptionType, websocket::MessageType};
 
-const METADATA: &str = "\"metadata\"";
-const PAYLOAD: &str = "\"payload\"";
-const EVENT: &str = "\"event\"";
-const SUBSCRIPTION: &str = "\"subscription\"";
-const SESSION: &str = "\"session\"";
-const SUBSCRIPTION_TYPE: &str = "\"subscription_type\"";
-const MESSAGE_TYPE: &str = "\"message_type\"";
-const RECONNECT_URL: &str = "\"reconnect_url\"";
-
-#[derive(Debug, Default, Clone, Copy)]
-struct Section {
-    pub start: usize,
-    pub end: usize,
-}
-
 #[derive(Debug, Clone, Copy)]
 pub struct Scanner {
-    metadata: Section,
-    payload: Section,
+    metadata: liver_shot::Span,
+    payload: liver_shot::Span,
     pub message_type: MessageType,
     pub subscription_type: Option<SubscriptionType>,
 }
 
 impl Scanner {
     pub fn new(data: &str) -> Result<Self, ScanError> {
-        let metadata = InternalScanner::find_section(data, METADATA)?;
-        let payload = InternalScanner::find_section(data, PAYLOAD)?;
+        let metadata = liver_shot::find("metadata", data)?;
+        let payload = liver_shot::find("payload", data)?;
 
-        let message_type: MessageType = Self::extract_string_field(data, &metadata, MESSAGE_TYPE)?
+        let mt_span = metadata.find("message_type", data)?;
+        let message_type: MessageType = data[mt_span.start + 1..mt_span.end - 1]
             .parse()
-            .map_err(ScanError::parse_error)?;
+            .map_err(ScanError::parse)?;
 
-        let subscription_type = Self::extract_string_field(data, &metadata, SUBSCRIPTION_TYPE)
-            .ok()
-            .map(|s| {
-                s.parse::<SubscriptionType>()
-                    .map_err(ScanError::parse_error)
-            })
-            .transpose()?;
+        let subscription_type = match metadata.find("subscription_type", data) {
+            Ok(span) => {
+                let s = &data[span.start + 1..span.end - 1];
+                Some(s.parse::<SubscriptionType>().map_err(ScanError::parse)?)
+            }
+            Err(e) if e.is_not_found() => None,
+            Err(e) => return Err(e.into()),
+        };
 
         Ok(Self {
             metadata,
@@ -75,244 +62,60 @@ impl Scanner {
 
     #[inline]
     pub fn get_metadata<'a>(&self, data: &'a str) -> &'a str {
-        &data[self.metadata.start..self.metadata.end]
+        self.metadata.get(data)
     }
 
     #[inline]
     pub fn get_payload<'a>(&self, data: &'a str) -> &'a str {
-        &data[self.payload.start..self.payload.end]
+        self.payload.get(data)
     }
 
     #[inline]
     pub fn get_session<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
-        self.extract_object_from_payload(data, SESSION)
+        self.find_in_payload(data, "session")
     }
 
     #[inline]
     pub fn get_subscription<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
-        self.extract_object_from_payload(data, SUBSCRIPTION)
+        self.find_in_payload(data, "subscription")
     }
 
     #[inline]
     pub fn get_event<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
-        self.extract_object_from_payload(data, EVENT)
+        self.find_in_payload(data, "event")
     }
 
     #[inline]
     pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
-        let session = InternalScanner::find_section(data, SESSION)?;
-        Self::extract_string_field(data, &session, RECONNECT_URL)
+        let session = liver_shot::find("session", data)?;
+        find_str(data, &session, "reconnect_url")
     }
 
-    #[inline]
-    fn extract_object_from_payload<'a>(
-        &self,
-        data: &'a str,
-        field_name: &str,
-    ) -> Result<&'a str, ScanError> {
-        let payload = self.get_payload(data);
-        let start = InternalScanner::find_section_start(payload, field_name)?;
-        let end = InternalScanner::skip_object(payload, start)?;
-
-        Ok(&payload[start..end])
-    }
-
-    #[inline]
-    fn extract_string_field<'a>(
-        data: &'a str,
-        section: &Section,
-        field_name: &str,
-    ) -> Result<&'a str, ScanError> {
-        let payload = &data[section.start..section.end];
-        let start = InternalScanner::find_section_start(payload, field_name)?;
-        let end = InternalScanner::skip_string(payload, start)?;
-
-        Ok(&payload[start + 1..end - 1])
+    fn find_in_payload<'a>(&self, data: &'a str, field_name: &str) -> Result<&'a str, ScanError> {
+        Ok(self.payload.find(field_name, data)?.get(data))
     }
 }
 
-struct InternalScanner;
-
-impl InternalScanner {
-    #[inline]
-    pub fn find_section(data: &str, pattern: &str) -> Result<Section, ScanError> {
-        let start = Self::find_section_start(data, pattern)?;
-        let end = Self::skip_object(data, start)?;
-        Ok(Section { start, end })
-    }
-
-    #[inline]
-    pub fn find_section_start(data: &str, pattern: &str) -> Result<usize, ScanError> {
-        let end = data
-            .find(pattern)
-            .ok_or(ScanError::field_not_found(pattern, "JSON input"))?
-            + pattern.len();
-
-        let bytes = data.as_bytes();
-        let mut pos = end;
-
-        while pos < bytes.len() {
-            match bytes[pos] {
-                b':' => {
-                    pos += 1; // skip colon
-
-                    while pos < bytes.len() && matches!(bytes[pos], b' ' | b'\t' | b'\n' | b'\r') {
-                        pos += 1;
-                    }
-
-                    return Ok(pos);
-                }
-                b' ' | b'\t' | b'\n' | b'\r' => pos += 1,
-                _ => {
-                    return Err(ScanError::InvalidFieldFormat {
-                        field_name: pattern.to_string(),
-                        position: pos,
-                        expected: "whitespace or ':'".to_string(),
-                    });
-                }
-            }
-        }
-
-        Err(ScanError::unexpected_eof(pos, "':'"))
-    }
-
-    /// The input position must point to an opening brace '{'
-    fn skip_object(data: &str, start_pos: usize) -> Result<usize, ScanError> {
-        let bytes = data.as_bytes();
-        if start_pos >= bytes.len() {
-            return Err(ScanError::out_of_bounds(start_pos, bytes.len()));
-        }
-
-        if bytes[start_pos] != b'{' {
-            return Err(ScanError::invalid_json_at(start_pos, "expected '{'"));
-        }
-
-        let mut pos = start_pos + 1; // skip '{'
-        let mut depth = 1;
-
-        while pos < bytes.len() && depth > 0 {
-            match bytes[pos] {
-                b'{' => depth += 1,
-                b'}' => depth -= 1,
-                _ => {}
-            }
-            pos += 1;
-        }
-
-        if depth != 0 {
-            Err(ScanError::unmatched_brackets("{", start_pos, depth))
-        } else {
-            Ok(pos)
-        }
-    }
-
-    /// The input position must point to an opening quote '"'
-    #[inline]
-    fn skip_string(data: &str, start_pos: usize) -> Result<usize, ScanError> {
-        let bytes = data.as_bytes();
-
-        if start_pos >= bytes.len() {
-            return Err(ScanError::out_of_bounds(start_pos, bytes.len()));
-        }
-
-        if bytes[start_pos] != b'"' {
-            return Err(ScanError::invalid_json_at(start_pos, "expected '\"'"));
-        }
-
-        let mut pos = start_pos + 1; // skip quote
-
-        while pos < bytes.len() {
-            match bytes[pos] {
-                b'"' => {
-                    return Ok(pos + 1);
-                }
-                b'\\' => pos += 2, // skip escaped character
-                _ => pos += 1,
-            }
-        }
-
-        Err(ScanError::unterminated_string(start_pos))
-    }
+fn find_str<'a>(
+    data: &'a str,
+    span: &liver_shot::Span,
+    field_name: &str,
+) -> Result<&'a str, ScanError> {
+    let value_span = span.find(field_name, data)?;
+    Ok(&data[value_span.start + 1..value_span.end - 1])
 }
 
 #[derive(Debug, thiserror::Error)]
 pub enum ScanError {
-    #[error("Position {position} is out of bounds for input of length {input_length}")]
-    OutOfBounds {
-        position: usize,
-        input_length: usize,
-    },
-    #[error("Invalid JSON at position {position}: {reason}")]
-    InvalidJsonAt { position: usize, reason: String },
-    #[error("Unterminated string starting at position {start_position}")]
-    UnterminatedString { start_position: usize },
-    #[error("Unmatched {bracket_type} at position {position} (depth: {depth})")]
-    UnmatchedBrackets {
-        bracket_type: String,
-        position: usize,
-        depth: i32,
-    },
-    #[error("Field '{field_name}' not found in {context}")]
-    FieldNotFound { field_name: String, context: String },
-    #[error("Invalid format for field '{field_name}' at position {position}: expected {expected}")]
-    InvalidFieldFormat {
-        field_name: String,
-        position: usize,
-        expected: String,
-    },
-    #[error("Unexpected end of input at position {position}: expected {expected}")]
-    UnexpectedEof { expected: String, position: usize },
     #[error("{0}")]
-    ParseError(String),
+    Parse(String),
+    #[error(transparent)]
+    Json(#[from] liver_shot::Error),
 }
 
 impl ScanError {
-    pub fn invalid_json_at(position: usize, reason: impl Into<String>) -> Self {
-        Self::InvalidJsonAt {
-            position,
-            reason: reason.into(),
-        }
-    }
-
-    pub fn field_not_found(field_name: impl Into<String>, context: impl Into<String>) -> Self {
-        Self::FieldNotFound {
-            field_name: field_name.into(),
-            context: context.into(),
-        }
-    }
-
-    pub fn unterminated_string(start_position: usize) -> Self {
-        Self::UnterminatedString { start_position }
-    }
-
-    pub fn unmatched_brackets(
-        bracket_type: impl Into<String>,
-        position: usize,
-        depth: i32,
-    ) -> Self {
-        Self::UnmatchedBrackets {
-            bracket_type: bracket_type.into(),
-            position,
-            depth,
-        }
-    }
-
-    pub fn unexpected_eof(position: usize, expected: impl Into<String>) -> Self {
-        Self::UnexpectedEof {
-            position,
-            expected: expected.into(),
-        }
-    }
-
-    pub fn parse_error(error: impl Into<String>) -> Self {
-        Self::ParseError(error.into())
-    }
-
-    pub fn out_of_bounds(position: usize, input_length: usize) -> Self {
-        Self::OutOfBounds {
-            position,
-            input_length,
-        }
+    pub fn parse(error: impl ToString) -> Self {
+        Self::Parse(error.to_string())
     }
 }
 
