@@ -87,7 +87,7 @@ impl Scanner {
 
     #[inline]
     pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
-        let session = liver_shot::find("session", data)?;
+        let session = self.payload.find("session", data)?;
         find_str(data, &session, "reconnect_url")
     }
 
