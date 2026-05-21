@@ -30,8 +30,8 @@ impl Request {
         matches!(self.message_type, MessageType::SessionReconnect)
     }
 
-    pub fn get_reconnect_url(&self) -> &str {
-        self.scanner.get_reconnect_url(&self.data).unwrap()
+    pub fn get_reconnect_url(&self) -> Option<&str> {
+        self.scanner.get_reconnect_url(&self.data).ok()
     }
 }
 

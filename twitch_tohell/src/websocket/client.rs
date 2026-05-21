@@ -364,8 +364,16 @@ where
     }
 
     if req.is_reconnect() {
-        info!("server requested reconnect to: {}", req.get_reconnect_url());
-        return Ok(Some(req.get_reconnect_url().to_string()));
+        match req.get_reconnect_url() {
+            Some(url) => {
+                info!("server requested reconnect to: {}", url);
+                return Ok(Some(url.to_string()));
+            }
+            None => {
+                warn!("server requested reconnect but no URL provided in message");
+                return Ok(None);
+            }
+        }
     }
     svc.ready().await.expect("service error is Infallible");
 
