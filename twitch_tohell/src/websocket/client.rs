@@ -346,10 +346,7 @@ where
     }
 }
 
-async fn handle_text_message<S>(
-    svc: &mut S,
-    text: Utf8Bytes,
-) -> Result<Option<String>, Error>
+async fn handle_text_message<S>(svc: &mut S, text: Utf8Bytes) -> Result<Option<String>, Error>
 where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
