@@ -307,7 +307,7 @@ where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
     match msg {
-        Some(Ok(Message::Text(text))) => match handle_text_message(write, svc, text).await {
+        Some(Ok(Message::Text(text))) => match handle_text_message(svc, text).await {
             Ok(Some(url)) => {
                 trace!("received reconnect request, closing current connection");
                 let _ = write.close().await;
@@ -347,7 +347,6 @@ where
 }
 
 async fn handle_text_message<S>(
-    _write: &mut WsSink,
     svc: &mut S,
     text: Utf8Bytes,
 ) -> Result<Option<String>, Error>
@@ -378,8 +377,10 @@ where
 
     if resp.is_error() {
         warn!(
-            "handler error for {:?}: type={:?} reason={:?}",
-            req_sub_type, resp.error_type, resp.error_reason
+            "handler error for {}: type={} reason={}",
+            req_sub_type.as_deref().unwrap_or("-"), 
+            resp.error_type.as_deref().unwrap_or("-"), 
+            resp.error_reason.as_deref().unwrap_or("-"),
         );
     }
 
