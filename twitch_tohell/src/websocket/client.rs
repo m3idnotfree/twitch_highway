@@ -307,7 +307,7 @@ where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
     match msg {
-        Some(Ok(Message::Text(text))) => match handle_text_message(write, svc, text).await {
+        Some(Ok(Message::Text(text))) => match handle_text_message(svc, text).await {
             Ok(Some(url)) => {
                 trace!("received reconnect request, closing current connection");
                 let _ = write.close().await;
@@ -320,9 +320,9 @@ where
                 Err(e)
             }
         },
-        Some(Ok(Message::Ping(ping))) => {
-            trace!("received ping, sending pong");
-            write.send(Message::Pong(ping)).await?;
+        Some(Ok(Message::Ping(_))) => {
+            // pong handled by tungstenite for us
+            trace!("received ping");
             Ok(None)
         }
         Some(Ok(Message::Close(frame))) => {
@@ -346,20 +346,15 @@ where
     }
 }
 
-async fn handle_text_message<S>(
-    write: &mut WsSink,
-    svc: &mut S,
-    text: Utf8Bytes,
-) -> Result<Option<String>, Error>
+async fn handle_text_message<S>(svc: &mut S, text: Utf8Bytes) -> Result<Option<String>, Error>
 where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
     let req = Request::from_str(&text)?;
 
     if req.is_keepalive() {
-        trace!("received keepalive, sending pong");
-        write.send(Message::Pong("".into())).await?;
-
+        // Twitch does not expect any response from keepalive messages
+        trace!("received keepalive");
         return Ok(None);
     }
 
@@ -369,11 +364,21 @@ where
     }
     svc.ready().await.expect("service error is Infallible");
 
+    let req_sub_type = req.subscription_type;
     let resp = svc.call(req).await.expect("service error is Infallible");
 
     if resp.is_reconnect() {
         trace!("handler requested reconnect");
         return Ok(resp.url);
+    }
+
+    if resp.is_error() {
+        warn!(
+            "handler error for {}: type={} reason={}",
+            req_sub_type.as_deref().unwrap_or("-"),
+            resp.error_type.as_deref().unwrap_or("-"),
+            resp.error_reason.as_deref().unwrap_or("-"),
+        );
     }
 
     Ok(None)
