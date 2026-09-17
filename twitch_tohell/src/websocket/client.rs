@@ -378,8 +378,8 @@ where
     if resp.is_error() {
         warn!(
             "handler error for {}: type={} reason={}",
-            req_sub_type.as_deref().unwrap_or("-"), 
-            resp.error_type.as_deref().unwrap_or("-"), 
+            req_sub_type.as_deref().unwrap_or("-"),
+            resp.error_type.as_deref().unwrap_or("-"),
             resp.error_reason.as_deref().unwrap_or("-"),
         );
     }
