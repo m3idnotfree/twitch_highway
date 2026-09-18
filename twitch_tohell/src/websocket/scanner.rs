@@ -85,8 +85,12 @@ impl Scanner {
         self.find_in_payload(data, "event")
     }
 
+    /// # Returns
+    ///
+    /// - `Ok(Some(_))` - reconnect URL
+    /// - `Ok(None)` - `null`
     #[inline]
-    pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<&'a str, ScanError> {
+    pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<Option<&'a str>, ScanError> {
         let session = self.payload.find("session", data)?;
         find_str(data, &session, "reconnect_url")
     }
@@ -96,13 +100,25 @@ impl Scanner {
     }
 }
 
+/// # Returns
+///
+/// - `Ok(Some(_))` - removed quotes string
+/// - `Ok(None)` - null
 fn find_str<'a>(
     data: &'a str,
     span: &liver_shot::Span,
     field_name: &str,
-) -> Result<&'a str, ScanError> {
+) -> Result<Option<&'a str>, ScanError> {
     let value_span = span.find(field_name, data)?;
-    Ok(&data[value_span.start + 1..value_span.end - 1])
+    let raw = value_span.get(data);
+    match raw {
+        "null" => Ok(None),
+        _ => raw
+            .strip_prefix('"')
+            .and_then(|s| s.strip_suffix('"'))
+            .map(Some)
+            .ok_or_else(|| ScanError::parse(format!("`{field_name}` is not a string"))),
+    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -258,6 +274,11 @@ mod tests {
 
         let _: MetaData = serde_json::from_str(scanner.get_metadata(data)).unwrap();
         let _: Session = serde_json::from_str(scanner.get_session(data).unwrap()).unwrap();
+
+        assert_eq!(
+            scanner.get_reconnect_url(data).unwrap(),
+            Some("wss://eventsub.wss.twitch.tv?...")
+        );
     }
 
     #[test]
@@ -302,5 +323,62 @@ mod tests {
         let _: MetaData = serde_json::from_str(scanner.get_metadata(data)).unwrap();
         let _: Subscription =
             serde_json::from_str(scanner.get_subscription(data).unwrap()).unwrap();
+    }
+
+    #[test]
+    fn reconnect_null_url() {
+        let data = r#"
+{
+    "metadata": {
+        "message_id": "84c1e79a-2a4b-4c13-ba0b-4312293e9308",
+        "message_type": "session_reconnect",
+        "message_timestamp": "2022-11-18T09:10:11.634234626Z"
+    },
+    "payload": {
+        "session": {
+           "id": "AQoQexAWVYKSTIu4ec_2VAxyuhAB",
+           "status": "reconnecting",
+           "keepalive_timeout_seconds": null,
+           "reconnect_url": null,
+           "connected_at": "2022-11-16T10:11:12.634234626Z"
+        }
+    }
+}
+"#;
+
+        let scanner = Scanner::new(data).unwrap();
+
+        assert_eq!(scanner.message_type, MessageType::SessionReconnect);
+        assert_eq!(scanner.subscription_type, None);
+
+        let _: MetaData = serde_json::from_str(scanner.get_metadata(data)).unwrap();
+        let _: Session = serde_json::from_str(scanner.get_session(data).unwrap()).unwrap();
+
+        assert_eq!(scanner.get_reconnect_url(data).unwrap(), None);
+    }
+
+    #[test]
+    fn reconnect_invalid_url_type() {
+        let data = r#"
+{
+    "metadata": {
+        "message_id": "84c1e79a-2a4b-4c13-ba0b-4312293e9308",
+        "message_type": "session_reconnect",
+        "message_timestamp": "2022-11-18T09:10:11.634234626Z"
+    },
+    "payload": {
+        "session": {
+           "id": "AQoQexAWVYKSTIu4ec_2VAxyuhAB",
+           "status": "reconnecting",
+           "keepalive_timeout_seconds": null,
+           "reconnect_url": 12,
+           "connected_at": "2022-11-16T10:11:12.634234626Z"
+        }
+    }
+}
+"#;
+
+        let scanner = Scanner::new(data).unwrap();
+        assert!(scanner.get_reconnect_url(data).is_err());
     }
 }

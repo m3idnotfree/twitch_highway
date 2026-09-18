@@ -364,7 +364,7 @@ where
     }
 
     if req.is_reconnect() {
-        match req.get_reconnect_url() {
+        match req.get_reconnect_url()? {
             Some(url) => {
                 info!("server requested reconnect to: {}", url);
                 return Ok(Some(url.to_string()));
