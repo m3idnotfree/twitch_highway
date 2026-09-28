@@ -13,14 +13,20 @@ impl Scanner {
         let metadata = liver_shot::find("metadata", data)?;
         let payload = liver_shot::find("payload", data)?;
 
-        let mt_span = metadata.find("message_type", data)?;
-        let message_type: MessageType = data[mt_span.start + 1..mt_span.end - 1]
+        let message_type: MessageType = metadata
+            .find("message_type", data)?
+            .value(data)
+            .as_str()
+            .ok_or_else(|| ScanError::parse("`message_type` is not a string"))?
             .parse()
             .map_err(ScanError::parse)?;
 
         let subscription_type = match metadata.find("subscription_type", data) {
             Ok(span) => {
-                let s = &data[span.start + 1..span.end - 1];
+                let s = span
+                    .value(data)
+                    .as_str()
+                    .ok_or_else(|| ScanError::parse("`subscription_type` is not a string"))?;
                 Some(s.parse::<SubscriptionType>().map_err(ScanError::parse)?)
             }
             Err(e) if e.is_not_found() => None,
@@ -92,32 +98,18 @@ impl Scanner {
     #[inline]
     pub fn get_reconnect_url<'a>(&self, data: &'a str) -> Result<Option<&'a str>, ScanError> {
         let session = self.payload.find("session", data)?;
-        find_str(data, &session, "reconnect_url")
+        let reconnect_url = session.find("reconnect_url", data)?.value(data);
+        if reconnect_url.is_null() {
+            return Ok(None);
+        }
+        reconnect_url
+            .as_str()
+            .map(Some)
+            .ok_or_else(|| ScanError::parse("`reconnect_url` is not a string"))
     }
 
     fn find_in_payload<'a>(&self, data: &'a str, field_name: &str) -> Result<&'a str, ScanError> {
         Ok(self.payload.find(field_name, data)?.get(data))
-    }
-}
-
-/// # Returns
-///
-/// - `Ok(Some(_))` - removed quotes string
-/// - `Ok(None)` - null
-fn find_str<'a>(
-    data: &'a str,
-    span: &liver_shot::Span,
-    field_name: &str,
-) -> Result<Option<&'a str>, ScanError> {
-    let value_span = span.find(field_name, data)?;
-    let raw = value_span.get(data);
-    match raw {
-        "null" => Ok(None),
-        _ => raw
-            .strip_prefix('"')
-            .and_then(|s| s.strip_suffix('"'))
-            .map(Some)
-            .ok_or_else(|| ScanError::parse(format!("`{field_name}` is not a string"))),
     }
 }
 
