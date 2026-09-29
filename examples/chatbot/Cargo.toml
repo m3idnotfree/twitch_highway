@@ -5,18 +5,12 @@ edition = "2024"
 publish = false
 
 [dependencies]
-anyhow = "1.0.102"
-axum = { version = "0.8.8" }
+anyhow = "1.0.104"
+axum = { version = "0.8.9" }
 dotenvy = "0.15.7"
-serde = "1.0.228"
-tokio = { version = "1.50.0", features = [
-  "macros",
-  "net",
-  "rt-multi-thread",
-  "signal",
-  "sync"
-] }
+serde = "1.0.229"
+tokio = { version = "1.53.1", features = ["macros", "net", "rt-multi-thread", "signal", "sync"] }
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 twitch_highway = { path = "../..", features = ["websocket"] }
-twitch_oauth_token = "4.3.0"
+twitch_oauth_token = "4.4.1"
