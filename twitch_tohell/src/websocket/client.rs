@@ -2,6 +2,7 @@ use std::{
     convert::Infallible,
     future::{Future, IntoFuture},
     marker::PhantomData,
+    ops::ControlFlow,
     pin::{Pin, pin},
     str::FromStr,
     time::Duration,
@@ -119,12 +120,16 @@ where
             let recv_task = handle_connection(&mut write, read, &mut svc);
 
             match recv_task.await? {
-                ConnectionResult::Url(url) => {
+                Exit::Url(Some(url)) => {
                     trace!("reconnect requested, switching to new url");
                     current_url = url;
                     time::sleep(config.reconnect_grace_period).await;
                 }
-                ConnectionResult::Closed => {
+                Exit::Url(None) => {
+                    trace!("reconnect requested, reusing current url");
+                    time::sleep(config.reconnect_grace_period).await;
+                }
+                Exit::Closed => {
                     trace!("connection closed");
                     return Ok(());
                 }
@@ -208,12 +213,16 @@ where
             tokio::select! {
                 result = recv_task => {
                     match result? {
-                        ConnectionResult::Url(url) => {
+                        Exit::Url(Some(url)) => {
                             trace!("reconnect requested, switching to new url");
                             current_url = url;
                             time::sleep(config.reconnect_grace_period).await;
                         },
-                        ConnectionResult::Closed => {
+                        Exit::Url(None) => {
+                            trace!("reconnect requested, reusing current url");
+                            time::sleep(config.reconnect_grace_period).await;
+                        },
+                        Exit::Closed => {
                             trace!("connection closed");
                             return Ok(());
 
@@ -276,8 +285,8 @@ async fn try_accept(url: &str, config: &Config) -> Result<(WsSink, WsStream), Er
     }
 }
 
-enum ConnectionResult {
-    Url(String),
+enum Exit {
+    Url(Option<String>),
     Closed,
 }
 
@@ -285,15 +294,15 @@ async fn handle_connection<S>(
     write: &mut WsSink,
     mut read: WsStream,
     svc: &mut S,
-) -> Result<ConnectionResult, Error>
+) -> Result<Exit, Error>
 where
     S: Service<Request, Response = Response, Error = Infallible> + Clone + Send + 'static,
     S::Future: Send,
 {
     loop {
         let msg = read.next().await;
-        if let Some(result) = handle_messages(write, svc, msg).await? {
-            return Ok(result);
+        if let ControlFlow::Break(exit) = handle_messages(write, svc, msg).await? {
+            return Ok(exit);
         }
     }
 }
@@ -302,18 +311,18 @@ async fn handle_messages<S>(
     write: &mut WsSink,
     svc: &mut S,
     msg: WsMessage,
-) -> Result<Option<ConnectionResult>, Error>
+) -> Result<ControlFlow<Exit>, Error>
 where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
     match msg {
         Some(Ok(Message::Text(text))) => match handle_text_message(svc, text).await {
-            Ok(Some(url)) => {
+            Ok(ControlFlow::Break(url)) => {
                 trace!("received reconnect request, closing current connection");
                 let _ = write.close().await;
-                Ok(Some(ConnectionResult::Url(url)))
+                Ok(ControlFlow::Break(url))
             }
-            Ok(None) => Ok(None),
+            Ok(ControlFlow::Continue(())) => Ok(ControlFlow::Continue(())),
             Err(e) => {
                 warn!("error handling text message: {}, closing connection", e);
                 let _ = write.close().await;
@@ -323,12 +332,12 @@ where
         Some(Ok(Message::Ping(_))) => {
             // pong handled by tungstenite for us
             trace!("received ping");
-            Ok(None)
+            Ok(ControlFlow::Continue(()))
         }
         Some(Ok(Message::Close(frame))) => {
             trace!("received close frame: {:?}", frame);
             let _ = write.close().await;
-            Ok(Some(ConnectionResult::Closed))
+            Ok(ControlFlow::Break(Exit::Closed))
         }
         Some(Err(e)) => {
             error!("websocket error: {}", e);
@@ -337,16 +346,16 @@ where
         }
         Some(Ok(Message::Pong(_) | Message::Binary(_) | Message::Frame(_))) => {
             trace!("ignoring non-text message");
-            Ok(None)
+            Ok(ControlFlow::Continue(()))
         }
         None => {
             trace!("websocket stream ended");
-            Ok(Some(ConnectionResult::Closed))
+            Ok(ControlFlow::Break(Exit::Closed))
         }
     }
 }
 
-async fn handle_text_message<S>(svc: &mut S, text: Utf8Bytes) -> Result<Option<String>, Error>
+async fn handle_text_message<S>(svc: &mut S, text: Utf8Bytes) -> Result<ControlFlow<Exit>, Error>
 where
     S: Service<Request, Response = Response, Error = Infallible>,
 {
@@ -355,18 +364,20 @@ where
     if req.is_keepalive() {
         // Twitch does not expect any response from keepalive messages
         trace!("received keepalive");
-        return Ok(None);
+        return Ok(ControlFlow::Continue(()));
     }
 
     if req.is_reconnect() {
         match req.get_reconnect_url()? {
             Some(url) => {
                 info!("server requested reconnect to: {}", url);
-                return Ok(Some(url.to_string()));
+                return Ok(ControlFlow::Break(Exit::Url(Some(url.to_string()))));
             }
             None => {
-                warn!("server requested reconnect but no URL provided in message");
-                return Ok(None);
+                warn!(
+                    "server requested reconnect but no URL provided in message, reusing current url"
+                );
+                return Ok(ControlFlow::Break(Exit::Url(None)));
             }
         }
     }
@@ -377,7 +388,7 @@ where
 
     if resp.is_reconnect() {
         trace!("handler requested reconnect");
-        return Ok(resp.url);
+        return Ok(ControlFlow::Break(Exit::Url(resp.url)));
     }
 
     if resp.is_error() {
@@ -389,7 +400,7 @@ where
         );
     }
 
-    Ok(None)
+    Ok(ControlFlow::Continue(()))
 }
 
 fn calculate_backoff_delay(attempts: usize, config: &Config) -> Duration {
