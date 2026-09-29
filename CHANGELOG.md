@@ -1,3 +1,17 @@
+## [twitch_tohell-v0.2.0](https://github.com/m3idnotfree/twitch_highway/compare/twitch_tohell-v0.1.1..twitch_tohell-v0.2.0) - 2026-09-29
+
+### Bug Fixes
+
+- **(websocket)** Stop sending manual pong on ping/keepalive (#3)([19635e3](https://github.com/m3idnotfree/twitch_highway/commit/19635e3c1c4f35907f14401a8041fcd80a90ad5e))
+- **(scanner)** [**breaking**] Correct session lookup and null check reconnect url (#4)([f7e5744](https://github.com/m3idnotfree/twitch_highway/commit/f7e574435784d89eeea8109136526a043651fec8))
+- **(client)** Reconnect using current url when reconnect_url is null([d04a2d0](https://github.com/m3idnotfree/twitch_highway/commit/d04a2d00c31d4a21e52cf9fd70f13712de8ce4b8))
+
+## [twitch_tohell-v0.1.1](https://github.com/m3idnotfree/twitch_highway/compare/v0.5.2..twitch_tohell-v0.1.1) - 2026-03-17
+
+### Refactor
+
+- **(websocket)** Replace InternalScanner with liver_shot([8cf21b0](https://github.com/m3idnotfree/twitch_highway/commit/8cf21b0e42d36be4cdade370fafd3911bf5ef3e2))
+
 ## [0.5.2](https://github.com/m3idnotfree/twitch_highway/compare/twitch_tohell-v0.1.0..v0.5.2) - 2026-03-15
 
 ### Refactor
